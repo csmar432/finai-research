@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.whl
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+
+# Data
+*.csv
+*.parquet
+*.xlsx
+*.db
+*.sqlite
+
+# Models
+*.pt
+*.pth
+*.ckpt
+*.h5
+
+# Output
+reports/
+figures/
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Cursor IDE
+.cursor/
+# .cursor/ 目录含 settings.json 和 rules/，不建议提交
+# 如需同步配置，请手动导出
+
+# Env
+.env
+.env.local
+# Local MCP server secrets
+mcp_servers/*/.env
+mcp_servers/*/.env.local
+mcp_servers/*/.cache
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+
+# Weights & Biases
+wandb/
+
+# Cache
+.cache/
+
+# Project-specific (local experiments/data — not for public repo)
+tariff_research/
+output/
+.cache/.last_session

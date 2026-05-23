@@ -1,0 +1,37 @@
+{
+  "project_name": "金融AI研究工作流",
+  "version": "1.0.0",
+  "created_date": "2026-05-19",
+  "author": "",
+
+  "research": {
+    "paper_format": "ACL",
+    "default_language": "Chinese",
+    "citation_style": "acl_natbib",
+    "latex_engine": "xelatex",
+    "reference_manager": "Zotero"
+  },
+
+  "report": {
+    "format": "Markdown",
+    "style": "国泰君安/中金标准",
+    "default_currency": "CNY",
+    "coverage_years": 5,
+    "forecast_years": 3
+  },
+
+  "execution": {
+    "python_path": ".venv/bin/python",
+    "jupyter_port": 8888,
+    "notebook_dir": "notebooks",
+    "output_dir": "results"
+  },
+
+  "paths": {
+    "templates": "templates",
+    "projects": "projects",
+    "knowledge": "knowledge",
+    "scripts": "scripts",
+    "data": "projects/_shared_data"
+  }
+}

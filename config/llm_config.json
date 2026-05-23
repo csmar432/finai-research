@@ -1,0 +1,83 @@
+{
+  "_comment": "AI 模型配置模板 | Key 从环境变量读取（已在 .gitignore）",
+
+  "_note": "Cursor 本地 Claude 是默认选项，无需任何配置。外部 AI 仅在脚本批处理时调用。",
+
+  "cursor": {
+    "_comment": "Cursor 内置 Claude，通过 Cursor Agent 直接调用，无需 API Key",
+    "model": "claude-sonnet-4-6",
+    "note": "配置项仅作文档参考，脚本不读取此节"
+  },
+
+  "b_ai": {
+    "api_key": "$B_AI_API_KEY",
+    "base_url": "https://api.b.ai/v1",
+    "_note": "支持模型（实测）：gpt-5.5 / claude-sonnet-4.6 / gemini-3.1-pro / deepseek-v4-flash 等26个模型"
+  },
+
+  "openai": {
+    "_comment": "B.AI GPT-5.5（通过 b_ai 中转，需 VPN）",
+    "api_key": "$B_AI_API_KEY",
+    "model": "gpt-5.5",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "base_url": "https://api.b.ai/v1"
+  },
+
+  "anthropic": {
+    "_comment": "Claude 用于 Cursor 本地对话，此处仅作占位。脚本不通过此配置调用。",
+    "api_key": "",
+    "model": "claude-sonnet-4-6",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "base_url": ""
+  },
+
+  "deepseek": {
+    "_comment": "DeepSeek 直连（无需 VPN），默认外部补充模型",
+    "api_key": "$DEEPSEEK_API_KEY",
+    "model": "deepseek-chat",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "base_url": "https://api.deepseek.com/v1"
+  },
+
+  "gemini": {
+    "_comment": "Gemini-3.1-Pro（通过 b_ai 中转，需 VPN）",
+    "api_key": "$B_AI_API_KEY",
+    "model": "gemini-3.1-pro",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "base_url": "https://api.b.ai/v1"
+  },
+
+  "kimi": {
+    "_comment": "Kimi-k2.5（通过 b_ai 中转，需 VPN）",
+    "api_key": "$B_AI_API_KEY",
+    "model": "kimi-k2.5",
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "base_url": "https://api.b.ai/v1"
+  },
+
+  "zhipu": {
+    "api_key": "$ZHIPU_API_KEY",
+    "model": "glm-5",
+    "temperature": 0.7,
+    "max_tokens": 4096,
+    "base_url": "https://open.bigmodel.cn/api/paas/v4"
+  },
+
+  "ollama": {
+    "enabled": false,
+    "base_url": "http://localhost:11434",
+    "model": "llama3.2",
+    "embedding_model": "nomic-embed-text"
+  },
+
+  "defaults": {
+    "_comment": "默认值：Cursor Claude 为默认，外部 API 仅作脚本批处理补充",
+    "provider": "cursor",
+    "fallback": "deepseek-chat"
+  }
+}

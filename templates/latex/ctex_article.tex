@@ -1,0 +1,83 @@
+% 中文论文 LaTeX 模板 (CTeX)
+% 适用于中文核心期刊、学位论文
+\documentclass[UTF8, a4paper, 12pt]{ctexart}
+
+% 页面设置
+\usepackage{geometry}
+\geometry{
+    top=2.54cm,
+    bottom=2.54cm,
+    left=3.17cm,
+    right=3.17cm,
+    headheight=10mm,
+    footskip=10mm
+}
+
+% 数学与图表
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% 代码高亮配置
+\lstset{
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=shadowbox,
+    escapeinside={\%}{\%},
+    extendedchars=false,
+    language=Python,
+}
+
+% 标题设置
+\ctexset{
+    section = {
+        format = \raggedright\Large\bfseries,
+        number = \Chinese{section}
+    },
+    subsection = {
+        format = \raggedright\large\bfseries,
+    }
+}
+
+\begin{document}
+
+% 标题
+\title{基于深度学习的金融文档理解方法研究}
+\author{
+    姓名\qquad 学号\qquad 导师\qquad 专业\\
+    某某大学\quad 某某学院
+}
+
+\date{\today}
+
+\maketitle
+
+\begin{abstract}
+本文针对金融文档理解任务，提出了一种基于预训练语言模型的金融文档分析方法。实验表明，该方法在金融文档分类、情感分析等任务上取得了显著的性能提升。
+\end{abstract}
+
+\keywords{金融文档理解; 预训练语言模型; 深度学习; 自然语言处理}
+
+\section{引言}
+
+\section{相关工作}
+
+\section{方法}
+
+\section{实验}
+
+\section{结论}
+
+\section*{参考文献}
+
+\begin{thebibliography}{99}
+    \bibitem{ref1} Author. Title. Conference, Year.
+\end{thebibliography}
+
+\end{document}
