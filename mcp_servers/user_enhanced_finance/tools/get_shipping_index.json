@@ -1,0 +1,23 @@
+{
+  "name": "get_shipping_index",
+  "description": "获取航运指数（BDI/BCI/BPI/BCTI）。注：BDTI 原油运输指数在当前 akshare 版本中不可用，将返回友好错误。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "index_name": {
+        "type": "string",
+        "description": "指数名称",
+        "enum": [
+          "bdi",
+          "bci",
+          "bpi",
+          "bdti",
+          "bcti"
+        ]
+      }
+    },
+    "required": [
+      "index_name"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "get_oecd_trade",
+  "description": "获取OECD贸易数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: exports/imports/trade_balance"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

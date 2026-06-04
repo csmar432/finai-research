@@ -1,0 +1,24 @@
+{
+  "name": "chinese_literature",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "serverIdentifier": "user-chinese-literature",
+  "description": "中文文献检索 MCP 服务器。整合百度学术（免费/API）、OpenAlex 和 Crossref，覆盖中国知网(CNKI)、万方数据cssci.cssn.cn的核心学术论文。提供论文元数据、引用关系、期刊分类等信息。",
+  "tools": [
+    "search_chinese_papers",
+    "get_paper_citations",
+    "get_journal_info",
+    "search_cssci_papers"
+  ],
+  "data_source": {
+    "百度学术": "https://xueshu.baidu.com（免费，无API Key）",
+    "OpenAlex": "https://openalex.org（免费，HTTP API，需网络）",
+    "Crossref": "https://api.crossref.org（免费，DOI查询）"
+  },
+  "notes": [
+    "CNKI 万方需要机构账号/IP，本服务器通过百度学术+OpenAlex 提供免费替代",
+    "百度学术搜索无官方API，本服务器通过 HTTP 请求模拟搜索结果页解析",
+    "生产环境建议申请百度学术合作API或使用 CNKI 机构账号"
+  ]
+}

@@ -1,0 +1,396 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8
+% 管理世界（Management World）格式模板
+% 参考来源：http://www.mgmt.gov.cn/
+% 适用于管理学、经济学、社会学等领域实证论文
+% CTeX 中文格式，使用XeLaTeX编译
+
+\PassOptionsToPackage{quiet}{xeCJK}
+\documentclass[lang=cn, aaffiliation={中国}]{ctexart}
+
+% ── 文档类型选项 ────────────────────────────────────────────────────────────
+% 管理世界采用单栏排版，12pt（五号）字体，1.5 倍行距
+
+% ── 必要宏包 ────────────────────────────────────────────────────────────────
+\usepackage[
+    a4paper,
+    top=2.54cm, bottom=2.54cm,
+    left=3.17cm, right=3.17cm,
+    headheight=14pt,
+    heightrounded,
+]{geometry}
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\xeCJKsetup{CJKspace=true, xCJKecglue={}}
+
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{longtable}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={管理世界格式模板},
+    pdfauthor={作者姓名},
+}
+
+\usepackage{natbib}
+\bibliographystyle{gbt7714-numerical}
+
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{pdflscape}          % 横向表格
+\usepackage{afterpage}          % 浮动体位置控制
+
+% ── 页面设置 ────────────────────────────────────────────────────────────────
+% 管理世界要求：五号（10.5pt）字体，1.5 倍行距
+\setstretch{1.5}
+\setlength{\parindent}{2em}
+\linespread{1.5}
+
+% ── 章节标题 ────────────────────────────────────────────────────────────────
+\titleformat*{\section}{\fontsize{12pt}{1.5em}\bfseries\center}
+\titleformat*{\subsection}{\fontsize{12pt}{1.5em}\bfseries}
+\titleformat*{\subsubsection}{\fontsize{12pt}{1.5em}\rmfamily}
+
+% ── 页眉页脚 ────────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\footnotesize 管~理~世~界}
+\fancyfoot[C]{\thepage}
+
+% ── 数学命令 ────────────────────────────────────────────────────────────────
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+
+% ── 标题与作者 ─────────────────────────────────────────────────────────────
+\title{论文标题（中文）\thanks{基金项目（编号）；基金项目（编号）。}}
+\author{作者一\thanks{简介：\dots，电话：\dots，E-mail：\dots}
+       \quad 作者二\thanks{简介：\dots，E-mail：\dots}}
+\date{\today}
+
+% ── 摘要 ────────────────────────────────────────────────────────────────────
+\newenvironment{cnabstract}{%
+    \par\textbf{摘\quad 要}
+    \indent
+}{\par\vspace{0.5\baselineskip}\par\textbf{关键词：}...}
+
+% ═══════════════════════════════════════════════════════════════════════════
+% 正文
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{document}
+
+\thispagestyle{empty}
+\maketitle
+\thispagestyle{fancy}
+
+% ── 摘要 ────────────────────────────────────────────────────────────────────
+\begin{cnabstract}
+    本文基于\dots数据，研究了\dots的问题。实证结果表明：（1）\dots；
+    （2）\dots；（3）\dots。进一步分析发现，\dots是重要的影响机制。
+    本文的研究发现对\dots具有重要的政策启示。
+\end{cnabstract}
+
+\textbf{关键词：}关键词1；关键词2；关键词3；关键词4；关键词5
+
+% ── 一、引言 ───────────────────────────────────────────────────────────────
+\section{一、引言}
+\label{sec:intro}
+
+\indent 在当前\dots背景下，\dots问题日益受到学术界和实践界的关注。
+
+从理论层面看，\dots（\citealp{xxx}）。\citet{yyy}的研究指出，\dots。
+
+从实践层面看，\dots（\citealp{zzz}）。
+
+然而，已有研究仍存在以下不足：第一，\dots；第二，\dots；第三，\dots。
+
+针对上述研究缺口，本文利用\dots数据，系统考察了\dots的影响及其机制。
+
+本文可能的边际贡献在于：（1）\dots；（2）\dots；（3）\dots。
+
+% ── 二、文献综述 ──────────────────────────────────────────────────────────
+\section{二、文献综述}
+\label{sec:lit}
+
+\subsection{（一）\dots研究}
+\label{sec:lit:topic1}
+
+\citet{xxx}最早系统研究了\dots问题。
+
+后续研究主要从以下两个视角展开：
+
+\textbf{视角一：}基于\dots理论，\dots（\citealp{yyy}）。\citet{zzz}进一步发现\dots。
+
+\textbf{视角二：}基于\dots框架，\citealp{www}认为\dots。
+
+\subsection{（二）\dots研究}
+\label{sec:lit:topic2}
+
+关于\dots的研究主要集中于\dots。
+
+\citet{vvv}利用\dots数据，发现\dots。
+
+综合而言，现有文献存在以下局限：（1）\dots；（2）\dots；（3）\dots。
+
+\subsection{（三）研究假说推导}
+\label{sec:hypothesis}
+
+基于上述文献梳理，本文提出如下研究假说：
+
+\textbf{假说 H1：}在其他条件不变的情况下，\dots对\dots有显著的正向（负向）影响。
+
+\textbf{假说 H2：}\dots对\dots的影响存在异质性，具体表现为\dots。
+
+\textbf{假说 H3：}\dots在\dots对\dots的影响中发挥中介作用。
+
+% ── 三、研究设计 ──────────────────────────────────────────────────────────
+\section{三、研究设计}
+\label{sec:design}
+
+\subsection{（一）样本选择与数据来源}
+\label{sec:data}
+
+本文以\dots为研究对象，时间跨度为\dots年。
+
+数据来源：（1）\dots数据库；（2）\dots数据库；（3）\dots官方统计。
+
+样本筛选过程：（1）剔除\dots样本；（2）剔除\dots样本；（3）对\dots进行处理。
+
+最终得到包含\dots个观测值的面板数据集。
+
+\subsection{（二）变量定义}
+\label{sec:var}
+
+表~\ref{tab:var_def}~详细定义了本文使用的主要变量。
+
+\begin{table}[htbp]
+    \centering
+    \caption{主要变量定义}
+    \label{tab:var_def}
+    \begin{threeparttable}
+        \begin{tabular}{p{2.2cm}p{2.0cm}p{6.3cm}}
+            \toprule
+            \textbf{变量类别} & \textbf{变量名称} & \textbf{变量定义与说明} \\
+            \midrule
+            \textbf{因变量} & $Y_{it}$ & \dots \\
+            \midrule
+            \textbf{自变量} & $X_{it}$ & \dots \\
+              & $Z_{it}$ & \dots \\
+            \midrule
+            \textbf{中介变量} & $M_{it}$ & \dots \\
+            \midrule
+            \textbf{调节变量} & $W_{it}$ & \dots \\
+            \midrule
+            \textbf{控制变量} & Size & \dots \\
+              & Lev & \dots \\
+              & Age & \dots \\
+              & $ROA$ & \dots \\
+              & $Dual$ & \dots \\
+              & $Top1$ & \dots \\
+            \midrule
+            \textbf{固定效应} & $\mu_i$ & 企业固定效应 \\
+              & $\lambda_t$ & 年份固定效应 \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item（1）所有连续变量均在 1\% 和 99\% 分位数进行 Winsorize 处理；
+            （2）数据来源：CSMAR、Wind 及国家统计局。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{（三）模型设定}
+\label{sec:model}
+
+为检验假说 H1，本文构建如下双向固定效应模型：
+
+\begin{equation}
+    \label{eq:baseline}
+    Y_{it} = \alpha + \beta_1 X_{it} + \beta_2 Z_{it} + \gamma Controls_{it} + \mu_i + \lambda_t + \varepsilon_{it},
+\end{equation}
+
+其中，$i$ 表示企业，$t$ 表示年份，$\mu_i$ 和 $\lambda_t$ 分别为企业和年份固定效应，
+用于控制\dots。
+
+为检验假说 H3（中介效应），本文采用三步法：
+
+\begin{align}
+    \label{eq:mediation}
+    M_{it} &= \alpha_1 + c \cdot X_{it} + \gamma_1 Controls_{it} + \mu_i + \lambda_t + \varepsilon_{it}, \\
+    Y_{it} &= \alpha_2 + a \cdot X_{it} + b \cdot M_{it} + \gamma_2 Controls_{it} + \mu_i + \lambda_t + \varepsilon_{it}.
+\end{align}
+
+% ── 四、实证分析 ──────────────────────────────────────────────────────────
+\section{四、实证分析}
+\label{sec:results}
+
+\subsection{（一）描述性统计}
+\label{sec:desc}
+
+表~\ref{tab:desc}~报告了主要变量的描述性统计结果。
+
+\begin{longtable}{lccccccc}
+    \caption{描述性统计}
+    \label{tab:desc}\\
+    \toprule
+    \textbf{变量} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{P25} & \textbf{P75} & \textbf{Max} \\
+    \midrule
+    \endfirsthead
+    \caption{(续表~\ref{tab:desc})}\\
+    \toprule
+    \textbf{变量} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{P25} & \textbf{P75} & \textbf{Max} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+    $Y_{it}$ & 12,480 & 0.052 & 0.098 & -0.215 & -0.004 & 0.085 & 0.302 \\
+    $X_{it}$ & 12,480 & 0.318 & 0.466 & 0.000 & 0.000 & 1.000 & 1.000 \\
+    $M_{it}$ & 12,480 & 0.184 & 0.388 & 0.000 & 0.000 & 0.000 & 1.000 \\
+    Size & 12,480 & 22.16 & 1.308 & 19.72 & 21.19 & 22.81 & 25.62 \\
+    Lev & 12,480 & 0.412 & 0.192 & 0.051 & 0.246 & 0.548 & 0.856 \\
+    Age & 12,480 & 2.87 & 0.302 & 2.197 & 2.708 & 3.091 & 3.466 \\
+\end{longtable}
+
+从表~\ref{tab:desc}~可以发现：（1）\dots；（2）\dots；（3）\dots。
+
+各主要变量之间的相关系数（未汇报，备索）均处于合理范围，不存在严重的多重共线性问题。
+
+\subsection{（二）基准回归结果}
+\label{sec:baseline}
+
+表~\ref{tab:regression}~报告了基准回归结果。
+
+\begin{table}[htbp]
+    \centering
+    \caption{基准回归结果}
+    \label{tab:regression}
+    \begin{threeparttable}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} & \textbf{(4)} \\
+            \midrule
+            $X_{it}$ & 0.038\*** & 0.028\*** & 0.022\** & 0.019\** \\
+              & (4.12) & (3.28) & (2.47) & (2.34) \\
+            $Z_{it}$ & & 0.015\** & 0.012\** & 0.010\** \\
+              & & (2.58) & (2.31) & (2.18) \\
+            \midrule
+            Size & & & -0.003 & -0.002 \\
+              & & & (-0.68) & (-0.54) \\
+            Lev & & & -0.021\*** & -0.019\*** \\
+              & & & (-3.85) & (-3.52) \\
+            ROA & & & 0.128\*** & 0.116\*** \\
+              & & & (5.42) & (4.89) \\
+            \midrule
+            \textbf{固定效应} & \textbf{无} & \textbf{无} & \textbf{无} & \textbf{企业+年份} \\
+            \textbf{Adj. $R^2$} & 0.054 & 0.071 & 0.098 & 0.186 \\
+            \textbf{N} & 12,480 & 12,480 & 12,480 & 12,480 \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：（1）括号内为 $t$ 值，标准误在企业层面进行聚类调整；
+            （2）\*** $p<0.01$，\** $p<0.05$，\* $p<0.10$；
+            （3）所有回归均控制了常数项。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+由表~\ref{tab:regression}~可见：（1）\dots；（2）\dots；（3）\dots。
+
+\subsection{（三）平行趋势检验}
+\label{sec:parallel}
+
+为保证 DID 估计的无偏性，本文采用事件研究法（Event Study）检验平行趋势假设。
+
+图~\ref{fig:parallel}~的结果显示，政策实施前各期系数均不显著（$p>0.10$），
+表明处理组与对照组在政策实施前满足平行趋势假设。
+
+\begin{figure}[htbp]
+    \centering
+    \caption{平行趋势检验：事件研究图}
+    \label{fig:parallel}
+    % \includegraphics[width=0.9\textwidth]{event_study.pdf}
+    \begin{minipage}{0.9\textwidth}\footnotesize
+        注：横轴为相对时间（0 表示政策实施年份），纵轴为 DID 系数估计值，
+        虚线表示 95\% 置信区间。政策实施前的系数均在统计意义上与零无显著差异，
+        支持平行趋势假设。
+    \end{minipage}
+\end{figure}
+
+% ── 五、进一步分析 ────────────────────────────────────────────────────────
+\section{五、进一步分析}
+\label{sec:additional}
+
+\subsection{（一）异质性分析}
+\label{sec:hetero}
+
+表~\ref{tab:hetero}~报告了分样本回归结果。
+
+\begin{table}[htbp]
+    \centering
+    \caption{异质性分析}
+    \label{tab:hetero}
+    \begin{threeparttable}
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} & \textbf{(4)} \\
+            & \textbf{国有企业} & \textbf{非国有企业} & \textbf{东部地区} & \textbf{中西部地区} \\
+            \midrule
+            $X_{it}$ & 0.012 & 0.028\*** & 0.024\*** & 0.008 \\
+              & (1.23) & (3.52) & (3.14) & (0.86) \\
+            \midrule
+            \textbf{Adj. $R^2$} & 0.168 & 0.194 & 0.178 & 0.202 \\
+            \textbf{N} & 3,840 & 8,640 & 7,280 & 5,200 \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：所有控制变量与固定效应均与基准回归一致；\*** $p<0.01$，\** $p<0.05$。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{（二）稳健性检验}
+\label{sec:robust}
+
+为确保研究结论的可靠性，本文进行了以下稳健性检验：
+
+\textbf{（1）替换核心变量的度量方式。}
+采用\dots作为\dots的替代变量，主要结论保持不变。
+
+\textbf{（2）改变样本范围。}
+剔除\dots样本后重新回归，结果仍然稳健。
+
+\textbf{（3）调整控制变量集。}
+参考\citet{xxx}的经典研究，加入\dots等变量，结果保持一致。
+
+\textbf{（4）改变标准误聚类层级。}
+同时在行业和年份层面进行双维聚类，结果依然稳健。
+
+% ── 六、结论与启示 ────────────────────────────────────────────────────────
+\section{六、结论与启示}
+\label{sec:conclusion}
+
+本文以\dots为准自然实验，利用\dots数据，系统研究了\dots的影响及其机制。
+
+\textbf{主要结论：}
+第一，\dots；第二，\dots；第三，\dots。
+
+\textbf{政策启示：}
+第一，\dots；第二，\dots；第三，\dots。
+
+\textbf{参考文献：}
+\bibliography{references}
+
+\end{document}

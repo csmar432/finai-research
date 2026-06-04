@@ -1,0 +1,13 @@
+{
+  "name": "pw_search_click",
+  "description": "在搜索框输入关键词并点击搜索按钮（金融网站通用流程）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

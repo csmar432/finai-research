@@ -1,0 +1,16 @@
+{
+  "name": "get_nber_paper_details",
+  "description": "获取NBER工作论文详情。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "paper_id": {
+        "type": "string",
+        "description": "论文ID（如 w12345）"
+      }
+    },
+    "required": [
+      "paper_id"
+    ]
+  }
+}

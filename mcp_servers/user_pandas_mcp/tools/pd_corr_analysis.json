@@ -1,0 +1,13 @@
+{
+  "name": "pd_corr_analysis",
+  "description": "相关性分析（Pearson/Spearman/Kendall）+ 热力图数据生成。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

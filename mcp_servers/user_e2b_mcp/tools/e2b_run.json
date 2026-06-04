@@ -1,0 +1,13 @@
+{
+  "name": "e2b_run",
+  "description": "在云端沙箱中执行Python代码（完全隔离，安全的代码执行环境）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

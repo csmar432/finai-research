@@ -1,0 +1,11 @@
+{
+  "name": "get_yf_financials",
+  "description": "获取财务报表（利润表、资产负债表、现金流量表）",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": { "type": "string", "description": "股票代码，例如 'AAPL'" }
+    },
+    "required": ["ticker"]
+  }
+}

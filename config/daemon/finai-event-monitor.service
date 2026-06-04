@@ -1,0 +1,48 @@
+[Unit]
+Description=FinAI Research Workflow — Event-Driven Research Trigger Monitor
+Documentation=https://github.com/finai-research/finai-research-workflow
+After=network.target
+
+[Service]
+# Adjust paths to match your installation
+WorkingDirectory=/home/username/论文-研报工作流
+Environment="PYTHONUNBUFFERED=1"
+Environment="PATH=/home/username/论文-研报工作流/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/home/username/论文-研报工作流/.env
+
+# Run as a non-root user (recommended: create a 'finai' user)
+# User=finai
+# Group=finai
+
+ExecStart=/home/username/论文-研报工作流/.venv/bin/python3 \
+    /home/username/论文-研报工作流/scripts/event_monitor.py \
+    --daemon \
+    --auto-trigger \
+    --macro-scheduler \
+    --log-file /home/username/论文-研报工作流/logs/monitor.log \
+    --pid-file /home/username/论文-研报工作流/data/event_monitor.pid \
+    --pipeline-type research_report \
+    --language zh
+
+# Restart on crash (but not on normal exit)
+Restart=on-failure
+RestartSec=30
+
+# Logging
+StandardOutput=append:/home/username/论文-研报工作流/logs/monitor-stdout.log
+StandardError=append:/home/username/论文-研报工作流/logs/monitor-stderr.log
+
+# Security hardening (optional but recommended)
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/username/论文-研报工作流/data
+ReadWritePaths=/home/username/论文-研报工作流/logs
+ReadWritePaths=/home/username/论文-研报工作流/output
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

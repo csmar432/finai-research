@@ -1,0 +1,19 @@
+{
+  "name": "get_option_vol",
+  "description": "获取期权隐含波动率数据（东方财富风格）。返回波动率微笑曲线。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "underlying": {
+        "type": "string",
+        "description": "标的代码",
+        "default": "510050.SH"
+      },
+      "expiry": {
+        "type": "string",
+        "description": "到期月份",
+        "default": "next"
+      }
+    }
+  }
+}

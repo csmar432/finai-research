@@ -1,0 +1,8 @@
+{
+  "name": "get_forex_spot",
+  "description": "获取外汇即期汇率（主要货币对）。使用 akshare 东方财富接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

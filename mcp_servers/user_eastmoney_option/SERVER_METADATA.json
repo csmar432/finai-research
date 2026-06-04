@@ -1,0 +1,21 @@
+{
+  "name": "Eastmoney Option",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "eastmoney-option",
+  "serverIdentifier": "user-eastmoney-option",
+  "description": "东方财富期权数据（期权链/希腊字母/隐含波动率）",
+  "tools": [
+    "get_option_chain",
+    "get_option_greeks",
+    "get_option_vol"
+  ],
+  "_legacy_capabilities": [
+    "期权链",
+    "希腊字母",
+    "隐含波动率",
+    "期权定价",
+    "波动率微笑"
+  ]
+}

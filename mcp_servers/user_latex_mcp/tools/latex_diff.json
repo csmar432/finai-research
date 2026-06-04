@@ -1,0 +1,13 @@
+{
+  "name": "latex_diff",
+  "description": "比较两个LaTeX文件，生成差异文档（latexdiff风格）。适合审稿时标注修改。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

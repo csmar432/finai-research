@@ -1,0 +1,17 @@
+{
+  "name": "get_fed_beige_book",
+  "description": "获取美联储褐皮书(Beige Book)。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      },
+      "quarter": {
+        "type": "string",
+        "description": "季度"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "get_context7_by_arxiv",
+  "description": "通过 ArXiv ID 获取论文全文内容（用于文献深度阅读）",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "arxiv_id": {
+        "type": "string",
+        "description": "ArXiv 论文 ID，例如 '2301.12345' 或 '2301.12345v2'"
+      }
+    },
+    "required": ["arxiv_id"]
+  }
+}

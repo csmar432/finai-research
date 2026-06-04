@@ -1,0 +1,17 @@
+{
+  "name": "NewsAPI",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": true,
+  "api_key_env_var": "NEWSAPI_API_KEY",
+  "server_name": "user-newsapi",
+  "serverIdentifier": "user-newsapi",
+  "description": "财经新闻聚合（基于 NewsAPI）。支持检索全球财经新闻，按来源、时间、关键词过滤。免费tier每月100次搜索。",
+  "tools": [
+    "get_news_search",
+    "get_news_top_headlines",
+    "get_news_sources"
+  ],
+  "_data_source": "NewsAPI (https://newsapi.org)",
+  "_note": "需要 NEWSAPI_API_KEY，免费注册：https://newsapi.org/register"
+}

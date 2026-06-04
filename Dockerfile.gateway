@@ -1,0 +1,29 @@
+# ── LLM Gateway Service
+# Routes requests to DeepSeek / OpenAI / Anthropic via relay API.
+# Exposes a REST + SSE endpoint for agent pipelines.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+COPY scripts/ ./scripts/
+COPY mcp_servers/ ./mcp_servers/
+COPY config/ ./config/
+COPY data/ ./data/
+COPY knowledge/ ./knowledge/
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# LLM Gateway listens on port 8000
+EXPOSE 8000
+
+CMD ["python", "-m", "scripts.core.llm_gateway"]

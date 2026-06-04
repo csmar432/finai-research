@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_gdp",
+  "description": "武汉GDP历年数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

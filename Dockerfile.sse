@@ -1,0 +1,26 @@
+# ── SSE Streaming API Service
+# Provides Server-Sent Events endpoint for real-time agent progress streaming.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+COPY scripts/ ./scripts/
+COPY mcp_servers/ ./mcp_servers/
+COPY config/ ./config/
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# SSE API listens on port 8501
+EXPOSE 8501
+
+CMD ["python", "-m", "scripts.core.sse_server"]

@@ -1,0 +1,254 @@
+# Halt Rules - 金融研究报告
+# ================================
+# 定义金融研报输出必须满足的质量规则
+# 用于 ContentRefinementAgent 和 FactCheckerAgent
+
+domain: financial_report
+version: "1.0"
+description: |
+  金融研究报告质量检查规则集
+  适用于券商研报、基金评价、公司研究等
+
+rules:
+  # ──────────────────────────────────────────────────────────────
+  # 数值准确性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: numerical_accuracy
+    description: 财务数据必须与数据源一致
+    category: accuracy
+    severity: error
+    validation:
+      type: regex_with_api_check
+      check:
+        - pattern: "ROE[=≈](\\d+\\.?\\d*)%"
+          description: ROE数值（应为-50%到100%）
+          range: [-50, 100]
+        - pattern: "净利率[=≈](\\d+\\.?\\d*)%"
+          description: 净利率数值（应为-50%到80%）
+          range: [-50, 80]
+        - pattern: "毛利率[=≈](\\d+\\.?\\d*)%"
+          description: 毛利率数值（应为0%到99%）
+          range: [0, 99]
+        - pattern: "PE[=≈](\\d+\\.?\\d*)"
+          description: 市盈率数值（应为-100到500）
+          range: [-100, 500]
+        - pattern: "PB[=≈](\\d+\\.?\\d*)"
+          description: 市净率数值（应为0.1到50）
+          range: [0.1, 50]
+        - pattern: "营收[长增]?率[=≈]?(\\d+\\.?\\d*)%"
+          description: 营收增长率（应为-100%到500%）
+          range: [-100, 500]
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: year_over_year_logic
+    description: 同比/环比增长率逻辑自洽
+    category: consistency
+    severity: error
+    validation:
+      type: custom
+      class: YoYQoQLogicRule
+      tolerance: 0.05
+      max_change: 1000
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: temporal_consistency
+    description: 时间顺序一致性
+    category: consistency
+    severity: error
+    validation:
+      type: timestamp_order_check
+      rules:
+        - description: 事件按时间顺序排列
+          check: chronological_order
+        - description: 预测数据不能早于历史数据
+          check: forecast_after_history
+        - description: 财报发布日期不能早于财报期间
+          check: release_after_period
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 数学关系规则
+  # ──────────────────────────────────────────────────────────────
+  - id: margin_consistency
+    description: 利润率之间的数学关系
+    category: math
+    severity: error
+    validation:
+      type: math_consistency
+      rules:
+        - description: 净利率不应大于毛利率
+          formula: "net_margin <= gross_margin"
+        - description: 营业利润率不应大于毛利率
+          formula: "operating_margin <= gross_margin"
+        - description: 三项费用率应为销售/管理/财务费用率之和
+          formula: "expense_rate == selling_rate + admin_rate + finance_rate"
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: balance_sheet_identity
+    description: 资产负债表基本等式
+    category: math
+    severity: error
+    validation:
+      type: balance_sheet_check
+      rules:
+        - description: 总资产 = 总负债 + 所有者权益
+          formula: "total_assets == total_liabilities + equity"
+        - description: 流动资产 + 非流动资产 = 总资产
+          formula: "current_assets + non_current_assets == total_assets"
+        - description: 流动负债 + 非流动负债 = 总负债
+          formula: "current_liabilities + non_current_liabilities == total_liabilities"
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: cash_flow_identity
+    description: 现金流量表基本等式
+    category: math
+    severity: warning
+    validation:
+      type: cash_flow_check
+      rules:
+        - description: 期初现金 + 净现金流 = 期末现金
+          formula: "beginning_cash + net_cash_flow == ending_cash"
+        - description: 经营现金流 + 投资现金流 + 融资现金流 = 净现金流
+          formula: "cfo + cfi + cff == net_cash_flow"
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 数据时效性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: data_freshness
+    description: 数据时效性要求
+    category: freshness
+    severity: warning
+    validation:
+      type: timestamp_check
+      rules:
+        - description: 财务数据不超过12个月
+          max_age_days: 365
+          check_date_field: "report_date"
+        - description: 宏观数据不超过3个月
+          max_age_days: 90
+          check_date_field: "macro_date"
+        - description: 预测数据必须标注预测期
+          required_fields: ["forecast_period", "forecast_date"]
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 单位一致性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: currency_unit
+    description: 货币单位一致性
+    category: format
+    severity: warning
+    validation:
+      type: unit_consistency
+      allowed_units:
+        - "亿元"
+        - "万元"
+        - "百万元"
+        - "万美元"
+        - "百万美元"
+      rules:
+        - description: 同一表格内单位必须一致
+          check: consistent_in_table
+        - description: 金额必须标注单位
+          check: unit_annotated
+    auto_fix: true
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 估值逻辑规则
+  # ──────────────────────────────────────────────────────────────
+  - id: valuation_logic
+    description: 估值逻辑一致性
+    category: logic
+    severity: error
+    validation:
+      type: valuation_check
+      rules:
+        - description: DCF估值必须有假设说明
+          required_fields: ["wacc", "terminal_growth", "projection_years"]
+        - description: 可比公司法必须有可比公司列表
+          required_fields: ["peer_companies"]
+        - description: 目标价必须有有效期
+          required_fields: ["target_price_date", "validity_period"]
+        - description: 市盈率为负时不能使用PE估值
+          formula: "if pe < 0 then exclude_pe_valuation"
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 风险提示规则
+  # ──────────────────────────────────────────────────────────────
+  - id: risk_disclosure
+    description: 风险提示完整性
+    category: completeness
+    severity: warning
+    validation:
+      type: content_check
+      rules:
+        - description: 必须包含至少3条风险提示
+          min_items: 3
+          check_field: "risk_factors"
+        - description: 风险提示不能过于笼统
+          min_length: 20  # 每条风险提示至少20字
+        - description: 必须标注研究风险
+          check_field: "research_risk"
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 投资评级规则
+  # ──────────────────────────────────────────────────────────────
+  - id: rating_definition
+    description: 投资评级定义
+    category: format
+    severity: warning
+    validation:
+      type: rating_check
+      rules:
+        - description: 必须提供评级定义说明
+          check_field: "rating_definition"
+        - description: 评级与目标价上涨空间应匹配
+          mapping:
+            "强烈推荐": [30, 100]   # 上涨空间30%-100%
+            "推荐": [15, 50]
+            "增持": [5, 30]
+            "中性": [-10, 15]
+            "减持": [-50, 0]
+            "卖出": [-100, -10]
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 披露完整性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: disclosure_completeness
+    description: 研究报告披露完整性
+    category: completeness
+    severity: warning
+    validation:
+      type: completeness_check
+      required_sections:
+        - name: "研究报告标题"
+          required: true
+        - name: "分析师信息"
+          required: true
+        - name: "发布机构"
+          required: true
+        - name: "发布日期"
+          required: true
+        - name: "核心观点"
+          required: true
+        - name: "风险提示"
+          required: true
+        - name: "免责声明"
+          required: true
+    auto_fix: false
+    halt_on_fail: false

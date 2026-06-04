@@ -8,11 +8,11 @@
   python scripts/cleanup_paper_index.py
 """
 
+import argparse
 import json
 import re
-import argparse
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.parent
 INDEX_FILE = SCRIPT_DIR / "knowledge" / "papers" / "index.json"
@@ -24,7 +24,7 @@ def is_garbage_entry(entry: dict) -> bool:
     title = entry.get("title", "")
     paper_id = entry.get("id", "")
 
-    # 完全空或占位符
+    # 完全空或无效条目
     if not title or title == "--":
         return True
 
@@ -122,15 +122,15 @@ def main():
     args = parser.parse_args()
 
     print(f"\n{'='*60}")
-    print(f"  🧹 清理论文索引")
+    print("  🧹 清理论文索引")
     print(f"{'='*60}")
 
     # Step 1: 清理 index.json 中的碎片条目
-    print(f"\n  Step 1: 清理 index.json 中的碎片条目")
+    print("\n  Step 1: 清理 index.json 中的碎片条目")
     cleaned = clean_index()
 
     if args.dry_run:
-        print(f"\n  🔍 [DRY RUN] 不会实际写入文件")
+        print("\n  🔍 [DRY RUN] 不会实际写入文件")
         print(f"  清理后会保留 {len(cleaned['papers'])} 个条目")
         return
 
@@ -146,7 +146,7 @@ def main():
     if frag_files:
         print(f"\n  Step 2: 删除 {len(frag_files)} 个碎片 JSON 文件")
         if args.no_delete_frag_dir:
-            print(f"  ⚠ 跳过删除（--no-delete-frag-dir）")
+            print("  ⚠ 跳过删除（--no-delete-frag-dir）")
         else:
             for f in frag_files:
                 f.unlink()
@@ -158,7 +158,7 @@ def main():
             except OSError:
                 pass
     else:
-        print(f"\n  Step 2: 碎片目录为空，跳过")
+        print("\n  Step 2: 碎片目录为空，跳过")
 
     # Step 3: 打印保留的论文列表
     papers = cleaned["papers"]
@@ -177,7 +177,7 @@ def main():
             print(f"  {i:2d}. {has_analysis} [{topic}] {title}")
 
     print(f"\n{'='*60}")
-    print(f"  ✅ 清理完成！")
+    print("  ✅ 清理完成！")
     print(f"{'='*60}")
 
 

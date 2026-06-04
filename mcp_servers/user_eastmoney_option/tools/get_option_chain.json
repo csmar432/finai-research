@@ -1,0 +1,19 @@
+{
+  "name": "get_option_chain",
+  "description": "获取期权链数据（东方财富风格）。返回认购/认沽报价。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "underlying": {
+        "type": "string",
+        "description": "标的代码: 510050.SH(50ETF)/510300.SH(300ETF)",
+        "default": "510050.SH"
+      },
+      "expiry": {
+        "type": "string",
+        "description": "到期月份",
+        "default": "next"
+      }
+    }
+  }
+}

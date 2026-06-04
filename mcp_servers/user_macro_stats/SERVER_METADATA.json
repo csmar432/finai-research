@@ -1,0 +1,30 @@
+{
+  "name": "Macro Stats",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "macro-stats",
+  "serverIdentifier": "user-macro-stats",
+  "description": "全球宏观数据 — World Bank API（无需API Key）+ 国家统计局分省数据备用方案",
+  "tools": [
+    "get_nbs_fallback",
+    "get_wb_gdp_pc",
+    "get_wb_gdp_usd",
+    "get_wb_indicator",
+    "get_wb_inflation",
+    "get_wb_population",
+    "get_wb_tech_rd",
+    "get_wb_trade",
+    "get_wb_unemployment"
+  ],
+  "_legacy_capabilities": [
+    "World Bank GDP",
+    "人均GDP",
+    "人口",
+    "通胀",
+    "失业率",
+    "贸易",
+    "R&D强度",
+    "NBS分省备用"
+  ]
+}

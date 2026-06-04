@@ -1,0 +1,25 @@
+{
+  "name": "get_csmar_financial",
+  "description": "获取CSMAR财务报表数据。返回A股上市公司财务报表。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "report_type": {
+        "type": "string",
+        "description": "报告类型: income/balance/cash_flow",
+        "default": "income"
+      },
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      }
+    },
+    "required": [
+      "ts_code"
+    ]
+  }
+}

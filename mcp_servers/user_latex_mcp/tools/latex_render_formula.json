@@ -1,0 +1,13 @@
+{
+  "name": "latex_render_formula",
+  "description": "将LaTeX数学公式渲染为SVG/PNG图片。适合嵌入Markdown/HTML文档。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

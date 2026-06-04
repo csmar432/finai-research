@@ -1,0 +1,13 @@
+{
+  "name": "pw_navigate",
+  "description": "导航到指定URL，等待页面加载完成。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

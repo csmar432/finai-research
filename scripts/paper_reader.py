@@ -21,17 +21,15 @@
   python scripts/paper_reader.py batch-download "2303.08774" "2201.00001"  # 批量下载
 """
 
-import json
-import sys
-import re
-import os
-import time
-import textwrap
-import hashlib
 import argparse
-from pathlib import Path
+import hashlib
+import json
+import re
+import sys
+import textwrap
+import time
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 # ─── 配置 ────────────────────────────────────────────────
 
@@ -63,8 +61,8 @@ def download_from_arxiv(arxiv_id: str) -> dict:
     从 arXiv 下载论文 PDF 并提取文本。
     返回论文元信息 + 全文内容。
     """
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     arxiv_id = arxiv_id_from_url(arxiv_id)
 
@@ -123,8 +121,8 @@ def download_from_arxiv(arxiv_id: str) -> dict:
 
     def _download_pdf(url: str, path: Path) -> bool:
         """下载 PDF，带 3 次重试和指数退避。"""
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         for attempt in range(3):
             try:
@@ -160,9 +158,9 @@ def download_from_arxiv(arxiv_id: str) -> dict:
             if ok:
                 print(f"  ✓ PDF 已保存: {pdf_path.name}")
             else:
-                return {"error": f"PDF 下载失败（已重试 3 次）"}
+                return {"error": "PDF 下载失败（已重试 3 次）"}
         else:
-            print(f"  ↺ PDF 已存在，跳过下载")
+            print("  ↺ PDF 已存在，跳过下载")
     except urllib.error.HTTPError:
         return {"error": f"arXiv 上未找到论文: {arxiv_id}"}
     except Exception as e:
@@ -182,7 +180,7 @@ def download_from_arxiv(arxiv_id: str) -> dict:
             txt_path.write_text(full_text, encoding="utf-8")
             print(f"  ✓ 文本已提取: {txt_path.name} ({len(full_text)} 字)")
         except ImportError:
-            print(f"  ⚠ pdfplumber 未安装，跳过文本提取（pip install pdfplumber）")
+            print("  ⚠ pdfplumber 未安装，跳过文本提取（pip install pdfplumber）")
             full_text = ""
         except Exception as e:
             print(f"  ⚠ 文本提取失败: {e}")
@@ -217,9 +215,9 @@ def get_from_semantic_scholar(arxiv_id: str = "", title: str = "") -> dict:
     从 Semantic Scholar API 获取论文元信息和摘要。
     结果缓存到本地，24小时内不重复请求。
     """
-    import urllib.request
-    import urllib.error
     import time
+    import urllib.error
+    import urllib.request
 
     if not arxiv_id and not title:
         return {"error": "需要提供 arXiv ID 或论文标题"}
@@ -263,7 +261,7 @@ def get_from_semantic_scholar(arxiv_id: str = "", title: str = "") -> dict:
                 pass  # 缓存写入失败不影响主流程
             return result
     except urllib.error.HTTPError:
-        return {"error": f"Semantic Scholar 上未找到论文"}
+        return {"error": "Semantic Scholar 上未找到论文"}
     except Exception as e:
         return {"error": f"Semantic Scholar API 请求失败: {e}"}
 
@@ -291,8 +289,10 @@ def load_paper_meta(arxiv_id: str) -> dict:
 
 def summarize_with_ai(arxiv_id: str, detail: str = "medium") -> str:
     """让 AI 摘要论文。"""
-    sys.path.insert(0, str(SCRIPT_DIR))
-    from scripts.ai_router import AI, Task
+    from scripts.ai_router import Task
+    from scripts.core.llm_gateway import LLMGateway
+
+    gateway = LLMGateway(memory=None, use_cache=True)
 
     meta = load_paper_meta(arxiv_id)
     abstract = meta.get("abstract", "")
@@ -336,15 +336,15 @@ def summarize_with_ai(arxiv_id: str, detail: str = "medium") -> str:
 作者：{", ".join(authors[:3])}{"等" if len(authors) > 3 else ""}
 摘要：{abstract}
 正文（部分）：{full_content[:15000]}"""
-        result = AI.chat(prompt, task=Task.CODE_ANALYSIS, temperature=0.3)
+        result = gateway.generate(prompt, task_hint=Task.CODE_ANALYSIS, temperature=0.3)
         return result.response
 
     # 标准摘要（含 DeepSeek 审查 + GPT 修复）
-    result = AI.chat(prompt, task=Task.CODE_ANALYSIS, temperature=0.3)
+    result = gateway.generate(prompt, task_hint=Task.CODE_ANALYSIS, temperature=0.3)
     draft = result.response.strip()
     print(f"  摘要草稿完成（{len(draft)} 字）")
 
-    print(f"  🔍 DeepSeek 审查摘要...")
+    print("  🔍 DeepSeek 审查摘要...")
     review_layer = ReviewLayer(use_cache=True)
     review_result = review_layer.review_and_fix(
         content=draft,
@@ -355,7 +355,7 @@ def summarize_with_ai(arxiv_id: str, detail: str = "medium") -> str:
     if review_result.issues:
         for issue in review_result.issues[:3]:
             print(f"    - {issue[:80]}")
-        print(f"  ✏️  GPT-5.5 修复摘要...")
+        print("  ✏️  GPT-5.5 修复摘要...")
     return review_result.fixed_content
 
 
@@ -364,8 +364,10 @@ def ask_paper_with_ai(arxiv_id: str, question: str) -> str:
     RAG 模式：基于论文原文回答问题。
     把论文内容作为上下文，让 AI 引用原文回答。
     """
-    sys.path.insert(0, str(SCRIPT_DIR))
-    from scripts.ai_router import AI, Task
+    from scripts.ai_router import Task
+    from scripts.core.llm_gateway import LLMGateway
+
+    gateway = LLMGateway(memory=None, use_cache=True)
 
     meta = load_paper_meta(arxiv_id)
     title = meta.get("title", "")
@@ -399,7 +401,7 @@ def ask_paper_with_ai(arxiv_id: str, question: str) -> str:
 4. 如果需要补充背景知识，请明确说明这是基于常识而非论文内容
 """
 
-    result = AI.chat(prompt, task=Task.CODE_ANALYSIS, temperature=0.3)
+    result = gateway.generate(prompt, task_hint=Task.CODE_ANALYSIS, temperature=0.3)
     return result.response
 
 
@@ -442,7 +444,7 @@ def compare_papers_with_ai(arxiv_ids: list[str], question: str) -> str:
 3. 引用原文支持你的分析
 """
 
-    result = AI.chat(prompt, task=Task.CODE_ANALYSIS, temperature=0.3)
+    result = gateway.generate(prompt, task_hint=Task.CODE_ANALYSIS, temperature=0.3)
     return result.response
 
 

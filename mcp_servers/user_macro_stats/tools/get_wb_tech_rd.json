@@ -1,0 +1,18 @@
+{
+  "name": "get_wb_tech_rd",
+  "description": "查询各国R&D支出占GDP比重",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string"
+      },
+      "start_year": {
+        "type": "integer"
+      },
+      "end_year": {
+        "type": "integer"
+      }
+    }
+  }
+}

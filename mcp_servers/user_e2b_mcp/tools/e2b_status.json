@@ -1,0 +1,9 @@
+{
+  "name": "e2b_status",
+  "description": "检查E2B沙箱服务状态和配额。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

@@ -2,7 +2,7 @@
   "project_name": "金融AI研究工作流",
   "version": "1.0.0",
   "created_date": "2026-05-19",
-  "author": "",
+  "author": "Your Name <your.email@example.com>",
 
   "research": {
     "paper_format": "ACL",
@@ -24,14 +24,52 @@
     "python_path": ".venv/bin/python",
     "jupyter_port": 8888,
     "notebook_dir": "notebooks",
-    "output_dir": "results"
+    "output_dir": "output"
   },
 
   "paths": {
     "templates": "templates",
+    "templates_latex_dir": "templates/latex",
     "projects": "projects",
+    "projects_note": "projects/ — 用户独立项目工作目录，可包含子项目研究文件夹",
     "knowledge": "knowledge",
     "scripts": "scripts",
-    "data": "projects/_shared_data"
+    "data": "data",
+    "_note": "All paths above are relative to the project root. Absolute paths are resolved at runtime via config.resolve_path()."
+  },
+
+  "event_monitor": {
+    "check_interval_seconds": 300,
+    "auto_trigger": false,
+    "policy_keywords": [
+      "关税",
+      "美联储",
+      "降准",
+      "碳排放",
+      "财政政策",
+      "数字人民币",
+      "房地产政策"
+    ],
+    "macro_countries": ["CN", "US", "EU"],
+    "macro_indicators": {
+      "CN": ["CPI", "PPI", "PMI", "GDP", "M2", "FDI", "零售"],
+      "US": ["NFP", "CPI", "GDP", "FOMC", "ISM"],
+      "EU": ["GDP", "CPI", "ECB"]
+    },
+    "relevance_threshold": 0.7,
+    "macro_scheduler_times": {
+      "CN_PMI": "09:30",
+      "US_NFP": "20:30",
+      "US_CPI": "20:30",
+      "CN_CPI": "09:30",
+      "US_FOMC": "22:00"
+    },
+    "dedup_window_hours": 24,
+    "max_concurrent_pipelines": 3,
+    "output_dir": "output/event_runs"
+  },
+  "_path_resolver": {
+    "base_dir": "SET_AT_RUNTIME",
+    "description": "Call project_config.resolve_paths(root_dir) after loading to make all paths absolute."
   }
 }

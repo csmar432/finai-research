@@ -1,0 +1,22 @@
+{
+  "name": "Wind",
+  "version": "1.0.0",
+  "is_mock": true,
+  "requires_api_key": false,
+  "server_name": "wind",
+  "serverIdentifier": "user-wind",
+  "description": "Wind万得金融终端数据风格（注：数据来自akshare免费数据，非WIND官方授权，数据为演示/模拟数据）",
+  "tools": [
+    "get_wind_bond_yield",
+    "get_wind_credit_spread",
+    "get_wind_futures",
+    "get_wind_stock_index"
+  ],
+  "_legacy_capabilities": [
+    "国债收益率",
+    "信用利差",
+    "股票指数",
+    "期货行情",
+    "债券数据"
+  ]
+}

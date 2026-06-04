@@ -1,0 +1,17 @@
+{
+  "name": "CryptoCompare",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-cryptocompare",
+  "serverIdentifier": "user-cryptocompare",
+  "description": "加密货币数据（基于 CryptoCompare API）。支持实时价格、历史K线、成交量、Orderbook数据。免费tier足够日常研究使用。",
+  "tools": [
+    "get_cc_price",
+    "get_cc_historical",
+    "get_cc_top_coins",
+    "get_cc_news"
+  ],
+  "_data_source": "CryptoCompare API (https://min-api.cryptocompare.com)",
+  "_note": "免费tier：每秒10次调用，日均10000次"
+}

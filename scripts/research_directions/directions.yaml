@@ -1,0 +1,310 @@
+# Research Directions Registry
+# YAML representation of DirectionFactory._registry
+# Loaded lazily by DirectionFactory._load_from_yaml()
+# This file replaces ~2314 lines of Python dataclass literals in __init__.py
+#
+# Schema:
+#   <direction_slug>:
+#     direction_name: <slug>
+#     display_name: <human-readable name>
+#     literature_theme: <theme description>
+#     methodology_chain:
+#       steps:
+#         - step_name: <name>
+#           econometric_class: <class ref>
+#           notes: <notes>
+#           data_needed: [<list of data requirements>]
+#           packages: [<list of required packages>]
+#     data_requirements:
+#       <key>: <description>
+#     expected_output: <output description>
+#     keywords: [<list of keywords>]
+#     sub_topics: [<list of sub-topics>]
+#     references: [<list of reference strings>]
+#     difficulty: <beginner|intermediate|advanced>
+#     estimated_pages: <integer>
+
+carbon_trading:
+  direction_name: carbon_trading
+  display_name: 碳交易试点效应
+  literature_theme: "研究碳排放权交易试点政策对企业减排行为的影响。评估碳配额机制是否有效促进企业绿色技术创新和碳排放reduction。"
+  methodology_chain:
+    steps:
+      - step_name: 断点回归设计 (RDD)
+        econometric_class: RDDRegression
+        notes: 以碳交易试点门槛设定为断点，利用企业是否跨过门槛进行断点回归估计因果效应。需检验断点连续性假设。
+        data_needed: ["企业层面排放数据", "碳配额分配信息", "企业财务数据"]
+        packages: []
+      - step_name: 安慰剂检验
+        econometric_class: PlaceboTest
+        notes: 在伪断点处进行回归，检验处理效应的真实性。
+        data_needed: ["伪断点数据"]
+        packages: []
+      - step_name: 异质性分析
+        econometric_class: HeterogeneityAnalysis
+        notes: 按行业、规模、所有制分组，考察碳交易政策的异质性效果。
+        data_needed: ["企业分组变量"]
+        packages: []
+  data_requirements:
+    排放数据: 生态环境部企业排放监测数据或CSMAR环境数据库
+    碳配额: 各试点碳交易所配额分配文件
+    财务数据: CSMAR/Wind上市公司财务数据
+    专利数据: 国家知识产权局专利申请与授权数据
+  expected_output: "基准RDD回归表、安慰剂检验图、异质性分析表、机制检验表。预期碳交易试点使企业碳排放下降X%，绿色专利增加Y件。"
+  keywords: ["碳交易", "碳排放权", "RDD", "断点回归", "减排", "绿色创新", "碳配额"]
+  sub_topics: ["碳市场建设效果", "碳价对企业决策影响", "碳交易与绿色信贷"]
+  references:
+    - "Zhang et al. (2019, J Environ Econ Manage) — Carbon Trading and Firm Performance"
+    - "Tang et al. (2020, China Econ Rev) — Carbon Market Policy Effects"
+  difficulty: intermediate
+  estimated_pages: 35
+
+green_bond:
+  direction_name: green_bond
+  display_name: 绿色债券溢价
+  literature_theme: "研究绿色债券相较于普通债券是否存在绿色溢价或认证溢价。考察发行人特征、债券条款和市场环境对绿色债券定价的影响。"
+  methodology_chain:
+    steps:
+      - step_name: 事件研究法 (Event Study)
+        econometric_class: EventStudy
+        notes: 以绿色债券发行公告日为事件日，计算累计超额收益率(CAR)衡量市场反应。
+        data_needed: ["绿色债券发行数据", "二级市场交易数据", "市场基准收益率"]
+        packages: []
+      - step_name: 利差分析
+        econometric_class: OLSRegression
+        notes: 控制期限、信用评级、发行规模等债券特征后，比较绿色债券与普通债券的信用利差差异。
+        data_needed: ["债券发行利率", "信用评级", "债券特征变量"]
+        packages: []
+      - step_name: 动态效应检验
+        econometric_class: PanelRegression
+        notes: 考察绿色溢价的时间演变趋势及其受政策变化的影响。
+        data_needed: ["时间序列债券数据"]
+        packages: []
+  data_requirements:
+    债券发行数据: Wind/Thomson Reuters绿色债券数据库
+    市场交易数据: 中债估值中心/二级市场交易数据
+    发行人财务: 公司年报和信用评级报告
+  expected_output: 绿色债券信用利差表、事件研究CAR图、动态利差演变图。
+  keywords: ["绿色债券", "信用利差", "认证溢价", "事件研究", "碳标签"]
+  sub_topics: ["绿色认证效应", "发行人异质性", "债券条款设计"]
+  references:
+    - "Flammer (2021, J Finance) — Green Bonds"
+    - "Zhou & Wen (2022, J Bank Finance) — Green Bond Pricing in China"
+  difficulty: intermediate
+  estimated_pages: 30
+
+carbon_economics:
+  direction_name: carbon_economics
+  display_name: 碳经济学与能源转型
+  literature_theme: "研究碳排放权交易机制对企业减排行为的影响，评估碳配额机制是否有效促进企业绿色技术创新，探索气候风险对企业投资和融资决策的作用路径。"
+  methodology_chain:
+    steps:
+      - step_name: 双重差分法 (DID)
+        econometric_class: DIDRegression
+        notes: 利用碳交易试点政策作为准自然实验，比较处理组与控制组在政策前后的差异，控制企业和年份固定效应。
+        data_needed: ["企业层面排放数据", "企业财务数据", "碳配额分配信息"]
+        packages: ["statsmodels", "linearmodels"]
+      - step_name: 机制检验
+        econometric_class: MediationAnalysis
+        notes: 检验绿色创新（专利）在碳交易与减排之间的中介效应。
+        data_needed: ["企业专利申请与授权数据", "研发投入数据"]
+        packages: []
+      - step_name: 异质性分析
+        econometric_class: HeterogeneityAnalysis
+        notes: 按行业、规模、所有制分组，考察碳交易政策的异质性效果。
+        data_needed: ["行业分类", "企业规模", "所有制性质"]
+        packages: []
+  data_requirements:
+    排放数据: 生态环境部企业排放监测数据或CSMAR环境数据库
+    碳配额: 各试点碳交易所配额分配文件
+    财务数据: CSMAR/Wind上市公司财务数据
+    专利数据: 国家知识产权局专利申请与授权数据
+  expected_output: 基准DID回归表、机制检验表、异质性分析表、安慰剂检验图、平行趋势图。
+  keywords: ["碳交易", "碳排放权", "DID", "绿色创新", "气候风险", "能源转型", "碳配额"]
+  sub_topics: ["碳市场建设效果", "碳价对企业决策影响", "碳交易与绿色信贷", "气候风险溢价"]
+  references:
+    - "Zhang et al. (2019, J Environ Econ Manage) — Carbon Trading and Firm Performance"
+    - "Tang et al. (2020, China Econ Rev) — Carbon Market Policy Effects"
+    - "He et al. (2020, QJE) — Carbon Markets and Corporate Behavior"
+  difficulty: intermediate
+  estimated_pages: 35
+
+macro_finance:
+  direction_name: macro_finance
+  display_name: 宏观经济与金融稳定
+  literature_theme: "研究货币政策传导机制、银行竞争对金融稳定的影响，考察宏观审慎政策有效性，以及宏观因素与金融市场之间的动态关联。"
+  methodology_chain:
+    steps:
+      - step_name: 货币政策VAR/SVAR分析
+        econometric_class: TimeSeriesRegression
+        notes: 构建结构向量自回归模型，分析货币政策冲击对实体经济和金融市场的传导效应。
+        data_needed: ["货币政策变量", "宏观经济变量", "金融市场价格数据"]
+        packages: ["statsmodels", "arch"]
+      - step_name: 银行竞争与风险承担
+        econometric_class: PanelRegression
+        notes: 考察银行竞争程度对风险承担行为的影响，控制宏观周期和银行特征。
+        data_needed: ["银行财务数据", "竞争指标(HHI)", "不良贷款率"]
+        packages: []
+      - step_name: 宏观审慎政策评估
+        econometric_class: DIDRegression
+        notes: 以宏观审慎政策出台为外生冲击，评估其对信贷、杠杆率等指标的调控效果。
+        data_needed: ["宏观审慎政策指标", "银行资产负债表数据"]
+        packages: []
+  data_requirements:
+    货币政策数据: 中国人民银行/Wind宏观数据库
+    银行数据: 银保监会/上市银行年报
+    宏观数据: 国家统计局/GDP/CPI/PPI
+    金融数据: 沪深交易所/Wind
+  expected_output: SVAR脉冲响应图、银行竞争回归表、宏观审慎政策DID评估表。
+  keywords: ["货币政策传导", "银行竞争", "金融稳定", "宏观审慎", "风险承担", "信贷周期"]
+  sub_topics: ["利率走廊机制", "流动性创造", "系统性风险", "信贷周期与实体经济"]
+  references:
+    - "Bernanke & Gertler (1995, NBER) — Monetary Policy and Business Fluctuations"
+    - "DellAriccia et al. (2014, J Finance) — Markups, Cost of Credit, and Competition"
+    - "Cerutti et al. (2017, J Int Econ) — Macroprudential Policy in EME"
+  difficulty: advanced
+  estimated_pages: 40
+
+asset_pricing:
+  direction_name: asset_pricing
+  display_name: 资产定价与因子投资
+  literature_theme: "研究A股市场的定价因子结构，考察ESG、碳风险、情绪等新因子对资产定价的解释能力，探索因子择时与组合优化策略。"
+  methodology_chain:
+    steps:
+      - step_name: Fama-French因子模型扩展
+        econometric_class: FactorModelRegression
+        notes: 在传统FF3/FF5基础上引入ESG、碳风险、流动性等新因子，进行时间序列和横截面回归。
+        data_needed: ["股票日收益率", "Fama-French因子", "ESG评分", "交易量/换手率"]
+        packages: ["pandas", "statsmodels", "linearmodels"]
+      - step_name: 因子有效性检验
+        econometric_class: GRSTest
+        notes: 运用Gibbons-Ross-Shanken检验评估因子模型对资产定价的解释能力差异。
+        data_needed: ["多因子组合收益率", "无风险利率"]
+        packages: []
+      - step_name: 因子择时策略
+        econometric_class: PredictiveRegression
+        notes: 检验宏观经济或市场情绪变量对因子收益率的预测能力。
+        data_needed: ["宏观预测变量", "市场情绪指标", "因子收益率序列"]
+        packages: []
+  data_requirements:
+    股票收益: CSMAR/Wind日收益率数据
+    因子数据: CSMAR Fama-French因子/特雷诺因子
+    ESG数据: 彭博/商道融绿/MSCI ESG评级
+    交易数据: Wind/Choice融资融券数据
+  expected_output: FF扩展模型回归表、GRS检验结果、因子择时预测回归表、IC分析图。
+  keywords: ["Fama-French因子", "ESG因子", "碳风险因子", "因子择时", "资产定价", "因子模型"]
+  sub_topics: ["异质波动率之谜", "盈利惯性", "价值效应", "动量效应", "因子相关性结构"]
+  references:
+    - "Fama & French (1993, J Finance) — Common Risk Factors in Stock Returns"
+    - "Fama & French (2015, JFE) — A Five-Factor Asset Pricing Model"
+    - "Cheng et al. (2022, RFS) — Carbon Risk and Asset Pricing"
+  difficulty: advanced
+  estimated_pages: 40
+
+corporate_finance:
+  direction_name: corporate_finance
+  display_name: 公司金融与治理
+  literature_theme: "研究资本结构调整速度、并购重组绩效、ESG与公司财务决策的关联，考察公司治理机制在其中的调节作用。"
+  methodology_chain:
+    steps:
+      - step_name: 资本结构调整速度估计
+        econometric_class: PartialAdjustmentModel
+        notes: 运用动态面板Partial Adjustment模型估计企业资本结构调整速度，考察目标杠杆率决定因素。
+        data_needed: ["企业资产负债率", "盈利能力", "规模", "成长性", "有形资产比例"]
+        packages: ["pandas", "statsmodels"]
+      - step_name: 并购绩效评估
+        econometric_class: EventStudy
+        notes: 以并购公告日为事件日，计算累计超额收益率(CAR)，考察短期市场反应。
+        data_needed: ["并购事件数据", "股票日收益率", "行业指数"]
+        packages: []
+      - step_name: 治理机制调节效应
+        econometric_class: PanelRegression
+        notes: 考察股权结构、董事会特征对主效应（政策/事件冲击）的调节作用。
+        data_needed: ["股权结构", "董事会规模/独立性", "高管薪酬"]
+        packages: []
+  data_requirements:
+    财务数据: CSMAR/Wind上市公司财务数据
+    并购数据: CSMAR并购重组数据库/Wind
+    治理数据: CSMAR公司治理数据库/国泰安
+    ESG数据: 彭博/MSCI/商道融绿
+  expected_output: 资本结构调整速度回归表、并购CAR分析表、治理调节效应表。
+  keywords: ["资本结构", "动态调整", "并购绩效", "公司治理", "股权结构", "ESG与公司决策"]
+  sub_topics: ["融资约束", "股利政策", "债务期限结构", "管理层激励", "机构投资者"]
+  references:
+    - "Flannery & Rangan (2006, JFE) — Partial Adjustment and Capital Structure"
+    - "Faccio & Masulis (2005, JFE) — Political Connections and M&A"
+    - "Gompers et al. (2010, QJE) — Proxy Advisors and Corporate Governance"
+  difficulty: intermediate
+  estimated_pages: 35
+
+green_finance:
+  direction_name: green_finance
+  display_name: 绿色金融体系
+  literature_theme: "研究绿色信贷指引政策对企业融资和投资行为的影响，考察ESG表现如何缓解企业融资约束，探索绿色金融政策对实体经济的传导机制。"
+  methodology_chain:
+    steps:
+      - step_name: 双重差分法 (DID)
+        econometric_class: DIDRegression
+        notes: 以2012年银监会绿色信贷指引为外生冲击，比较重污染行业与对照组企业在政策前后的融资约束变化。
+        data_needed: ["绿色信贷政策数据", "企业融资数据", "行业分类"]
+        packages: ["statsmodels", "linearmodels"]
+      - step_name: ESG融资约束检验
+        econometric_class: PanelRegression
+        notes: 运用KZ指数或SA指数衡量融资约束，检验ESG评分对融资约束的缓解作用。
+        data_needed: ["ESG评分", "融资约束指数", "企业财务数据"]
+        packages: []
+      - step_name: 机制分析
+        econometric_class: MediationAnalysis
+        notes: 检验信息不对称降低和银行关系两个渠道在ESG缓解融资约束中的中介作用。
+        data_needed: ["分析师跟踪人数", "审计质量", "银行贷款数据"]
+        packages: []
+  data_requirements:
+    政策数据: 银保监会绿色信贷统计/Wind绿色信贷数据
+    财务数据: CSMAR上市公司财务数据
+    ESG数据: 彭博/商道融绿/MSCI评级
+    贷款数据: 银行对公贷款数据
+  expected_output: 绿色信贷DID回归表、ESG融资约束面板回归表、机制检验表、异质性分析表。
+  keywords: ["绿色信贷", "ESG", "融资约束", "绿色金融政策", "双重差分", "信息不对称"]
+  sub_topics: ["绿色信贷与绿色创新", "ESG与银行信贷决策", "碳信息披露", "绿色金融示范区"]
+  references:
+    - "Wang et al. (2022, J Bank Finance) — Green Credit and Corporate Behavior"
+    - "Zhang et al. (2021, 经济研究) — ESG表现与融资约束"
+    - "Bu et al. (2020, J Clean Prod) — Green Finance and Corporate Green Innovation"
+  difficulty: intermediate
+  estimated_pages: 35
+
+digital_finance:
+  direction_name: digital_finance
+  display_name: 数字金融与金融科技
+  literature_theme: "研究数字金融普及对企业融资可得性和经营绩效的影响，考察金融科技竞争对传统银行经营行为和金融稳定的冲击。"
+  methodology_chain:
+    steps:
+      - step_name: 数字金融指数构建
+        econometric_class: IndexConstruction
+        notes: 利用北京大学数字普惠金融指数或蚂蚁集团数据，按企业注册地匹配到微观层面。
+        data_needed: ["省级数字金融指数", "企业微观数据", "匹配关系"]
+        packages: ["pandas"]
+      - step_name: DID/双重差分估计
+        econometric_class: DIDRegression
+        notes: 以数字金融进入特定地区为外生冲击，构建交错DID估计对企业融资和绩效的影响。
+        data_needed: ["企业融资数据", "数字金融覆盖信息", "时间虚拟变量"]
+        packages: ["statsmodels", "linearmodels"]
+      - step_name: 异质性与机制检验
+        econometric_class: HeterogeneityAnalysis
+        notes: 考察对不同规模、所有制、行业企业的异质性影响，检验融资约束缓解的机制路径。
+        data_needed: ["企业规模", "所有制", "行业分类", "融资约束指标"]
+        packages: []
+  data_requirements:
+    数字金融数据: 北京大学数字普惠金融指数/蚂蚁集团数据
+    企业数据: CSMAR上市公司财务数据
+    银行数据: 银保监会银行经营数据
+    区域数据: 国家统计局区域统计
+  expected_output: 基准DID回归表、数字金融指数趋势图、异质性分析表、机制检验表。
+  keywords: ["数字金融", "金融科技", "普惠金融", "融资约束", "FinTech竞争", "银行转型"]
+  sub_topics: ["移动支付", "网络借贷", "数字货币", "金融包容", "银行数字化转型", "金融科技监管"]
+  references:
+    - "Frost et al. (2019, BIS) — Big Tech and Credit Market Competition"
+    - "Jiang et al. (2020, JFE) — Digital Finance and Corporate Innovation"
+    - "Xie & Zhang (2022, 经济研究) — 数字金融与小微企业融资"
+  difficulty: intermediate
+  estimated_pages: 35

@@ -1,0 +1,13 @@
+{
+  "name": "pw_screenshot",
+  "description": "截取页面或元素截图。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

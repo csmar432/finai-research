@@ -1,0 +1,35 @@
+{
+  "name": "get_financial_report",
+  "description": "获取A股财务数据（利润表/资产负债表/现金流量表/财务指标）。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "report_type": {
+        "type": "string",
+        "enum": [
+          "income",
+          "balance",
+          "cashflow",
+          "fina_indicator"
+        ]
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      },
+      "period": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ts_code",
+      "report_type"
+    ]
+  }
+}

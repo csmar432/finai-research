@@ -1,0 +1,16 @@
+{
+  "name": "get_crypto_price",
+  "description": "获取加密货币行情数据。使用 akshare + CoinGecko 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "coin": {
+        "type": "string",
+        "description": "加密货币代码，如 BTC, ETH"
+      }
+    },
+    "required": [
+      "coin"
+    ]
+  }
+}

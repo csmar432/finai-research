@@ -1,0 +1,21 @@
+{
+  "name": "get_research_report",
+  "description": "获取券商研报数据（个股研报列表）。使用 akshare 东方财富接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      }
+    }
+  }
+}

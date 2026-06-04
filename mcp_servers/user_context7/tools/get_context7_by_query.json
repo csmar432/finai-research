@@ -1,0 +1,19 @@
+{
+  "name": "get_context7_by_query",
+  "description": "通过关键词查询获取相关论文全文",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "搜索查询，例如 'machine learning finance prediction'"
+      },
+      "max_results": {
+        "type": "integer",
+        "description": "最大返回数量",
+        "default": 5
+      }
+    },
+    "required": ["query"]
+  }
+}

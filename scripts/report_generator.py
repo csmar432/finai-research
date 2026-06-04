@@ -10,17 +10,18 @@
 - 多格式输出
 """
 
-import os
 import json
+import os
 import warnings
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")   # 必须在 import pyplot 之前
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 warnings.filterwarnings("ignore")
 
@@ -254,7 +255,7 @@ blockquote {{ border-left: 4px solid #4a90d9; padding-left: 1rem; color: #666; }
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(full_html)
 
-        print(f"[✓] 研报已生成:")
+        print("[✓] 研报已生成:")
         print(f"    Markdown: {md_path}")
         print(f"    HTML:     {html_path}")
 

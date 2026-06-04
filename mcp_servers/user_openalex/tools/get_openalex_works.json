@@ -1,0 +1,24 @@
+{
+  "name": "get_openalex_works",
+  "description": "通过关键词或过滤条件检索学术论文元数据（OpenAlex，2亿+学术成果）",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "搜索关键词，例如 'carbon trading innovation'"
+      },
+      "filter": {
+        "type": "string",
+        "description": "OpenAlex 过滤表达式，例如 'publication_year:>2022,type:journal-article'",
+        "default": ""
+      },
+      "per_page": {
+        "type": "integer",
+        "description": "每页返回数量",
+        "default": 25
+      }
+    },
+    "required": ["query"]
+  }
+}

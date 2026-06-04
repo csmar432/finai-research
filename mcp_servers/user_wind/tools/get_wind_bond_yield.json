@@ -1,0 +1,17 @@
+{
+  "name": "get_wind_bond_yield",
+  "description": "获取中国国债收益率曲线数据（模拟Wind风格）。返回各期限国债收益率。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      }
+    }
+  }
+}

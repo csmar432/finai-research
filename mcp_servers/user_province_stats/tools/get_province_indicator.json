@@ -1,0 +1,25 @@
+{
+  "name": "get_province_indicator",
+  "description": "查询指定省份的单一指标（如GDP、R&D经费等），支持指定年份。可用于获取某省份最新值或在研究报告中引用。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "province": {
+        "type": "string",
+        "description": "省份名称，如'湖北'、'广东'、'江苏'、'浙江'、'山东'、'北京'、'上海'、'四川'、'河南'",
+        "enum": ["湖北", "广东", "江苏", "浙江", "山东", "北京", "上海", "四川", "河南"]
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标ID，如'GDP'、'R&D经费'、'高新技术企业'、'技术合同成交额'、'R&D强度'",
+        "examples": ["GDP", "R&D经费", "高新技术企业", "技术合同成交额", "R&D强度", "本专科在校生"]
+      },
+      "year": {
+        "type": "string",
+        "description": "年份（可选），如'2024'。不填则返回最新可用年份。",
+        "examples": ["2024", "2025", "2020"]
+      }
+    },
+    "required": ["province", "indicator"]
+  }
+}

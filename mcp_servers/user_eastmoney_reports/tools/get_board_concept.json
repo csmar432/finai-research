@@ -1,0 +1,26 @@
+{
+  "name": "get_board_concept",
+  "description": "获取概念板块数据（板块列表/行情/历史走势）。使用 akshare 东方财富接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "data_type": {
+        "type": "string",
+        "enum": [
+          "names",
+          "spot",
+          "hist"
+        ]
+      },
+      "concept_name": {
+        "type": "string"
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      }
+    }
+  }
+}

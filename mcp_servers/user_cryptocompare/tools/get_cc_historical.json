@@ -1,0 +1,14 @@
+{
+  "name": "get_cc_historical",
+  "description": "获取加密货币历史价格",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "symbol": { "type": "string", "description": "币种符号，例如 'BTC'" },
+      "start_date": { "type": "string", "description": "开始日期，格式 'YYYY-MM-DD'" },
+      "end_date": { "type": "string", "description": "结束日期，格式 'YYYY-MM-DD'" },
+      "interval": { "type": "string", "description": "周期：'day','hour'", "default": "day" }
+    },
+    "required": ["symbol", "start_date", "end_date"]
+  }
+}

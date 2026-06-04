@@ -1,0 +1,27 @@
+{
+  "name": "get_stock_basic",
+  "description": "获取A股股票基础信息列表，包括代码、名称、上市日期、行业等。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "exchange": {
+        "type": "string",
+        "enum": [
+          "",
+          "SSE",
+          "SZSE",
+          "BSE"
+        ]
+      },
+      "list_status": {
+        "type": "string",
+        "enum": [
+          "L",
+          "D",
+          "P"
+        ],
+        "default": "L"
+      }
+    }
+  }
+}

@@ -1,0 +1,342 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8
+% 经济研究（Economic Research Journal）格式模板
+% 参考来源：http://www.erjw.cn/
+% 适用于经济金融领域实证论文
+% CTeX 中文格式，使用XeLaTeX编译
+
+\PassOptionsToPackage{quiet}{xeCJK}
+\documentclass[lang=cn, alanguage={chinese}, aaffiliation={中国}, aoptions={authoryear}]{ctexart}
+
+% ── 文档类型选项 ────────────────────────────────────────────────────────────
+% 本模板采用单栏排版，如需双栏可取消下面注释：
+% \documentclass[lang=cn, twocolumn]{ctexart}
+
+% ── 必要宏包 ────────────────────────────────────────────────────────────────
+\usepackage[
+    a4paper,
+    top=2.5cm, bottom=2.5cm,
+    left=3.0cm, right=2.5cm,
+    headheight=14.5pt,
+    heightrounded,
+]{geometry}
+
+\usepackage{fontspec}           % XeLaTeX 字体配置
+\usepackage{xeCJK}              % 中日韩文字处理
+\setmainfont{Times New Roman}   % 英文正文
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\xeCJKsetcharclass("0, "7F) { } % 忽略 ASCII 控制字符
+\xeCJKsetup{
+    CJKspace=true,
+    xCJKecglue={},
+    CheckFullChar=true,
+}
+
+\usepackage{mathtools}          % 数学公式（需 amsmath）
+\usepackage{booktabs}           % 表格线（\toprule/midrule/bottomrule）
+\usepackage{threeparttable}     % 表格注释
+\usepackage{longtable}          % 跨页长表格
+\usepackage{graphicx}           % 插图
+\graphicspath{{figures/}}       % 图表目录
+\usepackage{subcaption}         % 子图 subfigure 替代
+\usepackage{hyperref}           % 超链接与 PDF 元数据
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={经济研究格式模板},
+    pdfauthor={作者姓名},
+}
+
+\usepackage{natbib}             % 参考文献（GB/T 7714-2015 顺序编码制）
+\bibliographystyle{gbt7714-numerical}
+% 可选风格：gbt7714-author-year（著者-出版年制）
+% 需配合 biber 使用：xelatex → biber → xelatex × 2
+
+\usepackage{setspace}           % 行距设置
+\usepackage{enumitem}           % 列表设置
+\usepackage{indentfirst}        % 首段缩进
+\usepackage{titlesec}           % 章节标题格式
+
+% ── 页面设置 ────────────────────────────────────────────────────────────────
+% 经济研究要求：小四号（12pt）字体，1.5 倍行距
+\setstretch{1.5}
+\setlength{\parindent}{2em}     % 首行缩进 2 个中文字符
+\setlength{\abovecaptionskip}{6pt}
+\setlength{\belowcaptionskip}{6pt}
+\linespread{1.5}
+
+% ── 章节标题格式 ────────────────────────────────────────────────────────────
+\titleformat*{\section}{\fontsize{13pt}{1.5em}\bfseries\center}
+\titleformat*{\subsection}{\fontsize{12pt}{1.5em}\bfseries}
+\titleformat*{\subsubsection}{\fontsize{12pt}{1.5em}\rmfamily}
+
+% ── 页眉页脚 ────────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\footnotesize 中国工业经济}
+\fancyfoot[C]{\thepage}
+% 双栏模式下使用：
+% \fancyhead[LE,RO]{\thepage}
+% \fancyhead[LO]{\leftmark}
+% \fancyhead[RE]{\rightmark}
+
+% ── 中文破折号与省略号 ──────────────────────────────────────────────────────
+\ExplSyntaxOn
+\DeclareDocumentCommand \zhdash}{ }{
+    \unskip\ignorespaces\textemdash\ignorespaces}
+\ExplSyntaxOff
+
+% ── 标题与作者信息 ──────────────────────────────────────────────────────────
+\title{论文标题（中文）\thanks{基金项目（编号）。}}
+\author{作者甲\thanks{作者简介：...，E-mail: ...} \quad 作者乙\thanks{...}}
+\date{\today}
+
+% ── 摘要环境 ────────────────────────────────────────────────────────────────
+\newenvironment{cnabstract}{%
+    \par\textbf{摘要：}
+    \@tempswafalse
+}{\par\vspace{\baselineskip}\par\textbf{关键词：}...}
+
+\newenvironment{enabstract}{%
+    \par\begin{minipage}{\textwidth}\textbf{Abstract: }
+    }{%
+    \end{minipage}\par\vspace{\baselineskip}\par\textbf{Keywords: }...}
+
+% ═══════════════════════════════════════════════════════════════════════════
+%                            正文内容
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{document}
+
+% 消除首页页眉
+\thispagestyle{empty}
+
+% 标题（中英文）
+\maketitle
+\thispagestyle{fancy}
+
+% ── 中文摘要 ────────────────────────────────────────────────────────────────
+\begin{cnabstract}
+    本文基于\dots 研究了\dots。实证结果表明\dots。
+    本文的研究贡献在于：第一，\dots；第二，\dots。
+\end{cnabstract}
+
+\textbf{关键词：}关键词1；关键词2；关键词3；关键词4
+
+% ── 英文摘要（可选） ────────────────────────────────────────────────────────
+\begin{enabstract}
+    This paper investigates \dots using \dots data.
+    The results show that \dots. Our contributions are twofold: first, \dots;
+    second, \dots.
+\end{enabstract}
+
+\textbf{Keywords:} keyword1; keyword2; keyword3; keyword4
+
+% ── 一、引言 ───────────────────────────────────────────────────────────────
+\section{引言}
+\label{sec:intro}
+
+本文研究的问题是\dots。
+
+首先，\dots。其次，\dots。
+
+本文的结构安排如下：第二部分为文献综述；第三部分为研究设计；第四部分为实证结果与分析；第五部分为进一步分析；第六部分为结论与启示。
+
+% ── 二、文献综述 ─────────────────────────────────────────────────────────
+\section{文献综述与研究假说}
+\label{sec:lit}
+
+\subsection{文献综述}
+\label{sec:lit:review}
+
+关于\dots的研究已有丰富的文献，主要分为三类：
+
+第一，\dots（\citealp{xxx}）。\citet{yyy}发现\dots。
+
+第二，\dots（\citealp{zzz}）。\citet{www}利用\dots方法，证实了\dots。
+
+第三，\dots（\citealp{vvv}）。
+
+\subsection{研究假说}
+\label{sec:hypothesis}
+
+基于上述分析，本文提出如下假说：
+
+\textbf{假说 H1：}在其他条件不变的情况下，\dots对\dots有显著的正向影响。
+
+\textbf{假说 H2：}\dots对\dots的边际效应存在异质性，表现为\dots。
+
+% ── 三、研究设计 ──────────────────────────────────────────────────────────
+\section{研究设计}
+\label{sec:design}
+
+\subsection{样本选择与数据来源}
+\label{sec:data}
+
+本文以\dots为研究样本，时间跨度为\dots年。数据来源包括：
+（1）CSMAR 数据库；（2）Wind 数据库；（3）国家统计局。
+
+本文对原始数据做如下处理：第一，\dots；第二，\dots。
+
+\subsection{变量定义}
+\label{sec:var}
+
+\textbf{被解释变量（$Y$）：}本文采用\dots衡量\dots。
+
+\textbf{核心解释变量（$X$）：}本文的核心解释变量为\dots。
+
+\textbf{控制变量（Controls）：}参考\citet{xxx}，本文控制了以下变量：
+公司规模（Size）、资产负债率（Lev）、盈利能力（ROA）、企业年龄（Age）等。
+
+表~\ref{tab:var_def}~汇报了主要变量的定义。
+
+\begin{table}[htbp]
+    \centering
+    \caption{主要变量定义}
+    \label{tab:var_def}
+    \begin{threeparttable}
+        \begin{tabular}{p{2.5cm}p{2.5cm}p{5cm}}
+            \toprule
+            \textbf{变量名称} & \textbf{变量符号} & \textbf{变量定义} \\
+            \midrule
+            被解释变量 & $Y$ & \dots \\
+            核心解释变量 & $X$ & \dots \\
+            控制变量 & Size & \dots \\
+            & Lev & \dots \\
+            & ROA & \dots \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item \textbf{数据来源：}CSMAR 数据库。
+            \item 缩尾处理：所有连续变量在 1\% 和 99\% 分位数进行 Winsorize 处理。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{模型设定}
+\label{sec:model}
+
+为检验假说 H1，本文构建如下双向固定效应模型：
+
+\begin{equation}
+    \label{eq:baseline}
+    Y_{it} = \alpha + \beta X_{it} + \gamma Controls_{it} + \mu_i + \lambda_t + \varepsilon_{it},
+\end{equation}
+
+其中，$i$ 表示企业，$t$ 表示年份。$\mu_i$ 和 $\lambda_t$ 分别为企业和年份固定效应，$\varepsilon_{it}$ 为随机误差项。
+
+% ── 四、实证结果 ──────────────────────────────────────────────────────────
+\section{实证结果与分析}
+\label{sec:results}
+
+\subsection{描述性统计}
+\label{sec:desc}
+
+表~\ref{tab:desc_stat}~报告了主要变量的描述性统计。
+
+\begin{table}[htbp]
+    \centering
+    \caption{描述性统计}
+    \label{tab:desc_stat}
+    \begin{threeparttable}
+        \begin{tabular}{lcccccc}
+            \toprule
+            \textbf{变量} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{Median} & \textbf{Max} \\
+            \midrule
+            $Y$ & 8,432 & 0.051 & 0.108 & -0.231 & 0.039 & 0.382 \\
+            $X$ & 8,432 & 0.312 & 0.463 & 0.000 & 0.000 & 1.000 \\
+            Size & 8,432 & 22.14 & 1.326 & 19.76 & 21.95 & 25.89 \\
+            Lev & 8,432 & 0.421 & 0.198 & 0.047 & 0.410 & 0.853 \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：所有连续变量均经过 1\% 和 99\% 分位数缩尾处理。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{基准回归}
+\label{sec:baseline}
+
+表~\ref{tab:baseline}~报告了基准回归结果。
+
+\begin{table}[htbp]
+    \centering
+    \caption{基准回归结果}
+    \label{tab:baseline}
+    \begin{threeparttable}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} \\
+            \midrule
+            $X$ & 0.023\*** & 0.018\*** & 0.015\** \\
+              & (3.42) & (2.89) & (2.21) \\
+            Size & & -0.002 & -0.003 \\
+              & & (-0.54) & (-0.71) \\
+            \bottomrule
+            \textbf{固定效应} & \textbf{否} & \textbf{否} & \textbf{是} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：括号内为 $t$ 值；\* $p<0.1$，\** $p<0.05$，\*** $p<0.01$。
+            \item 企业层面聚类标准误，*** $p<0.01$, ** $p<0.05$, * $p<0.10$。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+% ── 五、进一步分析 ────────────────────────────────────────────────────────
+\section{进一步分析}
+\label{sec:additional}
+
+\subsection{异质性分析}
+\label{sec:hetero}
+
+本文从企业类型、地区等维度进行异质性分析，结果报告于表~\ref{tab:hetero}。
+
+\begin{figure}[htbp]
+    \centering
+    \caption{平行趋势检验}
+    \label{fig:parallel}
+    % \includegraphics[width=0.8\textwidth]{parallel_trend.pdf}
+    \begin{minipage}{0.8\textwidth}\footnotesize
+        注：图中横轴为相对时间（0 为政策实施年份），纵轴为 DID 系数，
+        虚线表示 95\% 置信区间。
+    \end{minipage}
+\end{figure}
+
+% ── 六、结论与启示 ────────────────────────────────────────────────────────
+\section{结论与启示}
+\label{sec:conclusion}
+
+本文以\dots为研究对象，考察了\dots的影响及其机制。
+
+本文的主要结论如下：第一，\dots； 第二，\dots。
+
+本文的研究启示在于：第一，\dots；第二，\dots。
+
+\textbf{参考文献：}
+\bibliography{references}
+
+% ── 附录 ──────────────────────────────────────────────────────────────────
+\newpage
+\appendix
+\section{附录}
+
+\subsection{稳健性检验}
+\label{app:robust}
+
+为保证研究结论的可靠性，本文进行了如下稳健性检验：
+
+（1）\textbf{替换核心变量：}采用\dots作为\dots的替代变量，主要结论保持不变。
+
+（2）\textbf{改变样本范围：}剔除\dots样本后重新回归，结果仍支持本文假说。
+
+（3）\textbf{改变估计方法：}采用 Poisson 回归和 Tobit 模型，结果保持一致。
+
+（4）\textbf{调整控制变量：}参考\citet{xxx}的经典文献，加入\dots等变量，结果稳健。
+
+\end{document}

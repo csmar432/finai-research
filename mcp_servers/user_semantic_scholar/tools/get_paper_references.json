@@ -1,0 +1,24 @@
+{
+  "name": "get_paper_references",
+  "description": "获取某论文的参考文献（逆向引文）。\n\n用于追溯论文的理论基础和文献来源，理解研究脉络。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "paper_id": {
+        "type": "string",
+        "description": "论文标识符（DOI/arXiv ID/S2Id）"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "返回参考文献数量（默认20，最大100）",
+        "default": 20
+      },
+      "offset": {
+        "type": "integer",
+        "description": "分页偏移量",
+        "default": 0
+      }
+    },
+    "required": ["paper_id"]
+  }
+}

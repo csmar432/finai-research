@@ -17,8 +17,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from scripts.core.memory import ContextUnit
-from scripts.core.planner import Task, TaskType, TaskStatus
-
+from scripts.core.planner import Task, TaskType
 
 # ─── Quality Flags ────────────────────────────────────────────────────────────
 
@@ -98,7 +97,7 @@ class ResearchReflector:
     success = score >= 0.7
     """
 
-    def __init__(self, memory: "ResearchMemory"):
+    def __init__(self, memory: ResearchMemory):
         self.memory = memory
         self._llm = None  # 延迟初始化 — reserved for future LLM summarization
 
@@ -114,10 +113,10 @@ class ResearchReflector:
         评估任务执行结果，返回 Evaluation 对象。
 
         评估维度（各有权重）：
-        1. 完整性 (30%): 结果字段是否齐全
-        2. 准确性 (40%): 数值范围检查、逻辑一致性
-        3. 一致性 (20%): 与历史结果对比
-        4. 置信度 (10%): API状态码、结果完整性
+        1. 完整性 (35%): 结果字段是否齐全
+        2. 准确性 (35%): 数值范围检查、逻辑一致性
+        3. 一致性 (10%): 与历史结果对比
+        4. 置信度 (20%): API状态码、结果完整性
         """
         completeness_score, completeness_flags = self._check_completeness(task, result)
         accuracy_score, accuracy_flags = self._check_accuracy(task, result)
@@ -320,11 +319,12 @@ class ResearchReflector:
 
                 # PE must be strictly > 0 (not >= 0)
                 if key_pattern == "pe":
+                    total += 1
                     if not (val > 0 and val < 1000):
                         flags.append("needs_verification")
-                        continue
-
-                total += 1
+                    else:
+                        passed += 1
+                    continue
                 within = True
                 if min_val is not None and val < min_val:
                     within = False

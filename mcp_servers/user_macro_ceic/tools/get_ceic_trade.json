@@ -1,0 +1,14 @@
+{
+  "name": "get_ceic_trade",
+  "description": "获取贸易数据（CEIC风格）。涵盖进出口总额、贸易顺差等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "trade_type": {
+        "type": "string",
+        "description": "贸易类型: imports/exports/balance",
+        "default": "balance"
+      }
+    }
+  }
+}

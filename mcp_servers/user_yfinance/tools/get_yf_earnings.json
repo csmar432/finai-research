@@ -1,0 +1,11 @@
+{
+  "name": "get_yf_earnings",
+  "description": "获取历史盈利数据（EPS预测、实际EPS、营收）",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": { "type": "string", "description": "股票代码，例如 'AAPL'" }
+    },
+    "required": ["ticker"]
+  }
+}

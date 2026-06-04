@@ -1,0 +1,14 @@
+{
+  "name": "get_news_search",
+  "description": "搜索财经新闻",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "搜索关键词" },
+      "from_date": { "type": "string", "description": "开始日期 'YYYY-MM-DD'" },
+      "to_date": { "type": "string", "description": "结束日期 'YYYY-MM-DD'" },
+      "language": { "type": "string", "description": "语言：en,zh", "default": "en" }
+    },
+    "required": ["query"]
+  }
+}

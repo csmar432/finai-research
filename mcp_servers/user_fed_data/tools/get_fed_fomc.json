@@ -1,0 +1,17 @@
+{
+  "name": "get_fed_fomc",
+  "description": "获取FOMC会议日程和决议。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      },
+      "include_statement": {
+        "type": "boolean",
+        "description": "是否包含声明全文"
+      }
+    }
+  }
+}

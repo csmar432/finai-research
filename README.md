@@ -1,318 +1,315 @@
-# 金融AI研究工作流
+# 论文-研报工作流 · FinResearch Agent
 
-一个极简、高效的本地工作流，服务于金融AI学术研究和研报生成。
+> 经济金融领域 AI 学术研究工作流 — 从研究想法到可投稿论文。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。
 
-## 架构原则
-
-**以 Cursor 本地 Claude 为核心，外部 AI 仅作补充。**
-
-```
-Cursor Agent（本地 Claude）
-  └── 直接对话、代码、分析、写作 — 无需任何配置
-  └── 若需脚本批处理 → scripts/ai_router.py → B.AI / DeepSeek
-```
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
+[![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
+[![CI](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/YOUR_USERNAME/finai-research-workflow/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/YOUR_USERNAME/finai-research-workflow/actions)
+[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/finai-research-workflow?style=social)](https://github.com/YOUR_USERNAME/finai-research-workflow/stargazers)
 
 ---
 
-## 3分钟上手
+## Who Is This For?
 
-### 1. 配置 API Key（仅脚本批处理需要）
+| Audience | Use Case |
+|----------|----------|
+| **PhD students / researchers** | Design empirical studies, run econometric analysis, generate LaTeX manuscripts for JF/JFE/RFS/经济研究/金融研究 |
+| **Finance professors** | Automate literature reviews, track policy experiments, benchmark against published papers |
+| **Graduate students** | Learn econometric methods (DID/IV/RDD) with automated validation and robustness checks |
+| **Quantitative analysts** | Access A-share data, run factor analysis, generate institutional-grade research reports |
+| **AI/ML researchers** | Explore LLM applications in financial research automation, provenance tracking, HITL design |
 
-Keys 放在项目根目录 `.env.local`（已在 .gitignore，不会提交）：
+> **Not sure?** If you've ever spent days downloading data, running regressions, formatting LaTeX tables, or searching for related work — this tool is for you.
 
-```bash
-# .env.local（勿提交）
-B_AI_API_KEY=sk-xxx        # B.AI 中转（需 VPN）：gpt-5.5 / claude-4.6 / gemini-3.1-pro
-DEEPSEEK_API_KEY=sk-xxx    # DeepSeek 直连（无需 VPN）：deepseek-chat / deepseek-reasoner
-FRED_API_KEY=xxx           # FRED 宏观数据（免费）：https://fred.stlouisfed.org
+---
+
+## Show Me What It Does
+
+Describe your research in plain Chinese — the agent handles the rest:
+
+```
+帮我研究关税政策对A股出口型企业创新的影响，设计一篇发表在经济研究的实证论文
 ```
 
-### 2. 安装依赖
+**What the agent produces automatically:**
+
+| Stage | Output |
+|-------|--------|
+| Literature Review | Citation graph + gap analysis (arXiv / NBER / OpenAlex / JF / JFE / RFS) |
+| Research Design | DID/IV/RDD identification strategy + data sourcing plan |
+| Empirical Analysis | 33 econometric methods, automated robustness tests (18 types) |
+| Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
+| Review Loop | Adversarial review until submission-ready |
+
+**Architecture overview:**
+
+![Architecture Diagram](.github/demo/architecture-diagram.svg)
+*Multi-agent pipeline: User Input → Cursor Agent → 5-Stage Research Pipeline → 34 MCP Servers → 33 Econometric Methods → LaTeX Paper*
+
+> **Note:** Screenshots and demo videos coming soon. The project is actively maintained.
+
+---
+
+## What is This?
+
+**论文-研报工作流** is a local AI-powered research workflow that helps you:
+
+- **Write academic papers** — From literature review to LaTeX submission (JF/JFE/RFS/经济研究/金融研究/管理世界)
+- **Generate research reports** — Institutional-grade financial analysis for A-shares and global markets
+- **Run empirical analysis** — DID, IV, PSM, Panel GMM with automated validation
+- **Access financial data** — A-shares, US stocks, macro indicators via 34 MCP data servers (most require no API key)
+
+> Architecture principle: **Cursor Claude (local) as the core, external AI as supplement.**
+
+---
+
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
+| **34 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (arXiv, NBER, OpenAlex) — most require no API key |
+| **33 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS — JF/JFE/RFS standard |
+| **Provenance Tracking** | Full data lineage from raw API to final chart/table |
+| **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
+| **6 Financial Analysts** | Parallel analysis: fundamental, valuation, risk, earnings, competitive, macro |
+| **Self-Evolution** | Continuous improvement based on task outcomes |
+| **34 Journal Templates** | JFE/JF/RFS + 28 Chinese journals (经济研究/金融研究/管理世界/会计研究 etc.) |
+
+---
+
+## Quick Start
+
+### 5-Minute Setup
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/finai-research/finai-research-workflow.git
+cd finai-research-workflow
+
+# 2. Install dependencies
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e .
+
+# 3. Configure API key (at least one required)
+cp .env.example .env
+# Edit .env and add: DEEPSEEK_API_KEY=sk-your-key
+# Other supported: ANTHROPIC_API_KEY, OPENAI_API_KEY
+
+# 4. Run your first research pipeline
+python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响"
+
+# Or use Cursor Agent (recommended) for the full interactive workflow
 ```
 
-### 3. 直接在 Cursor 里说话
+### Via Cursor (Recommended)
 
-直接在 Cursor 对话框中用自然语言调用所有功能，Cursor Claude 本地处理。
+Simply describe your research goal in natural language:
 
----
+```
+帮我分析碳排放权交易对企业绿色创新的影响，设计一篇实证论文，发表在经济研究
+```
 
-## 可用工具速查
-
-| 你说什么 | AI 自动完成 |
-|---|---|
-| "帮我检索XX领域文献，做综述" | arXiv 检索→下载→解析→生成综述 |
-| "设计一篇深度学习量化交易论文大纲" | 研究问题+创新点+章节概要 |
-| "写一篇完整论文" | 端到端生成全文 |
-| "分析苹果公司财务数据" | MCP 获取数据→研报生成 |
-| "获取茅台近一年日线数据" | akshare A股数据 + 特征工程 |
-| "批量情感分析这100条新闻" | LLMProcessor 脚本批处理（外部AI） |
+Cursor Agent will automatically call all necessary modules.
 
 ---
 
-## AI 角色定位
+## Architecture
 
-| 调用方式 | AI 模型 | 用途 |
-|---|---|---|
-| **Cursor 直接对话** | Claude（本地，无消耗） | 所有日常任务（默认） |
-| **脚本批处理** | B.AI gpt-5.5（需VPN） | 批量情感/摘要/代码 |
-| **脚本批处理** | DeepSeek（直连，无需VPN） | 中文写作/简单问答 |
+The system uses a **layered agent architecture** with Cursor Agent as the orchestrator:
 
-## Agent 使用（命令行）
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    Cursor Agent (Local Claude)                            │
+│                                                                          │
+│   Natural Language → Multi-Agent Pipeline → LaTeX Paper + PDF             │
+│   "帮我研究关税政策对创新的影响，发表在经济研究"                            │
+└──────────────────────────────────────────────────────────────────────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          ▼                   ▼                   ▼
+┌─────────────────┐  ┌─────────────────┐  ┌──────────────────────────┐
+│   scripts/core/  │  │   34 MCP Servers │  │  research_framework/      │
+│                 │  │                  │  │                          │
+│  Memory         │  │  A-shares        │  │  modern_did.py            │
+│  Planner        │  │  US Stocks       │  │  synthetic_control.py     │
+│  ToolSelector   │  │  Global Macro    │  │  rdd.py                   │
+│  Reflector      │  │  Academic Papers │  │  regression_engine.py     │
+│  Orchestrator   │  │  News/Reports    │  │  fin_charts.py            │
+│  HITL Gates     │  │  Forex/Commodity │  │  a_share_variables.py     │
+│  Self-Evolution │  │  ...             │  │  policy_database.py       │
+└─────────────────┘  └─────────────────┘  └──────────────────────────┘
+```
+
+**Key numbers:** 34 MCP servers · 33 econometric methods · 16 Skills · 38 test files · >200 test cases
+
+---
+
+## MCP Tools Overview
+
+| MCP Server | Function | API Key Required |
+|------------|----------|-----------------|
+| **user-tushare** | A-share data (quotes, financials, margin) | Yes |
+| **user-financial** | Global macro (GDP/CPI/M2 via World Bank + akshare) | No |
+| **user-eodhd** | US macro (yield curve, economic calendar) | Yes |
+| **user-eastmoney-reports** | Research reports, news, analyst rankings | No |
+| **user-yfinance** | US stock financials, ESG data | No |
+| **user-finviz-sec** | Stock screening, SEC filings | No |
+| **user-enhanced-finance** | Forex, shipping indices, commodities | No |
+| **user-arxiv** | Academic paper search and download | No |
+| **user-brave-search** | Web search for news and research | Yes |
+| **user-wb-data** | World Bank Data API | No |
+| **user-imf-data** | IMF Data API | No |
+| **user-nber-wp** | NBER Working Papers | No |
+| **user-fed-data** | Federal Reserve Data (FOMC, Beige Book) | No |
+| **user-bea-data** | Bureau of Economic Analysis | No |
+| **user-oecd-data** | OECD Data API | No |
+
+See [MCP Tool Marketplace Tutorial](docs/tutorials/04-mcp-marketplace.md) for details.
+
+---
+
+## Tutorials
+
+| Tutorial | Description | Time |
+|----------|-------------|------|
+| [01 - Quick Start](docs/tutorials/01-quickstart.md) | Setup and run your first pipeline | 5 min |
+| [02 - Financial Reports](docs/tutorials/02-financial-report.md) | Generate institutional research reports | 10 min |
+| [03 - Research Directions](docs/tutorials/03-research-directions.md) | Design empirical studies with DID/RDD/IV | 15 min |
+| [04 - MCP Marketplace](docs/tutorials/04-mcp-marketplace.md) | Discover and add MCP tools | 15 min |
+| [05 - Event-Driven Research](docs/tutorials/05-event-driven-research.md) | Automate research via event monitoring | 20 min |
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [SETUP_GUIDE.md](SETUP_GUIDE.md) | Environment setup, API keys, Docker |
+| [USAGE_GUIDE.md](USAGE_GUIDE.md) | Complete usage guide (Chinese) |
+| [QUICKSTART.md](QUICKSTART.md) | 5-minute quick start |
+| [CLAUDE.md](CLAUDE.md) | Agent configuration and capabilities |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
+| [docs/tutorials/](docs/tutorials/) | Step-by-step tutorials |
+| [docs/api_reference.md](docs/api_reference.md) | API documentation |
+
+---
+
+## Common Commands
 
 ```bash
-# 分析苹果公司财务数据
-python scripts/agent.py --goal "分析苹果公司2024年财务数据并生成研报"
+# Paper pipeline
+python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响"
 
-# 检索文献并做综述
-python scripts/agent.py --goal "检索深度学习量化交易方向的最新文献，做综述"
+# Financial report
+python scripts/demo_research_report.py --stock 000001.SZ
 
-# 继续上次会话（追问）
-python scripts/agent.py --resume
+# MCP tool marketplace
+python scripts/core/mcp_tool_market.py --search "gdp" --report
 
-# 查看所有会话状态
-python scripts/agent.py --list
+# Event monitor
+python scripts/event_monitor.py --interval 300 --test
 
-# 查看会话状态
-python scripts/agent.py --status
+# Literature review
+python scripts/literature_manager.py --search "carbon trading innovation"
 
-# 运行核心模块测试
-python scripts/agent.py --test
-```
+# Journal template
+python scripts/journal_template.py --list
+python scripts/journal_template.py --generate JFE output/paper.tex
 
-程序化调用：
-
-```python
-from scripts.core.session import ResearchSession, SessionConfig
-
-session = ResearchSession(SessionConfig(
-    session_id="茅台财务分析",
-    user_goal="分析茅台2024年财务数据并生成研报",
-    workspace_root=".",
-    verbose=True,
-))
-result = session.run("分析茅台2024年财务数据")
-print(result["summary"])
+# Dashboard
+streamlit run scripts/dashboard.py --server.port 8050
 ```
 
 ---
 
-## 目录结构
+## Data Coverage
 
-```
-工作流搭建/
-├── config/
-│   ├── llm_config.json     ← LLM API Key 配置模板（实际 Key 在 .env.local）
-│   ├── ai_router.json      ← AI 路由映射
-│   └── project_config.json  ← 项目元配置
-├── scripts/
-│   ├── core/                   ← ★ 核心智能体模块（四模块）
-│   │   ├── memory.py          ← 三层记忆（Context/短期/长期SQLite）
-│   │   ├── planner.py         ← 任务分解+拓扑排序+4级回退
-│   │   ├── tool_selector.py   ← 工具注册表+自主路由（13个工具）
-│   │   ├── reflector.py       ← 四维评估+反馈循环
-│   │   └── session.py         ← 会话管理（串联四模块）
-│   ├── agent.py              ← 统一 CLI 入口（推荐使用）
-│   ├── ai_router.py          ← 外部 AI 路由（B.AI/DeepSeek，作为补充）
-│   ├── data_pipeline.py       ← A股/美股数据+特征工程
-│   ├── literature_search.py   ← 文献检索→综述生成
-│   ├── literature_manager.py  ← 文献库管理
-│   ├── paper_reader.py       ← 论文下载→AI分析→问答
-│   ├── paper_write.py        ← 论文全流程（大纲→章节→全文整合）
-│   ├── paper_submit.py       ← 润色→查重→LaTeX检查→投稿信
-│   ├── paper_visualizer.py   ← 图表生成
-│   ├── paper_tools.py        ← 论文工具集
-│   ├── report_generator.py   ← 研报生成
-│   ├── econometrics.py        ← OLS/DID回归+稳健性检验
-│   ├── model_train.py        ← 模型训练框架
-│   └── generate_empirical_tables.py ← 实证表格生成
-├── prompts/                ← 提示词模板（15个）
-│   ├── 01_研究员角色.md    ← 学术研究员
-│   ├── 02_分析师角色.md    ← 金融分析师
-│   ├── 03_论文写手角色.md  ← 论文写作助手
-│   └── 04-15_*.md         ← 各章节写作提示词
-├── knowledge/              ← 知识库
-│   ├── papers/            ← 文献索引
-│   ├── papers_fulltext/   ← 论文原文
-│   ├── reviews/           ← 文献综述
-│   ├── outlines/          ← 论文大纲
-│   ├── chapters/          ← 章节草稿
-│   └── output/            ← 润色后论文
-├── templates/              ← 模板
-│   └── research_report.md ← 研报模板（国泰君安/中金格式）
-├── mcp_servers/
-│   ├── financial-mcp-server/  ← 金融数据 MCP（yfinance/FRED/CoinGecko/SEC）
-│   └── finviz-sec-mcp/        ← Finviz+SEC MCP（美股筛选/板块分析）
-├── .cursor/rules/         ← Cursor 调度规则
-├── requirements.txt       ← Python 依赖
-├── QUICKSTART.md         ← 快速开始
-└── README.md             ← 本文件
-```
+| Market | Source | Data Types |
+|--------|--------|------------|
+| **A-shares** | akshare (free) / Tushare Pro | Daily quotes, financials, margin, north flow |
+| **US Stocks** | yfinance + Finviz (free) | Quotes, financials, ESG, options, SEC filings |
+| **Macro (Global)** | World Bank + IMF + OECD (free) | GDP, CPI, population, trade, debt |
+| **Macro (China)** | akshare + NBS (free) | CPI, PPI, PMI, M2, FDI, retail sales |
+| **Macro (US)** | FRED + BEA + Fed (free) | NIPA, FOMC, Beige Book, yield curve |
+| **Fixed Income** | EODHD (key) / akshare (free) | Treasury yields, bond prices, credit spreads |
+| **Forex & Commodities** | akshare + Enhanced Finance (free) | FX rates, shipping indices, precious metals |
+| **Research Reports** | 东方财富 (free) | Analyst reports, news, sector analysis |
+| **Academic** | arXiv + NBER (free) | Working papers, citations |
 
 ---
 
-## 核心脚本速查
+## Extending the System
 
-### 论文写作（一个脚本搞定）
+### Adding a New MCP Server
 
-```bash
-# 完整流程：选题→大纲→7章节→全文整合
-python scripts/paper_write.py --topic "深度学习 量化交易" --venue "NeurIPS" --save
+1. Create directory: `mcp_servers/user_your_server/`
+2. Add `SERVER_METADATA.json`
+3. Add tool definitions in `tools/*.json`
+4. Register in Cursor MCP settings
+5. Rebuild registry: `python scripts/core/mcp_tool_market.py --dir mcp_servers`
 
-# 仅生成大纲
-python scripts/paper_write.py --step outline --topic "大模型 金融文档" --save
+See [MCP Marketplace Tutorial](docs/tutorials/04-mcp-marketplace.md) for full guide.
 
-# 仅生成引言+相关工作
-python scripts/paper_write.py --step intro --topic "强化学习 做市商"
+### Adding a New Research Direction
 
-# 整合已有章节为完整论文
-python scripts/paper_write.py --assemble --topic "论文主题"
-
-# 润色+查重+投稿信
-python scripts/paper_submit.py paper.md --polish english intensive --plagiarism-check
-python scripts/paper_submit.py paper.md --venue NeurIPS --cover-letter
-python scripts/paper_submit.py paper.md --response-letter "审稿意见..."
-```
-
-### 金融数据（A股+美股）
-
-```bash
-# 获取A股日线（akshare，无需API Key）
-python -c "
-from scripts.data_pipeline import fetch_a_stock, add_return_features
-df = fetch_a_stock('000001.SZ', '2024-01-01', '2025-01-01')
-df = add_return_features(df)
-df = add_moving_averages(df)
-print(df.tail())
-"
-
-# 获取美股数据（yfinance）
-python -c "
-from scripts.data_pipeline import fetch_us_stock
-df = fetch_us_stock('AAPL', '2024-01-01', '2025-01-01')
-print(df.tail())
-"
-
-# 获取A股板块行情
-python -c "
-from scripts.data_pipeline import fetch_a_sector
-df = fetch_a_sector('新能源')
-print(df.head())
-"
-```
+1. Create file: `scripts/research_directions/your_topic.py`
+2. Define `ResearchDirection` class with:
+   - Research questions
+   - Data requirements
+   - Hypothesis derivation
+   - Empirical strategy
+3. Add to `scripts/research_directions/__init__.py`
 
 ---
 
-## AI 路由策略（已激活）
+## Contributing
 
-```
-┌──────────────────────────────────────────────────────┐
-│                    Cursor（本地 Claude）               │
-│                                                      │
-│              日常对话 / 复杂推理 / 代码分析               │
-└──────────────────────────────────────────────────────┘
-                           +
-┌──────────────────────────────────────────────────────┐
-│              脚本层 ai_router.py                     │
-│                                                      │
-│  任务分类器 → 自动识别任务类型                        │
-│        ↓                                            │
-│  多模型路由 → 分配最优模型                           │
-│        ↓                                            │
-│  ┌──────────────┐  ┌──────────────┐              │
-│  │  DeepSeek     │  │  B.AI 中转    │              │
-│  │  (直连)       │  │  (统一 Key)   │              │
-│  │               │  └──────┬───────┘              │
-│  │  中文写作      │         │                      │
-│  │  快速检索      │    ┌────┴────┐                 │
-│  │  简单问答      │    ▼         ▼                 │
-│  └──────────────┘  GPT-5.5  Gemini-3.1-Pro         │
-│                  (代码/英文)   (推理/长文本)           │
-└──────────────────────────────────────────────────────┘
-```
+Contributions welcome! Please:
 
-| 任务类型 | 模型 | 通道 | 原因 |
-|---------|------|------|------|
-| 文献检索/综述 | DeepSeek | 直连 | 快、便宜 |
-| 中文论文/研报 | DeepSeek | 直连 | 中文能力强 |
-| 英文润色/翻译 | GPT-5.5 | B.AI | 英文质量最高 |
-| 代码生成/分析 | GPT-5.5 | B.AI | 代码能力最强 |
-| 数学推理 | Gemini-3.1-Pro | B.AI | 推理能力最强 |
-| 数据分析 | GPT-5.5 | B.AI | 分析能力强 |
-| 长上下文/多模态 | Gemini-3.1-Pro | B.AI | 超长文本理解 |
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
 ---
 
-## MCP 工具
+## License
 
-| MCP | 用途 | 状态 |
-|-----|------|------|
-| `finviz-sec` | 美股筛选、SEC文件、内幕交易 | ✅ 已验证 |
-| `financial` | 股票、外汇、加密货币、宏观经济 | ✅ 已验证 |
-| `finagent` | Yahoo Finance 市场数据 | ✅ 已验证 |
-| `brave-search` | 财经新闻、研报搜索 | ✅ Key 已配置 |
-| `arxiv` | 学术论文检索与下载 | ✅ 已验证 |
-| `fetch` | 网页正文抓取 | ✅ 已验证 |
-| `context7` | 官方文档实时查询 | ✅ 已验证 |
-| `sqlite` | SQL 分析 CSV/Excel | ✅ 已验证 |
-| `todo` | 研究任务管理 | ✅ 已验证 |
-| `memory` | 跨会话记忆 | ✅ 已验证 |
-| `github` | 代码仓库管理 | ✅ Token 已配置 |
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-## 数据源覆盖
+## Acknowledgments
 
-| 市场 | 数据源 | 数据类型 |
-|------|--------|----------|
-| **A股** | akshare（免费，无 Key）| 日线、财务报表、指数、板块 |
-| **美股** | yfinance + Finviz（免费）| 行情、财务、期权、筛选 |
-| **宏观** | FRED + SEC EDGAR（免费）| GDP、CPI、利率、国债 |
-| **加密** | CoinGecko（免费）| 币种价格、行情 |
-| **论文** | arXiv（免费）| 检索、下载、全文 |
+- Built on [Night Owl Research Agent (NORA)](https://github.com/GRIND-Lab-Core/night_owl_research_agent) design patterns
+- Inspired by [PaperOrchestra](https://github.com/google-research/paper-orchestra) multi-agent architecture
+- Data powered by akshare, yfinance, World Bank API, and Tushare Pro
 
 ---
 
-## 安装依赖
+## Star History
 
-```bash
-cd /Users/xuzheyi/Desktop/工作流搭建
-pip install -r requirements.txt
-```
-
-新增依赖（本次更新）：
-- `akshare==1.14.20` — A股数据
-- `yfinance==0.2.40` — 美股数据
-- `anthropic==7.0.0` — Claude SDK（用于 ai_router 多模型路由）
+[![Star History Chart](https://api.star-history.com/svg?repos=YOUR_USERNAME/finai-research-workflow&type=Timeline)](https://star-history.com/#YOUR_USERNAME/finai-research-workflow&Timeline)
 
 ---
 
-## 外接 API Key 配置
+## Built With
 
-### 已配置
-| 服务 | 状态 | 配置位置 |
-|------|------|---------|
-| DeepSeek | ✅ 已配置真实 Key | `config/llm_config.json` |
-| Brave Search | ✅ MCP 已配置 | Cursor MCP 设置 |
-| GitHub | ✅ Token 可用 | Cursor MCP 设置 |
-| Claude | ✅ 通过 Cursor 直接使用 | 无需额外配置 |
-| GPT-4o | ⏳ 待配置 | `config/llm_config.json` |
-| Gemini | ⏳ 待配置 | `config/llm_config.json`（base_url 已预设）|
-
-### 待配置的 Key（按需填入）
-
-**FRED API Key**（解锁宏观数据：GDP、CPI、利率、国债收益率等）
-1. 访问 https://fred.stlouisfed.org/docs/api/api_key.html 免费注册
-2. 将 Key 填入 `mcp_servers/financial-mcp-server/.env`：
-   ```
-   FRED_API_KEY=你的Key
-   ```
-
-**其他可选 Key**（`mcp_servers/financial-mcp-server/.env` 中已预设占位符）：
-- `ALPHA_VANTAGE_API_KEY` — 股票日内数据（免费额度 25次/天）
-- `TIINGO_API_KEY` — 高质量历史数据（50次/小时）
-- `POLYGON_API_KEY` — 实时+历史数据（5次/分钟）
-- `COINGECKO_API_KEY` — 加密货币数据（30次/分钟）
+| Layer | Technology |
+|-------|------------|
+| **AI Orchestration** | Cursor Agent, Claude API, OpenAI API, Anthropic API |
+| **Data (34 servers)** | akshare, yfinance, World Bank API, IMF API, Tushare Pro |
+| **Econometrics** | statsmodels, linearmodels, scipy |
+| **Visualization** | matplotlib, seaborn, plotly |
+| **Pipeline** | Python 3.10+, DuckDB, FastAPI, Streamlit |
+| **Testing** | pytest, ruff |
+| **Documentation** | MkDocs Material |
+| **Containerization** | Docker, Docker Compose |

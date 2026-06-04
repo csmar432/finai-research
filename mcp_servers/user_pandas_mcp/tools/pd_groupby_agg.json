@@ -1,0 +1,13 @@
+{
+  "name": "pd_groupby_agg",
+  "description": "分组聚合分析（groupby + agg）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

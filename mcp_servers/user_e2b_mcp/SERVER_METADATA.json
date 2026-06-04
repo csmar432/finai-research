@@ -1,0 +1,32 @@
+{
+  "name": "E2B Cloud Sandbox",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": true,
+  "api_key_env_var": "E2B_API_KEY",
+  "server_name": "E2B Cloud Sandbox",
+  "serverIdentifier": "user-e2b-mcp",
+  "description": "云端代码执行沙箱 — 在隔离云环境中安全执行任意 Python/JS/Shell 代码，支持 GPU 加速。适合运行机器学习模型、数据处理脚本、LLM 生成代码的安全验证。",
+  "tools": [
+    "e2b_run",
+    "e2b_run_js",
+    "e2b_install",
+    "e2b_status",
+    "e2b_safe_eval"
+  ],
+  "_legacy_capabilities": {
+    "language_support": [
+      "python3",
+      "javascript",
+      "bash"
+    ],
+    "gpu": true,
+    "timeout_seconds": 300,
+    "requires_api_key": true,
+    "api_key_env": "E2B_API_KEY",
+    "registration_url": "https://e2b.dev/docs/getting-started/api-key",
+    "dependencies": [
+      "e2b"
+    ]
+  }
+}

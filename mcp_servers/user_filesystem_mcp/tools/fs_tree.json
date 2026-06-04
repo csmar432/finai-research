@@ -1,0 +1,13 @@
+{
+  "name": "fs_tree",
+  "description": "生成目录树结构（类似tree命令）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

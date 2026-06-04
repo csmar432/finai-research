@@ -1,0 +1,13 @@
+{
+  "name": "pd_sql",
+  "description": "使用SQL查询数据框（pandasql）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

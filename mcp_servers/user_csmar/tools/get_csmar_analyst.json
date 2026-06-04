@@ -1,0 +1,17 @@
+{
+  "name": "get_csmar_analyst",
+  "description": "获取CSMAR分析师数据。返回分析师预测、评级等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "analyst_name": {
+        "type": "string",
+        "description": "分析师姓名（可选）"
+      }
+    }
+  }
+}

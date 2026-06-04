@@ -1,0 +1,25 @@
+{
+  "name": "get_economic_indicators",
+  "description": "获取全球经济指标（GDP/CPI/失业率等），via EODHD API",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country": {
+        "type": "string",
+        "description": "国家代码，如 USA/CN"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标名，如 gdp_current_usd/cpi/unemployment"
+      },
+      "api_token": {
+        "type": "string",
+        "description": "EODHD API token"
+      }
+    },
+    "required": [
+      "country",
+      "indicator"
+    ]
+  }
+}

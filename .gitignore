@@ -14,12 +14,16 @@ venv/
 *.ipynb_checkpoints
 profile_default/
 
-# Data
-*.csv
-*.parquet
-*.xlsx
-*.db
-*.sqlite
+# Data — 保留示例数据文件，忽略运行时生成的数据
+data/*.json
+data/*.xlsx
+data/charts/
+data/finance/
+data/pipeline_drafts/
+data/review_cache/
+!data/msci_esg_ratings.json
+!data/national_province_data_2026.json
+!data/test_national.json
 
 # Models
 *.pt
@@ -40,9 +44,11 @@ Thumbs.db
 *.swo
 
 # Cursor IDE
+# .cursor/settings.json 不提交（含MCP server paths等环境相关配置）
+# .cursor/rules/ 是项目规范文档，需要提交版本控制
 .cursor/
-# .cursor/ 目录含 settings.json 和 rules/，不建议提交
-# 如需同步配置，请手动导出
+!.cursor/rules/
+!.cursor/rules/*.mdc
 
 # Env
 .env
@@ -68,7 +74,34 @@ wandb/
 # Cache
 .cache/
 
-# Project-specific (local experiments/data — not for public repo)
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temp files
+*.tmp
+*.py.bak
+
+# Notebooks
+notebooks/
+
+# Streamlit
+.streamlit/
+
+# Project-specific (local experiments — not for public repo)
 tariff_research/
 output/
+results/
 .cache/.last_session
+papers/           # 用户生成的论文输出
+
+# MCP servers — 保留代码和元数据，忽略运行时生成文件
+mcp_servers/*/server.log
+mcp_servers/*/.cache/
+mcp_servers/*/data/
+mcp_servers/*/__pycache__/
+
+# Scripts — 核心代码，必须保留！不要忽略
+# 用户自行生成的临时脚本请放在 scripts/generated/ 并添加到上面忽略
+.github/internal-reports/

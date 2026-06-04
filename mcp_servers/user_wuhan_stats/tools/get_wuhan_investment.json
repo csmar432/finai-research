@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_investment",
+  "description": "武汉固定资产投资数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

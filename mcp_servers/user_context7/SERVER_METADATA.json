@@ -1,0 +1,16 @@
+{
+  "name": "Context7",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-context7",
+  "serverIdentifier": "user-context7",
+  "description": "学术论文全文获取（基于 Context7 API）。支持通过 ArXiv ID、DOI 或关键词检索获取论文PDF全文内容，用于文献综述深度阅读和引用验证。",
+  "tools": [
+    "get_context7_by_arxiv",
+    "get_context7_by_doi",
+    "get_context7_by_query"
+  ],
+  "_data_source": "Context7 API (https://context7.com)",
+  "_note": "无需 API Key，免费调用"
+}

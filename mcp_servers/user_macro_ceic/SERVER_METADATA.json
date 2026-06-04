@@ -1,0 +1,22 @@
+{
+  "name": "Macro Ceic",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "macro-ceic",
+  "serverIdentifier": "user-macro-ceic",
+  "description": "CEIC经济数据库风格（注：数据来自akshare/World Bank API免费数据，非CEIC官方授权，数据为演示/模拟数据）",
+  "tools": [
+    "get_ceic_consumer",
+    "get_ceic_industry",
+    "get_ceic_macro_china",
+    "get_ceic_trade"
+  ],
+  "_legacy_capabilities": [
+    "中国宏观",
+    "工业产出",
+    "消费者信心",
+    "贸易数据",
+    "GDP/CPI/PPI"
+  ]
+}

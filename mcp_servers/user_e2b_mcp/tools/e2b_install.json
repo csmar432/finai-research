@@ -1,0 +1,13 @@
+{
+  "name": "e2b_install",
+  "description": "在沙箱中预安装Python包（后续execute可用）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

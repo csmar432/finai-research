@@ -1,83 +1,63 @@
 {
-  "_comment": "AI 模型配置模板 | Key 从环境变量读取（已在 .gitignore）",
-
-  "_note": "Cursor 本地 Claude 是默认选项，无需任何配置。外部 AI 仅在脚本批处理时调用。",
-
-  "cursor": {
-    "_comment": "Cursor 内置 Claude，通过 Cursor Agent 直接调用，无需 API Key",
-    "model": "claude-sonnet-4-6",
-    "note": "配置项仅作文档参考，脚本不读取此节"
+  "_schema_version": "2.1",
+  "_description": "AI 模型配置 v2.1 — 多模型全备选架构（2026-05-29 实测验证）",
+  "_model_ids": {
+    "deepseek_flash":          "deepseek-chat",
+    "deepseek_pro":            "deepseek-v3",
+    "deepseek_r1":             "deepseek-reasoner",
+    "gpt_5_4_mini":           "gpt-4o-mini",
+    "gpt_5_5_mini":           "gpt-4o-mini",
+    "claude_sonnet":           "claude-sonnet-4-20250514",
+    "claude_opus":             "claude-3-5-sonnet-20241022",
+    "deepseek_v4_pro_relay":   "deepseek-chat",
+    "gemini_20_flash":         "gemini-2.0-flash",
+    "kimi":                    "moonshot-v1-8k",
+    "qwen":                    "qwen-plus",
+    "minimax":                 "abab6.5s-chat",
+    "glm":                     "glm-4-plus",
+    "local_ollama":             "llama3.2"
   },
-
-  "b_ai": {
-    "api_key": "$B_AI_API_KEY",
-    "base_url": "https://api.b.ai/v1",
-    "_note": "支持模型（实测）：gpt-5.5 / claude-sonnet-4.6 / gemini-3.1-pro / deepseek-v4-flash 等26个模型"
-  },
-
-  "openai": {
-    "_comment": "B.AI GPT-5.5（通过 b_ai 中转，需 VPN）",
-    "api_key": "$B_AI_API_KEY",
-    "model": "gpt-5.5",
-    "temperature": 0.7,
-    "max_tokens": 8192,
-    "base_url": "https://api.b.ai/v1"
-  },
-
-  "anthropic": {
-    "_comment": "Claude 用于 Cursor 本地对话，此处仅作占位。脚本不通过此配置调用。",
-    "api_key": "",
-    "model": "claude-sonnet-4-6",
-    "temperature": 0.7,
-    "max_tokens": 8192,
-    "base_url": ""
-  },
-
   "deepseek": {
-    "_comment": "DeepSeek 直连（无需 VPN），默认外部补充模型",
     "api_key": "$DEEPSEEK_API_KEY",
-    "model": "deepseek-chat",
-    "temperature": 0.7,
-    "max_tokens": 8192,
-    "base_url": "https://api.deepseek.com/v1"
+    "base_url": "https://api.deepseek.com",
+    "models": {
+      "deepseek-chat": "DeepSeek Chat — V3，1M context，速度快，成本低，中文质量好",
+      "deepseek-v3": "DeepSeek V3 — 236B/37B，深度推理，最强编程",
+      "deepseek-reasoner": "DeepSeek R1 — 数学/复杂推理专用，超越o3"
+    },
+    "defaults": {
+      "temperature": 0.7,
+      "max_tokens": 8192
+    }
   },
-
-  "gemini": {
-    "_comment": "Gemini-3.1-Pro（通过 b_ai 中转，需 VPN）",
-    "api_key": "$B_AI_API_KEY",
-    "model": "gemini-3.1-pro",
-    "temperature": 0.7,
-    "max_tokens": 8192,
-    "base_url": "https://api.b.ai/v1"
+  "relay": {
+    "api_key": "$RELAY_API_KEY",
+    "base_url": "https://api.b.ai/v1",
+    "description": "Relay 中转 API — B.AI，支持多模型中转（2026-06-04 验证）",
+    "models": {
+      "gpt-4o-mini": "GPT-4o-Mini — 实测可用，英文写作/翻译/快速任务",
+      "deepseek-chat": "DeepSeek-Chat — 实测可用（Relay版）",
+      "claude-sonnet-4-20250514": "Claude Sonnet — 实测可用，英文复杂分析/翻译",
+      "claude-3-5-sonnet-20241022": "Claude 3.5 Sonnet — 高级推理",
+      "gemini-2.0-flash": "Gemini 2.0-Flash — 快速任务/中文",
+      "moonshot-v1-8k": "Moonshot (Kimi) — 长文档分析",
+      "qwen-plus": "Qwen-Plus — 阿里通义，中文结构化",
+      "glm-4-plus": "GLM-4-Plus — 智谱，结构化输出"
+    },
+    "defaults": {
+      "temperature": 0.7,
+      "max_tokens": 8192
+    }
   },
-
-  "kimi": {
-    "_comment": "Kimi-k2.5（通过 b_ai 中转，需 VPN）",
-    "api_key": "$B_AI_API_KEY",
-    "model": "kimi-k2.5",
-    "temperature": 0.7,
-    "max_tokens": 8192,
-    "base_url": "https://api.b.ai/v1"
-  },
-
-  "zhipu": {
-    "api_key": "$ZHIPU_API_KEY",
-    "model": "glm-5",
-    "temperature": 0.7,
-    "max_tokens": 4096,
-    "base_url": "https://open.bigmodel.cn/api/paas/v4"
-  },
-
   "ollama": {
-    "enabled": false,
+    "provider": "ollama",
+    "model_id": "llama3.2",
     "base_url": "http://localhost:11434",
-    "model": "llama3.2",
-    "embedding_model": "nomic-embed-text"
-  },
-
-  "defaults": {
-    "_comment": "默认值：Cursor Claude 为默认，外部 API 仅作脚本批处理补充",
-    "provider": "cursor",
-    "fallback": "deepseek-chat"
+    "temperature_range": [0.0, 2.0],
+    "max_tokens": 8192,
+    "cost_per_1k_input": 0.0,
+    "cost_per_1k_output": 0.0,
+    "region": "local",
+    "enabled": false
   }
 }

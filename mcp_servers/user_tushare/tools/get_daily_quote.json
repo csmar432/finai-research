@@ -1,0 +1,28 @@
+{
+  "name": "get_daily_quote",
+  "description": "获取A股日线行情数据（开盘/收盘/最高/最低/成交量/成交额）。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码，如 000001.SZ"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      },
+      "trade_date": {
+        "type": "string",
+        "description": "指定交易日 YYYYMMDD"
+      }
+    },
+    "required": [
+      "ts_code"
+    ]
+  }
+}

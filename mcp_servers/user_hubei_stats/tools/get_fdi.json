@@ -1,0 +1,8 @@
+{
+  "name": "get_fdi",
+  "description": "获取中国FDI月度实际使用外资数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

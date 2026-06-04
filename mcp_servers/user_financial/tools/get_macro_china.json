@@ -1,0 +1,32 @@
+{
+  "name": "get_macro_china",
+  "description": "获取中国宏观经济指标。使用 akshare 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标名称",
+        "enum": [
+          "cpi",
+          "ppi",
+          "gdp",
+          "pmi",
+          "m2",
+          "new_financial_credit",
+          "money_supply",
+          "fdi",
+          "retail",
+          "real_estate",
+          "fixed_asset",
+          "lpr",
+          "shibor",
+          "trade_balance"
+        ]
+      }
+    },
+    "required": [
+      "indicator"
+    ]
+  }
+}

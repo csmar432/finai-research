@@ -1,0 +1,8 @@
+{
+  "name": "get_education_panel",
+  "description": "中国教育指标面板数据指引",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

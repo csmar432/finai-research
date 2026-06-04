@@ -1,0 +1,357 @@
+# Halt Rules - 实证研究论文
+# ===============================
+# 定义实证研究论文输出必须满足的质量规则
+# 用于 ContentRefinementAgent 和 FactCheckerAgent
+
+domain: empirical_paper
+version: "1.0"
+description: |
+  实证研究论文质量检查规则集
+  适用于经济学、金融学、管理学等领域的实证研究论文
+
+rules:
+  # ──────────────────────────────────────────────────────────────
+  # 假设推导规则
+  # ──────────────────────────────────────────────────────────────
+  - id: hypothesis_derivation
+    description: 假设必须有理论支撑
+    category: theory
+    severity: error
+    validation:
+      type: content_structure_check
+      rules:
+        - description: 每个假设必须引用相关理论
+          check: hypothesis_has_theory_reference
+        - description: 假设表述必须明确（可检验）
+          check: hypothesis_is_testable
+        - description: 假设必须与研究问题相关
+          check: hypothesis_related_to_research_question
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: hypothesis_numbering
+    description: 假设编号规范性
+    category: format
+    severity: warning
+    validation:
+      type: format_check
+      rules:
+        - description: 假设应使用统一编号（H1, H2...）
+          pattern: "H\\d+"
+        - description: 假设编号应连续
+          check: sequential_numbering
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 数据描述规则
+  # ──────────────────────────────────────────────────────────────
+  - id: data_description
+    description: 数据来源和描述完整性
+    category: data
+    severity: error
+    validation:
+      type: data_description_check
+      rules:
+        - description: 必须说明数据来源
+          required_fields: ["data_source", "database"]
+        - description: 必须说明样本筛选标准
+          required_fields: ["sample_selection", "inclusion_criteria", "exclusion_criteria"]
+        - description: 必须说明样本时间范围
+          required_fields: ["time_period_start", "time_period_end"]
+        - description: 必须报告最终样本量
+          required_fields: ["final_sample_size"]
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: variable_definition
+    description: 变量定义规范性
+    category: data
+    severity: error
+    validation:
+      type: variable_check
+      rules:
+        - description: 被解释变量必须有明确定义
+          required_fields: ["dependent_variable", "variable_definition", "measurement"]
+        - description: 核心解释变量必须有明确定义
+          required_fields: ["independent_variable", "variable_definition", "measurement"]
+        - description: 控制变量必须列出并定义
+          required_fields: ["control_variables"]
+        - description: 变量测度方法必须说明
+          required_fields: ["measurement_method", "data_source"]
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 实证方法规则
+  # ──────────────────────────────────────────────────────────────
+  - id: method_identification
+    description: 识别策略必须有理论依据
+    category: method
+    severity: error
+    validation:
+      type: method_check
+      rules:
+        - description: OLS回归必须说明固定效应设置
+          required_fields: ["fixed_effects", "cluster_standard_errors"]
+        - description: IV估计必须说明工具变量选择依据
+          required_fields: ["instrument_variable", "iv_selection_rationale", "relevance_test", "exogeneity_test"]
+        - description: DID必须说明平行趋势假设
+          required_fields: ["parallel_trend_test", "treatment_definition", "control_group"]
+        - description: 断点回归必须说明驱动变量和阈值
+          required_fields: ["running_variable", "cutoff_point", "bandwidth_selection"]
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: econometric_quality
+    description: 计量经济学检验（DID平行趋势/工具变量/PSM平衡性/异方差）
+    category: method
+    severity: error
+    validation:
+      type: econometric_quality_check
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: endogeneity_handling
+    description: 内生性处理
+    category: method
+    severity: error
+    validation:
+      type: endogeneity_check
+      rules:
+        - description: 必须讨论潜在内生性来源
+          check_field: "endogeneity_discussion"
+        - description: 必须报告内生性检验结果
+          check_field: "endogeneity_test"
+        - description: 必须说明解决内生性的方法
+          methods:
+            - "工具变量法 (IV)"
+            - "双重差分法 (DID)"
+            - "断点回归 (RDD)"
+            - "倾向得分匹配 (PSM)"
+            - "赫克曼选择模型"
+            - "合成控制法 (SCM)"
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 稳健性检验规则
+  # ──────────────────────────────────────────────────────────────
+  - id: robustness_check
+    description: 稳健性检验完整性
+    category: robustness
+    severity: error
+    validation:
+      type: robustness_check
+      rules:
+        - description: 必须包含至少2种稳健性检验
+          min_tests: 2
+          acceptable_tests:
+            - "替换被解释变量"
+            - "替换核心解释变量"
+            - "调整样本范围"
+            - "增加控制变量"
+            - "工具变量法"
+            - "倾向得分匹配"
+            - "Bootstrap标准误"
+            - "双向聚类标准误"
+        - description: 每种稳健性检验必须说明预期结果
+          check: test_has_expectation
+        - description: 稳健性检验结果必须与基准回归一致
+          check: result_consistency
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 异质性分析规则
+  # ──────────────────────────────────────────────────────────────
+  - id: heterogeneity_analysis
+    description: 异质性分析规范性
+    category: heterogeneity
+    severity: warning
+    validation:
+      type: heterogeneity_check
+      rules:
+        - description: 异质性分析必须有理论支撑
+          check: heterogeneity_has_theory
+        - description: 必须报告组间系数差异的统计检验
+          required_tests:
+            - "Bootstrap检验"
+            - "SUEST检验"
+            - "费舍尔精确检验"
+            - "Z检验"
+        - description: 分组必须有明确标准
+          check: group_definition
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 中介效应规则
+  # ──────────────────────────────────────────────────────────────
+  - id: mediation_analysis
+    description: 中介效应分析规范性
+    category: mechanism
+    severity: error
+    validation:
+      type: mediation_check
+      rules:
+        - description: 中介变量必须有理论依据
+          check: mediator_has_theory
+        - description: 必须使用Sobel检验或Bootstrap
+          required_tests:
+            - "Sobel检验"
+            - "Bootstrap置信区间"
+        - description: 必须报告中介效应占比
+          required_fields: ["mediation_proportion", "indirect_effect", "direct_effect"]
+        - description: 必须说明因果顺序假设
+          check: causal_sequence_explained
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 统计结果报告规则
+  # ──────────────────────────────────────────────────────────────
+  - id: regression_table
+    description: 回归结果表格规范性
+    category: format
+    severity: error
+    validation:
+      type: table_format_check
+      rules:
+        - description: 必须报告样本量(N)
+          required_fields: ["N"]
+        - description: 必须报告R方或伪R方
+          required_fields: ["R_squared or pseudo_R_squared"]
+        - description: 必须报告标准误或t值
+          required_fields: ["standard_errors or t_statistics"]
+        - description: 必须标注显著性水平
+          pattern: "\\*\\*\\*|\\*\\*|\\*"
+        - description: 必须标注固定效应类型
+          check_field: "fixed_effects_notation"
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: significance_reporting
+    description: 显著性标注规范性
+    category: format
+    severity: error
+    validation:
+      type: significance_check
+      rules:
+        - description: 显著性标注必须统一
+          pattern: "\\* p<0.1, \\*\\* p<0.05, \\*\\*\\* p<0.01"
+        - description: 不能同时使用多种显著性标注体系
+          check: single_significance_system
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 参考文献规则
+  # ──────────────────────────────────────────────────────────────
+  - id: citation_format
+    description: 参考文献格式规范性
+    category: citation
+    severity: error
+    validation:
+      type: citation_format_check
+      rules:
+        - description: 引用格式必须统一
+          acceptable_formats:
+            - "APA (7th edition)"
+            - "Chicago"
+            - "AEA"
+            - "BibTeX"
+        - description: DOI必须正确格式
+          pattern: "10\\.\\d{4,}/[\\w\\.\\-/]+"
+        - description: 引用必须可验证
+          check: citation_verifiable
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: citation_coverage
+    description: 引用覆盖率要求
+    category: citation
+    severity: error
+    validation:
+      type: citation_coverage_check
+      rules:
+        - description: 核心文献引用必须可验证
+          min_verification_rate: 0.9  # 90%可验证
+        - description: 必须引用领域经典文献
+          check: classic_citations
+        - description: 必须引用近5年文献
+          check: recent_citations
+          min_recent_ratio: 0.5  # 50%为近5年文献（顶刊标准）
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 因果推断规则
+  # ──────────────────────────────────────────────────────────────
+  - id: causal_inference
+    description: 因果推断严谨性
+    category: causality
+    severity: error
+    validation:
+      type: causal_inference_check
+      rules:
+        - description: 不能混淆相关性与因果性
+          check: correlation_vs_causation
+        - description: 必须讨论因果推断的识别假设
+          required_fields: ["identification_assumptions"]
+        - description: 必须说明研究局限性
+          required_fields: ["limitations"]
+        - description: 不能过度解读因果效应
+          check: causal_interpretation_bounds
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 论文结构规则
+  # ──────────────────────────────────────────────────────────────
+  - id: paper_structure
+    description: 论文结构完整性
+    category: structure
+    severity: warning
+    validation:
+      type: structure_check
+      required_sections:
+        - name: "摘要"
+          required: true
+        - name: "引言"
+          required: true
+        - name: "文献综述"
+          required: true
+        - name: "理论框架与研究假设"
+          required: true
+        - name: "研究设计"
+          required: true
+        - name: "实证结果"
+          required: true
+        - name: "稳健性检验"
+          required: true
+        - name: "结论与政策建议"
+          required: true
+        - name: "参考文献"
+          required: true
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 经济意义规则
+  # ──────────────────────────────────────────────────────────────
+  - id: economic_significance
+    description: 经济意义讨论
+    category: interpretation
+    severity: warning
+    validation:
+      type: economic_significance_check
+      rules:
+        - description: 必须报告经济意义
+          check_field: "economic_interpretation"
+        - description: 系数大小必须有实际意义解释
+          check: coefficient_interpretation
+        - description: 必须报告边际效应或弹性
+          required_fields: ["marginal_effect or elasticity"]
+    auto_fix: false
+    halt_on_fail: false

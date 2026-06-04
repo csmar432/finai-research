@@ -1,0 +1,13 @@
+{
+  "name": "e2b_safe_eval",
+  "description": "安全的数学/表达式求值（不需要完整沙箱）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

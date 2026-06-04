@@ -5,15 +5,15 @@ These tests verify that all four core modules work together correctly.
 Run with: .venv/bin/python -m pytest scripts/core/test_integration.py -v
 """
 
-import tempfile, shutil, sqlite3
+import shutil
+import tempfile
 from pathlib import Path
 
-from scripts.core.memory import ResearchMemory, ContextUnit
+from scripts.core.memory import ResearchMemory
 from scripts.core.planner import ResearchPlanner, TaskType
-from scripts.core.tool_selector import ToolSelector
-from scripts.core.reflector import ResearchReflector, Evaluation
+from scripts.core.reflector import Evaluation, ResearchReflector
 from scripts.core.session import ResearchSession, SessionConfig, SessionState
-
+from scripts.core.tool_selector import ToolSelector
 
 # ── Test 1: Memory → Planner integration ─────────────────────────────────
 
@@ -142,7 +142,7 @@ def test_session_end_to_end():
 
     # Save and resume should work
     session.save()
-    restored = ResearchSession.resume("integration-test")
+    restored = ResearchSession.load("integration-test")
     assert restored.config.session_id == "integration-test"
     # Resume restores the full serialized state including _state
     assert restored._state == SessionState.COMPLETED
@@ -214,7 +214,6 @@ def test_four_module_chain():
 
         # Step 4: Reflector evaluates results and writes back to memory
         reflector = ResearchReflector(mem)
-        from scripts.core.planner import Task, TaskStatus
         for task in tasks[:2]:
             eval_result = reflector.evaluate(task, {"result": "analysis done"}, ctx)
             assert isinstance(eval_result, Evaluation)

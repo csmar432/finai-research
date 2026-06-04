@@ -1,0 +1,14 @@
+{
+  "name": "get_bond_repo",
+  "description": "获取债券回购数据（东方财富风格）。返回银行间质押式回购行情。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "period": {
+        "type": "string",
+        "description": "期限: 1D/7D/14D/21D/1M",
+        "default": "7D"
+      }
+    }
+  }
+}

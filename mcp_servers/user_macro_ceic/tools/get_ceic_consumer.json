@@ -1,0 +1,14 @@
+{
+  "name": "get_ceic_consumer",
+  "description": "获取消费者信心数据（CEIC风格）。涵盖消费者信心指数、零售等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标: consumer_confidence/retail/income",
+        "default": "consumer_confidence"
+      }
+    }
+  }
+}

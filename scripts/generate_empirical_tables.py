@@ -38,10 +38,13 @@ sys.path.insert(0, str(SCRIPT_DIR))
 sys.path.insert(0, str(SCRIPT_DIR / "tariff_research"))
 
 from scripts.econometrics import (
-    OLSRegression, DIDRegression, RegressionTable,
-    table_to_markdown, descriptive_stats, RobustnessSuite, winsorize_all,
+    DIDRegression,
+    OLSRegression,
+    RegressionTable,
+    descriptive_stats,
+    table_to_markdown,
+    winsorize_all,
 )
-
 
 # ════════════════════════════════════════════════════════════════════
 # 数据加载

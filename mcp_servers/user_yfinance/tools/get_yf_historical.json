@@ -1,0 +1,14 @@
+{
+  "name": "get_yf_historical",
+  "description": "获取股票历史价格",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": { "type": "string", "description": "股票代码，例如 'AAPL'" },
+      "start_date": { "type": "string", "description": "开始日期，格式 'YYYY-MM-DD'" },
+      "end_date": { "type": "string", "description": "结束日期，格式 'YYYY-MM-DD'" },
+      "interval": { "type": "string", "description": "K线周期：'1d','1wk','1mo'", "default": "1d" }
+    },
+    "required": ["ticker", "start_date", "end_date"]
+  }
+}

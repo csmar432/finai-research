@@ -1,0 +1,10 @@
+{
+  "name": "get_cc_top_coins",
+  "description": "获取市值排名前N的加密货币",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "limit": { "type": "integer", "description": "返回数量", "default": 20 }
+    }
+  }
+}

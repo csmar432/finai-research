@@ -1,10 +1,10 @@
 """Tests for ResearchMemory three-layer memory system."""
 
-import shutil
 import os
+import shutil
 import tempfile
 
-from scripts.core.memory import ResearchMemory, ContextUnit
+from scripts.core.memory import ResearchMemory
 
 
 def test_memory_push_and_retrieve():

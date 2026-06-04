@@ -1,0 +1,17 @@
+{
+  "name": "OpenAlex",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-openalex",
+  "serverIdentifier": "user-openalex",
+  "description": "学术文献元数据（基于 OpenAlex API，2亿+学术成果）。覆盖全球所有学科的学术论文、作者、机构、期刊数据，免费且无需API Key。",
+  "tools": [
+    "get_openalex_works",
+    "get_openalex_author",
+    "get_openalex_institutions",
+    "get_openalex_concepts"
+  ],
+  "_data_source": "OpenAlex API (https://api.openalex.org)",
+  "_note": "无需 API Key，免费调用"
+}

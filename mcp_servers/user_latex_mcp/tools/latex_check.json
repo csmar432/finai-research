@@ -1,0 +1,13 @@
+{
+  "name": "latex_check",
+  "description": "检查LaTeX文件的语法和格式问题。类似于拼写检查，但针对LaTeX语法。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

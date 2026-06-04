@@ -1,0 +1,13 @@
+{
+  "name": "fs_glob",
+  "description": "通配符文件搜索（类似find但更强大）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

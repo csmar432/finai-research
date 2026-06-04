@@ -1,0 +1,22 @@
+{
+  "name": "Eastmoney Fund",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "eastmoney-fund",
+  "serverIdentifier": "user-eastmoney-fund",
+  "description": "东方财富基金数据（净值/重仓股/资金流/业绩）",
+  "tools": [
+    "get_fund_flow",
+    "get_fund_holdings",
+    "get_fund_nav",
+    "get_fund_performance"
+  ],
+  "_legacy_capabilities": [
+    "基金净值",
+    "重仓股",
+    "资金流",
+    "基金业绩",
+    "申赎数据"
+  ]
+}

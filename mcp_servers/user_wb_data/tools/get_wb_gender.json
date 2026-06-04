@@ -1,0 +1,21 @@
+{
+  "name": "get_wb_gender",
+  "description": "获取 World Bank 性别相关数据。\n\n默认指标：SG.GEN.PARL.ZS（女性在议会中的比例）。\n支持其他指标如 SG.VAW.REFZ.ZS（对妇女的暴力行为）等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码，如 USA、CHN"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "WB 性别指标代码",
+        "default": "SG.GEN.PARL.ZS"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

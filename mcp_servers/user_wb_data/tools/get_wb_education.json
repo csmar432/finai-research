@@ -1,0 +1,20 @@
+{
+  "name": "get_wb_education",
+  "description": "获取World Bank教育数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: school_enrollment/literacy_rate"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

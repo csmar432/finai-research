@@ -1,0 +1,29 @@
+{
+  "name": "Tushare",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": true,
+  "api_key_env_var": "TUSHARE_TOKEN",
+  "server_name": "tushare",
+  "serverIdentifier": "user-tushare",
+  "description": "Tushare Pro A股数据 — 财务/行情/资金流/期货",
+  "tools": [
+    "get_concept_stocks",
+    "get_daily_quote",
+    "get_financial_report",
+    "get_index_data",
+    "get_margin_data",
+    "get_stock_basic",
+    "get_trade_calendar"
+  ],
+  "_legacy_capabilities": [
+    "A股行情",
+    "财务报表",
+    "财务指标",
+    "融资融券",
+    "北向资金",
+    "指数",
+    "期货",
+    "概念股"
+  ]
+}

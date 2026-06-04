@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_tech",
+  "description": "武汉科技创新数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

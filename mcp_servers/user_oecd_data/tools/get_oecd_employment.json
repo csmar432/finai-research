@@ -1,0 +1,20 @@
+{
+  "name": "get_oecd_employment",
+  "description": "获取OECD就业数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: unemployment_rate/employment_rate/wage_growth"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

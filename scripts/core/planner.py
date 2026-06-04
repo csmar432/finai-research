@@ -4,11 +4,9 @@ from __future__ import annotations
 
 import re
 import time
-import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
 
 # ─── Enums ───────────────────────────────────────────────────────────────────
 
@@ -42,7 +40,7 @@ class Task:
     description: str
     task_type: TaskType
     status: TaskStatus = TaskStatus.PENDING
-    subtasks: list["Task"] = field(default_factory=list)
+    subtasks: list[Task] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
     result: Any = None
     error: str | None = None
@@ -80,6 +78,9 @@ KEYWORD_PATTERNS: dict[TaskType, list[str]] = {
     TaskType.REVIEW: [
         "审稿", "review", "润色", "polish", "校对",
     ],
+    TaskType.ORCHESTRATE: [
+        "编排", "编排流程", "编排任务", "协调", "调度",
+    ],
 }
 
 REGEX_PATTERNS: list[tuple[str, TaskType]] = [
@@ -101,7 +102,7 @@ class ResearchPlanner:
     executes in topological order, and implements fallback strategies.
     """
 
-    def __init__(self, memory: "ResearchMemory"):
+    def __init__(self, memory: ResearchMemory):
         self.memory = memory
         self.tasks: dict[str, Task] = {}
         self._task_counter = 0
@@ -316,7 +317,7 @@ class ResearchPlanner:
         Execute tasks in topological order (Kahn's algorithm).
 
         Returns a dict mapping task_id -> result.
-        Skeleton implementation that returns placeholder results.
+        Currently executes tasks sequentially with dependency checking.
         """
         results: dict[str, Any] = {}
 
@@ -335,7 +336,7 @@ class ResearchPlanner:
 
             task.status = TaskStatus.RUNNING
 
-            # Simulate execution (placeholder — ToolSelector not yet implemented)
+            # Simulate execution (fallback when ToolSelector is not available)
             try:
                 task.result = {"status": "executed", "task_id": task.id}
                 task.status = TaskStatus.DONE

@@ -1,8 +1,8 @@
 """Tests for ResearchReflector — four-dimensional result evaluation."""
 
-from scripts.core.reflector import ResearchReflector, Evaluation
 from scripts.core.memory import ResearchMemory
-from scripts.core.planner import Task, TaskType, TaskStatus
+from scripts.core.planner import Task, TaskStatus, TaskType
+from scripts.core.reflector import ResearchReflector
 
 
 def test_evaluate_financial_data():

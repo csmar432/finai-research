@@ -10,8 +10,8 @@
   python scripts/paper_full_pipeline.py --skip-docx      # 仅生成并润色Markdown
   python scripts/paper_full_pipeline.py --skip-polish     # 仅生成Markdown
 
-修复记录（2026-05-21）：
-  1. 模型名：deepseek-v4-pro/v4-flash/reasoner 全部返回空 → 强制降级为 deepseek-chat
+修复记录（2026-05-25）：
+  1. 模型名升级至最新版本：DeepSeek deepseek-v4-flash，Claude claude-sonnet-4-7，Gemini gemini-3.5-flash
   2. ai_router.py：添加空内容检测 + timeout 参数传递
   3. review_layer.py：修复 review_and_fix 方法变量作用域问题
   4. generate_docx_tables.py：修复 LaTeX 块公式、单行公式、行内公式解析
@@ -23,15 +23,15 @@
   8. prompt 中明确标注"以下所有表格均为程序化计算结果，请直接引用"
 """
 
+import argparse
 import os
-import re
+import subprocess
 import sys
 import time
-import json
-import argparse
 import warnings
-import subprocess
+import webbrowser
 from pathlib import Path
+
 
 # ── Keychain 密钥加载 ──────────────────────────────────────
 def _get_from_keychain(service: str, account: str) -> str | None:
@@ -47,24 +47,31 @@ def _get_from_keychain(service: str, account: str) -> str | None:
         pass
     return None
 
-for _env_name, (_svc, _acct) in [
-    ("DEEPSEEK_API_KEY", ("论文工作流", "DEEPSEEK_API_KEY")),
-]:
+_KEYCHAIN_MAP = {
+    "DEEPSEEK_API_KEY":  ("论文工作流", "DEEPSEEK_API_KEY"),
+    "RELAY_API_KEY":     ("论文工作流", "RELAY_API_KEY"),
+    "GEMINI_API_KEY":    ("论文工作流", "GEMINI_API_KEY"),
+    "KIMI_API_KEY":     ("论文工作流", "KIMI_API_KEY"),
+    "ZHIPU_API_KEY":    ("论文工作流", "ZHIPU_API_KEY"),
+    "FRED_API_KEY":      ("论文工作流", "FRED_API_KEY"),
+    "OPENAI_API_KEY":   ("论文工作流", "OPENAI_API_KEY"),
+}
+
+for _env_name, (_svc, _acct) in _KEYCHAIN_MAP.items():
     val = _get_from_keychain(_svc, _acct)
     if val:
         os.environ[_env_name] = val
 
 # ── 路径设置 ──────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+sys.path.insert(0, str(PROJECT_ROOT))  # add project root so "from scripts.XXX" works
 CACHE_DIR = PROJECT_ROOT / ".cache" / "paper_pipeline"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── 环境加载 ──────────────────────────────────────────────────
 from dotenv import load_dotenv
-load_dotenv(PROJECT_ROOT / ".env.local", override=False)
 
-import openai
+load_dotenv(PROJECT_ROOT / ".env.local", override=False)
 
 # ── 实证数据路径 ──────────────────────────────────────────────
 TARIFF_RESULTS = PROJECT_ROOT / "tariff_research" / "results" / "tables"
@@ -183,44 +190,6 @@ def build_paper_prompt(data: dict) -> str:
 """
 
 
-def call_deepseek(prompt: str, system: str = "", temperature: float = 0.7,
-                  max_tokens: int = 8192, timeout: int = 180) -> str:
-    """
-    直接调用 DeepSeek API（绕开 ai_router 避免挂起）。
-    实测 deepseek-v4-pro / v4-flash / reasoner 全部返回空内容，
-    只用 deepseek-chat 可正常工作。
-    """
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
-    if not api_key:
-        raise RuntimeError("未找到 DEEPSEEK_API_KEY，请在 .env.local 中配置")
-
-    client = openai.OpenAI(
-        api_key=api_key,
-        base_url="https://api.deepseek.com/v1",
-        timeout=timeout,
-    )
-
-    messages = []
-    if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
-
-    resp = client.chat.completions.create(
-        model="deepseek-chat",  # 实测唯一可用的模型名
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-    )
-
-    content = resp.choices[0].message.content
-    if not content or not content.strip():
-        raise RuntimeError(
-            "DeepSeek 返回空内容。请检查 API Key、网络连接，"
-            "或确认是否触发了频率限制。"
-        )
-    return content
-
-
 def generate_paper(data: dict, use_cache: bool = True) -> str:
     """生成论文正文。"""
     cache_file = CACHE_DIR / "paper_draft.md"
@@ -229,20 +198,29 @@ def generate_paper(data: dict, use_cache: bool = True) -> str:
         print(f"📦 使用缓存论文草稿: {cache_file.name}")
         return cache_file.read_text(encoding="utf-8")
 
-    print("🖊️  正在生成论文（deepseek-chat，可能需要 30-60 秒）...")
+    from scripts.core.llm_gateway import LLMGateway
+    from scripts.ai_router import Task
+
+    gateway = LLMGateway(memory=None, use_cache=use_cache)
+
+    print("🖊️  正在生成论文（通过AI路由自动选择最优模型）...")
     t0 = time.time()
 
     prompt = build_paper_prompt(data)
-    paper = call_deepseek(
-        prompt=prompt,
-        system="你是一位专业经济学论文写作专家，擅长撰写顶刊级别的实证研究论文。",
+    system = "你是一位专业经济学论文写作专家，擅长撰写顶刊级别的实证研究论文。"
+
+    result = gateway.generate(
+        prompt,
+        task_hint=Task.PAPER_CN,
+        system=system,
         temperature=0.7,
         max_tokens=8192,
-        timeout=180,
     )
+    paper = result.response
 
     elapsed = time.time() - t0
-    print(f"✅ 论文生成完成，耗时 {elapsed:.1f}s，字数 {len(paper)}")
+    model_used = result.model_used or "AI Router"
+    print(f"✅ 论文生成完成（使用: {model_used}），耗时 {elapsed:.1f}s，字数 {len(paper)}")
 
     cache_file.write_text(paper, encoding="utf-8")
     print(f"📦 已缓存至: {cache_file.name}")
@@ -279,19 +257,26 @@ def de_ai_polish(paper: str, use_cache: bool = True) -> str:
         print(f"📦 使用缓存润色版本: {cache_file.name}")
         return cache_file.read_text(encoding="utf-8")
 
-    print("🖊️  正在进行去AI化润色（deepseek-chat）...")
+    from scripts.core.llm_gateway import LLMGateway
+    from scripts.ai_router import Task
+
+    gateway = LLMGateway(memory=None, use_cache=use_cache)
+
+    print("🖊️  正在进行去AI化润色（通过AI路由自动选择最优模型）...")
     t0 = time.time()
 
-    polished = call_deepseek(
-        prompt=f"【待润色论文】\n\n{paper}",
+    result = gateway.generate(
+        f"【待润色论文】\n\n{paper}",
+        task_hint=Task.PAPER_CN,
         system=DE_AI_PROMPT,
         temperature=0.3,
         max_tokens=8192,
-        timeout=180,
     )
+    polished = result.response
 
     elapsed = time.time() - t0
-    print(f"✅ 去AI润色完成，耗时 {elapsed:.1f}s")
+    model_used = result.model_used or "AI Router"
+    print(f"✅ 去AI润色完成（使用: {model_used}），耗时 {elapsed:.1f}s")
 
     cache_file.write_text(polished, encoding="utf-8")
     print(f"📦 已缓存至: {cache_file.name}")
@@ -304,12 +289,10 @@ def de_ai_polish(paper: str, use_cache: bool = True) -> str:
 
 def generate_word(paper: str) -> Path:
     """将 Markdown 论文转换为 Word 三线表文档。"""
-    # 复用已修复的 generate_docx_tables.py 逻辑
-    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-    from generate_docx_tables import md_to_docx
+    from scripts.generate_docx_tables import md_to_docx
 
     output_file = OUTPUT_DIR / "关税政策影响研究_最终版.docx"
-    print(f"📄 正在生成 Word 文档（含三线表）...")
+    print("📄 正在生成 Word 文档（含三线表）...")
     t0 = time.time()
 
     md_to_docx(paper, str(output_file))
@@ -323,6 +306,60 @@ def generate_word(paper: str) -> Path:
 # 主流程
 # ════════════════════════════════════════════════════════════════
 
+def _launch_dashboard():
+    """启动 Streamlit Dashboard 并打开浏览器。"""
+    import urllib.request
+
+    dashboard_url = "http://localhost:8501"
+
+    # 检查是否已运行
+    try:
+        urllib.request.urlopen(dashboard_url, timeout=1)
+        print(f"  Dashboard 已运行于 {dashboard_url}")
+        return True
+    except Exception:
+        pass
+
+    # 启动 Dashboard
+    dashboard_script = PROJECT_ROOT / "scripts" / "dashboard.py"
+    if not dashboard_script.exists():
+        print(f"  Dashboard 脚本未找到: {dashboard_script}")
+        return False
+
+    print(f"  启动 Dashboard 于 {dashboard_url}...")
+
+    try:
+        subprocess.Popen(
+            [
+                sys.executable, "-m", "streamlit", "run",
+                str(dashboard_script),
+                "--server.port", "8501",
+                "--server.headless", "true",
+            ],
+            cwd=str(PROJECT_ROOT),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+        # 等待 Dashboard 启动
+        for _ in range(20):
+            time.sleep(0.5)
+            try:
+                urllib.request.urlopen(dashboard_url, timeout=1)
+                break
+            except Exception:
+                continue
+
+        # 打开浏览器
+        print(f"  打开浏览器: {dashboard_url}")
+        webbrowser.open(dashboard_url)
+        return True
+
+    except Exception as e:
+        print(f"  Dashboard 启动失败: {e}")
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="论文全流程管道")
     parser.add_argument("--no-cache", action="store_true",
@@ -333,6 +370,8 @@ def main():
                         help="跳过Word文档生成")
     parser.add_argument("--save-markdown", action="store_true",
                         help="保存中间 Markdown 文件到 output/")
+    parser.add_argument("--no-dashboard", action="store_true",
+                        help="跳过 Dashboard 自动启动")
     args = parser.parse_args()
 
     use_cache = not args.no_cache
@@ -340,6 +379,11 @@ def main():
     print("=" * 60)
     print("📊 论文全流程管道 v2.0（2026-05-21）")
     print("=" * 60)
+
+    # 自动启动 Dashboard
+    if not args.no_dashboard:
+        print("\n🚀 启动监控 Dashboard...")
+        _launch_dashboard()
 
     # Step 1: 加载数据
     print("\n📂 Step 1/4: 加载实证数据...")
@@ -375,7 +419,7 @@ def main():
     word_path = generate_word(final_paper)
 
     print("\n" + "=" * 60)
-    print(f"✅ 全部完成！")
+    print("✅ 全部完成！")
     print(f"   Word 文档: {word_path}")
     print("=" * 60)
 

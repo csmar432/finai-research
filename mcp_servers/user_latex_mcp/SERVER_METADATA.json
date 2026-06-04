@@ -1,0 +1,39 @@
+{
+  "name": "Latex Mcp",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "LaTeX MCP",
+  "serverIdentifier": "user-latex-mcp",
+  "description": "LaTeX 论文写作工具链 — 编译 PDF、语法检查、公式渲染、BibTeX 检查、latexdiff 对比、项目脚手架生成、字数统计。",
+  "tools": [
+    "latex_compile",
+    "latex_check",
+    "latex_to_pdf",
+    "latex_render_formula",
+    "latex_diff",
+    "latex_bibtex_check",
+    "latex_scaffold",
+    "latex_count_words",
+    "latex_get_stats"
+  ],
+  "_legacy_capabilities": {
+    "tools": [
+      "latex_compile (编译LaTeX项目生成PDF)",
+      "latex_check (LaTeX语法检查)",
+      "latex_to_pdf (LaTeX片段转PDF)",
+      "latex_render_formula (LaTeX公式渲染为SVG/PNG)",
+      "latex_diff (两个LaTeX文件差异对比)",
+      "latex_bibtex_check (BibTeX格式检查)",
+      "latex_scaffold (生成标准学术论文项目结构)",
+      "latex_count_words (LaTeX文档字数统计)",
+      "latex_get_stats (LaTeX项目统计信息)"
+    ],
+    "requires_api_key": false,
+    "dependencies": [
+      "latexdiff",
+      "pdflatex|xelatex|lualatex",
+      "bibtex"
+    ]
+  }
+}

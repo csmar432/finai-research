@@ -1,0 +1,19 @@
+{
+  "name": "get_paper_recommendations",
+  "description": "获取与给定论文相似的论文推荐。\n\n基于Semantic Scholar的AI推荐算法，用于发现相关研究工作。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "paper_id": {
+        "type": "string",
+        "description": "论文标识符（DOI/arXiv ID/S2Id）"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "返回推荐数量（默认10，最大50）",
+        "default": 10
+      }
+    },
+    "required": ["paper_id"]
+  }
+}

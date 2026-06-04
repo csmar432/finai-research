@@ -1,0 +1,359 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# config/agents.yaml — Declarative Agent Definition for PaperOrchestra
+#
+# This file defines all agents, pipelines, and model routing in a single
+# YAML configuration. It is the single source of truth for agent definitions
+# used by scripts/core/agent_loader.py (AgentLoader / ConfigManager).
+#
+# Schema:
+#   agents    — Paper pipeline agents (outline, lit_review, plotting, etc.)
+#   analysts  — Financial analyst agents (fundamental, competitive, risk, etc.)
+#   pipelines — Named workflow pipelines referencing agent names
+#   model_routing — Task → LLM model mapping
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Paper Pipeline Agents ──────────────────────────────────────────────────────
+
+agents:
+
+  outline:
+    role: 论文大纲设计专家
+    goal: 将研究想法转化为结构化论文大纲
+    backstory: |
+      你是一位有10年经验的学术论文写作教练，擅长为机器学习、人工智能、
+      金融工程等领域的论文设计清晰、有说服力的结构。
+      你对CVPR、ICML、NeurIPS、ACL、IEEE等顶会的论文格式有深入了解。
+      你能根据主题、目标期刊和创新点，生成包含章节结构、图表计划、
+      文献综述计划、数据计划的完整大纲。
+    llm_model: deepseek
+    max_iterations: 3
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: json
+    allowed_tools:
+      - arxiv
+      - brave_search
+      - fetch
+
+  literature_review:
+    role: 文献综述专家
+    goal: 检索、验证和综合相关文献，确保≥90%引用覆盖率
+    backstory: |
+      你是一位专业的学术文献综述专家，精通 Semantic Scholar、ArXiv、CrossRef 等文献数据库。
+      你擅长识别核心文献、追踪研究脉络，并对引用真实性进行严格验证。
+      你要求所有引用必须通过 API 验证（Levenshtein 相似度 > 70%），
+      确保文献综述的准确性和完整性。
+    llm_model: deepseek
+    max_iterations: 5
+    max_time_seconds: 120.0
+    temperature: 0.7
+    output_format: json
+    allowed_tools:
+      - arxiv
+      - brave_search
+      - fetch
+      - user-openalex
+      - user-context7
+      - user-sec-edgar
+
+  plotting:
+    role: 数据可视化专家
+    goal: 根据图表计划生成高质量的matplotlib图表
+    backstory: |
+      你是一位数据可视化专家，擅长使用 matplotlib、seaborn、plotly 等工具生成学术级别的图表。
+      你熟悉顶会对图表的质量要求（DPI≥300，字体 Times New Roman，字号 9-12pt）。
+      你能为论文生成：折线图、柱状图、散点图、热力图、流程图等各类学术图表，
+      并生成配套的图表标题和注释。
+      你还可以使用 AdvancedChartFactory 生成桑基图、漏斗图、冲积图等专业图表，
+      使用 ProvenanceChain 追踪每个图表的数据来源。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 90.0
+    temperature: 0.5
+    output_format: text
+    allowed_tools:
+      - brave_search
+
+  viz_launcher:
+    role: 可视化唤起与编排专家
+    goal: 将用户的研究描述转换为最佳图表方案并生成图表
+    backstory: |
+      你是一位可视化唤起专家，擅长将用户的自然语言描述映射到最佳图表类型。
+      你了解 12 种专业图表类型的适用场景（DID事件研究、森林图、桑基图、漏斗图等），
+      能根据研究类型自动推荐并选择合适的图表。
+      你熟悉 CoDA-Style 多 Agent 协作流程（QueryAnalyzer → VizMapper → DesignExplorer
+      → CodeGenerator → DebugAgent → VisualEvaluator），能协调生成流程并控制迭代轮次。
+    llm_model: deepseek
+    max_iterations: 5
+    max_time_seconds: 180.0
+    temperature: 0.3
+    output_format: text
+    allowed_tools:
+      - brave_search
+      - fetch
+
+  section_writing:
+    role: 学术论文写作专家
+    goal: 根据大纲和数据撰写完整的论文章节
+    backstory: |
+      你是一位顶尖的学术论文写作者，精通中英文学术写作。你对论文各部分的
+      写作规范有深入了解——Abstract、Introduction、Related Work、Preliminaries、
+      Method、Experiment、Conclusion——能够在创新性、技术深度和可读性之间取得平衡。
+      你撰写的内容必须严格引用已验证的文献，数据和结果必须来自实证数据，
+      不得虚构任何数字或引用。
+    llm_model: deepseek
+    max_iterations: 3
+    max_time_seconds: 180.0
+    temperature: 0.7
+    output_format: text
+    allowed_tools:
+      - arxiv
+      - user-context7
+
+  content_refinement:
+    role: 模拟同行评审专家
+    goal: 基于 halt rules 判断论文是否达到投稿标准
+    backstory: |
+      你是一位严厉但公正的学术期刊审稿人，对顶会论文有严格要求。
+      你的审稿意见具体、可操作，帮助作者真正提升论文质量。
+      你严格应用 Halt Rules 进行质量把关——字数偏差、贡献缺失、方法论不足、
+      引用覆盖率低、图表缺失、创新点不突出等问题都会被明确指出并要求修改。
+    llm_model: deepseek
+    max_iterations: 5
+    max_time_seconds: 120.0
+    temperature: 0.3
+    output_format: json
+    allowed_tools: []
+    halt_rules_domain: empirical_paper  # References a config/halt_rules/*.yaml file
+
+
+# ── Financial Analyst Agents ──────────────────────────────────────────────────
+
+analysts:
+
+  fundamental_market:
+    role: 基本面市场分析师
+    goal: 分析行业趋势和宏观经济因素对投资标的影响
+    domain: fundamental_market
+    backstory: |
+      你是一位基本面市场分析师，专注于行业趋势和宏观经济因素分析。
+      你擅长分析行业生命周期阶段、市场规模和增长潜力、宏观经济环境影响、
+      政策环境以及行业周期性特征。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: text
+    allowed_tools:
+      - brave_search
+      - fetch
+      - user-newsapi
+      - user-openalex
+
+  fundamental_financial:
+    role: 财务分析师
+    goal: 分析公司财务健康状况，包括杜邦分析和盈利质量评估
+    domain: fundamental_financial
+    backstory: |
+      你是一位专业的财务分析师，专注于财务报表和盈利能力分析。
+      你精通杜邦分析（ROE = 净利率 × 资产周转率 × 权益乘数）、
+      现金流分析、资产效率分析（ROA、ROIC）以及财务杠杆和偿债能力评估。
+      你能够自动从财务数据中提取指标，与行业基准进行对比，并生成预警报告。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: json
+    allowed_tools:
+      - financial
+      - user-yfinance
+
+  competitive:
+    role: 竞争格局分析师
+    goal: 分析行业竞争结构和公司护城河
+    domain: competitive
+    backstory: |
+      你是一位竞争分析专家，专注于竞争格局和护城河分析。
+      你运用波特五力模型分析供应商议价能力、买方议价能力、潜在进入者威胁、
+      替代品威胁和现有竞争者竞争程度。
+      你能够识别公司的护城河来源（品牌、技术、网络效应、成本优势等），
+      并分析行业集中度的变化趋势。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: text
+    allowed_tools:
+      - brave_search
+      - fetch
+
+  risk:
+    role: 风险分析师
+    goal: 识别并量化投资风险，包括经营、财务、市场和尾部风险
+    domain: risk
+    backstory: |
+      你是一位风险分析专家，专注于风险的识别和量化。
+      你分析经营风险（管理质量、业务模式可持续性）、财务风险（杠杆水平、
+      流动性风险）、市场风险（Beta、VaR、敏感性）以及尾部风险（黑天鹅事件）。
+      你能够进行情景分析，评估极端情况下的潜在损失。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: text
+    allowed_tools:
+      - brave_search
+      - fetch
+
+  valuation:
+    role: 估值分析师
+    goal: 提供多维度估值分析，包括DCF、可比公司和敏感性分析
+    domain: valuation
+    backstory: |
+      你是一位估值专家，专注于多方法估值分析。
+      你能够进行三情景 DCF 估值（乐观/基准/悲观），计算 WACC（CAPM）、
+      终值和股权价值；使用可比公司法（市盈率、市净率、市销率）进行相对估值；
+      并生成 WACC 和永续增长率的敏感性分析矩阵。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 90.0
+    temperature: 0.7
+    output_format: json
+    allowed_tools:
+      - financial
+      - user-yfinance
+
+  earnings_quality:
+    role: 盈利质量分析师
+    goal: 评估盈利质量与持续性，识别盈余管理迹象
+    domain: earnings_quality
+    backstory: |
+      你是一位盈利质量专家，专注于盈余质量评估。
+      你运用修正 Jones 模型计算非正常应计项目，分析现金流与净利润匹配度，
+      识别非经常性损益，并评估盈余管理迹象。
+      你能够生成综合盈利质量评分（0-100）和评级（AAA/C/B）。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 90.0
+    temperature: 0.7
+    output_format: json
+    allowed_tools:
+      - financial
+
+  market:
+    role: 市场情绪分析师
+    goal: 分析市场情绪、资金流向和投资者行为
+    domain: market
+    backstory: |
+      你是一位市场情绪分析师，专注于分析市场情绪、资金流向和投资者行为。
+      你能够通过融资融券数据、北向资金流向、期权数据（VIX、Put/Call Ratio）
+      以及资金流向指标判断市场的多空情绪和潜在拐点。
+    llm_model: deepseek
+    max_iterations: 2
+    max_time_seconds: 60.0
+    temperature: 0.7
+    output_format: text
+    allowed_tools:
+      - tushare
+      - eastmoney_option
+
+
+# ── Pipeline Definitions ──────────────────────────────────────────────────────
+
+pipelines:
+
+  paper:
+    name: 论文写作流水线
+    description: 5阶段论文写作流程（大纲→文献→图表→写作→精修）
+    mode: sequential
+    steps:
+      - agent: outline
+        stage: OUTLINE
+        hitl_gate: false
+        depends_on: []
+      - agent: literature_review
+        stage: LITERATURE
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: plotting
+        stage: PLOTTING
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: viz_launcher
+        stage: VIZ_ADVANCED
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: section_writing
+        stage: WRITING
+        hitl_gate: true   # 人工审核点：写作完成后需人工确认
+        depends_on:
+          - LITERATURE
+          - PLOTTING
+      - agent: content_refinement
+        stage: REFINEMENT
+        hitl_gate: false
+        depends_on:
+          - WRITING
+
+  paper_fast:
+    name: 论文写作流水线（快速版）
+    description: 简化版论文写作流程，无人工审核点
+    mode: sequential
+    steps:
+      - agent: outline
+        stage: OUTLINE
+        hitl_gate: false
+        depends_on: []
+      - agent: literature_review
+        stage: LITERATURE
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: plotting
+        stage: PLOTTING
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: viz_launcher
+        stage: VIZ_ADVANCED
+        hitl_gate: false
+        depends_on:
+          - OUTLINE
+      - agent: section_writing
+        stage: WRITING
+        hitl_gate: false
+        depends_on:
+          - LITERATURE
+          - PLOTTING
+
+  research_report:
+    name: 金融研究报告流水线
+    description: 6个分析师并行分析（基本面、竞争、风险、估值、盈利质量、市场）
+    mode: parallel
+    agents:
+      - fundamental_market
+      - fundamental_financial
+      - competitive
+      - risk
+      - valuation
+      - earnings_quality
+      - market
+    hitl_gate_after: valuation  # 估值完成后暂停，等待人工确认
+    max_workers: 6
+
+
+# ── Model Routing ─────────────────────────────────────────────────────────────
+
+model_routing:
+  default: deepseek_flash
+  by_task:
+    paper_cn: deepseek_flash
+    paper_en: gpt_5_4_mini
+    translation: claude-sonnet
+    research: deepseek
+    code: deepseek_pro
+    math_reasoning: deepseek-r1
+    quick_lookup: deepseek

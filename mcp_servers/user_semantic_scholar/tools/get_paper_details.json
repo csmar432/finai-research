@@ -1,0 +1,24 @@
+{
+  "name": "get_paper_details",
+  "description": "通过论文ID（DOI/arXiv ID/S2Id）获取完整论文详情。\n\n返回标题、作者、摘要、年份、期刊、引用量、参考文献列表、引用列表（摘要）等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "paper_id": {
+        "type": "string",
+        "description": "论文标识符（支持DOI、arXiv ID或Semantic Scholar Paper ID）\n例如：10.1093/qje/fbs042 或 1901.08550 或 6493ce56e306045199dc4e82"
+      },
+      "include_references": {
+        "type": "boolean",
+        "description": "是否包含参考文献摘要（前20篇）",
+        "default": true
+      },
+      "include_citations": {
+        "type": "boolean",
+        "description": "是否包含引用摘要（前20篇）",
+        "default": false
+      }
+    },
+    "required": ["paper_id"]
+  }
+}

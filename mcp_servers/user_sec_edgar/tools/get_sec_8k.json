@@ -1,0 +1,12 @@
+{
+  "name": "get_sec_8k",
+  "description": "获取公司8-K重大事件公告",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "cik": { "type": "string", "description": "SEC CIK 编号" },
+      "limit": { "type": "integer", "description": "返回数量", "default": 10 }
+    },
+    "required": ["cik"]
+  }
+}

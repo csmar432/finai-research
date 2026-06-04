@@ -1,0 +1,17 @@
+{
+  "name": "get_bea_industry",
+  "description": "获取BEA行业数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      },
+      "industry_level": {
+        "type": "string",
+        "description": "行业层级"
+      }
+    }
+  }
+}

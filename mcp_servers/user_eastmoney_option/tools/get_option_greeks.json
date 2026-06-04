@@ -1,0 +1,21 @@
+{
+  "name": "get_option_greeks",
+  "description": "获取期权希腊字母数据（东方财富风格）。返回Delta/Gamma/Vega/Theta/Rho。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "option_code": {
+        "type": "string",
+        "description": "期权合约代码"
+      },
+      "underlying": {
+        "type": "string",
+        "description": "标的代码",
+        "default": "510050.SH"
+      }
+    },
+    "required": [
+      "option_code"
+    ]
+  }
+}

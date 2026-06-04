@@ -1,0 +1,11 @@
+{
+  "name": "get_cc_price",
+  "description": "获取加密货币实时价格",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "symbol": { "type": "string", "description": "币种符号，例如 'BTC'" }
+    },
+    "required": ["symbol"]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "get_bea_gdi",
+  "description": "获取BEA GDI(国内总收入)数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      },
+      "quarter": {
+        "type": "string",
+        "description": "季度"
+      }
+    }
+  }
+}

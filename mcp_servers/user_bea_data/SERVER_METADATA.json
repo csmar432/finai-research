@@ -1,0 +1,23 @@
+{
+  "name": "BEA Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": true,
+  "api_key_env_var": "BEA_API_KEY",
+  "server_name": "bea-data",
+  "serverIdentifier": "user-bea-data",
+  "description": "BEA美国经济分析局数据（GDP/GDI/NIPA/行业，需免费注册API Key）",
+  "tools": [
+    "get_bea_gdi",
+    "get_bea_gdp",
+    "get_bea_industry",
+    "get_bea_nipa"
+  ],
+  "_legacy_capabilities": [
+    "GDP",
+    "GDI",
+    "NIPA国民账户",
+    "行业GDP",
+    "消费/投资"
+  ]
+}

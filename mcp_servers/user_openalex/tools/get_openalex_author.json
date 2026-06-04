@@ -1,0 +1,14 @@
+{
+  "name": "get_openalex_author",
+  "description": "获取作者信息及其发表成果",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "author_id": {
+        "type": "string",
+        "description": "OpenAlex 作者 ID，例如 'A123456789'"
+      }
+    },
+    "required": ["author_id"]
+  }
+}

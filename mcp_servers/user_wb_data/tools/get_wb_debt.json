@@ -1,0 +1,20 @@
+{
+  "name": "get_wb_debt",
+  "description": "获取World Bank债务数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: debt_gdp"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

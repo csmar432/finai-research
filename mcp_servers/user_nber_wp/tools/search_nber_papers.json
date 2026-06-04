@@ -1,0 +1,32 @@
+{
+  "name": "search_nber_papers",
+  "description": "搜索NBER工作论文。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "搜索关键词"
+      },
+      "author": {
+        "type": "string",
+        "description": "作者名称"
+      },
+      "year_from": {
+        "type": "integer",
+        "description": "起始年份"
+      },
+      "year_to": {
+        "type": "integer",
+        "description": "结束年份"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "返回数量"
+      }
+    },
+    "required": [
+      "query"
+    ]
+  }
+}

@@ -1,0 +1,391 @@
+% 《经济研究》(Economic Research Journal) LaTeX 模板
+% 适配 GB/T 7714-2015 参考文献格式
+% 格式：16开，双栏，中文，支持JEL分类号
+%
+% 编译方式：xelatex -> bibtex -> xelatex -> xelatex
+%
+% 依赖宏包（自动加载）：
+%   ctex, xeCJK, natbib, amsmath, geometry, fancyhdr, setspace, graphicx, booktabs
+
+% ─── 文档类 ────────────────────────────────────────────────────────────────
+\documentclass[10.5pt, UTF8, twocolumn, landscape]{ctexart}
+% 10.5pt: 经济研究正文字号
+% twocolumn, landscape + geometry: 实现16开双栏排版
+
+% ─── 页面布局 ─────────────────────────────────────────────────────────────
+\usepackage[
+    paperwidth=235mm,
+    paperheight=165mm,
+    top=20mm,
+    bottom=20mm,
+    left=15mm,
+    right=15mm,
+    headheight=10mm,
+    footskip=8mm,
+]{geometry}
+
+% ─── 语言与字体 ───────────────────────────────────────────────────────────
+\usepackage{xeCJK}
+% 设置中文主体字体（系统须安装相应字体，fallback 由 ctex 自动处理）
+%\setCJKmainfont{FandolSong-Regular.otf}[BoldFont={FandolSong-Bold.otf}]
+
+% ─── 数学与符号 ────────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools}   % enhanced amsmath
+\usepackage{booktabs}    % professional tables
+\usepackage{longtable}   % 长表格
+\usepackage{graphicx}    % 插图
+\graphicspath{{./figures/}}
+
+% ─── 间距控制 ─────────────────────────────────────────────────────────────
+\usepackage{setspace}
+%\setstretch{1.5}          % 正文1.5倍行距（经济研究要求）
+\setlength{\parindent}{2em}  % 首行缩进2字符
+\setlength{\parskip}{0pt}    % 段间距
+
+% ─── 页面样式 ─────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\fancypagestyle{JJYX}{
+    \fancyhf{}
+    \fancyhead[C]{\thepage}
+    \fancyfoot[C]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{JJYX}
+
+% ─── 超链接 ───────────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+
+% ─── 参考文献（GB/T 7714-2015 numeric）──────────────────────────────────────
+\usepackage[numbers,sort&compress]{natbib}
+% 样式说明：
+%   gbt7714-2005.bst 或 gbt7714-plain.bst 配合 natbib 使用
+%   如模板目录有 gbt7714-2005.bst，改用：
+%   \bibliographystyle{gbt7714-2005}
+\bibliographystyle{gbt7714-plain}
+
+% ─── 标题宏定义 ──────────────────────────────────────────────────────────
+% 经济研究要求：标题/作者/单位/摘要/关键词/中图分类号/JEL分类号
+\makeatletter
+% 作者、标题、关键词、摘要、分类号、JEL分类号存储
+\def\@JJYXtitle#1{\gdef\@JJYX@title{#1}}\def\@JJYX@title{}
+\def\@JJYXauthor#1{\gdef\@JJYX@author{#1}}\def\@JJYX@author{}
+\def\@JJYXaffiliation#1{\gdef\@JJYX@affiliation{#1}}\def\@JJYX@affiliation{}
+\def\@JJYXabstract#1{\gdef\@JJYX@abstract{#1}}\def\@JJYX@abstract{}
+\def\@JJYXkeywords#1{\gdef\@JJYX@keywords{#1}}\def\@JJYX@keywords{}
+\def\@JJYXclscode#1{\gdef\@JJYX@clscode{#1}}\def\@JJYX@clscode{}
+\def\@JJYXjel#1{\gdef\@JJYX@jel{#1}}\def\@JJYX@jel{}
+
+% 环境：摘要
+\newenvironment{jjyxabstract}{
+    \wuhao\sffamily\global\let\@JJYXabstract\@empty
+    \par\noindent\textbf{摘要\quad}\wuhao
+}{\par\vspace{\baselineskip}}
+
+% 环境：关键词
+\newenvironment{jjyxkeywords}{
+    \par\noindent\textbf{关键词\quad}\wuhao
+}{\par\vspace{\baselineskip}}
+
+% 环境：分类号
+\newenvironment{jjyxclscode}{
+    \par\noindent\textbf{中图分类号\quad}\wuhao
+}{\par\vspace{0.5\baselineskip}}
+
+% 环境：JEL分类号
+\newenvironment{jjyxjel}{
+    \par\noindent\textbf{JEL分类号\quad}\wuhao
+}{\par\vspace{\baselineskip}}
+
+\makeatother
+
+% 小五号字体命令
+\newcommand{\wuhao}{\fontsize{9pt}{13pt}\selectfont}
+% 标题区字号
+\newcommand{\JJYXtitlefont}{\fontsize{16pt}{22pt}\bfseries\selectfont}
+% 作者区字号
+\newcommand{\JJYXauthorfont}{\fontsize{10.5pt}{16pt}\selectfont}
+
+% ─── 标题页环境 ──────────────────────────────────────────────────────────
+% 使用方法：
+%   \begin{jjYXtitle}{标题}{作者}{单位}
+%   \begin{jjYXabstract} 摘要内容 \end{jjYXabstract}
+%   \begin{jjYXkeywords} 关键词1；关键词2；关键词3 \end{jjYXkeywords}
+%   \begin{jjYXclscode} F0；F03 \end{jjYXclscode}
+%   \begin{jjYXjel} JEL: G00; O40 \end{jjYXjel}
+%   \end{jjYXtitle}
+
+\NewDocumentEnvironment{jjYXtitle}{mmm}{
+    % 参数：{标题}{作者信息}{单位信息}
+    \twocolumn[%
+        \centering
+        % 标题
+        \JJYXtitlefont\@JJYX@title\par
+        \vspace{6pt}
+        % 作者
+        {\JJYXauthorfont #2}\par
+        \vspace{3pt}
+        % 单位
+        {\JJYXauthorfont #3}\par
+        \vspace{6pt}
+        % 摘要栏（单栏排版）
+        \hspace{2em}\begin{minipage}{0.9\linewidth}
+            % 摘要
+            \wuhao\textbf{摘要}\quad\@JJYX@abstract\par
+            \vspace{3pt}
+            % 关键词
+            \wuhao\textbf{关键词}\quad\@JJYX@keywords\par
+            % 中图分类号
+            \ifx\@JJYX@clscode\@empty\else
+                \wuhao\textbf{中图分类号}\quad\@JJYX@clscode\par
+            \fi
+            % JEL分类号
+            \ifx\@JJYX@jel\@empty\else
+                \wuhao\textbf{JEL分类号}\quad\@JJYX@jel\par
+            \fi
+        \end{minipage}
+        \vspace{8pt}
+    ]%
+}{}
+
+% ─── 标题快捷命令（单命令方式）────────────────────────────────────────────
+% 使用方法：
+%   \JJYXsettitle{标题}
+%   \JJYXsetauthor{作者}   % 盲审时注释掉
+%   \JJYXsetaffiliation{单位}
+%   \begin{jjYXabstract} 摘要 \end{jjYXabstract}
+%   \begin{jjYXkeywords} 关键词1；关键词2 \end{jjYXkeywords}
+
+\NewDocumentCommand{\JJYXsettitle}{m}{\@JJYXtitle{#1}}
+\NewDocumentCommand{\JJYXsetauthor}{m}{\@JJYXauthor{#1}}
+\NewDocumentCommand{\JJYXsetaffiliation}{m}{\@JJYXaffiliation{#1}}
+\NewDocumentCommand{\JJYXsetabstract}{m}{\@JJYXabstract{#1}}
+\NewDocumentCommand{\JJYXsetkeywords}{m}{\@JJYXkeywords{#1}}
+\NewDocumentCommand{\JJYXsetclscode}{m}{\@JJYXclscode{#1}}
+\NewDocumentCommand{\JJYXsetjel}{m}{\@JJYXjel{#1}}
+
+% ─── 正文环境 ─────────────────────────────────────────────────────────────
+% 一级标题：宋体加粗
+\ctexset{section/format={\centering\zihao{-3}\CJKfamily{zhsong}\bfseries}}
+% 二级标题：宋体
+\ctexset{subsection/format={\zihao{4}\CJKfamily{zhsong}}}
+% 三级标题：宋体
+\ctexset{subsubsection/format={\zihao{-4}\CJKfamily{zhsong}}}
+
+% ─── 图表浮动体 ────────────────────────────────────────────────────────────
+\usepackage{flafter}    % 图表放在引用之后
+\usepackage{booktabs}   % 三线表
+\usepackage{sidecap}    % 图注在侧
+% 表格字号
+\DeclareFontFamily{OT1}{fakesc}{}
+\usepackage{caption}
+\captionsetup{font=small, skip=6pt}
+
+% ─── 定理/证明环境 ─────────────────────────────────────────────────────────
+\newtheorem{hypothesis}{假设}
+\newtheorem{assumption}{假定}
+\newtheorem{definition}{定义}
+\newtheorem{prop}{性质}
+\newtheorem*{proof}{证明}
+
+% ─── 附录格式 ─────────────────────────────────────────────────────────────
+\ctexset{section/aftertitle={\par}}{}
+
+% ─────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 请填写以下信息（盲审时请删除作者和单位信息）
+% ══════════════════════════════════════════════════════════════════════════════
+
+\JJYXsettitle{论文标题（中文，不超过20字）}
+
+% 盲审时注释掉以下两行
+\JJYXsetauthor{作者一$^{1}$  ~~作者二$^{2}$ ~~作者三$^{1}$}
+\JJYXsetaffiliation{$^{1}$北京大学光华管理学院  $^{2}$清华大学五道口金融学院}
+
+% 摘要（不超过300字）
+\begin{jjYXabstract}
+本文基于XX数据，采用XX方法，实证研究了XX问题。研究发现：（1）……；（2）……；（3）……。这一发现对理解……具有重要意义，并对我……政策的制定提供了经验证据。
+\end{jjYXabstract}
+
+% 关键词（3-5个）
+\begin{jjYXkeywords}
+关键词一；关键词二；关键词三；关键词四；关键词五
+\end{jjYXkeywords}
+
+% 中图分类号（http://ztflh.xhma.com/）
+\begin{jjYXclscode}
+F0；F03
+\end{jjYXclscode}
+
+% JEL分类号（https://www.aeaweb.org/jel/jel-class-series）
+\begin{jjYXjel}
+JEL: G00; O40; C50
+\end{jjYXjel}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 正文
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{引言}
+\label{sec:intro}
+
+\section{文献综述与研究假设}
+\label{sec:lit}
+
+\subsection{文献综述}
+
+\subsection{研究假设}
+基于以上分析，本文提出如下待检验的研究假设：
+
+\begin{hypothesis}
+\label{hyp:h1}
+\textbf{假设1：}……（说明假设内容）。
+\end{hypothesis}
+
+\begin{hypothesis}
+\label{hyp:h2}
+\textbf{假设2：}……（说明假设内容）。
+\end{hypothesis}
+
+\section{研究设计}
+\label{sec:design}
+
+\subsection{样本与数据}
+本文以……为研究样本，时间跨度为……至……。数据来源于……。
+
+\subsection{变量定义}
+
+\subsubsection{被解释变量}
+$Y_{it}$ 表示……，数据来源于……。
+
+\subsubsection{解释变量}
+核心解释变量$X_{it}$ 为……。
+
+\subsubsection{控制变量}
+参考已有文献（\cite{xxx}），本文还控制了以下变量……。
+
+\begin{table}[htbp]
+\centering
+\caption{变量定义表}
+\label{tab:var}
+\wuhao
+\begin{tabular}{p{2.2cm}p{2.5cm}p{5.5cm}}
+\toprule
+变量类型 & 变量名称 & 变量定义 \\
+\midrule
+因变量 & $Y$ & ……（数据来源：XX数据库）\\
+\midrule
+自变量 & $X$ & ……（指标构造方法）\\
+\midrule
+控制变量 & $Z_1$ & ……\\
+& $Z_2$ & ……\\
+& $Year$ & 年份虚拟变量\\
+\midrule
+工具变量 & $IV$ & ……（工具变量选择依据）\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{模型设定}
+为检验假设1，本文构建如下双向固定效应回归模型：
+
+\begin{equation}
+\label{eq:baseline}
+Y_{it} = \alpha + \beta X_{it} + \gamma Z_{it} + \mu_i + \lambda_t + \varepsilon_{it}
+\end{equation}
+
+其中，$\mu_i$ 和 $\lambda_t$ 分别为企业和年份固定效应，$\varepsilon_{it}$ 为误差项。
+
+\section{实证结果}
+\label{sec:results}
+
+\subsection{描述性统计}
+
+\begin{longtable}{ccccccc}
+\caption{描述性统计}
+\label{tab:desc}
+\\\toprule
+变量 & 观测数 & 均值 & 标准差 & 最小值 & 中位数 & 最大值 \\
+\midrule
+\endfirsthead
+\multicolumn{7}{c}{\textbf{续表\thetable\ 描述性统计}}\\
+\toprule
+变量 & 观测数 & 均值 & 标准差 & 最小值 & 中位数 & 最大值 \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$Y$ & 1000 & 0.05 & 0.20 & -0.50 & 0.03 & 0.60 \\
+$X$ & 1000 & 0.30 & 0.15 & 0.10 & 0.28 & 0.70 \\
+$Z_1$ & 1000 & 5.20 & 1.50 & 1.00 & 5.00 & 9.00 \\
+\bottomrule
+\end{longtable}
+
+\subsection{基准回归分析}
+表~\ref{tab:reg} 报告了基准回归结果。
+
+\begin{table}[htbp]
+\centering
+\caption{基准回归结果}
+\label{tab:reg}
+\wuhao
+\begin{tabular}{lccc}
+\toprule
+ & (1) & (2) & (3) \\
+\midrule
+$X$ & 0.05** & 0.06*** & 0.04** \\
+    & (0.02) & (0.02) & (0.02) \\
+$Z_1$ & & 0.10*** & 0.08** \\
+      &      & (0.03)  & (0.03) \\
+\midrule
+常数项 & 0.01 & 0.02 & 0.03 \\
+       & (0.02) & (0.02) & (0.02) \\
+\midrule
+控制变量 & 否 & 是 & 是 \\
+企业固定效应 & 否 & 否 & 是 \\
+年份固定效应 & 否 & 否 & 是 \\
+\midrule
+观测数 & 1000 & 1000 & 1000 \\
+$R^2$ & 0.15 & 0.18 & 0.22 \\
+\bottomrule
+\multicolumn{4}{l}{\small 注：*** p<0.01, ** p<0.05, * p<0.1。括号内为聚类稳健标准误（聚类到企业）。}
+\end{tabular}
+\end{table}
+
+\subsection{内生性处理}
+为缓解遗漏变量偏误和反向因果导致的内生性问题，本文采用……方法进行检验。
+
+\subsection{稳健性检验}
+
+\subsubsection{替换核心变量}
+为保证结果的稳健性，本文采用……替换核心解释变量。
+
+\subsubsection{改变样本范围}
+剔除……样本后，主要结论依然成立。
+
+\section{进一步分析}
+\label{sec:进一步}
+
+\section{结论与启示}
+\label{sec:concl}
+
+本文基于……数据，实证研究了……问题。研究发现：（1）……；（2）……；（3）……。
+
+本文的研究启示在于：第一，……；第二，……；第三，……。未来研究可以从……角度进一步深化。
+
+\section*{参考文献}
+\addcontentsline{toc}{section}{参考文献}
+\bibliography{references}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 附录（如有）
+% ══════════════════════════════════════════════════════════════════════════════
+\clearpage
+\appendix
+\section*{附录}
+\addcontentsline{toc}{section}{附录}
+
+\end{document}

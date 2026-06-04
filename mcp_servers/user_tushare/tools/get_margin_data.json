@@ -1,0 +1,32 @@
+{
+  "name": "get_margin_data",
+  "description": "获取融资融券数据（融资余额/融资买入额/融券余额/北向资金）。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "data_type": {
+        "type": "string",
+        "enum": [
+          "margin",
+          "margin_detail",
+          "hsgt"
+        ]
+      },
+      "ts_code": {
+        "type": "string"
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      },
+      "trade_date": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "data_type"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "get_fed_interest_rate",
+  "description": "获取联邦基金利率数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "series_id": {
+        "type": "string",
+        "description": "序列ID"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期"
+      }
+    }
+  }
+}

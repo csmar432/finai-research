@@ -1,0 +1,13 @@
+{
+  "name": "pd_export",
+  "description": "导出数据框到CSV/JSON/Excel。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

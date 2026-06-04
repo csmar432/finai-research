@@ -1,0 +1,22 @@
+{
+  "name": "Eastmoney Reports",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "eastmoney-reports",
+  "serverIdentifier": "user-eastmoney-reports",
+  "description": "东方财富研报与宏观数据 — 券商研报摘要/宏观指标",
+  "tools": [
+    "get_analyst_rank",
+    "get_board_concept",
+    "get_board_industry",
+    "get_research_report",
+    "get_stock_news"
+  ],
+  "_legacy_capabilities": [
+    "研报",
+    "宏观数据",
+    "A股",
+    "板块资金流"
+  ]
+}

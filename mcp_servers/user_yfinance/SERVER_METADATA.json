@@ -1,0 +1,20 @@
+{
+  "name": "Yahoo Finance",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-yfinance",
+  "serverIdentifier": "user-yfinance",
+  "description": "美股/港股数据（基于 Yahoo Finance）。支持股票行情、历史价格、财务报表、期权数据、ETF数据、分红信息。无需API Key。",
+  "tools": [
+    "get_yf_quote",
+    "get_yf_historical",
+    "get_yf_financials",
+    "get_yf_options",
+    "get_yf_earnings",
+    "get_yf_news",
+    "get_yf_etf_holdings"
+  ],
+  "_data_source": "Yahoo Finance via yfinance Python library",
+  "_note": "无需 API Key，直接使用 yfinance"
+}

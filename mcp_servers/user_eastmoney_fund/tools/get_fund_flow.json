@@ -1,0 +1,14 @@
+{
+  "name": "get_fund_flow",
+  "description": "获取基金资金流数据（东方财富风格）。返回基金申赎、资金净流入等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "fund_type": {
+        "type": "string",
+        "description": "基金类型: equity/hybrid/bond/money",
+        "default": "equity"
+      }
+    }
+  }
+}

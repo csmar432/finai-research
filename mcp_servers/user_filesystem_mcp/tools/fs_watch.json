@@ -1,0 +1,13 @@
+{
+  "name": "fs_watch",
+  "description": "监控目录变化（新增/修改/删除文件）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

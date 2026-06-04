@@ -1,0 +1,137 @@
+# Halt Rules - 机器学习论文
+# ================================
+# 定义机器学习研究论文输出必须满足的质量规则
+
+domain: ml_paper
+version: "1.0"
+description: |
+  机器学习研究论文质量检查规则集
+  适用于CVPR、NeurIPS、ICML、ICLR等顶会论文
+
+rules:
+  # ──────────────────────────────────────────────────────────────
+  # 实验完整性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: experiment_completeness
+    description: 实验完整性要求
+    category: experiment
+    severity: error
+    validation:
+      type: experiment_check
+      rules:
+        - description: 必须包含消融实验
+          check_field: "ablation_study"
+        - description: 必须与基线方法对比
+          check_field: "baseline_comparison"
+        - description: 必须使用标准数据集
+          check_field: "standard_datasets"
+        - description: 必须报告计算资源
+          required_fields: ["gpu_hours", "training_time", "hardware"]
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: baseline_comparison
+    description: 基线对比要求
+    category: experiment
+    severity: error
+    validation:
+      type: baseline_check
+      rules:
+        - description: 必须对比当前SOTA方法
+          check_field: "sota_comparison"
+        - description: 必须对比经典方法
+          check_field: "classic_method_comparison"
+        - description: 基线方法必须正确实现或引用
+          check_field: "baseline_source"
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: reproducibility
+    description: 可复现性要求
+    category: experiment
+    severity: error
+    validation:
+      type: reproducibility_check
+      rules:
+        - description: 必须提供代码链接
+          required_fields: ["code_url", "github_link"]
+        - description: 必须说明超参数设置
+          check_field: "hyperparameters"
+        - description: 必须说明随机种子
+          check_field: "random_seed"
+        - description: 必须报告多次运行的均值和方差
+          check_field: "mean_variance"
+    auto_fix: false
+    halt_on_fail: true
+
+  # ──────────────────────────────────────────────────────────────
+  # 数学严谨性规则
+  # ──────────────────────────────────────────────────────────────
+  - id: mathematical_rigor
+    description: 数学表述严谨性
+    category: math
+    severity: error
+    validation:
+      type: math_check
+      rules:
+        - description: 核心定理必须有完整证明
+          check_field: "proof_completeness"
+        - description: 符号定义必须一致
+          check_field: "symbol_consistency"
+        - description: 复杂度分析必须正确
+          check_field: "complexity_analysis"
+    auto_fix: false
+    halt_on_fail: true
+
+  - id: notation_clarity
+    description: 符号说明要求
+    category: format
+    severity: warning
+    validation:
+      type: notation_check
+      rules:
+        - description: 首次出现必须定义
+          check_field: "first_appearance_definition"
+        - description: 必须提供符号表
+          check_field: "symbol_table"
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 图表规范规则
+  # ──────────────────────────────────────────────────────────────
+  - id: figure_quality
+    description: 图表质量要求
+    category: format
+    severity: warning
+    validation:
+      type: figure_check
+      rules:
+        - description: 必须300 DPI以上
+          check_field: "dpi_requirement"
+        - description: 必须有清晰图例
+          check_field: "legend_clarity"
+        - description: 必须有坐标轴标签
+          check_field: "axis_labels"
+        - description: 必须有图题说明
+          check_field: "figure_caption"
+    auto_fix: false
+    halt_on_fail: false
+
+  # ──────────────────────────────────────────────────────────────
+  # 相关工作规则
+  # ──────────────────────────────────────────────────────────────
+  - id: related_work
+    description: 相关工作覆盖
+    category: literature
+    severity: warning
+    validation:
+      type: related_work_check
+      rules:
+        - description: 必须引用近3年相关工作
+          check_field: "recent_work_coverage"
+          min_ratio: 0.3
+        - description: 必须讨论与本文工作的区别
+          check_field: "differentiation"
+    auto_fix: false
+    halt_on_fail: false

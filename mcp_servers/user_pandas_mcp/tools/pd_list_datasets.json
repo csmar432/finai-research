@@ -1,0 +1,9 @@
+{
+  "name": "pd_list_datasets",
+  "description": "列出当前会话中所有已注册的数据框及其摘要。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}

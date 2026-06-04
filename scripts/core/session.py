@@ -2,27 +2,35 @@
 
 Architecture:
     ResearchSession
-        ├── memory: ResearchMemory      — three-layer memory (context / short-term / long-term)
-        ├── planner: ResearchPlanner    — task decomposition + topological execution + fallback
-        ├── tool_selector: ToolSelector — MCP + script tool routing
+        ├── memory: ResearchMemory       — three-layer memory (context / short-term / long-term)
+        ├── llm: LLMGateway              — unified LLM routing with caching and cost tracking
+        ├── planner: ResearchPlanner     — task decomposition + topological execution + fallback
+        ├── tool_selector: ToolSelector  — MCP + script tool routing
         └── reflector: ResearchReflector — four-dimensional result evaluation
+
+Execution modes:
+    - Sequential (default): tasks execute one-by-one in topological order
+    - Parallel: dependency-free tasks execute concurrently (max_workers configurable)
 
 User-facing entry point for the economic research agent.
 """
 
 from __future__ import annotations
 
+import concurrent.futures
+import threading
 import time
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from scripts.core.llm_gateway import LLMGateway
 from scripts.core.memory import ResearchMemory
 from scripts.core.planner import ResearchPlanner, Task, TaskStatus
 from scripts.core.reflector import Evaluation, ResearchReflector
 from scripts.core.tool_selector import ToolSelection, ToolSelector
-
 
 # ─── Session State & Status ────────────────────────────────────────────────────
 
@@ -30,9 +38,9 @@ from scripts.core.tool_selector import ToolSelection, ToolSelector
 class SessionState(Enum):
     CREATED = "created"
     RUNNING = "running"
+    PAUSED = "paused"
     COMPLETED = "completed"
     FAILED = "failed"
-    PAUSED = "paused"
 
 
 @dataclass
@@ -42,6 +50,7 @@ class SessionStatus:
     completed_tasks: int = 0
     failed_tasks: int = 0
     pending_tasks: int = 0
+    running_tasks: int = 0
     avg_score: float | None = None
 
 
@@ -57,9 +66,15 @@ class SessionConfig:
     auto_save: bool = True
     max_context_items: int = 20
     max_retries: int = 3
-    model: str = "cursor"          # cursor | deepseek | b_ai
     verbose: bool = False
-    db_path: str | None = None     # override default .cache/research.db
+    db_path: str | None = None
+    # ── Execution mode ────────────────────────────────────────────
+    parallel: bool = False            # Enable parallel execution
+    max_workers: int = 4              # Max concurrent tasks in parallel mode
+    # ── Progress callback ────────────────────────────────────────
+    progress_callback: Callable[[str, Task, float], None] | None = None
+    # ── LLM settings ─────────────────────────────────────────────
+    llm_use_cache: bool = True       # Enable LLM response caching
 
 
 # ─── ResearchSession ───────────────────────────────────────────────────────────
@@ -73,19 +88,38 @@ class ResearchSession:
     It manages the lifecycle of a research session: decomposition, execution,
     evaluation, and persistence.
 
+    Execution modes:
+        - parallel=False (default): sequential topological execution
+        - parallel=True: concurrent execution of dependency-free tasks
+
     Example usage:
         session = ResearchSession(SessionConfig(
             session_id="茅台财务分析_20260523",
             user_goal="分析贵州茅台2024年财务数据和投资价值",
         ))
-        result = session.run("帮我分析茅台的ROE和毛利率")
-        print(result["summary"])
 
-        # Follow-up question
+        # Sequential execution
+        result = session.run("帮我分析茅台的ROE和毛利率")
+
+        # Parallel execution
+        result = session.run("同时分析茅台和五粮液的财务数据", parallel=True)
+
+        # Follow-up
         followup = session.ask("再对比一下五粮液")
 
-        # Resume later
-        restored = ResearchSession.resume("茅台财务分析_20260523")
+        # Pause & resume
+        session.pause()
+        restored = session.resume()
+
+        # Progress tracking
+        def on_progress(phase: str, task: Task, progress: float):
+            print(f"[{phase}] {task.description}: {progress:.0%}")
+
+        session = ResearchSession(SessionConfig(
+            session_id="test",
+            user_goal="分析",
+            progress_callback=on_progress,
+        ))
     """
 
     def __init__(self, config: SessionConfig):
@@ -94,14 +128,116 @@ class ResearchSession:
             session_id=config.session_id,
             db_path=config.db_path,
         )
+        self.llm = LLMGateway(self.memory, use_cache=config.llm_use_cache)
         self.planner = ResearchPlanner(self.memory)
         self.tool_selector = ToolSelector(self.memory)
         self.reflector = ResearchReflector(self.memory)
         self._task_results: dict[str, Any] = {}
         self._state = SessionState.CREATED
         self._created_at = time.time()
+        # ── Parallel execution state ──────────────────────────────
+        self._running_task_count = 0
+        self._running_task_count_lock = threading.Lock()
+        self._pause_event = threading.Event()
+        self._pause_event.set()  # Initially not paused
 
-    # ── Lifecycle Methods ──────────────────────────────────────────────────────
+        # ── Self-Evolution Integration ─────────────────────────────
+        self._evolution_engine: Any | None = None
+        self._evolution_activated: bool = False
+
+    def enable_self_evolution(
+        self,
+        engine: Any | None = None,
+        log_path: str | None = None,
+        quality_baseline: float = 0.7,
+    ) -> dict[str, Any]:
+        """
+        启用自进化引擎，将 ResearchSession 与 SEPL 协议集成。
+
+        Parameters
+        ----------
+        engine : Any | None
+            外部提供的 SelfEvolutionEngine 实例。
+            如果为 None，则创建新实例。
+        log_path : str | None
+            进化历史日志路径。
+        quality_baseline : float
+            质量基准线，低于此值触发进化。
+
+        Returns
+        -------
+        dict[str, Any]
+            激活状态摘要。
+        """
+        if self._evolution_activated:
+            return {"status": "already_enabled", "engine_id": id(self._evolution_engine)}
+
+        # 注册各组件到进化引擎
+        if engine is None:
+            from scripts.core.self_evolution import SelfEvolutionEngine
+            engine = SelfEvolutionEngine(memory=self.memory, gateway=self.llm)
+
+        engine.register_agent("planner", self.planner)
+        engine.register_agent("tool_selector", self.tool_selector)
+        engine.register_agent("reflector", self.reflector)
+
+        # 激活引擎
+        result = engine.activate(
+            evolution_log_path=log_path,
+            quality_baseline=quality_baseline,
+        )
+
+        self._evolution_engine = engine
+        self._evolution_activated = True
+
+        return {
+            "status": "enabled",
+            "engine": engine,
+            "activation": result,
+        }
+
+    def disable_self_evolution(self) -> dict[str, Any]:
+        """停用自进化引擎。"""
+        if not self._evolution_activated or self._evolution_engine is None:
+            return {"status": "not_enabled"}
+
+        result = self._evolution_engine.deactivate()
+        self._evolution_activated = False
+        return result
+
+    def _on_task_complete(
+        self,
+        task_id: str,
+        result: Any,
+    ) -> None:
+        """
+        任务完成回调：触发进化引擎评估。
+
+        在每个任务执行完成后由 _execute_sequential / _execute_parallel 调用。
+        """
+        if not self._evolution_activated or self._evolution_engine is None:
+            return
+
+        try:
+            self._evolution_engine.record_and_assess(
+                agent_name=task_id,
+                result=result,
+                context={"session_id": self.config.session_id},
+            )
+        except Exception:
+            pass  # 进化评估失败不影响主流程
+
+    def get_evolution_status(self) -> dict[str, Any]:
+        """返回自进化引擎状态。"""
+        if not self._evolution_activated:
+            return {"status": "not_enabled"}
+        engine = self._evolution_engine
+        return {
+            "status": "enabled",
+            "is_active": engine.is_active(),
+            "events": len(engine._history),
+            "proposals": len(engine._proposals),
+        }
 
     def run(self, user_request: str) -> dict[str, Any]:
         """
@@ -109,13 +245,11 @@ class ResearchSession:
 
         Main flow:
         1. Planner.decompose(user_request) → task graph
-        2. Topological execution of each Task:
-           a. ToolSelector.select() → list of ToolSelection
-           b. ToolSelector.execute(primary_selection) → ToolResult
-           c. Reflection.evaluate() → Evaluation
-           d. Memory.push() → store context
-           e. Planner._fallback() if failed (up to max_retries)
-        3. Return {session_id, tasks, summary, status}
+        2. Topological execution:
+           - Sequential: Kahn's algorithm, one-by-one
+           - Parallel: layer-by-layer, max_workers concurrent
+        3. Per-task: select → execute → evaluate → memory → save
+        4. Return {session_id, tasks, summary, status}
 
         Parameters
         ----------
@@ -128,154 +262,69 @@ class ResearchSession:
             {
                 "session_id": str,
                 "tasks": dict[str, dict],   # task_id → {result, evaluation}
-                "summary": str,              # reflector.reflect() output
+                "summary": str,               # reflector.reflect() output
                 "status": SessionStatus,
+                "total_latency_ms": float,
             }
         """
+        start_time = time.time()
         self._state = SessionState.RUNNING
+        self._pause_event.set()  # Ensure not paused
 
         # Decompose user request into task graph
         tasks = self.planner.decompose(user_request)
         if self.config.verbose:
             print(f"[ResearchSession] Decomposed into {len(tasks)} root tasks")
 
-        # Flatten all tasks (including subtasks) for execution
         all_tasks = self._flatten_tasks(tasks)
 
-        # Execute in topological order using planner's sort
-        sorted_tasks = self._topological_order(all_tasks)
-
-        for task in sorted_tasks:
-            # Check dependencies — skip if not ready
-            if not self._dependencies_ready(task, sorted_tasks):
-                task.status = TaskStatus.BLOCKED
-                continue
-
-            task.status = TaskStatus.RUNNING
-            context = self.memory.get_context(
-                limit=self.config.max_context_items
-            )
-
-            # Step a: Tool selection
-            selections = self.tool_selector.select(task, context)
-            if not selections:
-                # No tool available — treat as soft failure
-                if self.config.verbose:
-                    print(f"[ResearchSession] No tool found for task {task.id}")
-                evaluation = self._create_empty_evaluation(task)
-                self._task_results[task.id] = {"result": None, "evaluation": evaluation}
-                self._write_context(task, None, evaluation)
-                task.status = TaskStatus.FAILED
-                task.error = "No suitable tool found"
-                continue
-
-            # Step b: Execute primary tool (with fallback)
-            result = self._execute_with_fallback(task, selections)
-
-            # Step c: Evaluate result
-            evaluation = self.reflector.evaluate(task, result, context)
-
-            # Step d: Write to memory
-            self._write_context(task, result, evaluation)
-
-            # Step e: Store result
-            self._task_results[task.id] = {
-                "result": result,
-                "evaluation": evaluation,
-            }
-
-            # Mark task complete
-            if evaluation.success:
-                task.status = TaskStatus.DONE
-                task.finished_at = time.time()
-            else:
-                task.status = TaskStatus.FAILED
-                task.error = evaluation.feedback
-
-            # Auto-save
-            if self.config.auto_save:
-                self.save()
+        if self.config.parallel:
+            self._execute_parallel(all_tasks)
+        else:
+            self._execute_sequential(all_tasks)
 
         # Session complete
-        if any(r.get("evaluation", Evaluation("", False, 0, "", [], [], time.time())).success
-               for r in self._task_results.values()):
+        if any(
+            r.get("evaluation", Evaluation("", False, 0, "", [], [], time.time())).success
+            for r in self._task_results.values()
+        ):
             self._state = SessionState.COMPLETED
         else:
             self._state = SessionState.FAILED
 
-        # Generate summary
         summary = self.reflector.reflect(self)
+        total_latency_ms = (time.time() - start_time) * 1000
+
+        if self.config.auto_save:
+            self.save()
 
         return {
             "session_id": self.config.session_id,
             "tasks": self._task_results,
             "summary": summary,
             "status": self.status(),
+            "total_latency_ms": total_latency_ms,
         }
 
     def ask(self, followup: str) -> dict[str, Any]:
         """
         Handle a follow-up / supplementary instruction on the current session.
 
-        Based on the memory context, understands the follow-up in relation to
-        the original user goal and continues the research.
-
-        Parameters
-        ----------
-        followup : str
-            The follow-up question or instruction.
-
-        Returns
-        -------
-        dict[str, Any]
-            Same structure as run(), scoped to the follow-up tasks.
+        Follows the same execution mode (parallel/sequential) as the original run.
         """
-        # Resume on ask from any non-RUNNING state
         if self._state != SessionState.RUNNING:
             self._state = SessionState.RUNNING
-
-        context = self.memory.get_context(limit=self.config.max_context_items)
 
         if self.config.verbose:
             print(f"[ResearchSession.ask] Follow-up: {followup}")
 
-        # Combine follow-up with context for smarter decomposition
-        combined_request = context[-1].task if context else self.config.user_goal
-        combined_request = f"{combined_request} + {followup}"
-
-        # Decompose the follow-up
         tasks = self.planner.decompose(f"{self.config.user_goal}。{followup}")
         all_tasks = self._flatten_tasks(tasks)
-        sorted_tasks = self._topological_order(all_tasks)
 
-        for task in sorted_tasks:
-            if not self._dependencies_ready(task, sorted_tasks):
-                task.status = TaskStatus.BLOCKED
-                continue
-
-            task.status = TaskStatus.RUNNING
-            current_context = self.memory.get_context(limit=self.config.max_context_items)
-            selections = self.tool_selector.select(task, current_context)
-
-            if not selections:
-                evaluation = self._create_empty_evaluation(task)
-                self._task_results[task.id] = {"result": None, "evaluation": evaluation}
-                self._write_context(task, None, evaluation)
-                task.status = TaskStatus.FAILED
-                task.error = "No suitable tool found"
-                continue
-
-            result = self._execute_with_fallback(task, selections)
-            evaluation = self.reflector.evaluate(task, result, current_context)
-            self._write_context(task, result, evaluation)
-            self._task_results[task.id] = {"result": result, "evaluation": evaluation}
-
-            if evaluation.success:
-                task.status = TaskStatus.DONE
-                task.finished_at = time.time()
-            else:
-                task.status = TaskStatus.FAILED
-                task.error = evaluation.feedback
+        if self.config.parallel:
+            self._execute_parallel(all_tasks)
+        else:
+            self._execute_sequential(all_tasks)
 
         if self.config.auto_save:
             self.save()
@@ -290,13 +339,57 @@ class ResearchSession:
             "followup": followup,
         }
 
+    def pause(self):
+        """
+        Pause the session. Currently sets a flag; for full pause support,
+        call this between task boundaries.
+        """
+        self._pause_event.clear()
+        self._state = SessionState.PAUSED
+
+    def resume(self) -> dict[str, Any]:
+        """
+        Resume a paused session. Re-executes remaining pending tasks.
+        """
+        if self._state != SessionState.PAUSED:
+            return {"error": "Session is not paused"}
+
+        self._pause_event.set()
+        self._state = SessionState.RUNNING
+
+        # Find pending tasks
+        pending = [
+            t for t in self.planner.tasks.values()
+            if t.status == TaskStatus.PENDING
+        ]
+
+        if not pending:
+            return {"message": "No pending tasks to resume"}
+
+        if self.config.parallel:
+            self._execute_parallel(pending)
+        else:
+            self._execute_sequential(pending)
+
+        summary = self.reflector.reflect(self)
+
+        if self.config.auto_save:
+            self.save()
+
+        return {
+            "session_id": self.config.session_id,
+            "tasks": self._task_results,
+            "summary": summary,
+            "status": self.status(),
+            "resumed_tasks": len(pending),
+        }
+
     def status(self) -> SessionStatus:
-        """
-        Return the current session status snapshot.
-        """
+        """Return the current session status snapshot."""
         completed = 0
         failed = 0
         pending = 0
+        running = 0
         scores: list[float] = []
 
         for task_result in self._task_results.values():
@@ -309,6 +402,9 @@ class ResearchSession:
                 failed += 1
             scores.append(evaluation.score)
 
+        with self._running_task_count_lock:
+            running = self._running_task_count
+
         for task in self.planner.tasks.values():
             if task.status == TaskStatus.PENDING:
                 pending += 1
@@ -320,47 +416,29 @@ class ResearchSession:
             completed_tasks=completed,
             failed_tasks=failed,
             pending_tasks=pending,
+            running_tasks=running,
             avg_score=avg_score,
         )
 
     def save(self):
-        """
-        Manually persist the session to disk.
-        Delegates to memory.save_session().
-        """
+        """Manually persist the session to disk."""
         self.memory.save_session()
 
     @staticmethod
-    def resume(session_id: str, db_path: str | None = None) -> "ResearchSession":
-        """
-        Restore a historical session from SQLite.
+    def resume_session(session_id: str, db_path: str | None = None) -> ResearchSession:
+        """Alias for ResearchSession.load()."""
+        return ResearchSession.load(session_id, db_path)
 
-        Creates a new ResearchSession with the same session_id, restoring
-        memory state from the sessions table.
-
-        Parameters
-        ----------
-        session_id : str
-            The ID of the session to restore.
-        db_path : str | None
-            Path to the SQLite database. Defaults to .cache/research.db.
-
-        Returns
-        -------
-        ResearchSession
-            A new ResearchSession instance with restored state.
-        """
+    @staticmethod
+    def load(session_id: str, db_path: str | None = None) -> ResearchSession:
+        """Load a saved session and reconstruct its state."""
         path = db_path or ".cache/research.db"
 
-        # Restore memory from disk
         memory = ResearchMemory.load_session(session_id, db_path=path)
 
-        # Reconstruct a config from stored state
-        # get_context() may be empty if session wasn't saved, but we still create the session
         context = memory.get_context(limit=1)
         user_goal = "Restored session"
         if context:
-            # Try to extract goal from first context unit
             user_goal = context[0].task if context else "Restored session"
 
         config = SessionConfig(
@@ -371,30 +449,194 @@ class ResearchSession:
         )
 
         session = ResearchSession(config)
-
-        # Restore the memory from the loaded one
         session.memory = memory
-        # Re-initialize planner/tool_selector/reflector with restored memory
         session.planner = ResearchPlanner(session.memory)
         session.tool_selector = ToolSelector(session.memory)
         session.reflector = ResearchReflector(session.memory)
 
-        # Restore task results from context if available
         for unit in session.memory.get_context(limit=100):
             if isinstance(unit.result, dict) and "task_id" in unit.result:
                 task_id = unit.result["task_id"]
                 session._task_results[task_id] = {
                     "result": unit.result.get("result"),
-                    "evaluation": None,  # evaluation may not be stored
+                    "evaluation": None,
                 }
 
-        # Infer state from context
+        # Restore planner tasks from stored task results
+        if hasattr(session.planner, "tasks"):
+            for task_id, task_result in session._task_results.items():
+                result_data = task_result.get("result", {})
+                if isinstance(result_data, dict):
+                    task = session.planner.tasks.get(task_id)
+                    if task is not None:
+                        from scripts.core.planner import TaskStatus
+                        task.status = (
+                            TaskStatus.DONE
+                            if result_data.get("success")
+                            else TaskStatus.FAILED
+                        )
+
         if session._task_results:
             session._state = SessionState.COMPLETED
         else:
             session._state = SessionState.CREATED
 
         return session
+
+    # ── Sequential Execution ───────────────────────────────────────────────────
+
+    def _execute_sequential(self, tasks: list[Task]):
+        """Execute tasks sequentially in topological order."""
+        sorted_tasks = self._topological_order(tasks)
+        total = len(sorted_tasks)
+
+        for i, task in enumerate(sorted_tasks):
+            # Check pause
+            self._pause_event.wait()
+
+            if not self._dependencies_ready(task, sorted_tasks):
+                task.status = TaskStatus.BLOCKED
+                continue
+
+            task.status = TaskStatus.RUNNING
+            self._report_progress("running", task, (i + 1) / total)
+
+            context = self.memory.get_context(limit=self.config.max_context_items)
+            result, evaluation = self._execute_single_task(task, context)
+
+            self._task_results[task.id] = {
+                "result": result,
+                "evaluation": evaluation,
+            }
+
+            # Self-evolution: trigger evolution assessment after task
+            self._on_task_complete(task.id, result)
+
+            if evaluation.success:
+                task.status = TaskStatus.DONE
+                task.finished_at = time.time()
+            else:
+                task.status = TaskStatus.FAILED
+                task.error = evaluation.feedback
+
+            self._report_progress("done", task, (i + 1) / total)
+
+            if self.config.auto_save:
+                self.save()
+
+    # ── Parallel Execution ──────────────────────────────────────────────────────
+
+    def _execute_parallel(self, tasks: list[Task]):
+        """
+        Execute tasks in parallel, layer by layer.
+
+        Strategy:
+        1. Kahn topological sort produces a layer-by-layer order
+        2. All tasks in the same "layer" (no unmet dependencies) run concurrently
+        3. Max concurrent workers = self.config.max_workers
+        4. Results are stored as each task completes
+        5. Dependency counts are updated after each layer finishes
+        """
+        task_map = {t.id: t for t in tasks}
+        remaining = {t.id for t in tasks}
+        in_degree = {t.id: len(t.dependencies) for t in tasks}
+        total = len(tasks)
+        completed_count = [0]  # Mutable counter for progress
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.config.max_workers
+        ) as executor:
+            while remaining:
+                # Find all tasks ready to run (in_degree == 0)
+                ready_ids = [tid for tid in remaining if in_degree.get(tid, 0) == 0]
+
+                if not ready_ids:
+                    # Deadlock — remaining tasks have unmet circular dependencies
+                    for tid in remaining:
+                        task_map[tid].status = TaskStatus.BLOCKED
+                        task_map[tid].error = "Circular dependency detected"
+                    break
+
+                ready_tasks = [task_map[tid] for tid in ready_ids]
+
+                # Mark as running
+                for task in ready_tasks:
+                    task.status = TaskStatus.RUNNING
+                    self._report_progress("running", task, completed_count[0] / total)
+
+                # Submit all ready tasks concurrently
+                futures = {
+                    executor.submit(self._execute_single_task_isolated, task): task
+                    for task in ready_tasks
+                }
+
+                for future in concurrent.futures.as_completed(futures):
+                    task = futures[future]
+                    remaining.discard(task.id)
+
+                    try:
+                        result, evaluation = future.result()
+                    except Exception as exc:
+                        evaluation = self._create_empty_evaluation(task)
+                        evaluation.feedback = f"Parallel execution error: {exc}"
+                        result = {"task_id": task.id, "status": "error", "error": str(exc)}
+
+                    self._task_results[task.id] = {
+                        "result": result,
+                        "evaluation": evaluation,
+                    }
+
+                    # Self-evolution: trigger evolution assessment after task
+                    self._on_task_complete(task.id, result)
+
+                    if evaluation.success:
+                        task.status = TaskStatus.DONE
+                        task.finished_at = time.time()
+                    else:
+                        task.status = TaskStatus.FAILED
+                        task.error = evaluation.feedback
+
+                    completed_count[0] += 1
+                    self._report_progress("done", task, completed_count[0] / total)
+
+                    # Update in-degrees of dependent tasks
+                    for other_id, other_task in task_map.items():
+                        if other_id in remaining and task.id in other_task.dependencies:
+                            in_degree[other_id] -= 1
+
+                if self.config.auto_save:
+                    self.save()
+
+    def _execute_single_task_isolated(self, task: Task) -> tuple[Any, Evaluation]:
+        """
+        Isolated task execution for parallel mode.
+
+        Creates a fresh context snapshot to avoid race conditions
+        when reading shared memory concurrently.
+        """
+        context = self.memory.get_context(limit=self.config.max_context_items)
+        return self._execute_single_task(task, context)
+
+    # ── Single Task Execution ─────────────────────────────────────────────────
+
+    def _execute_single_task(
+        self,
+        task: Task,
+        context: list,
+    ) -> tuple[Any, Evaluation]:
+        """Execute one task: select → execute → evaluate."""
+        selections = self.tool_selector.select(task, context)
+
+        if not selections:
+            evaluation = self._create_empty_evaluation(task)
+            self._write_context(task, None, evaluation)
+            return None, evaluation
+
+        result = self._execute_with_fallback(task, selections)
+        evaluation = self.reflector.evaluate(task, result, context)
+        self._write_context(task, result, evaluation)
+
+        return result, evaluation
 
     # ── Internal Helpers ───────────────────────────────────────────────────────
 
@@ -403,12 +645,7 @@ class ResearchSession:
         task: Task,
         selections: list[ToolSelection],
     ) -> Any:
-        """
-        Execute a task using tool selections with fallback on failure.
-
-        Tries each tool in priority order until one succeeds or all fail.
-        Respects self.config.max_retries for the whole task.
-        """
+        """Execute a task using tool selections with fallback on failure."""
         attempt = 0
         last_error: str | None = None
 
@@ -420,21 +657,18 @@ class ResearchSession:
                         return result.output
                     last_error = result.error
                 except NotImplementedError:
-                    # MCP or script tool not implemented in this environment
-                    # Return a mock result so the session can continue
                     return {
                         "task_id": task.id,
                         "task_type": task.task_type.value,
                         "status": "mocked",
-                        "note": f"Tool '{selection.tool_name}' not implemented — returning mock result",
+                        "note": f"Tool '{selection.tool_name}' not implemented",
                         "attempt": attempt,
                     }
-                except Exception as exc:  # noqa: BLE001
+                except Exception as exc:
                     last_error = str(exc)
 
             attempt += 1
 
-        # All tools failed after max_retries
         return {
             "task_id": task.id,
             "task_type": task.task_type.value,
@@ -464,7 +698,6 @@ class ResearchSession:
         """Push task result and evaluation into memory."""
         tools_used: list[str] = []
         if result and isinstance(result, dict):
-            # Try to extract tool name from result
             tool_name = result.get("tool_name", "")
             if tool_name:
                 tools_used = [tool_name]
@@ -485,11 +718,18 @@ class ResearchSession:
             },
         )
 
-        # Update the latest context unit's evaluation field
         context = self.memory.get_context(limit=1)
         if context:
             latest = context[-1]
             self.memory.update_evaluation(latest.timestamp, evaluation.feedback)
+
+    def _report_progress(self, phase: str, task: Task, progress: float):
+        """Report progress via callback if configured."""
+        if self.config.progress_callback:
+            try:
+                self.config.progress_callback(phase, task, progress)
+            except Exception:
+                pass  # Don't let callback errors break execution
 
     def _flatten_tasks(self, tasks: list[Task]) -> list[Task]:
         """Flatten a task tree into a flat list (BFS)."""
@@ -504,12 +744,10 @@ class ResearchSession:
     def _topological_order(self, tasks: list[Task]) -> list[Task]:
         """
         Kahn's topological sort — tasks with no unmet dependencies come first.
-        Falls back to planner's sort for task graphs with no duplicates.
         """
         task_map = {t.id: t for t in tasks}
         in_degree = {t.id: 0 for t in tasks}
 
-        # Compute in-degrees
         for t in tasks:
             for dep_id in t.dependencies:
                 if dep_id in in_degree:
@@ -533,7 +771,6 @@ class ResearchSession:
                     if in_degree[dep.id] == 0 and dep not in sorted_tasks and dep not in ready:
                         ready.append(dep)
 
-        # Append any remaining tasks (cycles or orphaned)
         for t in tasks:
             if t not in sorted_tasks:
                 sorted_tasks.append(t)
@@ -547,7 +784,8 @@ class ResearchSession:
 
         completed_ids = {
             t.id for t in all_tasks
-            if t.status in (TaskStatus.DONE, TaskStatus.FAILED, TaskStatus.BLOCKED)
+            if t.status in (TaskStatus.DONE, TaskStatus.BLOCKED)
+            # NOTE: FAILED does NOT satisfy dependencies — a failed dep means the task cannot run
         }
 
         return all(dep_id in completed_ids for dep_id in task.dependencies)
@@ -556,5 +794,6 @@ class ResearchSession:
         return (
             f"ResearchSession(id={self.config.session_id!r}, "
             f"state={self._state.value}, "
-            f"tasks={len(self._task_results)})"
+            f"tasks={len(self._task_results)}, "
+            f"parallel={self.config.parallel})"
         )

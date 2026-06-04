@@ -20,13 +20,10 @@ DeepSeek 审查 + GPT 修复双阶段流水线。
   print(result.fixed_content)
 """
 
-import json
 import time
-import hashlib
+from dataclasses import dataclass
 from enum import Enum
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 # ─── 配置路径 ────────────────────────────────────────────
 
@@ -84,14 +81,14 @@ class ReviewLayer:
     首次调用时自动初始化，后续调用共享同一 router 实例。
     """
 
-    _router: "Optional[AIRouter]" = None
+    _router: "LLMGateway | None" = None
 
     def __init__(self, use_cache: bool = True):
         if ReviewLayer._router is None:
             import sys as _sys
             _sys.path.insert(0, str(SCRIPT_DIR))
-            from scripts.ai_router import AIRouter
-            ReviewLayer._router = AIRouter(use_cache=use_cache)
+            from scripts.core.llm_gateway import LLMGateway
+            ReviewLayer._router = LLMGateway(memory=None, use_cache=use_cache)
         self.router = ReviewLayer._router
         self._use_cache = use_cache
 
@@ -105,7 +102,7 @@ class ReviewLayer:
         self,
         content: str,
         content_type: ReviewType,
-        context: Optional[dict] = None,
+        context: dict | None = None,
         skip_review: bool = False,
         skip_fix: bool = False,
     ) -> ReviewResult:
@@ -179,7 +176,7 @@ class ReviewLayer:
         self,
         content: str,
         content_type: ReviewType,
-        context: Optional[dict] = None,
+        context: dict | None = None,
     ) -> tuple[str, list[str], float]:
         """仅审查，不修复。返回 (审查意见, 问题列表, 评分)。"""
         result = self.review_and_fix(content, content_type, context, skip_fix=True)
@@ -189,7 +186,7 @@ class ReviewLayer:
         self,
         content: str,
         content_type: ReviewType,
-        context: Optional[dict] = None,
+        context: dict | None = None,
     ) -> str:
         """直接修复，不审查（跳过已知无问题）。"""
         result = self.review_and_fix(content, content_type, context, skip_review=True)

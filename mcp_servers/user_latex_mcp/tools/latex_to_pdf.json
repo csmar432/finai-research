@@ -1,0 +1,13 @@
+{
+  "name": "latex_to_pdf",
+  "description": "将LaTeX片段或完整代码转换为PDF文件。适合生成独立表格、公式或单页内容。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

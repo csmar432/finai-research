@@ -1,0 +1,30 @@
+{
+  "name": "get_trade_calendar",
+  "description": "获取A股交易日历。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "exchange": {
+        "type": "string",
+        "enum": [
+          "SSE",
+          "SZSE",
+          "BSE"
+        ]
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      },
+      "is_open": {
+        "type": "string",
+        "enum": [
+          "0",
+          "1"
+        ]
+      }
+    }
+  }
+}

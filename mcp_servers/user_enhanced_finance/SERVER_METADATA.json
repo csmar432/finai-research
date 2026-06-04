@@ -1,0 +1,25 @@
+{
+  "name": "Enhanced Finance",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "enhanced-finance",
+  "serverIdentifier": "user-enhanced-finance",
+  "description": "增强金融数据 — 汇率/大宗商品/加密货币/航运指数",
+  "tools": [
+    "get_commodity_price",
+    "get_crypto_price",
+    "get_forex_hist",
+    "get_forex_spot",
+    "get_futures_price",
+    "get_shipping_index"
+  ],
+  "_legacy_capabilities": [
+    "外汇",
+    "大宗商品",
+    "加密货币",
+    "航运指数",
+    "全球指数",
+    "期货"
+  ]
+}

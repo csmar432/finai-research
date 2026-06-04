@@ -1,0 +1,14 @@
+{
+  "name": "get_yf_quote",
+  "description": "获取股票实时行情",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": {
+        "type": "string",
+        "description": "股票代码，例如 'AAPL'（美股）或 '0700.HK'（港股）"
+      }
+    },
+    "required": ["ticker"]
+  }
+}

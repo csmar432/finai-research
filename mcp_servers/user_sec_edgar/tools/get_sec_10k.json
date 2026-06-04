@@ -1,0 +1,12 @@
+{
+  "name": "get_sec_10k",
+  "description": "获取公司10-K年报全文",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "cik": { "type": "string", "description": "SEC CIK 编号" },
+      "year": { "type": "integer", "description": "年份，例如 2023" }
+    },
+    "required": ["cik", "year"]
+  }
+}

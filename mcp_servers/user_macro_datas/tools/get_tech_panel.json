@@ -1,0 +1,8 @@
+{
+  "name": "get_tech_panel",
+  "description": "中国科技指标面板数据指引",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

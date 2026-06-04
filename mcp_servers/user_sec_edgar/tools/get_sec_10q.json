@@ -1,0 +1,13 @@
+{
+  "name": "get_sec_10q",
+  "description": "获取公司10-Q季报",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "cik": { "type": "string", "description": "SEC CIK 编号" },
+      "year": { "type": "integer", "description": "年份" },
+      "quarter": { "type": "integer", "description": "季度：1,2,3,4" }
+    },
+    "required": ["cik", "year", "quarter"]
+  }
+}

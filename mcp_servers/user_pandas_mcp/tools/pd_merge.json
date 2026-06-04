@@ -1,0 +1,13 @@
+{
+  "name": "pd_merge",
+  "description": "合并两个数据框（merge/concat/join）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

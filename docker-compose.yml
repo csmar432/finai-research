@@ -1,0 +1,358 @@
+version: '3.9'
+
+services:
+  # ── MCP Data Servers (Core — always running) ───────────────────────────────────
+
+  mcp_eastmoney_reports:
+    build:
+      context: ./mcp_servers/user_eastmoney_reports
+      dockerfile: Dockerfile
+    container_name: mcp_eastmoney_reports
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_financial:
+    build:
+      context: ./mcp_servers/user_financial
+      dockerfile: Dockerfile
+    container_name: mcp_financial
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_enhanced_finance:
+    build:
+      context: ./mcp_servers/user_enhanced_finance
+      dockerfile: Dockerfile
+    container_name: mcp_enhanced_finance
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_eodhd:
+    build:
+      context: ./mcp_servers/user_eodhd
+      dockerfile: Dockerfile
+    container_name: mcp_eodhd
+    environment:
+      - PYTHONUNBUFFERED=1
+      - EODHD_API_KEY=${EODHD_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_fed_data:
+    build:
+      context: ./mcp_servers/user_fed_data
+      dockerfile: Dockerfile
+    container_name: mcp_fed_data
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_wb_data:
+    build:
+      context: ./mcp_servers/user_wb_data
+      dockerfile: Dockerfile
+    container_name: mcp_wb_data
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_imf_data:
+    build:
+      context: ./mcp_servers/user_imf_data
+      dockerfile: Dockerfile
+    container_name: mcp_imf_data
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_oecd_data:
+    build:
+      context: ./mcp_servers/user_oecd_data
+      dockerfile: Dockerfile
+    container_name: mcp_oecd_data
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  mcp_latex_mcp:
+    build:
+      context: ./mcp_servers/user_latex_mcp
+      dockerfile: Dockerfile
+    container_name: mcp_latex_mcp
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  # ── MCP Data Servers (Optional — enable as needed) ──────────────────────────
+  # Uncomment the services you need. Each requires its Dockerfile to exist
+  # under ./mcp_servers/<server_name>/Dockerfile.
+  #
+  # Available optional servers (确认存在后取消注释):
+  #   mcp_tushare          — A股数据（需 TUSHARE_TOKEN）
+  #   mcp_bea_data         — 美国经济分析局数据
+  #   mcp_csmar            — 国泰安CSMAR数据库
+  #   mcp_eastmoney_bond   — 东方财富债券数据
+  #   mcp_eastmoney_fund   — 东方财富基金数据
+  #   mcp_eastmoney_option — 东方财富期权数据
+  #   mcp_filesystem_mcp   — 文件系统工具
+  #   mcp_hubei_stats      — 湖北省统计数据
+  #   mcp_macro_ceic       — CEIC宏观经济数据
+  #   mcp_macro_datas      — 宏觀面板数据
+  #   mcp_macro_stats       — 宏观统计数据
+  #   mcp_nber_wp          — NBER工作论文
+  #   mcp_pandas_mcp       — Pandas数据分析
+  #   mcp_playwright_mcp   — 浏览器自动化
+  #   mcp_semantic_scholar — 学术文献检索
+  #   mcp_wuhan_stats      — 武汉市统计数据
+  #   mcp_wind             — 万得Wind数据（需WIND_TOKEN）
+
+  # mcp_tushare:
+  #   build: ./mcp_servers/user_tushare
+  #   container_name: mcp_tushare
+  #   environment: [PYTHONUNBUFFERED=1, TUSHARE_TOKEN=${TUSHARE_TOKEN:-}]
+
+  # mcp_yfinance:        # 美股/港股数据（yfinance，无需Key）
+  #   build: ./mcp_servers/user_yfinance
+  #   container_name: mcp_yfinance
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_bea_data:
+  #   build: ./mcp_servers/user_bea_data
+  #   container_name: mcp_bea_data
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_csmar:
+  #   build: ./mcp_servers/user_csmar
+  #   container_name: mcp_csmar
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_eastmoney_bond:
+  #   build: ./mcp_servers/user_eastmoney_bond
+  #   container_name: mcp_eastmoney_bond
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_eastmoney_fund:
+  #   build: ./mcp_servers/user_eastmoney_fund
+  #   container_name: mcp_eastmoney_fund
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_eastmoney_option:
+  #   build: ./mcp_servers/user_eastmoney_option
+  #   container_name: mcp_eastmoney_option
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_filesystem_mcp:
+  #   build: ./mcp_servers/user_filesystem_mcp
+  #   container_name: mcp_filesystem_mcp
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_hubei_stats:
+  #   build: ./mcp_servers/user_hubei_stats
+  #   container_name: mcp_hubei_stats
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_macro_ceic:
+  #   build: ./mcp_servers/user_macro_ceic
+  #   container_name: mcp_macro_ceic
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_macro_datas:
+  #   build: ./mcp_servers/user_macro_datas
+  #   container_name: mcp_macro_datas
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_macro_stats:
+  #   build: ./mcp_servers/user_macro_stats
+  #   container_name: mcp_macro_stats
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_nber_wp:
+  #   build: ./mcp_servers/user_nber_wp
+  #   container_name: mcp_nber_wp
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_pandas_mcp:
+  #   build: ./mcp_servers/user_pandas_mcp
+  #   container_name: mcp_pandas_mcp
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_playwright_mcp:
+  #   build: ./mcp_servers/user_playwright_mcp
+  #   container_name: mcp_playwright_mcp
+  #   environment: [PYTHONUNBUFFERED=1]
+  #   command: ["python", "-m", "playwright", "install", "chromium"]
+
+  # mcp_semantic_scholar:
+  #   build: ./mcp_servers/user_semantic_scholar
+  #   container_name: mcp_semantic_scholar
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # ── 新增 MCP 服务器（2026-06-04）────────────────────────────────
+  # 无需 API Key，直接取消注释即可启用：
+
+  # mcp_context7:        # 学术论文全文（ArXiv/DOI）
+  #   build: ./mcp_servers/user_context7
+  #   container_name: mcp_context7
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_openalex:        # 学术元数据（2亿+成果）
+  #   build: ./mcp_servers/user_openalex
+  #   container_name: mcp_openalex
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_sec_edgar:       # SEC 10-K/10-Q/8-K 公告
+  #   build: ./mcp_servers/user_sec_edgar
+  #   container_name: mcp_sec_edgar
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_cryptocompare:   # 加密货币数据
+  #   build: ./mcp_servers/user_cryptocompare
+  #   container_name: mcp_cryptocompare
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_newsapi:         # 财经新闻（需 NEWSAPI_API_KEY）
+  #   build: ./mcp_servers/user_newsapi
+  #   container_name: mcp_newsapi
+  #   environment: [PYTHONUNBUFFERED=1, NEWSAPI_API_KEY=${NEWSAPI_API_KEY:-}]
+
+  # mcp_wuhan_stats:
+  #   build: ./mcp_servers/user_wuhan_stats
+  #   container_name: mcp_wuhan_stats
+  #   environment: [PYTHONUNBUFFERED=1]
+
+  # mcp_wind:
+  #   build: ./mcp_servers/user_wind
+  #   container_name: mcp_wind
+  #   environment: [PYTHONUNBUFFERED=1, WIND_TOKEN=${WIND_TOKEN:-}]
+
+  # ── Core LLM Gateway ─────────────────────────────────────────────────────────
+
+  llm_gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: llm_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - RELAY_API_KEY=${RELAY_API_KEY:-}
+      - MCP_SERVER_URL=http://mcp_eastmoney_reports:8001
+    env_file:
+      - .env
+    depends_on:
+      mcp_eastmoney_reports:
+        condition: service_started
+      mcp_financial:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  # ── SSE Streaming API ─────────────────────────────────────────────────────────
+
+  sse_api:
+    build:
+      context: .
+      dockerfile: Dockerfile.sse
+    container_name: sse_api
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LLM_GATEWAY_URL=http://llm_gateway:8000
+    depends_on:
+      llm_gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  # ── Dashboard ────────────────────────────────────────────────────────────────
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: dashboard
+    ports:
+      - "8050:8050"
+    environment:
+      - LLM_GATEWAY_URL=http://llm_gateway:8000
+      - SSE_API_URL=http://sse_api:8501
+    depends_on:
+      llm_gateway:
+        condition: service_healthy
+      sse_api:
+        condition: service_healthy
+    restart: on-failure
+
+  # ── Watchtower (optional — auto-update containers) ────────────────────────────
+  # Uncomment to enable automatic container updates:
+  #
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   container_name: watchtower
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - WATCHTOWER_CLEANUP=true
+  #     - WATCHTOWER_POLL_INTERVAL=3600
+
+networks:
+  default:
+    name: finai_network
+    driver: bridge

@@ -1,0 +1,8 @@
+{
+  "name": "get_hubei_tech_contract",
+  "description": "湖北技术合同成交额（akshare暂无分省数据，返回已知数据）",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

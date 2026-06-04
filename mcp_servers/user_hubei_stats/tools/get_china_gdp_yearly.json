@@ -1,0 +1,8 @@
+{
+  "name": "get_china_gdp_yearly",
+  "description": "获取全国GDP年度数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

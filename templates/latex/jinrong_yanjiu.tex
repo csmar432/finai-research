@@ -1,0 +1,348 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8
+% 金融研究（Journal of Financial Research）格式模板
+% 参考来源：http://jrs.finance-cn.org/
+% 适用于货币银行、资本市场、公司金融等领域论文
+% CTeX 中文格式，使用XeLaTeX编译
+
+\PassOptionsToPackage{quiet}{xeCJK}
+\documentclass[lang=cn, aaffiliation={中国}]{ctexart}
+
+% ── 文档类型选项 ────────────────────────────────────────────────────────────
+% 本模板采用单栏排版。如需双栏可将整段替换为：
+% \documentclass[lang=cn, twocolumn]{ctexart}
+
+% ── 必要宏包 ────────────────────────────────────────────────────────────────
+\usepackage[
+    a4paper,
+    top=2.5cm, bottom=2.5cm,
+    left=3.0cm, right=2.5cm,
+    headheight=14.5pt,
+    heightrounded,
+]{geometry}
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\xeCJKsetup{CJKspace=true, xCJKecglue={}}
+
+\usepackage{amsmath, mathtools}  % 数学公式
+\usepackage{booktabs}            % 表格线
+\usepackage{threeparttable}      % 表格注释
+\usepackage{longtable}           % 跨页表格
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={金融研究格式模板},
+    pdfauthor={作者姓名},
+}
+
+\usepackage{natbib}
+\bibliographystyle{gbt7714-numerical}
+
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+
+% ── 页面设置 ────────────────────────────────────────────────────────────────
+\setstretch{1.5}
+\setlength{\parindent}{2em}
+\setlength{\abovecaptionskip}{6pt}
+\setlength{\belowcaptionskip}{6pt}
+
+% ── 章节标题格式 ────────────────────────────────────────────────────────────
+\titleformat*{\section}{\fontsize{13pt}{1.5em}\bfseries\center}
+\titleformat*{\subsection}{\fontsize{12pt}{1.5em}\bfseries}
+\titleformat*{\subsubsection}{\fontsize{12pt}{1.5em}\rmfamily}
+
+% ── 页眉页脚 ────────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\footnotesize 金~融~研~究}
+\fancyfoot[C]{\thepage}
+
+% ── 图表设置 ────────────────────────────────────────────────────────────────
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\E}{E}
+
+% ── 标题与作者 ─────────────────────────────────────────────────────────────
+\title{论文标题（中文）\thanks{基金项目（编号）。}}
+\author{作者姓名\thanks{作者简介：\dots，E-mail: \dots}}
+\date{\today}
+
+% ── 摘要 ────────────────────────────────────────────────────────────────────
+\newenvironment{cnabstract}{%
+    \par\textbf{摘要：}
+}{\par\vspace{\baselineskip}\par\textbf{关键词：}...}
+
+% ═══════════════════════════════════════════════════════════════════════════
+% 正文
+% ═══════════════════════════════════════════════════════════════════════════
+
+\begin{document}
+
+\thispagestyle{empty}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{cnabstract}
+    本文利用\dots数据，考察了\dots对\dots的影响。研究发现：
+    （1）\dots；（2）\dots；（3）\dots。
+    机制检验表明，\dots是重要的传导路径。
+\end{cnabstract}
+
+\textbf{关键词：}关键词1；关键词2；关键词3
+
+% ── 一、引言 ───────────────────────────────────────────────────────────────
+\section{引言}
+\label{sec:intro}
+
+金融市场的\dots问题是当前学术研究的热点。
+
+一方面，\dots（\citealp{xxx}）。\citet{yyy}指出，\dots。
+
+另一方面，\dots（\citealp{zzz}）。
+
+本文可能的贡献在于：第一，\dots；第二，\dots；第三，\dots。
+
+% ── 二、理论分析与研究假说 ───────────────────────────────────────────────
+\section{理论分析与研究假说}
+\label{sec:theory}
+
+\subsection{理论分析}
+\label{sec:theory:mech}
+
+基于\dots理论，\dots（\citealp{xxx}）。
+
+核心逻辑如下：第一，\dots（如图~\ref{fig:framework}所示）。第二，\dots。
+
+\begin{figure}[htbp]
+    \centering
+    \caption{研究框架}
+    \label{fig:framework}
+    % \includegraphics[width=0.75\textwidth]{framework.pdf}
+    \begin{minipage}{0.75\textwidth}\footnotesize
+        注：图中实线箭头表示直接影响，虚线箭头表示间接影响。
+    \end{minipage}
+\end{figure}
+
+\subsection{研究假说}
+\label{sec:hypothesis}
+
+基于上述分析，本文提出：
+
+\textbf{假说 H1：}在其他条件不变的情况下，\dots对\dots有显著影响。
+
+\textbf{假说 H2：}\dots的效应在\dots样本中更为显著。
+
+% ── 三、研究设计 ──────────────────────────────────────────────────────────
+\section{研究设计}
+\label{sec:design}
+
+\subsection{样本与数据}
+\label{sec:data}
+
+本文以\dots年\dots市场的\dots家公司为研究样本。
+
+数据来源：（1）CSMAR 数据库；（2）Wind 数据库；（3）中国人民银行调查统计司。
+
+样本筛选步骤：（1）\dots；（2）\dots；（3）\dots。
+
+最终得到包含\dots个公司-\/年观测值的非平衡面板数据。
+
+\subsection{模型设定}
+\label{sec:model}
+
+为检验假说 H1，本文构建双向固定效应模型：
+
+\begin{equation}
+    \label{eq:main}
+    Y_{it} = \alpha + \beta \cdot Treat_i \times Post_t + \gamma X_{it} + \mu_i + \lambda_t + \varepsilon_{it},
+\end{equation}
+
+其中，$Treat_i \times Post_t$ 为双重差分交互项，是本文的核心解释变量。
+
+\subsection{变量定义}
+\label{sec:var}
+
+表~\ref{tab:var_def}~汇总了主要变量的定义。
+
+\begin{table}[htbp]
+    \centering
+    \caption{主要变量定义}
+    \label{tab:var_def}
+    \begin{threeparttable}
+        \begin{tabular}{p{2.5cm}p{2.5cm}p{5.5cm}}
+            \toprule
+            \textbf{变量类型} & \textbf{变量名称} & \textbf{变量定义} \\
+            \midrule
+            \textbf{被解释变量} & $Y_{it}$ & \dots \\
+            \midrule
+            \textbf{解释变量} & $Treat_i$ & \dots \\
+              & $Post_t$ & \dots \\
+              & $Treat_i \times Post_t$ & \dots（核心变量）\\
+            \midrule
+            \textbf{控制变量} & Size & \dots \\
+              & Lev & \dots \\
+              & ROA & \dots \\
+              & Growth & \dots \\
+              & Age & \dots \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 缩尾处理：所有连续变量在 1\% 和 99\% 分位数进行 Winsorize 处理。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+% ── 四、实证分析 ──────────────────────────────────────────────────────────
+\section{实证分析}
+\label{sec:results}
+
+\subsection{描述性统计}
+\label{sec:summary}
+
+表~\ref{tab:desc}报告了主要变量的描述性统计。
+
+\begin{longtable}{lccccccc}
+    \caption{描述性统计}
+    \label{tab:desc}\\
+    \toprule
+    \textbf{变量} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{P25} & \textbf{P75} & \textbf{Max} \\
+    \midrule
+    \endfirsthead
+    \caption{(续)}\\
+    \toprule
+    \textbf{变量} & \textbf{N} & \textbf{Mean} & \textbf{SD} & \textbf{Min} & \textbf{P25} & \textbf{P75} & \textbf{Max} \\
+    \midrule
+    \endhead
+    \bottomrule
+    \endfoot
+    $Y_{it}$ & 15,320 & 0.048 & 0.092 & -0.201 & -0.002 & 0.082 & 0.298 \\
+    $Treat_i \times Post_t$ & 15,320 & 0.342 & 0.474 & 0.000 & 0.000 & 1.000 & 1.000 \\
+    Size & 15,320 & 22.08 & 1.254 & 19.68 & 21.17 & 22.73 & 25.54 \\
+    Lev & 15,320 & 0.396 & 0.194 & 0.052 & 0.238 & 0.539 & 0.852 \\
+    ROA & 15,320 & 0.048 & 0.038 & -0.056 & 0.020 & 0.071 & 0.168 \\
+\end{longtable}
+
+\subsection{基准回归结果}
+\label{sec:baseline}
+
+表~\ref{tab:did}报告了基准回归结果。
+
+\begin{table}[htbp]
+    \centering
+    \caption{基准回归结果：双重差分估计}
+    \label{tab:did}
+    \begin{threeparttable}
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} \\
+            & \textbf{OLS} & \textbf{Poisson} & \textbf{2SLS} \\
+            \midrule
+            $Treat \times Post$ & 0.031\*** & 0.218\** & 0.045\*** \\
+              & (3.56) & (2.31) & (3.12) \\
+            Size & -0.001 & -0.008 & -0.002 \\
+              & (-0.32) & (-0.94) & (-0.44) \\
+            \midrule
+            \textbf{固定效应} & \textbf{无} & \textbf{无} & \textbf{企业+年份} \\
+            \textbf{Adj. $R^2$} & 0.082 & 0.138 & 0.124 \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：（1）括号内为 $t$ 值，标准误在企业层面聚类；（2）\*** $p<0.01$, \** $p<0.05$, \* $p<0.10$；（3）第（3）列采用工具变量法，工具变量为\dots。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{平行趋势检验}
+\label{sec:parallel}
+
+本文采用事件研究法（Event Study）检验平行趋势假设：
+
+\begin{equation}
+    \label{eq:event}
+    Y_{it} = \alpha + \sum_{k=-5, k\neq-1}^{5} \beta_k D_{it}^k + \gamma X_{it} + \mu_i + \lambda_t + \varepsilon_{it},
+\end{equation}
+
+其中 $D_{it}^k$ 为相对时间虚拟变量。
+
+图~\ref{fig:event_study}~报告了事件研究回归结果，可以看出政策实施前各期系数均不显著，满足平行趋势假设。
+
+\begin{figure}[htbp]
+    \centering
+    \caption{事件研究图：平行趋势检验}
+    \label{fig:event_study}
+    % \includegraphics[width=0.85\textwidth]{event_study.pdf}
+    \begin{minipage}{0.85\textwidth}\footnotesize
+        注：横轴表示相对时间（0 为政策实施年份），纵轴为 DID 系数估计值，
+        虚线为 95\% 置信区间。政策实施前的系数均不显著，支持平行趋势假设。
+    \end{minipage}
+\end{figure}
+
+% ── 五、机制检验 ──────────────────────────────────────────────────────────
+\section{机制检验}
+\label{sec:mechanism}
+
+\subsection{中介效应}
+\label{sec:mediation}
+
+借鉴\citet{xxx}的中介效应检验方法，本文构建如下递归模型：
+
+\begin{align}
+    \label{eq:mediation}
+    M_{it} &= \alpha_1 + c_1 \cdot Treat_i \times Post_t + \gamma_1 X_{it} + \mu_i + \lambda_t + \varepsilon_{it}, \\
+    Y_{it} &= \alpha_2 + c_2 \cdot Treat_i \times Post_t + b \cdot M_{it} + \gamma_2 X_{it} + \mu_i + \lambda_t + \varepsilon_{it}.
+\end{align}
+
+表~\ref{tab:mediation}~报告了中介效应检验结果。
+
+\begin{table}[htbp]
+    \centering
+    \caption{中介效应检验}
+    \label{tab:mediation}
+    \begin{threeparttable}
+        \begin{tabular}{lcc}
+            \toprule
+            \textbf{} & \textbf{Step 1} & \textbf{Step 2} \\
+            \midrule
+            $Treat \times Post$ & 0.182\*** & 0.025\** \\
+              & (4.21) & (2.38) \\
+            $M_{it}$（中介变量）& & 0.031\*** \\
+              & & (3.65) \\
+            \midrule
+            \textbf{间接效应} & \multicolumn{2}{c}{0.006} \\
+            \textbf{直接效应} & \multicolumn{2}{c}{0.025} \\
+            \textbf{总效应} & \multicolumn{2}{c}{0.031} \\
+            \textbf{中介比例} & \multicolumn{2}{c}{18.9\%} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}\footnotesize
+            \item 注：中介变量 $M_{it}$ 为\dots。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+% ── 六、结论 ──────────────────────────────────────────────────────────────
+\section{结论与启示}
+\label{sec:conclusion}
+
+本文以\dots为自然实验，利用\dots数据，研究了\dots的影响及其机制。
+
+主要结论：第一，\dots；第二，\dots；第三，\dots。
+
+政策启示：第一，\dots；第二，\dots。
+
+\textbf{参考文献：}
+\bibliography{references}
+
+\end{document}

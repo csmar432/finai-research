@@ -1,0 +1,8 @@
+{
+  "name": "get_consumer_retail",
+  "description": "获取中国社会消费品零售总额月度数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

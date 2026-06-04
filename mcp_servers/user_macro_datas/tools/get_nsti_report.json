@@ -1,0 +1,8 @@
+{
+  "name": "get_nsti_report",
+  "description": "科技部公报数据指引（含分省R&D排名）",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "get_ust_yield_rates",
+  "description": "获取美国国债收益率曲线（1M-30Y），via EODHD API",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份，如 2024"
+      }
+    },
+    "required": []
+  }
+}

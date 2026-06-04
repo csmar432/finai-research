@@ -1,0 +1,23 @@
+{
+  "name": "Eodhd Economic Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "EODHD Economic Data",
+  "serverIdentifier": "user-eodhd",
+  "description": "全球经济数据 MCP — 宏观经济指标、国债收益率曲线、经济日历。数据源: akshare/World Bank API (无需Key)。设置 EODHD_API_KEY 可获得官方 EODHD 数据。",
+  "tools": [
+    "get_economic_indicators",
+    "get_ust_yield_rates",
+    "get_economic_events"
+  ],
+  "_legacy_capabilities": {
+    "tools": [
+      "get_economic_indicators (全球经济指标)",
+      "get_ust_yield_rates (美国国债收益率曲线)",
+      "get_economic_events (全球经济日历)"
+    ],
+    "requires_api_key": false,
+    "dependencies": []
+  }
+}

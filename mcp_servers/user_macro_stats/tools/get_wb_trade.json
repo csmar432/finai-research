@@ -1,0 +1,18 @@
+{
+  "name": "get_wb_trade",
+  "description": "查询各国经常账户余额",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string"
+      },
+      "start_year": {
+        "type": "integer"
+      },
+      "end_year": {
+        "type": "integer"
+      }
+    }
+  }
+}

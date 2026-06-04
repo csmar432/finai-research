@@ -1,0 +1,25 @@
+{
+  "name": "get_macro_euro",
+  "description": "获取欧元区宏观经济指标。使用 akshare 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标名称",
+        "enum": [
+          "cpi",
+          "gdp",
+          "unemployment_rate",
+          "ecb_rate",
+          "ppi",
+          "retail_sales",
+          "trade"
+        ]
+      }
+    },
+    "required": [
+      "indicator"
+    ]
+  }
+}

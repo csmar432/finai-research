@@ -1,0 +1,13 @@
+{
+  "name": "pd_read",
+  "description": "读取CSV/JSON/Excel/Parquet文件到DataFrame并注册到会话。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

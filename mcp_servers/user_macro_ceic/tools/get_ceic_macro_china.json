@@ -1,0 +1,14 @@
+{
+  "name": "get_ceic_macro_china",
+  "description": "获取中国宏观经济指标（CEIC风格）。涵盖GDP、CPI、PPI、PMI等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标: gdp/cpi/ppi/pmi/m2/lpr/shibor/trade_balance",
+        "default": "gdp"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "get_wind_futures",
+  "description": "获取期货行情数据（模拟Wind风格）。涵盖商品期货、金融期货。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "futures_type": {
+        "type": "string",
+        "description": "期货类型: commodity(商品)/financial(金融)",
+        "default": "commodity"
+      }
+    }
+  }
+}

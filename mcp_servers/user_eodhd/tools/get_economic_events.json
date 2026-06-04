@@ -1,0 +1,28 @@
+{
+  "name": "get_economic_events",
+  "description": "获取全球经济事件日历（CPI/FOMC/非农等），via EODHD API",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country": {
+        "type": "string",
+        "description": "国家代码，如 US/CN"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYY-MM-DD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYY-MM-DD"
+      },
+      "limit": {
+        "type": "integer",
+        "description": "最大结果数，默认200"
+      }
+    },
+    "required": [
+      "country"
+    ]
+  }
+}

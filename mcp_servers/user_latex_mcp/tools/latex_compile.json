@@ -1,0 +1,13 @@
+{
+  "name": "latex_compile",
+  "description": "编译LaTeX项目生成PDF。支持自动检测主文件和多次编译（pdflatex → bibtex → pdflatex）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

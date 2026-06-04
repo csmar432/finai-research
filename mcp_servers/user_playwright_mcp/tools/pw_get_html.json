@@ -1,0 +1,13 @@
+{
+  "name": "pw_get_html",
+  "description": "获取页面或元素的HTML源码。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

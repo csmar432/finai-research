@@ -1,0 +1,25 @@
+{
+  "name": "Financial",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "financial",
+  "serverIdentifier": "user-financial",
+  "description": "全球宏观金融数据 — FRED风格（via akshare，无API Key）",
+  "tools": [
+    "get_macro_china",
+    "get_macro_euro",
+    "get_macro_japan",
+    "get_macro_uk",
+    "get_macro_usa",
+    "get_wb_indicator"
+  ],
+  "_legacy_capabilities": [
+    "宏观指标",
+    "经济数据",
+    "央行利率",
+    "国债收益率",
+    "通胀",
+    "就业"
+  ]
+}

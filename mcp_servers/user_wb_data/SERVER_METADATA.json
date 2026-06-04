@@ -1,0 +1,27 @@
+{
+  "name": "World Bank Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "wb-data",
+  "serverIdentifier": "user-wb-data",
+  "description": "World Bank Data API（无需API Key）",
+  "tools": [
+    "get_wb_debt",
+    "get_wb_education",
+    "get_wb_gdp",
+    "get_wb_gender",
+    "get_wb_health",
+    "get_wb_population",
+    "get_wb_trade"
+  ],
+  "_legacy_capabilities": [
+    "GDP",
+    "人口",
+    "贸易",
+    "债务",
+    "健康",
+    "教育",
+    "性别"
+  ]
+}

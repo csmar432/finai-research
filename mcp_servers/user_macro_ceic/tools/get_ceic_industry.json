@@ -1,0 +1,14 @@
+{
+  "name": "get_ceic_industry",
+  "description": "获取工业产出数据（CEIC风格）。涵盖工业增加值、产能利用率等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "industry_type": {
+        "type": "string",
+        "description": "行业类型: manufacturing/production/capacity",
+        "default": "manufacturing"
+      }
+    }
+  }
+}

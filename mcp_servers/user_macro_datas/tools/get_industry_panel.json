@@ -1,0 +1,8 @@
+{
+  "name": "get_industry_panel",
+  "description": "中国产业指标面板数据指引",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

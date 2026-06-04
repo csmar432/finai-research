@@ -1,0 +1,19 @@
+{
+  "name": "get_wind_credit_spread",
+  "description": "获取信用利差数据（企业债vs国债）。返回不同评级的信用利差。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "rating": {
+        "type": "string",
+        "description": "债券评级: AAA/AA+/AA",
+        "default": "AAA"
+      },
+      "period": {
+        "type": "string",
+        "description": "期限: 1Y/3Y/5Y/10Y",
+        "default": "3Y"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Pandas Mcp",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "Pandas MCP",
+  "serverIdentifier": "user-pandas-mcp",
+  "description": "数据分析 MCP — 读取CSV/JSON/Excel文件、描述性统计、数据筛选、分组聚合、合并、转换、相关性分析、透视表、SQL查询、数据导出。",
+  "tools": [
+    "pd_read",
+    "pd_describe",
+    "pd_filter",
+    "pd_groupby_agg",
+    "pd_merge",
+    "pd_transform",
+    "pd_corr_analysis",
+    "pd_pivot",
+    "pd_export",
+    "pd_summary",
+    "pd_list_datasets",
+    "pd_sql",
+    "pd_head"
+  ],
+  "_legacy_capabilities": {
+    "tools": [
+      "pd_read (读取数据文件)",
+      "pd_describe (描述性统计)",
+      "pd_filter (数据筛选)",
+      "pd_groupby_agg (分组聚合)",
+      "pd_merge (数据合并)",
+      "pd_transform (数据转换)",
+      "pd_corr_analysis (相关性分析)",
+      "pd_pivot (数据透视表)",
+      "pd_export (数据导出)",
+      "pd_summary (数据框概览)",
+      "pd_list_datasets (列出已注册数据框)",
+      "pd_sql (SQL查询数据框)",
+      "pd_head (查看前N行)"
+    ],
+    "requires_api_key": false,
+    "dependencies": [
+      "pandas",
+      "pandasql"
+    ]
+  }
+}

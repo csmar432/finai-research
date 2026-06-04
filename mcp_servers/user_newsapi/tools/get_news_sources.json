@@ -1,0 +1,11 @@
+{
+  "name": "get_news_sources",
+  "description": "获取可用新闻源列表",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "category": { "type": "string", "description": "分类过滤" },
+      "language": { "type": "string", "description": "语言：en,zh", "default": "en" }
+    }
+  }
+}

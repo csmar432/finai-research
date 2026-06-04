@@ -1,0 +1,13 @@
+{
+  "name": "pd_summary",
+  "description": "获取数据框概览（info + describe + null counts + head）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

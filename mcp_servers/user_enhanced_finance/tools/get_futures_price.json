@@ -1,0 +1,14 @@
+{
+  "name": "get_futures_price",
+  "description": "获取期货价格数据。使用 akshare 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "symbol": {
+        "type": "string",
+        "description": "期货合约代码，如 RB0（螺纹钢默认）, IF, IC 等"
+      }
+    },
+    "required": []
+  }
+}

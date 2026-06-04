@@ -1,0 +1,328 @@
+% 《金融研究》(Journal of Financial Research) LaTeX 模板
+% 适配 GB/T 7714-2015 参考文献格式
+% 格式：A4，双栏，中文，摘要+关键词
+%
+% 编译方式：xelatex -> bibtex -> xelatex -> xelatex
+
+% ─── 文档类 ────────────────────────────────────────────────────────────────
+\documentclass[10pt, UTF8, twocolumn]{ctexart}
+% 10pt: 金融研究正文字号
+% twocolumn: 双栏排版
+
+% ─── 页面布局 ─────────────────────────────────────────────────────────────
+\usepackage[
+    a4paper,
+    top=22mm,
+    bottom=22mm,
+    left=20mm,
+    right=20mm,
+    headheight=10mm,
+    footskip=8mm,
+    columnsep=8mm,
+]{geometry}
+
+% ─── 语言与字体 ────────────────────────────────────────────────────────────
+\usepackage{xeCJK}
+%\setCJKmainfont{...}[...]  % 系统字体配置（可选，ctex 自动 fallback）
+
+% ─── 数学与符号 ────────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+
+% ─── 间距控制 ─────────────────────────────────────────────────────────────
+\usepackage{setspace}
+%\setstretch{1.5}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+
+% ─── 页面样式 ─────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\fancypagestyle{JRYJ}{
+    \fancyhf{}
+    \fancyhead[C]{\thepage}
+    \fancyfoot[C]{\thepage}
+    \fancyhead[LO,RE]{}
+    \fancyhead[CO,CE]{}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{JRYJ}
+
+% ─── 超链接 ───────────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+
+% ─── 参考文献（GB/T 7714-2015 numeric）─────────────────────────────────────
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{gbt7714-plain}
+% 如有 gbt7714-2005.bst 可改用: \bibliographystyle{gbt7714-2005}
+
+% ─── 标题宏 ───────────────────────────────────────────────────────────────
+\makeatletter
+\def\@JRYJtitle#1{\gdef\@JRYJ@title{#1}}\def\@JRYJ@title{}
+\def\@JRYJauthor#1{\gdef\@JRYJ@author{#1}}\def\@JRYJ@author{}
+\def\@JRYJaffiliation#1{\gdef\@JRYJ@affiliation{#1}}\def\@JRYJ@affiliation{}
+\def\@JRYJabstract#1{\gdef\@JRYJ@abstract{#1}}\def\@JRYJ@abstract{}
+\def\@JRYJkeywords#1{\gdef\@JRYJ@keywords{#1}}\def\@JRYJ@keywords{}
+\makeatother
+
+% 摘要环境
+\NewDocumentEnvironment{jryjabstract}{}{
+    \par\noindent\textbf{摘\quad 要}\xiaosi
+    \wuhao
+}{
+    \par\vspace{\baselineskip}
+}
+
+% 关键词环境
+\NewDocumentEnvironment{jryjkeywords}{}{
+    \par\noindent\textbf{关键词}\xiaosi\ \wuhao
+}{
+    \par\vspace{0.5\baselineskip}
+}
+
+% 设置命令
+\NewDocumentCommand{\JRYJsettitle}{m}{\@JRYJtitle{#1}}
+\NewDocumentCommand{\JRYJsetauthor}{m}{\@JRYJauthor{#1}}
+\NewDocumentCommand{\JRYJsetaffiliation}{m}{\@JRYJaffiliation{#1}}
+\NewDocumentCommand{\JRYJsetabstract}{m}{\@JRYJabstract{#1}}
+\NewDocumentCommand{\JRYJsetkeywords}{m}{\@JRYJkeywords{#1}}
+
+% 字号命令
+\newcommand{\xiaosi}{\fontsize{12pt}{18pt}\selectfont}
+\newcommand{\wuhao}{\fontsize{9pt}{13pt}\selectfont}
+% 标题字号
+\newcommand{\JRYJtitlefont}{\fontsize{18pt}{26pt}\bfseries\selectfont}
+% 作者字号
+\newcommand{\JRYJauthorfont}{\fontsize{10.5pt}{16pt}\selectfont}
+
+% ─── 正文格式 ─────────────────────────────────────────────────────────────
+% 一级标题：黑体加粗，居中
+\ctexset{section/format={\centering\zihao{-3}\CJKfamily{zhhei}\bfseries}}
+% 二级标题：黑体
+\ctexset{subsection/format={\zihao{4}\CJKfamily{zhhei}}}
+% 三级标题：黑体
+\ctexset{subsubsection/format={\zihao{-4}\CJKfamily{zhhei}}}
+
+% ─── 图表浮动 ─────────────────────────────────────────────────────────────
+\usepackage{caption}
+\captionsetup{font=small, skip=6pt}
+
+% ─── 定理环境 ─────────────────────────────────────────────────────────────
+\newtheorem{hypothesis}{假设}
+\newtheorem{assumption}{假定}
+\newtheorem{finance}{命题}
+\newtheorem*{proof}{证明}
+
+% ─────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 封面信息（盲审时删除作者和单位信息）
+% ══════════════════════════════════════════════════════════════════════════════
+
+\JRYJsettitle{论文标题（中文，不超过20字）}
+
+% 盲审时注释掉以下两行
+\JRYJsetauthor{作者一$^{1}$~~作者二$^{2}$~~作者三$^{1}$}
+\JRYJsetaffiliation{$^{1}$北京大学光华管理学院~~$^{2}$清华大学五道口金融学院}
+
+\begin{jryjabstract}
+本文基于XX数据，采用XX方法，实证研究了XX问题。研究发现：（1）……；（2）……；（3）……。本文的研究对理解……具有理论意义，对金融监管和金融市场参与者……具有实践价值。
+\end{jryjabstract}
+
+\begin{jryjkeywords}
+关键词一；关键词二；关键词三；关键词四
+\end{jryjkeywords}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 正文
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{引言}
+\label{sec:intro}
+
+本文的研究背景与问题、意义和主要贡献如下。
+
+第一，……
+
+第二，……
+
+第三，……
+
+\section{文献综述}
+\label{sec:lit}
+
+\subsection{理论文献回顾}
+
+\subsection{实证文献回顾}
+已有文献在……方面做出了重要贡献，但仍存在以下不足：（1）……；（2）……；（3）……。
+
+本文与已有研究的关键区别在于：……。
+
+\section{研究设计}
+\label{sec:design}
+
+\subsection{样本与数据}
+本文以……为研究样本，时间跨度为……至……。数据来源包括……数据库、……数据库和……。
+
+样本筛选过程：（1）剔除……；（2）剔除……；（3）剔除……。
+
+\subsection{变量定义}
+
+\subsubsection{被解释变量}
+$Y_{it}$ 表示……，数据来源于……。
+
+\subsubsection{解释变量}
+核心解释变量$X_{it}$ 为……。该指标由……构造得到。
+
+工具变量$IV_{it}$ 为……。选择依据：……。
+
+\subsubsection{控制变量}
+参考已有研究（\cite{xxx}），本文还控制了以下变量：$Z_1$（……）、$Z_2$（……）、年份固定效应等。
+
+\begin{table}[htbp]
+\centering
+\caption{变量定义表}
+\label{tab:var}
+\xiaosi
+\begin{tabular}{p{2cm}p{2.5cm}p{5.5cm}}
+\toprule
+变量类型 & 变量名称 & 变量定义 \\
+\midrule
+因变量 & $Y$ & ……（数据来源：XX数据库）\\
+\midrule
+自变量 & $X$ & ……（指标构造方法）\\
+\midrule
+控制变量 & $Z_1$ & ……（定义）\\
+& $Z_2$ & ……（定义）\\
+& $Year$ & 年份虚拟变量\\
+\midrule
+工具变量 & $IV$ & ……（选择依据）\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{模型构建}
+为检验假设1，本文构建如下双向固定效应回归模型：
+
+\begin{equation}
+\label{eq:baseline}
+Y_{it} = \alpha + \beta X_{it} + \gamma Z_{it} + \mu_i + \lambda_t + \varepsilon_{it}
+\end{equation}
+
+其中，$X_{it}$ 为核心解释变量，$Z_{it}$ 为控制变量向量，$\mu_i$ 和 $\lambda_t$ 分别为企业和年份固定效应，$\varepsilon_{it}$ 为随机误差项。
+
+\section{实证结果}
+\label{sec:results}
+
+\subsection{描述性统计}
+表~\ref{tab:desc} 报告了主要变量的描述性统计。
+
+\begin{longtable}{ccccccc}
+\caption{描述性统计}
+\label{tab:desc}
+\\\toprule
+变量 & 观测数 & 均值 & 标准差 & 最小值 & 中位数 & 最大值 \\
+\midrule
+\endfirsthead
+\multicolumn{7}{c}{\textbf{续表\thetable\ 描述性统计}}\\
+\toprule
+变量 & 观测数 & 均值 & 标准差 & 最小值 & 中位数 & 最大值 \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$Y$ & 1000 & 0.05 & 0.20 & -0.50 & 0.03 & 0.60 \\
+$X$ & 1000 & 0.30 & 0.15 & 0.10 & 0.28 & 0.70 \\
+$Z_1$ & 1000 & 5.20 & 1.50 & 1.00 & 5.00 & 9.00 \\
+\bottomrule
+\end{longtable}
+
+\subsection{基准回归分析}
+表~\ref{tab:reg} 报告了基准回归结果。
+
+\begin{table}[htbp]
+\centering
+\caption{基准回归结果}
+\label{tab:reg}
+\xiaosi
+\begin{tabular}{lccc}
+\toprule
+ & (1) & (2) & (3) \\
+\midrule
+$X$ & 0.05** & 0.06*** & 0.04** \\
+    & (0.02) & (0.02) & (0.02) \\
+$Z_1$ & & 0.10*** & 0.08** \\
+      &      & (0.03)  & (0.03) \\
+\midrule
+常数项 & 0.01 & 0.02 & 0.03 \\
+       & (0.02) & (0.02) & (0.02) \\
+\midrule
+控制变量 & 否 & 是 & 是 \\
+企业固定效应 & 否 & 否 & 是 \\
+年份固定效应 & 否 & 否 & 是 \\
+\midrule
+观测数 & 1000 & 1000 & 1000 \\
+$R^2$ & 0.15 & 0.18 & 0.22 \\
+\bottomrule
+\multicolumn{4}{l}{\small 注：*** p<0.01, ** p<0.05, * p<0.1。括号内为聚类稳健标准误（聚类到企业层面）。}
+\end{tabular}
+\end{table}
+
+\section{内生性处理}
+\label{sec:endo}
+
+\subsection{工具变量法}
+为缓解反向因果导致的内生性问题，本文采用工具变量方法。
+
+第一阶段：$X_{it} = \pi_0 + \pi_1 IV_{it} + \cdots + \varepsilon_{it}$
+
+第二阶段：$Y_{it} = \alpha + \beta \hat{X}_{it} + \gamma Z_{it} + \mu_i + \lambda_t + \varepsilon_{it}$
+
+工具变量有效性检验：弱工具变量检验F统计量为……，Stock-Yogo临界值为……，拒绝弱工具变量假设。
+
+\subsection{其他内生性处理策略}
+（1）滞后解释变量；（2）PSM倾向得分匹配；（3）Heckman两阶段模型。
+
+\section{稳健性检验}
+\label{sec:robust}
+
+（1）替换核心变量：采用……替换$X$，结果依然显著。
+
+（2）改变样本范围：剔除……样本后，主要结论不变。
+
+（3）改变控制变量：加入/剔除……变量，结论稳健。
+
+（4）改变固定效应结构：加入……交互固定效应。
+
+\section{进一步分析}
+\label{sec:further}
+
+\section{结论}
+\label{sec:concl}
+
+本文基于……数据，实证研究了……问题。研究发现：（1）……；（2）……；（3）……。
+
+理论贡献：第一，……；第二，……。
+
+实践启示：对于金融监管机构，……；对于金融机构，……；对于投资者，……。
+
+本文的局限性及未来研究方向：……。
+
+\section*{参考文献}
+\addcontentsline{toc}{section}{参考文献}
+\bibliography{references}
+
+% ══════════════════════════════════════════════════════════════════════════════
+% 附录
+% ══════════════════════════════════════════════════════════════════════════════
+\clearpage
+\appendix
+\section*{附录}
+\addcontentsline{toc}{section}{附录}
+
+\end{document}

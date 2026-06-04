@@ -1,0 +1,13 @@
+{
+  "name": "pw_wait",
+  "description": "等待指定时间或条件。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "number"
+      }
+    },
+    "required": []
+  }
+}

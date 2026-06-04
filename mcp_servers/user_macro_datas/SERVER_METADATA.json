@@ -1,0 +1,23 @@
+{
+  "name": "Macro Datas",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "macro-datas",
+  "serverIdentifier": "user-macro-datas",
+  "description": "马克数据网 + 科技部公报数据指引 — 含R&D/科技/产业/教育面板数据已知数据汇总",
+  "tools": [
+    "get_education_panel",
+    "get_industry_panel",
+    "get_nsti_report",
+    "get_rd_panel",
+    "get_tech_panel"
+  ],
+  "_legacy_capabilities": [
+    "R&D面板数据",
+    "科技指标面板",
+    "产业指标面板",
+    "教育指标面板",
+    "科技部公报指引"
+  ]
+}

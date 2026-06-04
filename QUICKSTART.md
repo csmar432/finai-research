@@ -8,12 +8,14 @@
 
 ### 第二步：配置 API Key（仅脚本批处理需要，Cursor 对话无需配置）
 
-Keys 放在项目根目录 `.env.local`（已在 .gitignore）：
+Keys 放在项目根目录 `.env`（已在 .gitignore）：
 
 ```bash
-B_AI_API_KEY=sk-xxx        # B.AI 中转（需 VPN）
-DEEPSEEK_API_KEY=sk-xxx    # DeepSeek 直连（无需 VPN）
-FRED_API_KEY=xxx            # FRED 宏观数据（免费）
+DEEPSEEK_API_KEY=sk-xxx    # DeepSeek 直连（无需 VPN）：中文写作/代码/分析，速度快
+RELAY_API_KEY=xxx          # B.AI 中转：GPT/Claude 模型，英文写作/翻译质量最佳
+FRED_API_KEY=xxx           # FRED 宏观数据（免费）
+ALPHA_VANTAGE_API_KEY=xxx  # 美股技术指标（免费额度 25次/天）
+TIINGO_API_KEY=xxx         # 美股基本面数据
 ```
 
 > Cursor 直接对话使用本地 Claude，无需任何 Key 配置。
@@ -57,13 +59,43 @@ MCP 对应：`arxiv-mcp` + `fetch-mcp`
 
 ---
 
-## AI 角色定位（以 Cursor Claude 为核心）
+## AI 模型 — 自动寻优 + 手动指定
 
-| 调用方式 | AI 模型 | 用途 |
-|---|---|---|
-| Cursor 直接对话 | Claude（本地） | 所有日常任务（默认） |
-| 脚本批处理 | B.AI gpt-5.5（需VPN） | 批量情感/摘要/代码 |
-| 脚本批处理 | DeepSeek（直连，无需VPN） | 中文写作/简单问答 |
+系统内置 AI Router，**只需配置 Key，系统自动选最优模型**（中文→DeepSeek，英文→GPT/Claude）。
+
+### 自动寻优（默认）
+
+| 任务类型 | 首选模型 | 备选模型 |
+|---------|---------|---------|
+| 中文研究/论文 | DeepSeek V4 Flash（直连） | GPT-5.4-Mini（B.AI） |
+| 英文写作/翻译 | GPT-5.4-Mini / Claude Sonnet 4.6（B.AI） | DeepSeek V4 Flash |
+| 深度推理 | Claude Opus 4.7（B.AI） | DeepSeek V4 Pro |
+| 数学/推理 | DeepSeek R1（直连） | Claude Opus 4.7 |
+| 备选兜底 | Ollama 本地模型（需自行部署） | — |
+
+### 手动指定（可选）
+
+```python
+from scripts.ai_router import AIRouter
+router = AIRouter()
+router.chat("任务", model="deepseek")       # 强制 DeepSeek
+router.chat("任务", model="gpt5")           # 强制 GPT-5.4-Mini
+router.chat("任务", model="claude-sonnet")  # 强制 Claude Sonnet
+router.chat("任务", model="claude-opus")    # 强制 Claude Opus
+```
+
+### B.AI Relay 实测模型（2026-05-29）
+
+| 模型 | 状态 |
+|------|------|
+| `gpt-5.4-mini` | ✅ 可用 |
+| `claude-sonnet-4.6` | ✅ 可用 |
+| `claude-opus-4.7` | ✅ 可用 |
+| `deepseek-v4-flash` / `deepseek-v4-pro` | ✅ 可用 |
+| `glm-5.1` / `kimi-k2.5` | ✅ 可用 |
+| `gemini-*` 系列 | ❌ 返回空内容，暂不支持 |
+
+中转 API 支持任何兼容 OpenAI 格式的服务（B.AI / Groq / OpenRouter 等），只需修改 `.env` 中的 `RELAY_BASE_URL`。
 
 ---
 
@@ -83,26 +115,6 @@ MCP 对应：`arxiv-mcp` + `fetch-mcp`
 
 ---
 
-## 新增功能说明（本次更新）
-
-### 1. A股数据支持（akshare）
-无需 API Key，直接获取 A股日线、财务报表、指数、板块数据：
-```python
-from scripts.data_pipeline import fetch_a_stock, add_return_features
-df = fetch_a_stock("000001.SZ", "2024-01-01", "2025-01-01")
-df = add_return_features(df)
-```
-
-### 2. 多模型路由（已激活）
-DeepSeek + Claude 协同工作，不再全部走 DeepSeek。英文润色/代码生成自动路由到 Claude。
-
-### 3. 论文脚本合并
-原来 9 个论文脚本 → 合并为 2 个：
-- `paper_write.py` — 选题→大纲→章节→全文
-- `paper_submit.py` — 润色→查重→格式检查→投稿信
-
----
-
 ## 常见问题
 
 **Q: 每次都要粘贴角色提示吗？**
@@ -110,3 +122,6 @@ A: 不需要。Cursor 的规则（`.cursor/rules/`）已保存角色设定。
 
 **Q: 如何获取 A股数据？**
 A: `python scripts/data_pipeline.py` 直接运行，输入数字 1 即获取演示数据。
+
+**Q: 如何更换中转 API 厂商？**
+A: 修改 `.env` 中的 `RELAY_BASE_URL`，可以是 B.AI、Groq、OpenRouter 等任何兼容 OpenAI 格式的服务。

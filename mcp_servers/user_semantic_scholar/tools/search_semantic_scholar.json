@@ -1,0 +1,49 @@
+{
+  "name": "search_semantic_scholar",
+  "description": "在Semantic Scholar中搜索学术论文。\n\n支持200M+论文的AI增强检索，按相关性（而非简单关键词）排序。\n支持按年份、引用量、期刊、作者筛选。无需API Key，免费使用。\n\n适用场景：\n- 经济金融领域文献检索（JF/JFE/RFS等顶刊）\n- 发现高引经典文献和最新工作\n- 追踪特定作者的研究产出",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "搜索关键词或短语（如 'tariff innovation firm performance DID'）"
+      },
+      "year_from": {
+        "type": "integer",
+        "description": "起始年份（默认2020）",
+        "default": 2020
+      },
+      "year_to": {
+        "type": "integer",
+        "description": "结束年份（默认2025）",
+        "default": 2025
+      },
+      "citation_count_min": {
+        "type": "integer",
+        "description": "最小引用量过滤（可选，用于优先显示高引文献）",
+        "default": 0
+      },
+      "venue": {
+        "type": "string",
+        "description": "期刊/会议名称过滤（如 'Journal of Finance', 'AEA Papers and Proceedings'）"
+      },
+      "fields_of_study": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "学科领域过滤（如 ['Economics', 'Computer Science']）",
+        "default": ["Economics"]
+      },
+      "limit": {
+        "type": "integer",
+        "description": "返回数量（默认20，最大100）",
+        "default": 20
+      },
+      "offset": {
+        "type": "integer",
+        "description": "分页偏移量（用于翻页）",
+        "default": 0
+      }
+    },
+    "required": ["query"]
+  }
+}

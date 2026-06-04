@@ -14,7 +14,6 @@ Usage:
 
 import argparse
 import sys
-import json
 from datetime import datetime
 from pathlib import Path
 
@@ -23,8 +22,7 @@ _project_root = Path(__file__).parent.parent.resolve()
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from scripts.core.session import ResearchSession, SessionConfig, SessionState
-from scripts.core.memory import ResearchMemory
+from scripts.core.session import ResearchSession, SessionConfig
 
 
 def main():

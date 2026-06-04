@@ -1,0 +1,13 @@
+{
+  "name": "fs_hash",
+  "description": "计算文件哈希值（MD5/SHA256）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "get_macro_uk",
+  "description": "获取英国宏观经济指标。使用 akshare 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标名称",
+        "enum": [
+          "cpi",
+          "cpi_monthly",
+          "gdp_quarterly",
+          "unemployment_rate",
+          "bank_rate",
+          "retail_monthly",
+          "trade"
+        ]
+      }
+    },
+    "required": [
+      "indicator"
+    ]
+  }
+}

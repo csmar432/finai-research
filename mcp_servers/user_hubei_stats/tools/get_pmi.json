@@ -1,0 +1,8 @@
+{
+  "name": "get_pmi",
+  "description": "获取中国PMI月度数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

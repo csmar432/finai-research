@@ -1,0 +1,21 @@
+{
+  "name": "Eastmoney Bond",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "eastmoney-bond",
+  "serverIdentifier": "user-eastmoney-bond",
+  "description": "东方财富债券数据（现货/回购/收益率曲线）",
+  "tools": [
+    "get_bond_repo",
+    "get_bond_spot",
+    "get_bond_yield_curve"
+  ],
+  "_legacy_capabilities": [
+    "债券现货",
+    "债券回购",
+    "收益率曲线",
+    "国债",
+    "企业债"
+  ]
+}

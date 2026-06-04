@@ -1,0 +1,21 @@
+{
+  "name": "get_csmar_corporate",
+  "description": "获取CSMAR公司治理数据。返回股权结构、董事会信息等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "info_type": {
+        "type": "string",
+        "description": "信息类型: ownership/board/compensation",
+        "default": "ownership"
+      }
+    },
+    "required": [
+      "ts_code"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "get_fund_nav",
+  "description": "获取基金净值数据（东方财富风格）。返回单位净值、累计净值等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "fund_code": {
+        "type": "string",
+        "description": "基金代码，如 000001.OF"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      }
+    },
+    "required": [
+      "fund_code"
+    ]
+  }
+}

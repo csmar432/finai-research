@@ -1,0 +1,22 @@
+{
+  "name": "CSMAR",
+  "version": "1.0.0",
+  "is_mock": true,
+  "requires_api_key": false,
+  "server_name": "csmar",
+  "serverIdentifier": "user-csmar",
+  "description": "CSMAR国泰安金融数据库风格（演示数据，真实数据需机构账号）",
+  "tools": [
+    "get_csmar_analyst",
+    "get_csmar_corporate",
+    "get_csmar_financial",
+    "get_csmar_trading"
+  ],
+  "_legacy_capabilities": [
+    "财务报表",
+    "公司治理",
+    "交易数据",
+    "分析师预测",
+    "财务指标"
+  ]
+}

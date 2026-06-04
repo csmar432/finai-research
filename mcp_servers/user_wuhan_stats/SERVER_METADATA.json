@@ -1,0 +1,25 @@
+{
+  "name": "Wuhan Stats",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "wuhan-stats",
+  "serverIdentifier": "user-wuhan-stats",
+  "description": "武汉统计年鉴数据 — 已知数据汇总 + 武汉统计年鉴PDF来源指引，无需API Key",
+  "tools": [
+    "get_wuhan_education",
+    "get_wuhan_gdp",
+    "get_wuhan_industry",
+    "get_wuhan_investment",
+    "get_wuhan_tech",
+    "get_wuhan_trade"
+  ],
+  "_legacy_capabilities": [
+    "武汉GDP",
+    "武汉工业",
+    "武汉固定资产投资",
+    "武汉进出口",
+    "武汉高校",
+    "武汉科技创新"
+  ]
+}

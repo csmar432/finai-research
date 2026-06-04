@@ -13,20 +13,23 @@
   python scripts/paper_visualizer.py --type table --data "对比数据"
 """
 
-import sys
-import re
-import json
 import argparse
-from pathlib import Path
+import re
+import sys
 from datetime import datetime
+from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from scripts.ai_router import AI, Task
+from scripts.ai_router import Task
+from scripts.core.llm_gateway import LLMGateway
 
 VIS_DIR = SCRIPT_DIR / "knowledge" / "visualizations"
 VIS_DIR.mkdir(parents=True, exist_ok=True)
+
+# Global gateway instance for visualization tasks
+_gateway = LLMGateway(memory=None, use_cache=False)
 
 
 def generate_architecture_diagram(
@@ -82,9 +85,9 @@ dot -Tsvg architecture.dot -o architecture.svg
 
 请确保 DOT 代码可以直接使用（语法正确）。"""
 
-    print(f"\n  🎨 设计模型架构图...")
-    result = AI.chat(prompt, task=Task.RESEARCH, model="deepseek",
-                     temperature=0.3, max_tokens=4096)
+    print("\n  🎨 设计模型架构图...")
+    result = _gateway.generate(prompt, task_hint=Task.RESEARCH,
+                               model="deepseek", temperature=0.3, max_tokens=4096)
     return result.response.strip()
 
 
@@ -158,9 +161,9 @@ colors = ['#2ecc71', '#3498db', '#e74c3c', '#f39c12', '#9b59b6']
 
 代码要完整、可运行，图表要美观、专业。"""
 
-    print(f"\n  📊 设计实验结果可视化...")
-    result = AI.chat(prompt, task=Task.RESEARCH, model="deepseek",
-                     temperature=0.3, max_tokens=6144)
+    print("\n  📊 设计实验结果可视化...")
+    result = _gateway.generate(prompt, task_hint=Task.RESEARCH,
+                               model="deepseek", temperature=0.3, max_tokens=6144)
     return result.response.strip()
 
 
@@ -207,9 +210,9 @@ def generate_latex_table(
 
 请提供完整的 LaTeX 代码，直接复制即可使用。"""
 
-    print(f"\n  📋 生成 LaTeX 表格...")
-    result = AI.chat(prompt, task=Task.PAPER_CN, model="deepseek",
-                     temperature=0.3, max_tokens=4096)
+    print("\n  📋 生成 LaTeX 表格...")
+    result = _gateway.generate(prompt, task_hint=Task.PAPER_CN,
+                               model="deepseek", temperature=0.3, max_tokens=4096)
     return result.response.strip()
 
 
@@ -238,7 +241,7 @@ def main():
     topic = args.topic or "研究主题"
 
     print(f"\n{'='*70}")
-    print(f"  🎨 论文图表生成")
+    print("  🎨 论文图表生成")
     print(f"  主题: {topic}")
     print(f"{'='*70}")
 
@@ -265,7 +268,7 @@ def main():
     if args.save:
         save_visualization("\n\n".join(all_content), "all", topic)
 
-    print(f"\n✅ 完成！")
+    print("\n✅ 完成！")
 
 
 if __name__ == "__main__":

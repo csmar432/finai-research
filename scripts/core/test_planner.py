@@ -1,10 +1,8 @@
 """Tests for scripts/core/planner.py — ResearchPlanner decomposition and fallback."""
 
-import tempfile
-import os
 
-from scripts.core.planner import ResearchPlanner, TaskType, TaskStatus
 from scripts.core.memory import ResearchMemory
+from scripts.core.planner import ResearchPlanner, TaskStatus, TaskType
 
 
 def test_decompose_paper():

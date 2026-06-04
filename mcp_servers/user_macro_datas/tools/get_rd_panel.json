@@ -1,0 +1,8 @@
+{
+  "name": "get_rd_panel",
+  "description": "中国各省R&D面板数据指引",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

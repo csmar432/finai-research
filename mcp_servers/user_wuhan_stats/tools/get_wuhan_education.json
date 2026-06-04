@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_education",
+  "description": "武汉高校教育数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

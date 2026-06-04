@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "description": "Industry financial benchmarks for analyst agents. Each benchmark uses p25/median/p75 quantiles from CSMAR/Wind 2024 data.",
+  "industries": {
+    "technology": {
+      "description": "Technology sector",
+      "benchmarks": {
+        "roe": {"median": 0.15, "p25": 0.05, "p75": 0.30},
+        "net_margin": {"median": 0.12, "p25": 0.02, "p75": 0.30},
+        "gross_margin": {"median": 0.55, "p25": 0.30, "p75": 0.80},
+        "roa": {"median": 0.08, "p25": 0.02, "p75": 0.18},
+        "debt_to_equity": {"median": 0.50, "p25": 0.20, "p75": 1.20},
+        "current_ratio": {"median": 1.80, "p25": 1.00, "p75": 3.50}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.055
+    },
+    "banking": {
+      "description": "Banking and financial services",
+      "benchmarks": {
+        "roe": {"median": 0.12, "p25": 0.05, "p75": 0.22},
+        "net_margin": {"median": 0.30, "p25": 0.15, "p75": 0.50},
+        "gross_margin": {"median": 0.00, "p25": 0.00, "p75": 0.00},
+        "roa": {"median": 0.012, "p25": 0.003, "p75": 0.025},
+        "debt_to_equity": {"median": 8.00, "p25": 7.00, "p75": 9.50},
+        "current_ratio": {"median": 1.00, "p25": 0.80, "p75": 1.50}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.05
+    },
+    "energy": {
+      "description": "Energy sector",
+      "benchmarks": {
+        "roe": {"median": 0.10, "p25": 0.03, "p75": 0.20},
+        "net_margin": {"median": 0.05, "p25": 0.01, "p75": 0.15},
+        "gross_margin": {"median": 0.25, "p25": 0.10, "p75": 0.50},
+        "roa": {"median": 0.05, "p25": 0.01, "p75": 0.12},
+        "debt_to_equity": {"median": 0.80, "p25": 0.30, "p75": 1.50},
+        "current_ratio": {"median": 1.20, "p25": 0.80, "p75": 2.00}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.06
+    },
+    "healthcare": {
+      "description": "Healthcare and pharmaceutical sector",
+      "benchmarks": {
+        "roe": {"median": 0.16, "p25": 0.08, "p75": 0.28},
+        "net_margin": {"median": 0.12, "p25": 0.05, "p75": 0.25},
+        "gross_margin": {"median": 0.60, "p25": 0.30, "p75": 0.85},
+        "roa": {"median": 0.10, "p25": 0.04, "p75": 0.20},
+        "debt_to_equity": {"median": 0.45, "p25": 0.20, "p75": 1.00},
+        "current_ratio": {"median": 2.00, "p25": 1.20, "p75": 4.00}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.05
+    },
+    "consumer": {
+      "description": "Consumer goods and retail sector",
+      "benchmarks": {
+        "roe": {"median": 0.15, "p25": 0.05, "p75": 0.30},
+        "net_margin": {"median": 0.04, "p25": 0.01, "p75": 0.12},
+        "gross_margin": {"median": 0.22, "p25": 0.10, "p75": 0.40},
+        "roa": {"median": 0.06, "p25": 0.02, "p75": 0.15},
+        "debt_to_equity": {"median": 0.70, "p25": 0.35, "p75": 1.30},
+        "current_ratio": {"median": 1.20, "p25": 0.80, "p75": 2.00}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.055
+    },
+    "manufacturing": {
+      "description": "Manufacturing sector",
+      "benchmarks": {
+        "roe": {"median": 0.12, "p25": 0.06, "p75": 0.22},
+        "net_margin": {"median": 0.06, "p25": 0.02, "p75": 0.15},
+        "gross_margin": {"median": 0.25, "p25": 0.15, "p75": 0.45},
+        "roa": {"median": 0.06, "p25": 0.02, "p75": 0.12},
+        "debt_to_equity": {"median": 0.80, "p25": 0.30, "p75": 1.40},
+        "current_ratio": {"median": 1.50, "p25": 1.00, "p75": 2.50}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.055
+    },
+    "real_estate": {
+      "description": "Real estate sector",
+      "benchmarks": {
+        "roe": {"median": 0.08, "p25": 0.03, "p75": 0.18},
+        "net_margin": {"median": 0.08, "p25": 0.02, "p75": 0.20},
+        "gross_margin": {"median": 0.25, "p25": 0.15, "p75": 0.40},
+        "roa": {"median": 0.03, "p25": 0.01, "p75": 0.08},
+        "debt_to_equity": {"median": 2.00, "p25": 1.00, "p75": 3.50},
+        "current_ratio": {"median": 1.00, "p25": 0.60, "p75": 1.80}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.06
+    },
+    "default": {
+      "description": "Default benchmarks when industry is unknown",
+      "benchmarks": {
+        "roe": {"median": 0.12, "p25": 0.05, "p75": 0.25},
+        "net_margin": {"median": 0.08, "p25": 0.02, "p75": 0.20},
+        "gross_margin": {"median": 0.30, "p25": 0.10, "p75": 0.60},
+        "roa": {"median": 0.06, "p25": 0.02, "p75": 0.15},
+        "debt_to_equity": {"median": 0.80, "p25": 0.30, "p75": 1.50},
+        "current_ratio": {"median": 1.50, "p25": 0.80, "p75": 3.00}
+      },
+      "risk_free_rate": 0.04,
+      "market_risk_premium": 0.055
+    }
+  }
+}

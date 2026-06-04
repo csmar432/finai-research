@@ -1,0 +1,11 @@
+{
+  "name": "get_yf_etf_holdings",
+  "description": "获取ETF持仓明细",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "ticker": { "type": "string", "description": "ETF代码，例如 'SPY'" }
+    },
+    "required": ["ticker"]
+  }
+}

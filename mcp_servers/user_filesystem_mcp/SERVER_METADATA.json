@@ -1,0 +1,37 @@
+{
+  "name": "Filesystem Mcp",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "Filesystem MCP",
+  "serverIdentifier": "user-filesystem-mcp",
+  "description": "安全的文件系统操作 MCP — 读写文件、通配符搜索、文件树、grep 内容搜索、文件对比、批量重命名。无 API Key 要求。",
+  "tools": [
+    "fs_glob",
+    "fs_read",
+    "fs_write",
+    "fs_tree",
+    "fs_grep",
+    "fs_diff",
+    "fs_stats",
+    "fs_batch_rename",
+    "fs_watch",
+    "fs_hash"
+  ],
+  "_legacy_capabilities": {
+    "tools": [
+      "fs_glob (通配符文件搜索)",
+      "fs_read (读取文件内容)",
+      "fs_write (写入文件内容)",
+      "fs_tree (目录树结构)",
+      "fs_grep (内容搜索)",
+      "fs_diff (文件对比)",
+      "fs_stats (文件统计)",
+      "fs_batch_rename (批量重命名)",
+      "fs_watch (文件监视)",
+      "fs_hash (文件哈希)"
+    ],
+    "requires_api_key": false,
+    "dependencies": []
+  }
+}

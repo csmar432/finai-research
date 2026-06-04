@@ -1,0 +1,13 @@
+{
+  "name": "pd_filter",
+  "description": "按条件筛选数据行（类似SQL WHERE）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

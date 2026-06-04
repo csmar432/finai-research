@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.finai.research-workflow.event-monitor</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- 使用相对路径，通过 WorkingDirectory 指定项目根目录 -->
+        <string>%%PROJECT_ROOT%%/.venv/bin/python3</string>
+        <string>%%PROJECT_ROOT%%/scripts/event_monitor.py</string>
+        <string>--daemon</string>
+        <string>--auto-trigger</string>
+        <string>--macro-scheduler</string>
+        <string>--log-file</string>
+        <string>%%PROJECT_ROOT%%/logs/monitor.log</string>
+        <string>--pipeline-type</string>
+        <string>research_report</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>%%PROJECT_ROOT%%</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONUNBUFFERED</key>
+        <string>1</string>
+    </dict>
+
+    <!-- Run immediately after loading -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Restart if it crashes -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Stdout/stderr to log file -->
+    <key>StandardOutPath</key>
+    <string>%%PROJECT_ROOT%%/logs/monitor-stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>%%PROJECT_ROOT%%/logs/monitor-stderr.log</string>
+
+    <!-- Resource limits -->
+    <key>HardResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>256</integer>
+    </dict>
+
+    <!-- Nice priority (lower = higher priority) -->
+    <key>LowPriorityIO</key>
+    <true/>
+
+    <!-- Description -->
+    <key>Description</key>
+    <string>FinAI Research Workflow — Event-Driven Research Trigger Monitor.
+Runs APScheduler-based macro-aware polling (NFP/FOMC/CPI/PMI) and
+automatically triggers the research pipeline on high-relevance events.
+See: https://github.com/finai-research/finai-research-workflow
+
+安装说明：
+1. 将 %%PROJECT_ROOT%% 替换为实际项目路径
+2. cp com.finai.research-workflow.event-monitor.plist ~/Library/LaunchAgents/
+3. launchctl load ~/Library/LaunchAgents/com.finai.research-workflow.event-monitor.plist</string>
+</dict>
+</plist>

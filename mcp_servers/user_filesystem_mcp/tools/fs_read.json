@@ -1,0 +1,13 @@
+{
+  "name": "fs_read",
+  "description": "读取一个或多个文件内容。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

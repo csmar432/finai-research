@@ -1,0 +1,15 @@
+{
+  "name": "Province Stats",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-province-stats",
+  "serverIdentifier": "user-province-stats",
+  "description": "全国各省科技创新与产业发展数据。数据来源：各省统计局公报、科技部公报、马克数据网整理。湖北数据已全面核查（2026-05-31），其余省份数据来源于各省官方公报。",
+  "tools": [
+    "get_province_indicator",
+    "get_province_rankings",
+    "get_province_timeseries"
+  ],
+  "_legacy_capabilities": []
+}

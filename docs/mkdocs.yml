@@ -1,0 +1,77 @@
+# mkdocs.yml — Documentation site configuration
+# Built with Material for MkDocs
+
+site_name: FinResearch Agent 文档
+site_description: 经济金融领域 AI 学术研究工作流文档
+site_author: FinAI Research Workflow Contributors
+site_url: https://github.com/YOUR_USERNAME/finai-research-workflow
+
+repo_name: YOUR_USERNAME/finai-research-workflow
+repo_url: https://github.com/YOUR_USERNAME/finai-research-workflow
+edit_uri: ""
+
+theme:
+  name: material
+  language: zh
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue grey
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.mark
+  - pymdownx.keys
+
+nav:
+  - Home: index.md
+  - 快速入门:
+      - 安装配置: tutorials/01-quickstart.md
+      - 金融研究报告: tutorials/02-financial-report.md
+      - 研究方向设计: tutorials/03-research-directions.md
+  - MCP 工具:
+      - MCP 市场: tutorials/04-mcp-marketplace.md
+      - 数据源参考: external_data_sources.md
+  - 进阶:
+      - 事件驱动研究: tutorials/05-event-driven-research.md
+      - API 参考: api_reference.md
+  - 项目:
+      - 架构设计: ARCHITECTURE.md
+      - 使用指南: ../USAGE_GUIDE.md

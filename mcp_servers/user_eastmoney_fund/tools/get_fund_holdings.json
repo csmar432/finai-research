@@ -1,0 +1,21 @@
+{
+  "name": "get_fund_holdings",
+  "description": "获取基金重仓股数据（东方财富风格）。返回前十大持仓股票及比例。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "fund_code": {
+        "type": "string",
+        "description": "基金代码，如 000001.OF"
+      },
+      "period": {
+        "type": "string",
+        "description": "报告期: 2024Q1/2024Q2等",
+        "default": "2024Q2"
+      }
+    },
+    "required": [
+      "fund_code"
+    ]
+  }
+}

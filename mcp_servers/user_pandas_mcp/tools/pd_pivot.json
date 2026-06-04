@@ -1,0 +1,13 @@
+{
+  "name": "pd_pivot",
+  "description": "数据透视表分析。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

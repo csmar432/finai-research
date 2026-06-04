@@ -1,0 +1,13 @@
+{
+  "name": "latex_count_words",
+  "description": "统计LaTeX文档字数（排除命令、公式、参考文献）。适合AEA/RFS等字数限制。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

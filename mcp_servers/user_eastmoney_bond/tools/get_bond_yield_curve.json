@@ -1,0 +1,14 @@
+{
+  "name": "get_bond_yield_curve",
+  "description": "获取债券收益率曲线数据（东方财富风格）。返回各期限收益率。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "bond_type": {
+        "type": "string",
+        "description": "债券类型: treasury/corporate",
+        "default": "treasury"
+      }
+    }
+  }
+}

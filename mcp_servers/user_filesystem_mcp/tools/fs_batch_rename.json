@@ -1,0 +1,13 @@
+{
+  "name": "fs_batch_rename",
+  "description": "批量重命名文件（支持替换模式）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

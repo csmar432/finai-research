@@ -1,0 +1,30 @@
+{
+  "name": "get_commodity_price",
+  "description": "获取大宗商品价格（黄金/白银/原油）。日期范围通过 Python 过滤。使用 akshare 接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "commodity": {
+        "type": "string",
+        "description": "商品类型",
+        "enum": [
+          "gold",
+          "silver",
+          "brent_oil",
+          "wti_oil"
+        ]
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD（可选）"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD（可选）"
+      }
+    },
+    "required": [
+      "commodity"
+    ]
+  }
+}

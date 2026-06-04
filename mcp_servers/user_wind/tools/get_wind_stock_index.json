@@ -1,0 +1,22 @@
+{
+  "name": "get_wind_stock_index",
+  "description": "获取主要股票指数行情（模拟Wind风格）。涵盖上证综指、沪深300等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "index_code": {
+        "type": "string",
+        "description": "指数代码: 000001.SH/399001.SZ/000300.SH/399006.SZ",
+        "default": "000001.SH"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      }
+    }
+  }
+}

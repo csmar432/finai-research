@@ -1,0 +1,27 @@
+{
+  "name": "get_macro_usa",
+  "description": "获取美国宏观经济指标。使用 FRED API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "indicator": {
+        "type": "string",
+        "description": "指标名称",
+        "enum": [
+          "gdp",
+          "cpi",
+          "unemployment_rate",
+          "fed_rate",
+          "mortgage_rate",
+          "retail_sales",
+          "ism_pmi",
+          "housing_starts",
+          "durables"
+        ]
+      }
+    },
+    "required": [
+      "indicator"
+    ]
+  }
+}

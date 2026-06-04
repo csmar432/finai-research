@@ -1,0 +1,21 @@
+{
+  "name": "get_bea_gdp",
+  "description": "获取BEA GDP数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      },
+      "quarter": {
+        "type": "string",
+        "description": "季度"
+      },
+      "component": {
+        "type": "string",
+        "description": "组成部分"
+      }
+    }
+  }
+}

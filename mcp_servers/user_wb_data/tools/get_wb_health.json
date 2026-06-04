@@ -1,0 +1,20 @@
+{
+  "name": "get_wb_health",
+  "description": "获取World Bank健康数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: life_expectancy/fertility_rate/co2_emissions"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

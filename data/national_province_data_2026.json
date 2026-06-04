@@ -1,0 +1,1415 @@
+{
+  "meta": {
+    "title": "全国各省科技创新与产业发展数据清单",
+    "description": "31省全覆盖：GDP/R&D/高校/高新企业/技术合同/数字经济/金融，含核查状态",
+    "generated_at": "2026-05-31",
+    "version": "3.0",
+    "schema_version": "3.0",
+    "data_coverage": "31省骨架（数据已清除，待MCP/手动填充）",
+    "data_note": "所有省数据已清除，仅保留结构路径和获取方法。数据来源优先级：①MCP(World Bank/akshare) → ②网页抓取(Brave+Fetch) → ③手动录入(统计公报/年鉴)",
+    "verification_policy": {
+      "empty": "骨架已建，数据待填充",
+      "partial": "核心指标有官方来源",
+      "full": "9大类指标全部收录"
+    },
+    "last_cleared": "2026-05-31",
+    "schema_features": [
+      "indicator_definitions: 每个指标的定义、别名、获取方法",
+      "acquisition_routes: 三层数据获取路径（MCP/API/手动）",
+      "31省完整骨架: 含capital/region/gdp_rank",
+      "ranking_tables: 含headers定义，待填充"
+    ]
+  },
+  "indicator_schema": {
+    "categories": [
+      {
+        "id": "ECON",
+        "name": "经济总量",
+        "description": "GDP，人均GDP等"
+      },
+      {
+        "id": "EDU",
+        "name": "高校与人才",
+        "description": "高校数量，在校生，研究生等"
+      },
+      {
+        "id": "PLAT",
+        "name": "创新平台",
+        "description": "重点实验室，技术创新中心等"
+      },
+      {
+        "id": "RD",
+        "name": "R&D投入",
+        "description": "R&D经费，强度，财政科技支出"
+      },
+      {
+        "id": "ENT",
+        "name": "科技企业",
+        "description": "高新企业，科技型中小企业，专精特新等"
+      },
+      {
+        "id": "TECH",
+        "name": "技术转化",
+        "description": "技术合同，成果转化"
+      },
+      {
+        "id": "IND",
+        "name": "新兴/战略产业",
+        "description": "数字经济，高技术制造业等"
+      },
+      {
+        "id": "AI",
+        "name": "AI与算力",
+        "description": "AI企业，产业规模，算力"
+      },
+      {
+        "id": "FIN",
+        "name": "科技金融",
+        "description": "贷款，基金，上市等"
+      }
+    ],
+    "data_types": {
+      "A": {
+        "label": "真实数据",
+        "color": "E2EFDA",
+        "description": "有明确官方来源可直接引用"
+      },
+      "B": {
+        "label": "MCP可补充",
+        "color": "DEEAF1",
+        "description": "可通过API获取，需标注数据日期"
+      },
+      "C": {
+        "label": "手动录入",
+        "color": "FCE4D6",
+        "description": "无API需人工维护"
+      }
+    }
+  },
+  "provinces": {
+    "广东": {
+      "name_cn": "广东",
+      "capital": "广州市",
+      "region": "南部",
+      "gdp_rank_2024": 1,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "江苏": {
+      "name_cn": "江苏",
+      "capital": "南京市",
+      "region": "东部",
+      "gdp_rank_2024": 2,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "山东": {
+      "name_cn": "山东",
+      "capital": "济南市",
+      "region": "东部",
+      "gdp_rank_2024": 3,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "浙江": {
+      "name_cn": "浙江",
+      "capital": "杭州市",
+      "region": "东部",
+      "gdp_rank_2024": 4,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "四川": {
+      "name_cn": "四川",
+      "capital": "成都市",
+      "region": "西南",
+      "gdp_rank_2024": 5,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "河南": {
+      "name_cn": "河南",
+      "capital": "郑州市",
+      "region": "中部",
+      "gdp_rank_2024": 6,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "湖北": {
+      "name_cn": "湖北省",
+      "capital": "武汉市",
+      "region": "中部",
+      "gdp_rank_2024": 7,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "福建": {
+      "name_cn": "福建",
+      "capital": "福州市",
+      "region": "东部",
+      "gdp_rank_2024": 8,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "上海": {
+      "name_cn": "上海",
+      "capital": "上海市",
+      "region": "东部",
+      "gdp_rank_2024": 9,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "湖南": {
+      "name_cn": "湖南",
+      "capital": "长沙市",
+      "region": "中部",
+      "gdp_rank_2024": 10,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "安徽": {
+      "name_cn": "安徽",
+      "capital": "合肥市",
+      "region": "东部",
+      "gdp_rank_2024": 11,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "北京": {
+      "name_cn": "北京",
+      "capital": "北京市",
+      "region": "华北",
+      "gdp_rank_2024": 12,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "河北": {
+      "name_cn": "河北",
+      "capital": "石家庄市",
+      "region": "华北",
+      "gdp_rank_2024": 13,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "陕西": {
+      "name_cn": "陕西",
+      "capital": "西安市",
+      "region": "西北",
+      "gdp_rank_2024": 14,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "江西": {
+      "name_cn": "江西",
+      "capital": "南昌市",
+      "region": "中部",
+      "gdp_rank_2024": 15,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "辽宁": {
+      "name_cn": "辽宁",
+      "capital": "沈阳市",
+      "region": "东北",
+      "gdp_rank_2024": 16,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "重庆": {
+      "name_cn": "重庆",
+      "capital": "重庆市",
+      "region": "西南",
+      "gdp_rank_2024": 17,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "云南": {
+      "name_cn": "云南",
+      "capital": "昆明市",
+      "region": "西南",
+      "gdp_rank_2024": 18,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "广西": {
+      "name_cn": "广西",
+      "capital": "南宁市",
+      "region": "西南",
+      "gdp_rank_2024": 19,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "内蒙古": {
+      "name_cn": "内蒙古",
+      "capital": "呼和浩特市",
+      "region": "华北",
+      "gdp_rank_2024": 20,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "山西": {
+      "name_cn": "山西",
+      "capital": "太原市",
+      "region": "华北",
+      "gdp_rank_2024": 21,
+      "verification": "partial",
+      "categories": [
+        "ECON",
+        "EDU",
+        "ENT",
+        "TECH"
+      ],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {
+          "GDP增速": {
+            "value": 5.5,
+            "unit": "%",
+            "source": "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)",
+            "data_type": "A",
+            "year": "2024",
+            "note": "地区生产总值比重为5.5%"
+          }
+        },
+        "EDU": {
+          "研究生在学": {
+            "value": 6.4,
+            "unit": "万人",
+            "source": "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)",
+            "data_type": "A",
+            "year": "2024",
+            "note": "在学研究生6.4万"
+          }
+        },
+        "PLAT": {},
+        "RD": {},
+        "ENT": {
+          "高新技术企业": {
+            "value": 4155.0,
+            "unit": "家",
+            "source": "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)",
+            "data_type": "A",
+            "year": "2024",
+            "note": "高新技术企业4155家"
+          }
+        },
+        "TECH": {
+          "技术合同成交额": {
+            "value": 793.7,
+            "unit": "亿元",
+            "source": "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)",
+            "data_type": "A",
+            "year": "2024",
+            "note": "技术合同成交总额793.7亿"
+          }
+        },
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "贵州": {
+      "name_cn": "贵州",
+      "capital": "贵阳市",
+      "region": "西南",
+      "gdp_rank_2024": 22,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "新疆": {
+      "name_cn": "新疆",
+      "capital": "乌鲁木齐市",
+      "region": "西北",
+      "gdp_rank_2024": 23,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "天津": {
+      "name_cn": "天津",
+      "capital": "天津市",
+      "region": "华北",
+      "gdp_rank_2024": 24,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "黑龙江": {
+      "name_cn": "黑龙江",
+      "capital": "哈尔滨市",
+      "region": "东北",
+      "gdp_rank_2024": 25,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "吉林": {
+      "name_cn": "吉林",
+      "capital": "长春市",
+      "region": "东北",
+      "gdp_rank_2024": 26,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "甘肃": {
+      "name_cn": "甘肃",
+      "capital": "兰州市",
+      "region": "西北",
+      "gdp_rank_2024": 27,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "海南": {
+      "name_cn": "海南",
+      "capital": "海口市",
+      "region": "南部",
+      "gdp_rank_2024": 28,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "宁夏": {
+      "name_cn": "宁夏",
+      "capital": "银川市",
+      "region": "西北",
+      "gdp_rank_2024": 29,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "青海": {
+      "name_cn": "青海",
+      "capital": "西宁市",
+      "region": "西北",
+      "gdp_rank_2024": 30,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    },
+    "西藏": {
+      "name_cn": "西藏",
+      "capital": "拉萨市",
+      "region": "西南",
+      "gdp_rank_2024": 31,
+      "verification": "empty",
+      "categories": [],
+      "time_series": [],
+      "time_series_count": 0,
+      "data": {
+        "ECON": {},
+        "EDU": {},
+        "PLAT": {},
+        "RD": {},
+        "ENT": {},
+        "TECH": {},
+        "IND": {},
+        "AI": {},
+        "FIN": {}
+      }
+    }
+  },
+  "ranking_tables": {
+    "GDP_2024": {
+      "description": "2024年各省GDP排名",
+      "headers": [
+        "排名",
+        "省份",
+        "GDP(亿元)",
+        "增速(%)",
+        "来源"
+      ],
+      "data": [],
+      "unit": "亿元",
+      "source": "各省统计局《2024年国民经济和社会发展统计公报》"
+    },
+    "RD经费_2024": {
+      "description": "2024年各省R&D经费内部支出排名",
+      "headers": [
+        "排名",
+        "省份",
+        "R&D经费(亿元)",
+        "增速(%)",
+        "来源"
+      ],
+      "data": [],
+      "unit": "亿元",
+      "source": "科技部《2024年全国科技经费投入统计公报》"
+    },
+    "RD强度_2024": {
+      "description": "2024年各省R&D/GDP排名",
+      "headers": [
+        "排名",
+        "省份",
+        "R&D强度(%)",
+        "R&D经费(亿元)",
+        "GDP(亿元)",
+        "来源"
+      ],
+      "data": [],
+      "unit": "%",
+      "source": "科技部公报 / 各省统计公报"
+    },
+    "高新技术企业_2024": {
+      "description": "2024年各省高新技术企业数量排名",
+      "headers": [
+        "排名",
+        "省份",
+        "高新企业(家)",
+        "新增(家)",
+        "来源"
+      ],
+      "data": [
+        [
+          1,
+          "山西",
+          4155.0,
+          "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)"
+        ]
+      ],
+      "unit": "家",
+      "source": "科技部火炬中心 / 各省科技厅"
+    },
+    "技术合同_2024": {
+      "description": "2024年各省技术合同成交额排名",
+      "headers": [
+        "排名",
+        "省份",
+        "技术合同(亿元)",
+        "增速(%)",
+        "来源"
+      ],
+      "data": [
+        [
+          1,
+          "山西",
+          793.7,
+          "各省统计公报 (fetch: https://tjgb.hongheiku.com/sjtjgb/58259.html)"
+        ]
+      ],
+      "unit": "亿元",
+      "source": "科技部技术市场统计 / 各省统计公报"
+    }
+  },
+  "indicator_definitions": {
+    "ECON": [
+      {
+        "id": "GDP",
+        "name": "地区GDP",
+        "unit": "亿元",
+        "note": "名义GDP，各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "GDP增速",
+        "name": "GDP同比增速",
+        "unit": "%",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "人均GDP",
+        "name": "人均地区生产总值",
+        "unit": "元",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "一产",
+        "name": "第一产业增加值",
+        "unit": "亿元",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "二产",
+        "name": "第二产业增加值",
+        "unit": "亿元",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "三产",
+        "name": "第三产业增加值",
+        "unit": "亿元",
+        "note": "各省统计公报",
+        "data_type": "A"
+      }
+    ],
+    "EDU": [
+      {
+        "id": "高校数量",
+        "name": "普通高校数量",
+        "unit": "所",
+        "note": "教育部统计名单，含本专科",
+        "data_type": "A"
+      },
+      {
+        "id": "本科高校",
+        "name": "本科层次高校",
+        "unit": "所",
+        "note": "教育部统计名单",
+        "data_type": "A"
+      },
+      {
+        "id": "高职专科",
+        "name": "高职专科院校",
+        "unit": "所",
+        "note": "教育部统计名单",
+        "data_type": "A"
+      },
+      {
+        "id": "本专科在校生",
+        "name": "普通本专科在校生",
+        "unit": "万人",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "研究生在学",
+        "name": "在学研究生",
+        "unit": "万人",
+        "note": "各省统计公报，含博士硕士",
+        "data_type": "A"
+      },
+      {
+        "id": "毛入学率",
+        "name": "高等教育毛入学率",
+        "unit": "%",
+        "note": "各省统计公报",
+        "data_type": "A"
+      }
+    ],
+    "PLAT": [
+      {
+        "id": "全国重点实验室",
+        "name": "全国重点实验室",
+        "unit": "个",
+        "note": "科技部/各省科技厅",
+        "data_type": "A"
+      },
+      {
+        "id": "国家技术创新中心",
+        "name": "国家技术创新中心",
+        "unit": "个",
+        "note": "科技部",
+        "data_type": "A"
+      },
+      {
+        "id": "国家企业技术中心",
+        "name": "国家企业技术中心",
+        "unit": "个",
+        "note": "发改委/工信部",
+        "data_type": "A"
+      },
+      {
+        "id": "省级重点实验室",
+        "name": "省级重点实验室",
+        "unit": "个",
+        "note": "省科技厅",
+        "data_type": "A"
+      },
+      {
+        "id": "省级技术创新中心",
+        "name": "省级技术创新中心",
+        "unit": "个",
+        "note": "省科技厅",
+        "data_type": "A"
+      },
+      {
+        "id": "国家大学科技园",
+        "name": "国家大学科技园",
+        "unit": "个",
+        "note": "科技部/教育部",
+        "data_type": "A"
+      },
+      {
+        "id": "科技企业孵化器",
+        "name": "科技企业孵化器",
+        "unit": "个",
+        "note": "科技部火炬中心",
+        "data_type": "A"
+      }
+    ],
+    "RD": [
+      {
+        "id": "R&D经费",
+        "name": "R&D经费内部支出",
+        "unit": "亿元",
+        "note": "科技部《全国科技经费投入统计公报》",
+        "data_type": "A"
+      },
+      {
+        "id": "R&D强度",
+        "name": "R&D经费占GDP比重",
+        "unit": "%",
+        "note": "科技部公报 / 各省公报",
+        "data_type": "A"
+      },
+      {
+        "id": "基础研究",
+        "name": "基础研究经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "应用研究",
+        "name": "应用研究经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "试验发展",
+        "name": "试验发展经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "企业R&D",
+        "name": "企业R&D经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "高校R&D",
+        "name": "高校R&D经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "科研机构R&D",
+        "name": "科研机构R&D经费",
+        "unit": "亿元",
+        "note": "各省R&D经费统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "财政科技支出",
+        "name": "财政科学技术支出",
+        "unit": "亿元",
+        "note": "各省预算执行报告",
+        "data_type": "B"
+      }
+    ],
+    "ENT": [
+      {
+        "id": "高新技术企业",
+        "name": "高新技术企业数量",
+        "unit": "家",
+        "note": "火炬统计 / 省科技厅",
+        "data_type": "A"
+      },
+      {
+        "id": "科技型中小企业",
+        "name": "科技型中小企业",
+        "unit": "家",
+        "note": "省科技厅备案",
+        "data_type": "A"
+      },
+      {
+        "id": "专精特新",
+        "name": "专精特新中小企业",
+        "unit": "家",
+        "note": "工信部认定",
+        "data_type": "A"
+      },
+      {
+        "id": "小巨人",
+        "name": "专精特新小巨人企业",
+        "unit": "家",
+        "note": "工信部认定",
+        "data_type": "A"
+      },
+      {
+        "id": "国家高新区",
+        "name": "国家高新区数量",
+        "unit": "个",
+        "note": "科技部",
+        "data_type": "A"
+      }
+    ],
+    "TECH": [
+      {
+        "id": "技术合同成交额",
+        "name": "技术合同成交额",
+        "unit": "亿元",
+        "note": "各省统计公报，科技部技术市场统计",
+        "data_type": "A"
+      },
+      {
+        "id": "技术合同项数",
+        "name": "认定登记技术合同数",
+        "unit": "项",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "成果转化率",
+        "name": "科技成果就地转化率",
+        "unit": "%",
+        "note": "省科技厅",
+        "data_type": "B"
+      }
+    ],
+    "IND": [
+      {
+        "id": "数字经济规模",
+        "name": "数字经济核心产业增加值",
+        "unit": "亿元",
+        "note": "各省数字经济规划/白皮书",
+        "data_type": "C"
+      },
+      {
+        "id": "数字经济占GDP比重",
+        "name": "数字经济占GDP比重",
+        "unit": "%",
+        "note": "各省数字经济规划/白皮书",
+        "data_type": "C"
+      },
+      {
+        "id": "高技术制造业增速",
+        "name": "高技术制造业增加值增速",
+        "unit": "%",
+        "note": "各省统计公报（规上工业）",
+        "data_type": "A"
+      },
+      {
+        "id": "高技术制造业比重",
+        "name": "高技术制造业占规上工业比重",
+        "unit": "%",
+        "note": "各省统计公报（规上工业）",
+        "data_type": "A"
+      },
+      {
+        "id": "装备制造业增速",
+        "name": "装备制造业增加值增速",
+        "unit": "%",
+        "note": "各省统计公报（规上工业）",
+        "data_type": "A"
+      },
+      {
+        "id": "新能源汽车产量",
+        "name": "新能源汽车产量",
+        "unit": "万辆",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "集成电路产量",
+        "name": "集成电路产量",
+        "unit": "亿块",
+        "note": "各省统计公报",
+        "data_type": "A"
+      },
+      {
+        "id": "太阳能电池产量",
+        "name": "太阳能电池产量",
+        "unit": "万千瓦",
+        "note": "各省统计公报",
+        "data_type": "A"
+      }
+    ],
+    "AI": [
+      {
+        "id": "AI算力规模",
+        "name": "智能算力规模",
+        "unit": "EFLOPS",
+        "note": "省工信厅/发改委规划",
+        "data_type": "C"
+      },
+      {
+        "id": "数据中心机架",
+        "name": "在用数据中心机架规模",
+        "unit": "万标准机架",
+        "note": "省工信厅",
+        "data_type": "C"
+      },
+      {
+        "id": "5G基站",
+        "name": "5G基站数量",
+        "unit": "万个",
+        "note": "省通信管理局",
+        "data_type": "B"
+      },
+      {
+        "id": "算力中心收入",
+        "name": "算力中心业务收入",
+        "unit": "亿元",
+        "note": "省统计局",
+        "data_type": "C"
+      }
+    ],
+    "FIN": [
+      {
+        "id": "A股上市公司",
+        "name": "A股上市公司数量",
+        "unit": "家",
+        "note": "Wind/证监会",
+        "data_type": "A"
+      },
+      {
+        "id": "科技贷款余额",
+        "name": "科技型企业贷款余额",
+        "unit": "亿元",
+        "note": "人行分行 / 省金融监管局",
+        "data_type": "C"
+      },
+      {
+        "id": "省级母基金",
+        "name": "省级政府投资基金规模",
+        "unit": "亿元",
+        "note": "省财政厅",
+        "data_type": "C"
+      },
+      {
+        "id": "科创板上市",
+        "name": "科创板上市公司数",
+        "unit": "家",
+        "note": "Wind/证监会",
+        "data_type": "A"
+      }
+    ]
+  },
+  "acquisition_routes": {
+    "description": "数据获取路径定义。MCP优先级：直接API > 间接API > 手动录入。",
+    "tier1_mcp": [
+      {
+        "id": "wb_indicator",
+        "server": "user-wb-data",
+        "description": "World Bank API — 全球GDP/CPI/人口等宏观指标",
+        "params": {
+          "country_code": "CHN",
+          "indicator": "wb_gdp_usd"
+        },
+        "covers": [
+          "ECON:GDP",
+          "ECON:人均GDP"
+        ],
+        "note": "无需API Key，https://api.worldbank.org/v2/country/CHN/indicator/NY.GDP.MKTP.CD"
+      },
+      {
+        "id": "macro_china",
+        "server": "user-financial",
+        "description": "akshare中国宏观 — CPI/PPI/GDP/PMI等",
+        "params": {
+          "indicator": "gdp"
+        },
+        "covers": [
+          "ECON:GDP增速",
+          "ECON:CPI",
+          "ECON:PPI"
+        ],
+        "note": "无需API Key，akshare本地缓存"
+      }
+    ],
+    "tier2_api": [
+      {
+        "id": "brave_search",
+        "server": "user-brave-search",
+        "description": "Brave Search — 各省公报全文检索",
+        "params": {
+          "query": "2024年统计公报 GDP R&D"
+        },
+        "covers": [
+          "全指标辅助检索"
+        ],
+        "note": "需BRAVE_SEARCH_API_KEY，检索各省统计公报页面"
+      },
+      {
+        "id": "fetch_gov",
+        "server": "user-fetch",
+        "description": "网页抓取 — 各省统计局/科技厅官网",
+        "params": {
+          "url": "https://tjj.hubei.gov.cn/tjsj/tjgb/"
+        },
+        "covers": [
+          "各省公报全文"
+        ],
+        "note": "无需API Key，直接抓取政府官网"
+      }
+    ],
+    "tier3_manual": [
+      {
+        "id": "manual_nbs",
+        "description": "国家统计局 — R&D公报、全国科技经费统计",
+        "url": "https://www.stats.gov.cn/sj/zxfb/202509/t20250930_194823.html",
+        "covers": [
+          "RD:R&D经费",
+          "RD:R&D强度"
+        ],
+        "note": "科技部/国家统计局联合发布（每年9月），含分省数据"
+      },
+      {
+        "id": "manual_moe",
+        "description": "教育部 — 高等教育统计数据",
+        "url": "https://www.moe.gov.cn/s78/A03/moe_560/",
+        "covers": [
+          "EDU:高校数量",
+          "EDU:本专科在校生",
+          "EDU:研究生在学"
+        ],
+        "note": "教育部发展规划司，每年8月发布"
+      },
+      {
+        "id": "manual_most",
+        "description": "科技部 — 国家创新能力评价/火炬统计",
+        "url": "https://www.most.gov.cn/kjtj/",
+        "covers": [
+          "ENT:高新技术企业",
+          "ENT:科技型中小企业",
+          "ENT:专精特新"
+        ],
+        "note": "火炬中心发布高新技术企业认定名单"
+      }
+    ],
+    "workflow": {
+      "step1": {
+        "action": "调用 get_all_provinces_summary 查看已收录哪些省",
+        "mcp_tool": "get_all_provinces_summary"
+      },
+      "step2": {
+        "action": "对 verification=empty 的省，按 acquisition_routes 填充数据",
+        "mcp_tool": "get_province_indicator"
+      },
+      "step3": {
+        "action": "批量获取时间序列",
+        "mcp_tool": "get_province_timeseries"
+      },
+      "step4": {
+        "action": "获取全国排名表",
+        "mcp_tool": "get_province_rankings"
+      },
+      "step5": {
+        "action": "保存到 national_province_data_2026.json",
+        "write_back": true
+      },
+      "step6": {
+        "action": "导出 Excel 报告",
+        "export_xlsx": "national_province_data_2026.xlsx"
+      }
+    }
+  },
+  "category_acquisition_notes": {
+    "ECON": {
+      "priority": "MCP(World Bank) +各省公报",
+      "freshness": "年度(每年3-4月)",
+      "notes": "各省统计公报发布后约2周内更新"
+    },
+    "EDU": {
+      "priority": "各省公报 + 教育部名单",
+      "freshness": "年度(每年8-9月)",
+      "notes": "教育部高等教育事业统计数据汇编为最权威来源"
+    },
+    "PLAT": {
+      "priority": "省科技厅公告",
+      "freshness": "不定期",
+      "notes": "全国重点实验室由科技部认定；省级由省科技厅认定"
+    },
+    "RD": {
+      "priority": "科技部公报(最高权威) + 各省公报",
+      "freshness": "年度(每年9-10月)",
+      "notes": "科技部R&D经费统计公报为最高权威，含分省数据"
+    },
+    "ENT": {
+      "priority": "火炬中心 + 省科技厅",
+      "freshness": "年度(每年11-12月)",
+      "notes": "高新技术企业认定结果通常11-12月公布"
+    },
+    "TECH": {
+      "priority": "各省公报",
+      "freshness": "年度(每年3-4月)",
+      "notes": "技术市场统计由科技部统一口径"
+    },
+    "IND": {
+      "priority": "各省公报 + 省发改委",
+      "freshness": "年度(每年3-4月)",
+      "notes": "数字经济数据各省披露标准不一，部分省未公布绝对值"
+    },
+    "AI": {
+      "priority": "省工信厅 + 省发改委",
+      "freshness": "不定期",
+      "notes": "算力数据主要来自各省数字经济十四五规划"
+    },
+    "FIN": {
+      "priority": "证监会 + 人行 + 省金融局",
+      "freshness": "年度(每年4-5月)",
+      "notes": "科技贷款和母基金数据各省披露差异大"
+    }
+  }
+}

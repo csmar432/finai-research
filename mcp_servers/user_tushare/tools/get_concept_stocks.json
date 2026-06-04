@@ -1,0 +1,15 @@
+{
+  "name": "get_concept_stocks",
+  "description": "获取概念股板块信息（概念列表/成分股）。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "concept_name": {
+        "type": "string"
+      },
+      "ts_code": {
+        "type": "string"
+      }
+    }
+  }
+}

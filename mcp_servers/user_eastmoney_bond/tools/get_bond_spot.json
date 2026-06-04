@@ -1,0 +1,14 @@
+{
+  "name": "get_bond_spot",
+  "description": "获取债券现货数据（东方财富风格）。返回国债、企业债行情。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "bond_type": {
+        "type": "string",
+        "description": "债券类型: treasury/corporate/financial",
+        "default": "treasury"
+      }
+    }
+  }
+}

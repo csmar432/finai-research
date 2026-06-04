@@ -1,0 +1,13 @@
+{
+  "name": "pd_describe",
+  "description": "生成描述性统计（均值/标准差/分位数/极值等）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

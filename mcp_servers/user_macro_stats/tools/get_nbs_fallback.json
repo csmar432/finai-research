@@ -1,0 +1,8 @@
+{
+  "name": "get_nbs_fallback",
+  "description": "国家统计局分省数据备用方案",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

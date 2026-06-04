@@ -1,0 +1,13 @@
+{
+  "name": "get_fed_yield_curve",
+  "description": "获取美联储收益率曲线模型数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "date": {
+        "type": "string",
+        "description": "日期 YYYY-MM-DD"
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "get_bea_nipa",
+  "description": "获取BEA NIPA(国民账户)数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "table_name": {
+        "type": "string",
+        "description": "表名"
+      },
+      "year": {
+        "type": "integer",
+        "description": "年份"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "get_province_timeseries",
+  "description": "获取指定省份和指标的多年序列数据（如R&D经费2007-2024年，GDP 2005-2025年）。用于论文图表或回归分析。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "province": {
+        "type": "string",
+        "description": "省份名称",
+        "enum": ["湖北", "广东", "江苏", "浙江", "山东", "北京", "上海", "四川", "河南"]
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标ID（支持序列的指标：GDP、R&D经费、高新技术企业、技术合同成交额、本专科在校生）",
+        "examples": ["GDP", "R&D经费", "高新技术企业", "技术合同成交额", "本专科在校生"]
+      }
+    },
+    "required": ["province", "indicator"]
+  }
+}

@@ -18,20 +18,20 @@ Keychain 管理脚本
   api_key = get_secret("论文工作流", "DEEPSEEK_API_KEY")
 """
 
-import subprocess
 import argparse
-import sys
-import os
+import subprocess
 from pathlib import Path
 
 SERVICE = "论文工作流"
 
 KEYS = {
-    "B_AI_API_KEY":     "B.AI 代理 API Key（GPT/Gemini/Kimi）",
+    "RELAY_API_KEY":    "中转 API Key（兼容 OpenAI 格式的代理服务，如 B.AI/Groq/Nexr/OpenRouter）",
     "DEEPSEEK_API_KEY": "DeepSeek 直连 API Key",
-    "FRED_API_KEY":     "FRED 经济数据 API Key",
     "ZHIPU_API_KEY":    "智谱 AI API Key",
     # MCP Server 专用
+    "TUSHARE_TOKEN":       "Tushare Pro Token（A 股数据：行情/财务/融资融券）",
+    "EODHD_API_KEY":       "EODHD API Key（全球宏观数据：GDP/CPI/国债收益率）",
+    "FRED_API_KEY":        "FRED API Key（美联储经济数据）",
     "ALPHA_VANTAGE_API_KEY": "Alpha Vantage（股价/外汇数据）",
     "TIINGO_API_KEY":        "Tiingo（美股基本面+新闻）",
     "POLYGON_API_KEY":       "Polygon.io（美股实时行情）",

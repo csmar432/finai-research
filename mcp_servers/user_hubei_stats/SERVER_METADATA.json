@@ -1,0 +1,36 @@
+{
+  "name": "Hubei Stats",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "hubei-stats",
+  "serverIdentifier": "user-hubei-stats",
+  "description": "湖北省统计年鉴数据 — akshare全国宏观 + 湖北已知数据汇总，无需API Key",
+  "tools": [
+    "get_china_gdp",
+    "get_china_gdp_yearly",
+    "get_consumer_retail",
+    "get_cpi",
+    "get_fdi",
+    "get_hubei_hitech",
+    "get_hubei_rd_funding",
+    "get_hubei_tech_contract",
+    "get_industry_production",
+    "get_m2",
+    "get_pmi",
+    "get_ppi"
+  ],
+  "_legacy_capabilities": [
+    "全国GDP季度",
+    "全国GDP年度",
+    "CPI/PPI",
+    "PMI",
+    "M2货币",
+    "FDI",
+    "社会零售",
+    "工业增加值",
+    "湖北技术合同",
+    "湖北R&D",
+    "湖北高新技术企业"
+  ]
+}

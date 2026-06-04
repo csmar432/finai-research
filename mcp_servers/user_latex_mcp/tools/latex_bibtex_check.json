@@ -1,0 +1,13 @@
+{
+  "name": "latex_bibtex_check",
+  "description": "检查BibTeX文件格式，识别重复条目、未定义引用、无效字段。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

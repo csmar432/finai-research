@@ -1,0 +1,13 @@
+{
+  "name": "latex_scaffold",
+  "description": "在指定目录生成标准学术论文LaTeX项目结构。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

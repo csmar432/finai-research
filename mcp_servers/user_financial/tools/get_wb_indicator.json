@@ -1,0 +1,25 @@
+{
+  "name": "get_wb_indicator",
+  "description": "从 World Bank API 获取宏观指标。无需 API Key，覆盖全球所有国家。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标代码"
+      },
+      "per_page": {
+        "type": "integer",
+        "default": 50
+      }
+    },
+    "required": [
+      "country_code",
+      "indicator"
+    ]
+  }
+}

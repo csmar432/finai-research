@@ -1,0 +1,21 @@
+{
+  "name": "get_fund_performance",
+  "description": "获取基金业绩数据（东方财富风格）。返回收益率、同类排名等。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "fund_code": {
+        "type": "string",
+        "description": "基金代码，如 000001.OF"
+      },
+      "period": {
+        "type": "string",
+        "description": "期限: 1M/3M/6M/1Y/3Y",
+        "default": "1Y"
+      }
+    },
+    "required": [
+      "fund_code"
+    ]
+  }
+}

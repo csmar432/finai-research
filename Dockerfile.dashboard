@@ -1,0 +1,26 @@
+# ── Dashboard Service
+# Streamlit-based dashboard for monitoring pipeline runs and agent state.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+COPY scripts/ ./scripts/
+COPY mcp_servers/ ./mcp_servers/
+COPY config/ ./config/
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# Dashboard listens on port 8050
+EXPOSE 8050
+
+CMD ["streamlit", "run", "scripts/dashboard.py", "--server.port=8050", "--server.address=0.0.0.0"]

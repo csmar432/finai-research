@@ -1,0 +1,13 @@
+{
+  "name": "e2b_run_js",
+  "description": "在云端沙箱中执行JavaScript代码。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

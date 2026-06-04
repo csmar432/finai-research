@@ -1,0 +1,19 @@
+{
+  "name": "SEC EDGAR",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "user-sec-edgar",
+  "serverIdentifier": "user-sec-edgar",
+  "description": "美国SEC EDGAR公告获取。支持10-K年报、10-Q季报、8-K重大事件、DEF14A委托声明书。SEC数据免费公开，无需API Key。",
+  "tools": [
+    "get_sec_company_search",
+    "get_sec_filings",
+    "get_sec_10k",
+    "get_sec_10q",
+    "get_sec_8k",
+    "get_sec_cik_by_ticker"
+  ],
+  "_data_source": "SEC EDGAR Full Text Search (https://efts.sec.gov)",
+  "_note": "无需 API Key，通过 SEC 公开 API 获取"
+}

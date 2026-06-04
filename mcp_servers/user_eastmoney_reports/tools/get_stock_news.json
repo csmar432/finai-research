@@ -1,0 +1,22 @@
+{
+  "name": "get_stock_news",
+  "description": "获取个股新闻/公告。使用 akshare 东方财富接口，无需 API Key。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string"
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      },
+      "max_results": {
+        "type": "integer",
+        "default": 20
+      }
+    }
+  }
+}

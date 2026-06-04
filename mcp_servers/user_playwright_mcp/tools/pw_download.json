@@ -1,0 +1,13 @@
+{
+  "name": "pw_download",
+  "description": "等待并下载文件（触发下载后等待完成）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

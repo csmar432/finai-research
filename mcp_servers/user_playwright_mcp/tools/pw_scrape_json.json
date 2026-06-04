@@ -1,0 +1,13 @@
+{
+  "name": "pw_scrape_json",
+  "description": "从页面提取JSON数据（从script标签、API响应或JSON-LD中提取）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

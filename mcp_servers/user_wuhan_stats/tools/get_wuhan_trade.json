@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_trade",
+  "description": "武汉进出口贸易数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

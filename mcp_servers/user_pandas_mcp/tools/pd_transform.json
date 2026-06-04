@@ -1,0 +1,13 @@
+{
+  "name": "pd_transform",
+  "description": "数据转换和派生新列。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

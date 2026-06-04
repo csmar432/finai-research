@@ -1,0 +1,13 @@
+{
+  "name": "pd_head",
+  "description": "查看数据框前N行。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

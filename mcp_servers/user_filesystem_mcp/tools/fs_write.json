@@ -1,0 +1,13 @@
+{
+  "name": "fs_write",
+  "description": "写入文件内容（可批量）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "object"
+      }
+    },
+    "required": []
+  }
+}

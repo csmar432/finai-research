@@ -1,0 +1,66 @@
+# ============================================================
+# FinAI Research Workflow — 可选依赖
+# ============================================================
+# pip install -r requirements-optional.txt  # 安装全部可选依赖
+# pip install -r requirements-optional.txt --extra-index-url ...  # 如需私有源
+#
+# 按需分组安装：
+#   pip install finai-research-workflow[rag]
+#   pip install finai-research-workflow[deep-learning]
+#   pip install finai-research-workflow[econometrics]
+#   pip install finai-research-workflow[knowledge]
+#   pip install finai-research-workflow[sandbox]
+#   pip install finai-research-workflow[browser]
+#   pip install finai-research-workflow[monitor]
+#   pip install finai-research-workflow[dev]
+# ============================================================
+
+# ── RAG / 向量检索 ───────────────────────────────────────────
+# 用途：文献向量库、语义检索、混合搜索
+# 说明：chromadb 含内嵌向量引擎，无需单独服务
+chromadb>=0.4.22
+faiss-cpu>=1.7.4
+sentence-transformers>=2.3.0
+jieba>=0.42.0
+
+# ── 深度学习（Transformer / VLM）──────────────────────────────
+# 用途：transformers 模型加载、VLM 视觉图表评估
+# 说明：torch 用于 autonomy_loop 中的模型推理
+torch>=2.2.0
+accelerate>=0.30.0
+
+# ── 计量经济扩展 ─────────────────────────────────────────────
+# 用途：面板数据 IV 估计、GMM、Sargan-Hansen 过度识别检验
+# 说明：linearmodels 已含于核心依赖，此处为扩展包
+linearmodels>=4.17
+diff_in_diff2>=1.0.0
+pandas-datareader>=0.10.0
+pandasql>=0.7.3
+
+# ── 知识图谱可视化 ───────────────────────────────────────────
+# 用途：引文网络图谱、知识图谱可视化（与 Neo4j 配合）
+# 说明：neo4j 需独立安装并启动服务
+neo4j>=5.0.0
+pyvis>=0.3.0
+
+# ── 云端代码沙箱 ─────────────────────────────────────────────
+# 用途：E2B microVM 安全代码执行（支持代码生成 + 图表 + 回测）
+# 说明：需设置 E2B_API_KEY 环境变量
+e2b-code-interpreter>=2.0.0
+
+# ── 浏览器自动化 ─────────────────────────────────────────────
+# 用途：动态网页抓取、交互式金融数据采集
+# 注意：安装后需运行 `playwright install chromium`
+playwright>=1.40.0
+
+# ── 监控与调度 ───────────────────────────────────────────────
+# 用途：定时任务、宏观经济数据自动更新、研究流程调度
+apscheduler>=3.10.0
+
+# ── 开发工具 ─────────────────────────────────────────────────
+pytest>=7.4.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+ruff>=0.1.0
+jupyter>=1.0.0
+ipykernel>=6.28.0

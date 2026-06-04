@@ -1,0 +1,24 @@
+{
+  "name": "get_csmar_trading",
+  "description": "获取CSMAR交易数据。返回日频交易数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD"
+      }
+    },
+    "required": [
+      "ts_code"
+    ]
+  }
+}

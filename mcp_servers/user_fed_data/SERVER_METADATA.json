@@ -1,0 +1,22 @@
+{
+  "name": "Fed Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "fed-data",
+  "serverIdentifier": "user-fed-data",
+  "description": "Federal Reserve Economic Data (FOMC/褐皮书/收益率曲线/联邦基金利率)",
+  "tools": [
+    "get_fed_beige_book",
+    "get_fed_fomc",
+    "get_fed_interest_rate",
+    "get_fed_yield_curve"
+  ],
+  "_legacy_capabilities": [
+    "FOMC日程",
+    "褐皮书",
+    "收益率曲线",
+    "联邦基金利率",
+    "美联储数据"
+  ]
+}

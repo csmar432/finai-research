@@ -1,0 +1,11 @@
+{
+  "name": "get_news_top_headlines",
+  "description": "获取财经头条新闻",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "category": { "type": "string", "description": "分类：business, technology, science", "default": "business" },
+      "country": { "type": "string", "description": "国家代码：us,cn,gb", "default": "us" }
+    }
+  }
+}

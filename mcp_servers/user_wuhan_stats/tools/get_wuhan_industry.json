@@ -1,0 +1,8 @@
+{
+  "name": "get_wuhan_industry",
+  "description": "武汉规模以上工业数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

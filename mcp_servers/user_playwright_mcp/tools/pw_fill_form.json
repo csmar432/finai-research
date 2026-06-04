@@ -1,0 +1,13 @@
+{
+  "name": "pw_fill_form",
+  "description": "填写表单字段。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "object"
+      }
+    },
+    "required": []
+  }
+}

@@ -1,0 +1,284 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-green" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="750" fill="url(#bg)" rx="12"/>
+
+  <!-- Title -->
+  <text x="600" y="48" text-anchor="middle" font-size="22" font-weight="700" fill="#58a6ff">论文-研报工作流 · FinResearch Agent</text>
+  <text x="600" y="70" text-anchor="middle" font-size="11" fill="#8b949e">Multi-Agent Research Pipeline: Idea → Literature → Experiment → Paper → Review</text>
+
+  <!-- ── USER INPUT ─────────────────────────────────────────────────────── -->
+  <rect x="475" y="82" width="250" height="52" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="600" y="102" text-anchor="middle" font-size="12" font-weight="600" fill="#e6edf3">用户自然语言输入</text>
+  <text x="600" y="120" text-anchor="middle" font-size="10" fill="#58a6ff">"帮我研究碳排放权交易的创新影响"</text>
+
+  <!-- Arrow down from user -->
+  <line x1="600" y1="134" x2="600" y2="158" stroke="#30363d" stroke-width="2" marker-end="url(#arr)"/>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+    <path d="M0,0 L8,4 L0,8 Z" fill="#30363d"/>
+  </marker></defs>
+
+  <!-- ── CURSOR AGENT ────────────────────────────────────────────────────── -->
+  <rect x="400" y="162" width="400" height="58" rx="8" fill="#1f6feb" stroke="#388bfd" stroke-width="2" filter="url(#glow-blue)"/>
+  <text x="600" y="188" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Cursor Agent (Local Claude)</text>
+  <text x="600" y="208" text-anchor="middle" font-size="10" fill="#a5d6ff">Orchestrator · Memory · Planner · Reflector · HITL Gates</text>
+
+  <!-- Vertical arrow -->
+  <line x1="600" y1="220" x2="600" y2="248" stroke="#30363d" stroke-width="2"/>
+  <path d="M594,244 L600,252 L606,244" fill="none" stroke="#30363d" stroke-width="2"/>
+
+  <!-- ── 5 PIPELINE STAGES ───────────────────────────────────────────────── -->
+  <!-- Stage label -->
+  <text x="600" y="268" text-anchor="middle" font-size="9" fill="#8b949e" letter-spacing="2">RESEARCH PIPELINE</text>
+
+  <!-- Stage data -->
+  <!-- [x, label, sublabel, color] -->
+  <!-- Stage 1: 文献综述 -->
+  <rect x="20" y="278" width="210" height="108" rx="8" fill="#161b22" stroke="#7ee787" stroke-width="2"/>
+  <text x="125" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#7ee787">文献综述</text>
+  <text x="125" y="328" text-anchor="middle" font-size="10" fill="#e6edf3">Literature Review</text>
+  <text x="125" y="350" text-anchor="middle" font-size="9" fill="#8b949e">arXiv · NBER · OpenAlex</text>
+  <text x="125" y="366" text-anchor="middle" font-size="9" fill="#8b949e">Semantic Scholar · CNKI</text>
+  <text x="125" y="382" text-anchor="middle" font-size="9" fill="#8b949e">引文网络 · Gap Analysis</text>
+
+  <!-- Stage 2: 研究设计 -->
+  <rect x="255" y="278" width="210" height="108" rx="8" fill="#161b22" stroke="#d29922" stroke-width="2"/>
+  <text x="360" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#d29922">研究设计</text>
+  <text x="360" y="328" text-anchor="middle" font-size="10" fill="#e6edf3">Experiment Design</text>
+  <text x="360" y="350" text-anchor="middle" font-size="9" fill="#8b949e">DID · IV · RDD · PSM</text>
+  <text x="360" y="366" text-anchor="middle" font-size="9" fill="#8b949e">合成控制 · Panel GMM</text>
+  <text x="360" y="382" text-anchor="middle" font-size="9" fill="#8b949e">Policy Database (23)</text>
+
+  <!-- Stage 3: 数据获取 -->
+  <rect x="490" y="278" width="220" height="108" rx="8" fill="#161b22" stroke="#bc8cff" stroke-width="2"/>
+  <text x="600" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#bc8cff">数据获取</text>
+  <text x="600" y="328" text-anchor="middle" font-size="10" fill="#e6edf3">Data Acquisition</text>
+  <text x="600" y="350" text-anchor="middle" font-size="9" fill="#8b949e">34 MCP Data Servers</text>
+  <text x="600" y="366" text-anchor="middle" font-size="9" fill="#8b949e">A股 · 宏观 · 美股 · 外汇</text>
+  <text x="600" y="382" text-anchor="middle" font-size="9" fill="#8b949e">World Bank · IMF · OECD</text>
+
+  <!-- Stage 4: 实证分析 -->
+  <rect x="735" y="278" width="220" height="108" rx="8" fill="#161b22" stroke="#ff7b72" stroke-width="2"/>
+  <text x="845" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#ff7b72">实证分析</text>
+  <text x="845" y="328" text-anchor="middle" font-size="10" fill="#e6edf3">Empirical Analysis</text>
+  <text x="845" y="350" text-anchor="middle" font-size="9" fill="#8b949e">33 Econometric Methods</text>
+  <text x="845" y="366" text-anchor="middle" font-size="9" fill="#8b949e">Robustness Tests ×18</text>
+  <text x="845" y="382" text-anchor="middle" font-size="9" fill="#8b949e">Diagnostic Reporting</text>
+
+  <!-- Stage 5: 论文写作 -->
+  <rect x="980" y="278" width="200" height="108" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+  <text x="1080" y="308" text-anchor="middle" font-size="13" font-weight="700" fill="#58a6ff">论文写作</text>
+  <text x="1080" y="328" text-anchor="middle" font-size="10" fill="#e6edf3">Paper Writing</text>
+  <text x="1080" y="350" text-anchor="middle" font-size="9" fill="#8b949e">LaTeX · 34 Templates</text>
+  <text x="1080" y="366" text-anchor="middle" font-size="9" fill="#8b949e">Adversarial Review Loop</text>
+  <text x="1080" y="382" text-anchor="middle" font-size="9" fill="#8b949e">JF/JFE/RFS · 经济研究</text>
+
+  <!-- Arrows between stages -->
+  <line x1="230" y1="332" x2="253" y2="332" stroke="#30363d" stroke-width="2"/>
+  <path d="M247,327 L255,332 L247,337" fill="none" stroke="#30363d" stroke-width="2"/>
+  <line x1="465" y1="332" x2="488" y2="332" stroke="#30363d" stroke-width="2"/>
+  <path d="M482,327 L490,332 L482,337" fill="none" stroke="#30363d" stroke-width="2"/>
+  <line x1="710" y1="332" x2="733" y2="332" stroke="#30363d" stroke-width="2"/>
+  <path d="M727,327 L735,332 L727,337" fill="none" stroke="#30363d" stroke-width="2"/>
+  <line x1="955" y1="332" x2="978" y2="332" stroke="#30363d" stroke-width="2"/>
+  <path d="M972,327 L980,332 L972,337" fill="none" stroke="#30363d" stroke-width="2"/>
+
+  <!-- Arrow from Cursor Agent down to pipeline -->
+  <path d="M600,248 L125,278" stroke="#7ee787" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+
+  <!-- ── MCP DATA SERVERS ──────────────────────────────────────────────────── -->
+  <rect x="20" y="406" width="1160" height="150" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="600" y="430" text-anchor="middle" font-size="12" font-weight="700" fill="#bc8cff">34 MCP Data Servers — Most Require No API Key</text>
+  <line x1="50" y1="440" x2="1150" y2="440" stroke="#21262d" stroke-width="1"/>
+
+  <!-- MCP server grid (4 rows) -->
+  <!-- Row 1 -->
+  <rect x="30" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="97" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#f0883e">user-tushare</text>
+  <text x="97" y="483" text-anchor="middle" font-size="8" fill="#8b949e">A股行情/财务/融资融券</text>
+
+  <rect x="175" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="242" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">user-financial</text>
+  <text x="242" y="483" text-anchor="middle" font-size="8" fill="#8b949e">中国宏观 GDP/CPI/M2</text>
+
+  <rect x="320" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="387" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">user-wb-data</text>
+  <text x="387" y="483" text-anchor="middle" font-size="8" fill="#8b949e">World Bank API</text>
+
+  <rect x="465" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="532" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">user-imf-data</text>
+  <text x="532" y="483" text-anchor="middle" font-size="8" fill="#8b949e">IMF Data API</text>
+
+  <rect x="610" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="677" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">user-oecd-data</text>
+  <text x="677" y="483" text-anchor="middle" font-size="8" fill="#8b949e">OECD Stats API</text>
+
+  <rect x="755" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="822" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#bc8cff">user-eastmoney</text>
+  <text x="822" y="483" text-anchor="middle" font-size="8" fill="#8b949e">东方财富 研报/新闻</text>
+
+  <rect x="900" y="450" width="135" height="44" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="967" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#7ee787">user-yfinance</text>
+  <text x="967" y="483" text-anchor="middle" font-size="8" fill="#8b949e">美股 yfinance ESG</text>
+
+  <rect x="1045" y="450" width="125" height="44" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="1107" y="467" text-anchor="middle" font-size="9" font-weight="600" fill="#bc8cff">user-enhanced</text>
+  <text x="1107" y="483" text-anchor="middle" font-size="8" fill="#8b949e">外汇/航运/大宗商品</text>
+
+  <!-- Row 2 -->
+  <rect x="30" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="97" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#d29922">user-arxiv</text>
+  <text x="97" y="537" text-anchor="middle" font-size="8" fill="#8b949e">学术论文 检索/下载</text>
+
+  <rect x="175" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="242" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#d29922">user-nber-wp</text>
+  <text x="242" y="537" text-anchor="middle" font-size="8" fill="#8b949e">NBER Working Papers</text>
+
+  <rect x="320" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="387" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#d29922">user-openalex</text>
+  <text x="387" y="537" text-anchor="middle" font-size="8" fill="#8b949e">OpenAlex 引文数据</text>
+
+  <rect x="465" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="532" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#ff7b72">user-fed-data</text>
+  <text x="532" y="537" text-anchor="middle" font-size="8" fill="#8b949e">美联储 FOMC/Beige Book</text>
+
+  <rect x="610" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="677" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#ff7b72">user-eodhd</text>
+  <text x="677" y="537" text-anchor="middle" font-size="8" fill="#8b949e">美国宏观 国债收益率</text>
+
+  <rect x="755" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="822" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#7ee787">user-finviz-sec</text>
+  <text x="822" y="537" text-anchor="middle" font-size="8" fill="#8b949e">股票筛选 SEC Filings</text>
+
+  <rect x="900" y="504" width="135" height="44" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="967" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#d29922">user-semantic-scholar</text>
+  <text x="967" y="537" text-anchor="middle" font-size="8" fill="#8b949e">2亿+ 学术论文引文</text>
+
+  <rect x="1045" y="504" width="125" height="44" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="1107" y="521" text-anchor="middle" font-size="9" font-weight="600" fill="#bc8cff">+24 more</text>
+  <text x="1107" y="537" text-anchor="middle" font-size="8" fill="#8b949e">省区数据/期权/基金</text>
+
+  <!-- Arrow: stages → MCP -->
+  <path d="M845,406 L845,394" stroke="#bc8cff" stroke-width="1.5" fill="none"/>
+  <path d="M840,400 L845,408 L850,400" fill="none" stroke="#bc8cff" stroke-width="1.5"/>
+
+  <!-- ── RESEARCH FRAMEWORK LAYER ───────────────────────────────────────────── -->
+  <rect x="20" y="572" width="1160" height="130" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="600" y="596" text-anchor="middle" font-size="12" font-weight="700" fill="#ff7b72">research_framework — 33 Econometric Methods (JF/JFE/RFS Standard)</text>
+  <line x1="50" y1="606" x2="1150" y2="606" stroke="#21262d" stroke-width="1"/>
+
+  <!-- Method modules (3 rows) -->
+  <!-- Row 1 -->
+  <rect x="30" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="80" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#7ee787">Callaway-SantAnna</text>
+  <text x="80" y="642" text-anchor="middle" font-size="8" fill="#8b949e">交错DID · QJE 2021</text>
+
+  <rect x="140" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="190" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#7ee787">Sun-Abraham</text>
+  <text x="190" y="642" text-anchor="middle" font-size="8" fill="#8b949e">事件研究DID · REStud 2021</text>
+
+  <rect x="250" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="300" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#7ee787">Borusyak-Jaravel</text>
+  <text x="300" y="642" text-anchor="middle" font-size="8" fill="#8b949e">交错DID · REStud 2024</text>
+
+  <rect x="360" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="410" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#bc8cff">合成控制</text>
+  <text x="410" y="642" text-anchor="middle" font-size="8" fill="#8b949e">Synthetic Control · JASA 2010</text>
+
+  <rect x="470" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="520" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#bc8cff">合成DID</text>
+  <text x="520" y="642" text-anchor="middle" font-size="8" fill="#8b949e">SynthDID · Arkhangelsky 2021</text>
+
+  <rect x="580" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="630" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#f0883e">RDD</text>
+  <text x="630" y="642" text-anchor="middle" font-size="8" fill="#8b949e">断点回归 · Cattaneo 2019</text>
+
+  <rect x="690" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="740" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">Panel GMM / IV</text>
+  <text x="740" y="642" text-anchor="middle" font-size="8" fill="#8b949e">Arellano-Bond · Stock-Yogo</text>
+
+  <rect x="800" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="850" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#d29922">空间回归 SDM</text>
+  <text x="850" y="642" text-anchor="middle" font-size="8" fill="#8b949e">LeSage-Pace 2009</text>
+
+  <rect x="910" y="614" width="100" height="38" rx="6" fill="#21262d" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="960" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#ff7b72">稳健性×18</text>
+  <text x="960" y="642" text-anchor="middle" font-size="8" fill="#8b949e">robustness_runner.py</text>
+
+  <rect x="1020" y="614" width="150" height="38" rx="6" fill="#21262d" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="1095" y="628" text-anchor="middle" font-size="9" font-weight="600" fill="#58a6ff">金融图表工厂</text>
+  <text x="1095" y="642" text-anchor="middle" font-size="8" fill="#8b949e">fin_charts.py · 20 Presets · ≥300 DPI</text>
+
+  <!-- Row 2 -->
+  <rect x="30" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="80" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#7ee787">Goodman-Bacon</text>
+  <text x="80" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">分解 · REStat 2021</text>
+
+  <rect x="140" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="190" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#7ee787">Gardner Two-Stage</text>
+  <text x="190" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">交错DID · 2022</text>
+
+  <rect x="250" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="300" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#7ee787">dCdH</text>
+  <text x="300" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">非交错处理 · JASA 2020</text>
+
+  <rect x="360" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#7ee787" stroke-width="1.5"/>
+  <text x="410" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#7ee787">Honest DiD</text>
+  <text x="410" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">敏感性 · Rambachan 2023</text>
+
+  <rect x="470" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="520" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#d29922">三重差分DDD</text>
+  <text x="520" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">Triple Diff DID</text>
+
+  <rect x="580" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="630" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#d29922">面板分位数</text>
+  <text x="630" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">Panel Quantile · Canay 2011</text>
+
+  <rect x="690" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+  <text x="740" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#d29922">交互固定效应</text>
+  <text x="740" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">Bai (2009) CCE</text>
+
+  <rect x="800" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="850" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#f0883e">局部投影DID</text>
+  <text x="850" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">Local Projections · Jordà 2005</text>
+
+  <rect x="910" y="660" width="100" height="34" rx="6" fill="#21262d" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="960" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#bc8cff">政策实验库</text>
+  <text x="960" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">23 Policies · 2008-2024</text>
+
+  <rect x="1020" y="660" width="150" height="34" rx="6" fill="#21262d" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="1095" y="672" text-anchor="middle" font-size="8" font-weight="600" fill="#79c0ff">A股特色变量</text>
+  <text x="1095" y="684" text-anchor="middle" font-size="7.5" fill="#8b949e">北向资金/融资余额/ESG · 8种</text>
+
+  <!-- Arrow: MCP → RF -->
+  <path d="M600,572 L600,558" stroke="#ff7b72" stroke-width="1.5" fill="none"/>
+  <path d="M595,564 L600,556 L605,564" fill="none" stroke="#ff7b72" stroke-width="1.5"/>
+
+  <!-- ── KEY STATS (top right) ─────────────────────────────────────────────── -->
+  <rect x="1030" y="14" width="158" height="70" rx="6" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <text x="1109" y="30" text-anchor="middle" font-size="8" fill="#8b949e" letter-spacing="1">KEY METRICS</text>
+  <text x="1109" y="50" text-anchor="middle" font-size="16" font-weight="700" fill="#bc8cff">34</text>
+  <text x="1109" y="64" text-anchor="middle" font-size="8" fill="#8b949e">MCP Servers</text>
+  <text x="1160" y="50" text-anchor="middle" font-size="16" font-weight="700" fill="#ff7b72">33</text>
+  <text x="1160" y="64" text-anchor="middle" font-size="8" fill="#8b949e">Methods</text>
+  <text x="1109" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#7ee787">16</text>
+  <text x="1160" y="78" text-anchor="middle" font-size="8" fill="#8b949e">Skills</text>
+
+  <!-- ── OUTPUT NOTE ───────────────────────────────────────────────────────── -->
+  <text x="600" y="718" text-anchor="middle" font-size="10" fill="#8b949e">输出: LaTeX Paper (34 journal formats) + PDF + Diagnostic Report</text>
+
+</svg>

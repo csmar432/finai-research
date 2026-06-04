@@ -1,0 +1,24 @@
+{
+  "name": "get_imf_world_economic_outlook",
+  "description": "获取IMF世界经济展望(WEO)数据。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "国家代码"
+      },
+      "indicator": {
+        "type": "string",
+        "description": "指标: gdp_growth/inflation/unemployment/fiscal_balance"
+      },
+      "year_range": {
+        "type": "string",
+        "description": "年份范围"
+      }
+    },
+    "required": [
+      "country_code"
+    ]
+  }
+}

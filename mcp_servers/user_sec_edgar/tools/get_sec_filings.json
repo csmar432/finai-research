@@ -1,0 +1,13 @@
+{
+  "name": "get_sec_filings",
+  "description": "获取公司近期SEC公告列表",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "cik": { "type": "string", "description": "SEC CIK 编号，例如 '0000320183'" },
+      "form_type": { "type": "string", "description": "表单类型：10-K, 10-Q, 8-K, DEF 14A", "default": "10-K" },
+      "limit": { "type": "integer", "description": "返回数量", "default": 10 }
+    },
+    "required": ["cik"]
+  }
+}

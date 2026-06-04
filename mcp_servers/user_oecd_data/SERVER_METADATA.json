@@ -1,0 +1,22 @@
+{
+  "name": "OECD Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "oecd-data",
+  "serverIdentifier": "user-oecd-data",
+  "description": "OECD Data API（GDP/就业/贸易/TFP，无需API Key）",
+  "tools": [
+    "get_oecd_employment",
+    "get_oecd_gdp",
+    "get_oecd_tfp",
+    "get_oecd_trade"
+  ],
+  "_legacy_capabilities": [
+    "GDP",
+    "就业",
+    "贸易",
+    "TFP",
+    "生产力"
+  ]
+}

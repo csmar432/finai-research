@@ -1,0 +1,10 @@
+{
+  "name": "get_cc_news",
+  "description": "获取加密货币最新新闻",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "categories": { "type": "string", "description": "新闻分类，例如 'BTC' 或 'Blockchain'", "default": "" }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "pw_scrape_table",
+  "description": "抓取HTML表格数据（东方财富/同花顺等金融网站的常用表格）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

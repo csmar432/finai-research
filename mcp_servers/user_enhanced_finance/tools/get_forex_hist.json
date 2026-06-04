@@ -1,0 +1,23 @@
+{
+  "name": "get_forex_hist",
+  "description": "获取外汇历史走势数据（仅支持指定货币对）。使用 akshare 东方财富接口，无需 API Key。日期范围通过 Python 过滤。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "currency_pair": {
+        "type": "string",
+        "description": "货币对，如 USD/CNY, EUR/USD（需大写）",
+        "default": "USDCNY"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期 YYYYMMDD（可选，默认返回全部历史）"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期 YYYYMMDD（可选）"
+      }
+    },
+    "required": []
+  }
+}

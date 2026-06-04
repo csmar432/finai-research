@@ -1,0 +1,11 @@
+{
+  "name": "get_sec_company_search",
+  "description": "通过公司名称或 ticker 搜索 SEC 公司信息",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "company": { "type": "string", "description": "公司名称或 ticker，例如 'Apple Inc' 或 'AAPL'" }
+    },
+    "required": ["company"]
+  }
+}

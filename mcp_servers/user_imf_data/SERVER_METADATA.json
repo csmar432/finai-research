@@ -1,0 +1,21 @@
+{
+  "name": "IMF Data",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "imf-data",
+  "serverIdentifier": "user-imf-data",
+  "description": "IMF Data API（WEO/BOP/IFS，无需API Key）",
+  "tools": [
+    "get_imf_bop",
+    "get_imf_ifs",
+    "get_imf_world_economic_outlook"
+  ],
+  "_legacy_capabilities": [
+    "世界经济展望",
+    "国际收支",
+    "国际金融统计",
+    "GDP增速",
+    "汇率"
+  ]
+}

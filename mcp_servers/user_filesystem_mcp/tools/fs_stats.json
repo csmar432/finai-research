@@ -1,0 +1,13 @@
+{
+  "name": "fs_stats",
+  "description": "获取文件/目录统计信息（大小/行数/修改时间）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

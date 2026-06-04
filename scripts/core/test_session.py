@@ -6,15 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from scripts.core.memory import ResearchMemory
 from scripts.core.session import (
     ResearchSession,
     SessionConfig,
     SessionState,
     SessionStatus,
 )
-from scripts.core.planner import TaskType
-
 
 # ─── Fixtures ───────────────────────────────────────────────────────────────────
 
@@ -84,7 +81,7 @@ def test_resume_session(tmpdir):
     session.save()
 
     # Resume from disk
-    restored = ResearchSession.resume("resume-test", db_path=db)
+    restored = ResearchSession.load("resume-test", db_path=db)
 
     assert restored.config.session_id == "resume-test"
     # Context may contain the pushed item (if save_session persisted it)

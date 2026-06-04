@@ -1,0 +1,8 @@
+{
+  "name": "get_m2",
+  "description": "获取中国M2货币供应量年度数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

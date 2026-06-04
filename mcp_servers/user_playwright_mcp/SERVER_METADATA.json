@@ -1,0 +1,41 @@
+{
+  "name": "Playwright Mcp",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "Playwright MCP",
+  "serverIdentifier": "user-playwright-mcp",
+  "description": "浏览器自动化 MCP — 网页导航、截图、表格抓取、JSON提取、表单填写、点击交互、JS执行、文件下载。适合抓取无 API 的金融网站数据（东方财富、同花顺等）。",
+  "tools": [
+    "pw_navigate",
+    "pw_screenshot",
+    "pw_scrape_table",
+    "pw_scrape_json",
+    "pw_click",
+    "pw_fill_form",
+    "pw_evaluate_js",
+    "pw_wait",
+    "pw_download",
+    "pw_get_html",
+    "pw_search_click"
+  ],
+  "_legacy_capabilities": {
+    "tools": [
+      "pw_navigate (导航到URL)",
+      "pw_screenshot (页面/元素截图)",
+      "pw_scrape_table (抓取HTML表格)",
+      "pw_scrape_json (从页面提取JSON数据)",
+      "pw_click (点击页面元素)",
+      "pw_fill_form (填写表单)",
+      "pw_evaluate_js (执行JavaScript)",
+      "pw_wait (等待时间/条件)",
+      "pw_download (等待并下载文件)",
+      "pw_get_html (获取HTML源码)",
+      "pw_search_click (搜索并点击)"
+    ],
+    "requires_api_key": false,
+    "dependencies": [
+      "playwright"
+    ]
+  }
+}

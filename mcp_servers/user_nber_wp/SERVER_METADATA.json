@@ -1,0 +1,19 @@
+{
+  "name": "NBER Working Papers",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "nber-wp",
+  "serverIdentifier": "user-nber-wp",
+  "description": "NBER Working Papers（无需API Key）",
+  "tools": [
+    "get_nber_paper_details",
+    "search_nber_papers"
+  ],
+  "_legacy_capabilities": [
+    "工作论文搜索",
+    "论文详情",
+    "作者信息",
+    "摘要获取"
+  ]
+}

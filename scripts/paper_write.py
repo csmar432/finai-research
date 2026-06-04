@@ -19,20 +19,18 @@
   python scripts/paper_write.py --assemble              # 仅整合已有章节
 """
 
-import sys
+import argparse
 import json
 import re
-import argparse
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from scripts.ai_router import AI, Task
 from scripts.review_layer import ReviewLayer, ReviewType
-
 
 # ─── 章节审查辅助函数 ─────────────────────────────────
 
@@ -125,7 +123,7 @@ def generate_outline(
 """
 
     print(f"\n{'='*70}")
-    print(f"  [1/7] 生成论文大纲")
+    print("  [1/7] 生成论文大纲")
     print(f"  主题: {topic}")
     if target_venue:
         print(f"  目标: {target_venue}")
@@ -214,7 +212,7 @@ def write_intro_related(outline: dict, max_tokens: int = 4096) -> dict:
 4. 主要贡献（以 We propose... 格式，3-4条）
 5. 论文结构（最后一段）
 """
-    print(f"\n  [2/7] 撰写 Introduction...")
+    print("\n  [2/7] 撰写 Introduction...")
     r = AI.chat(prompt_intro, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.4, max_tokens=max_tokens)
     print(f"    耗时: {r.latency_ms/1000:.1f}s")
@@ -239,7 +237,7 @@ def write_intro_related(outline: dict, max_tokens: int = 4096) -> dict:
 4. 与本文的关联（1段，不要详述本文方法）
 格式：用 \\cite{{author2023}} 引用，小标题分组
 """
-    print(f"\n  [3/7] 撰写 Related Work...")
+    print("\n  [3/7] 撰写 Related Work...")
     r = AI.chat(prompt_related, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.4, max_tokens=max_tokens)
     print(f"    耗时: {r.latency_ms/1000:.1f}s")
@@ -282,7 +280,7 @@ def write_methodology(outline: dict, max_tokens: int = 6144) -> str:
 
 风格：语言严谨、数学符号用 LaTeX 格式、每个决策要有动机。
 """
-    print(f"\n  [4/7] 撰写 Methodology...")
+    print("\n  [4/7] 撰写 Methodology...")
     r = AI.chat(prompt, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.4, max_tokens=max_tokens)
     print(f"  耗时: {r.latency_ms/1000:.1f}s")
@@ -318,7 +316,7 @@ def write_experiment_conclusion(outline: dict, max_tokens: int = 6144) -> dict:
 ### 4.4 消融实验（各组件贡献分析）
 格式：使用 LaTeX 表格格式（\\begin{{table}}）
 """
-    print(f"\n  [5/7] 撰写 Experiments...")
+    print("\n  [5/7] 撰写 Experiments...")
     r = AI.chat(prompt_exp, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.3, max_tokens=max_tokens)
     print(f"    耗时: {r.latency_ms/1000:.1f}s")
@@ -341,7 +339,7 @@ def write_experiment_conclusion(outline: dict, max_tokens: int = 6144) -> dict:
 
 风格：简洁、避免重复 Introduction 内容、未来工作要有前瞻性。
 """
-    print(f"\n  [6/7] 撰写 Conclusion...")
+    print("\n  [6/7] 撰写 Conclusion...")
     r = AI.chat(prompt_conc, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.4, max_tokens=2048)
     print(f"    耗时: {r.latency_ms/1000:.1f}s")
@@ -396,7 +394,7 @@ def assemble_full_paper(
 
 格式：Markdown，LaTeX公式用 $$...$$
 """
-    print(f"\n  [7/7] 整合全文...")
+    print("\n  [7/7] 整合全文...")
     r = AI.chat(prompt, task=Task.PAPER_CN, model="deepseek",
                 temperature=0.4, max_tokens=max_tokens)
     print(f"    耗时: {r.latency_ms/1000:.1f}s")
@@ -528,8 +526,8 @@ def main():
     args = parser.parse_args()
 
     print(f"\n{'='*70}")
-    print(f"  论文写作工具 v2.0")
-    print(f"  AI路由: DeepSeek(中文) / GPT-5.5(英文) / Gemini(推理)")
+    print("  论文写作工具 v2.0")
+    print("  AI路由: DeepSeek(中文) / GPT-5.5(英文) / Gemini(推理)")
     print(f"{'='*70}")
 
     # 路由1：仅整合
@@ -563,7 +561,7 @@ def main():
         return
 
     max_t = args.max_tokens or 0
-    mt = {k: max_t for k in DEFAULT_MAX_TOKENS} if max_t else DEFAULT_MAX_TOKENS
+    mt = dict.fromkeys(DEFAULT_MAX_TOKENS, max_t) if max_t else DEFAULT_MAX_TOKENS
 
     # Step 1: 大纲
     outline = None
@@ -598,7 +596,7 @@ def main():
 
     # 🔍 审查：引言 + 相关工作
     print(f"\n{'='*70}")
-    print(f"  🔍 审查章节...")
+    print("  🔍 审查章节...")
     venue = args.venue or "Unknown"
     for key in ("introduction", "intro", "related_work"):
         if key in chapters:
@@ -636,14 +634,14 @@ def main():
     full_paper = assemble_full_paper(args.topic, outline, chapters, mt.get("assemble", 8192))
 
     print(f"\n{'='*70}")
-    print(f"  🔍 审查完整论文...")
+    print("  🔍 审查完整论文...")
     full_paper = _review_chapter(
         full_paper, "FULL PAPER",
         ReviewType.PAPER_CHAPTER, args.topic, venue
     )
 
     print(f"\n{'='*70}")
-    print(f"  完整论文预览（前2000字）")
+    print("  完整论文预览（前2000字）")
     print(f"{'='*70}")
     print(full_paper[:2000])
 
@@ -651,7 +649,7 @@ def main():
         _save_paper(full_paper, args.topic, args.format)
 
     print(f"\n{'='*70}")
-    print(f"  ✅ 完成！")
+    print("  ✅ 完成！")
     print(f"{'='*70}")
 
 
@@ -716,7 +714,7 @@ def _load_existing_chapters() -> dict:
 def print_outline_summary(outline: dict):
     """打印大纲摘要。"""
     print(f"\n{'='*70}")
-    print(f"  📋 大纲摘要")
+    print("  📋 大纲摘要")
     print(f"{'='*70}")
     title = outline.get("title", "")
     if title:

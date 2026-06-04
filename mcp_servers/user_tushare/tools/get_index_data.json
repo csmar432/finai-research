@@ -1,0 +1,29 @@
+{
+  "name": "get_index_data",
+  "description": "获取A股指数数据（日线行情/基础信息）。使用 Tushare Pro API。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string"
+      },
+      "trade_date": {
+        "type": "string"
+      },
+      "start_date": {
+        "type": "string"
+      },
+      "end_date": {
+        "type": "string"
+      },
+      "data_type": {
+        "type": "string",
+        "enum": [
+          "daily",
+          "basic"
+        ],
+        "default": "daily"
+      }
+    }
+  }
+}

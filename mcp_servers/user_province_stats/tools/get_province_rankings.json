@@ -1,0 +1,16 @@
+{
+  "name": "get_province_rankings",
+  "description": "获取全国排名表（如各省GDP排名、R&D经费排名、技术合同排名等），用于省间横向对比。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "table": {
+        "type": "string",
+        "description": "排名表ID",
+        "enum": ["GDP_2024", "RD经费_2024", "RD强度_2024", "高新技术企业_2024", "技术合同_2024"],
+        "examples": ["GDP_2024", "RD经费_2024", "RD强度_2024"]
+      }
+    },
+    "required": ["table"]
+  }
+}

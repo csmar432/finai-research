@@ -1,0 +1,13 @@
+{
+  "name": "pw_click",
+  "description": "点击页面元素。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

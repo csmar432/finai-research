@@ -1,0 +1,8 @@
+{
+  "name": "get_cpi",
+  "description": "获取中国CPI月度数据",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}

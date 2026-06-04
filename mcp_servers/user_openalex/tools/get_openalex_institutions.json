@@ -1,0 +1,14 @@
+{
+  "name": "get_openalex_institutions",
+  "description": "获取机构信息及其发表成果",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "institution_id": {
+        "type": "string",
+        "description": "OpenAlex 机构 ID，例如 'I123456789'"
+      }
+    },
+    "required": ["institution_id"]
+  }
+}

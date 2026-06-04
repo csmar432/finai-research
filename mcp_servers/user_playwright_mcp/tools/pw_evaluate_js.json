@@ -1,0 +1,13 @@
+{
+  "name": "pw_evaluate_js",
+  "description": "在页面上下文中执行JavaScript代码。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

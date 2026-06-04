@@ -1,0 +1,26 @@
+{
+  "name": "Semantic Scholar",
+  "version": "1.0.0",
+  "is_mock": false,
+  "requires_api_key": false,
+  "server_name": "semantic-scholar",
+  "serverIdentifier": "user-semantic-scholar",
+  "description": "Semantic Scholar 学术论文搜索与引文网络分析（无需API Key，免费层 100req/5min）",
+  "rate_limit": "100 requests per 5 minutes (unauthenticated); 1 RPS with free API key",
+  "api_base": "https://api.semanticscholar.org/graph/v1",
+  "papers_indexed": "200M+ papers with 2.4B citation links",
+  "tools": [
+    "search_semantic_scholar",
+    "get_paper_details",
+    "get_paper_citations",
+    "get_paper_references",
+    "get_paper_recommendations"
+  ],
+  "_legacy_capabilities": [
+    "学术论文多源检索",
+    "引文网络分析",
+    "参考文献追溯",
+    "高引文献发现",
+    "论文推荐"
+  ]
+}

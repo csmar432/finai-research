@@ -1,0 +1,46 @@
+name: Bug Report
+description: Report a bug to help us improve
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        
+        **描述问题**
+        简要描述你遇到的问题。
+        
+        **复现步骤**
+        1. Go to '...'
+        2. Run '...'
+        3. See error
+        
+        **期望行为**
+        描述你期望发生的行为。
+        
+        **环境**
+        - OS: [e.g. macOS 14]
+        - Python: [e.g. 3.11]
+        - 包版本: [e.g. 0.1.0]
+        
+        **附加内容**
+        请附上错误日志或截图。
+  - type: textarea
+    id: description
+    attributes:
+      label: 详细描述
+      placeholder: 尽可能详细地描述问题...
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python 版本
+      placeholder: 3.11
+  - type: textarea
+    id: logs
+    attributes:
+      label: 错误日志
+      placeholder: |
+        Traceback (most recent call last):
+          ...

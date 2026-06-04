@@ -1,0 +1,13 @@
+{
+  "name": "fs_diff",
+  "description": "比较两个文件差异。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}

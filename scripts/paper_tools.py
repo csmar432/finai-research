@@ -13,16 +13,12 @@
 - 图表分辨率检查与转换
 """
 
-import os
-import re
-import json
 import hashlib
-import subprocess
+import re
 import shutil
 import warnings
-from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
 
 warnings.filterwarnings("ignore")
 
@@ -159,7 +155,6 @@ def fetch_doi_metadata(doi: str) -> dict:
     """
     try:
         import urllib.request
-        import json
         url = f"https://doi.org/{doi}"
         req = urllib.request.Request(
             url,
@@ -191,9 +186,10 @@ def check_figure_resolution(figure_path: str, min_dpi: int = 300) -> dict:
     width_px, height_px = img.size
 
     if img.info.get("dpi"):
-        dpi = img.info["dpi"][0]
+        dpi_tuple = img.info["dpi"]
+        dpi_val = dpi_tuple[0] if isinstance(dpi_tuple, (list, tuple)) else dpi_tuple
+        dpi = dpi_val if dpi_val > 0 else (width_px / 6.5 if width_px > 100 else 72)
     else:
-        physical_width_inch = 6.5 / 2.54 * 2 if "cm" not in str(img.info) else width_px / 28.35
         dpi = width_px / 6.5 if width_px > 100 else 72
 
     result = {

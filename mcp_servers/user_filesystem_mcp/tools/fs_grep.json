@@ -1,0 +1,13 @@
+{
+  "name": "fs_grep",
+  "description": "在文件中搜索文本（grep）。\\n\\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "properties": {
+        "type": "string"
+      }
+    },
+    "required": []
+  }
+}
