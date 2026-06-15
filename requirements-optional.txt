@@ -27,7 +27,7 @@ jieba>=0.42.0
 # 用途：transformers 模型加载、VLM 视觉图表评估
 # 说明：torch 用于 autonomy_loop 中的模型推理
 torch>=2.2.0
-accelerate>=0.30.0
+accelerate>=1.14.0
 
 # ── 计量经济扩展 ─────────────────────────────────────────────
 # 用途：面板数据 IV 估计、GMM、Sargan-Hansen 过度识别检验

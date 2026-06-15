@@ -82,7 +82,7 @@ jieba>=0.42.0
 
 # ── Deep Learning Extras ─────────────────────────────────────────────────────
 torch>=2.2.0
-accelerate>=0.30.0
+accelerate>=1.14.0
 
 # ── Econometrics Extras ──────────────────────────────────────────────────────
 pandas-datareader>=0.10.0
