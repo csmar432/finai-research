@@ -518,8 +518,7 @@ class LLMGateway:
     _counter_lock: threading.Lock = threading.Lock()
 
     def __init__(self, memory: ResearchMemory, use_cache: bool = True):
-        """
-        Initialize the gateway.
+        """Initialize the gateway.
 
         Parameters
         ----------
@@ -528,9 +527,14 @@ class LLMGateway:
         use_cache : bool
             Whether to enable response caching. Default True.
         """
+        # Import lazily and look up ``AI`` via the module attribute so tests
+        # can ``patch("scripts.ai_router.AI", ...)`` and have it take effect
+        # after this gateway has already been imported.
+        import scripts.ai_router as _ai_router_mod
+
         self.memory = memory
         self._use_cache = use_cache
-        self.router = AI  # Global singleton from ai_router
+        self.router = _ai_router_mod.AI
         self.stats = CostStats()
 
         # Ensure router cache is consistent with our use_cache setting
