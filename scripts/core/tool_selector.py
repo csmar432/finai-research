@@ -2673,7 +2673,7 @@ class ToolSelector:
             callable=None,
         )
         cls.TOOL_REGISTRY_BASE["esg_controversy"] = ToolCapability(
-            name="esg_controverge",
+            name="esg_controversy",
             task_types=[TaskType.DATA_FETCH],
             inputs=["company_name", "limit"],
             outputs=["company", "controversy_date", "category", "severity", "description"],

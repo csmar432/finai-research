@@ -5,17 +5,54 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  docs:
+  build:
     name: Build Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Install mkdocs
-        run: pip install mkdocs mkdocs-material mkdocstrings-python
-      - name: Build docs
+          python-version: "3.12"
+          cache: pip
+      - name: Install mkdocs + plugins
+        run: |
+          pip install --upgrade pip
+          pip install mkdocs mkdocs-material mkdocstrings-python
+          pip install -e ".[dev]" --quiet
+      - name: Build mkdocs
+        # 不加 --strict: 项目 docs/ 中存在指向仓库根目录文档
+        # (USAGE_GUIDE.md / SETUP_GUIDE.md) 的相对链接, mkdocs 视为 broken。
+        # 这些链接在 GitHub 仓库中可正常跳转, 仅是 mkdocs 的 markdown 文件集不同。
         run: mkdocs build -f mkdocs.yml
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

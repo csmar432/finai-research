@@ -212,9 +212,10 @@ class TestMCPToolServerMap:
 
     def test_map_contains_known_tools(self):
         """Known tool names are present in the map."""
+        # 注: `fetch` 和 `finviz_sec` 不在仓库中, 已移除
         expected = [
-            "arxiv", "brave_search", "fetch", "financial", "finviz_sec",
-            "yfinance", "eastmoney_reports", "tushare",
+            "arxiv", "brave_search", "financial", "yfinance",
+            "eastmoney_reports", "tushare",
         ]
         for name in expected:
             assert name in ToolSelector.MCP_TOOL_SERVER_MAP, f"Missing tool: {name}"

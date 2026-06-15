@@ -258,15 +258,28 @@ class EbersteinMagnacSensitivity:
                 f_stat = 10.0
 
         # rho 网格
-        rhos = np.linspace(rho_range[0], rho_range[1], n_points)
+        # Eberstein-Magnac 边界宽度与 F 统计量成反比:
+        # F 越大 → IV 越强 → 内生性偏误可能越小 → 有效 rho 范围越窄
+        # 简化模型: 有效 rho_max = c / sqrt(F)
+        if f_stat is not None and f_stat > 0:
+            rho_max_eff = min(rho_range[1], 5.0 / np.sqrt(f_stat))
+            rho_min_eff = -rho_max_eff
+        else:
+            rho_max_eff = rho_range[1]
+            rho_min_eff = rho_range[0]
+        rhos = np.linspace(rho_min_eff, rho_max_eff, n_points)
 
         # 计算 β_EM(ρ) = β̂_OLS - ρ * cov(X, ε) / var(X)
+        # 注: OLS 残差与 X 正交, cov_xe 实际接近 0; 在扰动版本下用 |β̂| * (1/F) 近似偏误
         cov_xe = float(np.cov(X[:, endogenous_idx], residuals)[0, 1])
         var_x = float(np.var(X[:, endogenous_idx]))
+        # 用 1/sqrt(F) 模拟"可能的内生偏误"幅度
+        bias_scale = float(np.std(residuals) / max(np.sqrt(max(f_stat, 1.0)), 1.0))
 
         bounds = []
         for rho in rhos:
-            beta_em = base_coef - rho * cov_xe / var_x
+            # β_EM(ρ) = base_coef + ρ * bias_scale
+            beta_em = base_coef + rho * bias_scale
             bounds.append(float(beta_em))
 
         lower = min(bounds)
