@@ -24,8 +24,10 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        # 不用 --quiet, 让 install 错误显示 (CI 默认是 silent, 失败只看到 exit code 1)
-        run: pip install --upgrade pip && pip install ruff mypy && pip install -e ".[dev]"
+        run: pip install --upgrade pip && pip install ruff && pip install -e ".[dev]"
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
+          PYTHONUNBUFFERED: 1
 
       - name: Ruff lint
         run: ruff check scripts/ --ignore E501 --line-length 100

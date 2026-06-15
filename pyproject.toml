@@ -97,7 +97,6 @@ dev = [
     "pytest-cov>=4.1.0",
     "pytest-timeout>=2.2.0",
     "ruff>=0.1.0",
-    "mypy>=1.8.0",
 ]
 # 原本 dev 组里 jupyter>=1.0.0 + ipykernel>=6.28.0 会拉 200+ 依赖 (jupyterlab, jupyter-server,
 # notebook, ipywidgets 等), 在 CI 干净环境极易触发 solver 冲突或下载超时。
