@@ -556,14 +556,21 @@ jobs:
       - name: Combine coverage reports
         if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
         run: |
-          coverage combine coverage-data/.coverage.* || true
+          # download-artifact@v4 with merge-multiple=true writes each
+          # artifact under a directory of the same name:
+          #   coverage-data/coverage-batch1/.coverage
+          #   coverage-data/coverage-batch2/.coverage
+          #   coverage-data/coverage-batch3/.coverage
+          ls -la coverage-data/ || true
+          ls -la coverage-data/coverage-batch*/ 2>/dev/null || true
+          coverage combine coverage-data/coverage-batch*/.coverage
           coverage report -m
       - name: Upload to Codecov
         if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage-data/.coverage
+          files: ./.coverage
           fail_ci_if_error: false
           verbose: true
         env:
