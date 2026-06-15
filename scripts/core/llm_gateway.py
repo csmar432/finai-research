@@ -527,14 +527,18 @@ class LLMGateway:
         use_cache : bool
             Whether to enable response caching. Default True.
         """
-        # Import lazily and look up ``AI`` via the module attribute so tests
-        # can ``patch("scripts.ai_router.AI", ...)`` and have it take effect
-        # after this gateway has already been imported.
-        import scripts.ai_router as _ai_router_mod
+        # Use importlib.import_module (NOT ``import x as y``) so we always
+        # look up ``scripts.ai_router`` via sys.modules, even when the
+        # ``scripts`` package has already been imported earlier in the
+        # process. Tests patch ``sys.modules['scripts.ai_router']`` to a
+        # mock, but ``import scripts.ai_router as _x`` would resolve via
+        # the ``scripts`` package's ``__dict__`` and silently return the
+        # real (cached) module, defeating the patch.
+        import importlib
 
         self.memory = memory
         self._use_cache = use_cache
-        self.router = _ai_router_mod.AI
+        self.router = importlib.import_module("scripts.ai_router").AI
         self.stats = CostStats()
 
         # Ensure router cache is consistent with our use_cache setting
