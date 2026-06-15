@@ -1,0 +1,333 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0d1220"/>
+    </linearGradient>
+    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+
+  <!-- 页眉 -->
+  <rect x="0" y="0" width="1600" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
+  <text x="60" y="48" fill="#e8edf5" font-size="32" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图 1: 体系架构 (System Architecture Overview)</text>
+  <text x="60" y="72" fill="#aab4c5" font-size="16" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">5 层端到端：用户 → 接口层 → 编排核心 → 技能系统 → 数据与基础设施</text>
+  <text x="1540" y="48" fill="#aab4c5" font-size="14" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v1.0.0</text>
+  <text x="1540" y="72" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5-architecture series</text>
+  <line x1="60" y1="100" x2="1540" y2="100" stroke="#1e2738" stroke-width="1"/>
+
+  <g>
+    <rect x="60" y="150" width="280" height="700" rx="16" fill="none" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="72" y="140" width="124" height="22" rx="6" fill="#0a0e1a" stroke="#ec4899" stroke-width="1"/>
+    <text x="134" y="155" fill="#ec4899" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">① 用户 / 角色层</text>
+  </g>
+
+  <g>
+    <rect x="90" y="190" width="220" height="80" rx="12" fill="#5e1a3b" stroke="#ec4899" stroke-width="1.5"/>
+    <rect x="90" y="190" width="220" height="3" rx="2" fill="#ec4899"/>
+    <text x="200.0" y="222.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 类用户</text>
+    <text x="200.0" y="248.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">学生 / 研究员 / 老师 / 机构</text>
+  </g>
+
+  <g>
+    <rect x="90" y="300" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="90" y="300" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="200.0" y="327.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Setup Wizard</text>
+    <text x="200.0" y="353.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">交互式配置</text>
+  </g>
+
+  <g>
+    <rect x="90" y="390" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="90" y="390" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="200.0" y="417.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Profile 切换</text>
+    <text x="200.0" y="443.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 profile / 智能 fallback</text>
+  </g>
+
+  <g>
+    <rect x="90" y="480" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="90" y="480" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="200.0" y="507.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">CLI 入口</text>
+    <text x="200.0" y="533.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">12+ 入口脚本</text>
+  </g>
+
+  <g>
+    <rect x="90" y="570" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="90" y="570" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="597.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Checkpoint</text>
+    <text x="200.0" y="623.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">强制交互 (HITL)</text>
+  </g>
+
+  <g>
+    <rect x="90" y="660" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="90" y="660" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="687.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Event Monitor</text>
+    <text x="200.0" y="713.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">NFP/CPI/FOMC 监控</text>
+  </g>
+
+  <g>
+    <rect x="90" y="750" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="90" y="750" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="777.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Keychain</text>
+    <text x="200.0" y="803.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">API key 加密存储</text>
+  </g>
+
+  <g>
+    <rect x="370" y="150" width="280" height="700" rx="16" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="382" y="140" width="74" height="22" rx="6" fill="#0a0e1a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="419" y="155" fill="#3b82f6" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">② 接口层</text>
+  </g>
+
+  <g>
+    <rect x="400" y="190" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="190" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="217.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Claude Code / Cursor</text>
+    <text x="510.0" y="243.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">原生 IDE 集成</text>
+  </g>
+
+  <g>
+    <rect x="400" y="280" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="280" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="307.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">GitHub Copilot</text>
+    <text x="510.0" y="333.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">VS Code 集成</text>
+  </g>
+
+  <g>
+    <rect x="400" y="370" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="370" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="397.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">自然语言</text>
+    <text x="510.0" y="423.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">中文主题 → 论文</text>
+  </g>
+
+  <g>
+    <rect x="400" y="460" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="460" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="487.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MCP Protocol</text>
+    <text x="510.0" y="513.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Model Context Protocol</text>
+  </g>
+
+  <g>
+    <rect x="400" y="550" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="550" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="577.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Stdin/stdout</text>
+    <text x="510.0" y="603.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">subprocess 沙箱</text>
+  </g>
+
+  <g>
+    <rect x="400" y="640" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="640" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="667.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LaTeX 编译</text>
+    <text x="510.0" y="693.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">PDF 输出</text>
+  </g>
+
+  <g>
+    <rect x="400" y="730" width="220" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="400" y="730" width="220" height="3" rx="2" fill="#3b82f6"/>
+    <text x="510.0" y="757.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">JSON/CSV/YAML</text>
+    <text x="510.0" y="783.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">结构化输出</text>
+  </g>
+
+  <g>
+    <rect x="680" y="150" width="280" height="700" rx="16" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="692" y="140" width="84" height="22" rx="6" fill="#0a0e1a" stroke="#f59e0b" stroke-width="1"/>
+    <text x="734" y="155" fill="#f59e0b" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">③ 编排核心</text>
+  </g>
+
+  <g>
+    <rect x="710" y="190" width="220" height="80" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="190" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="222.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Agent Pipeline</text>
+    <text x="820.0" y="248.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">8 步端到端编排</text>
+  </g>
+
+  <g>
+    <rect x="710" y="290" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="290" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="317.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">AI Router</text>
+    <text x="820.0" y="343.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DeepSeek / Claude / GPT 路由</text>
+  </g>
+
+  <g>
+    <rect x="710" y="380" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="380" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="407.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LLM Reviewer</text>
+    <text x="820.0" y="433.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">对抗性评审</text>
+  </g>
+
+  <g>
+    <rect x="710" y="470" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="470" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="497.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Checkpoint</text>
+    <text x="820.0" y="523.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">断点续传</text>
+  </g>
+
+  <g>
+    <rect x="710" y="560" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="560" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="587.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Provenance</text>
+    <text x="820.0" y="613.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据溯源追踪</text>
+  </g>
+
+  <g>
+    <rect x="710" y="650" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="650" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="677.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Autonomy Loop</text>
+    <text x="820.0" y="703.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">自主循环 + HITL</text>
+  </g>
+
+  <g>
+    <rect x="710" y="740" width="220" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="710" y="740" width="220" height="3" rx="2" fill="#f59e0b"/>
+    <text x="820.0" y="767.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MCP Tool Market</text>
+    <text x="820.0" y="793.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">工具市场</text>
+  </g>
+
+  <g>
+    <rect x="990" y="150" width="280" height="700" rx="16" fill="none" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="1002" y="140" width="84" height="22" rx="6" fill="#0a0e1a" stroke="#a855f7" stroke-width="1"/>
+    <text x="1044" y="155" fill="#a855f7" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">④ 技能系统</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="190" width="220" height="80" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="190" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="222.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">17 技能</text>
+    <text x="1130.0" y="248.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">完整研究生命周期</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="290" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="290" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="317.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">lit-review</text>
+    <text x="1130.0" y="343.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">文献综述</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="380" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="380" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="407.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">idea-discovery</text>
+    <text x="1130.0" y="433.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">想法生成</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="470" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="470" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="497.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">experiment-design</text>
+    <text x="1130.0" y="523.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">实证设计</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="560" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="560" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="587.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">paper-writing</text>
+    <text x="1130.0" y="613.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">论文写作</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="650" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="650" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="677.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">review-loop</text>
+    <text x="1130.0" y="703.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">对抗性 review</text>
+  </g>
+
+  <g>
+    <rect x="1020" y="740" width="220" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1020" y="740" width="220" height="3" rx="2" fill="#a855f7"/>
+    <text x="1130.0" y="767.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">submit-check</text>
+    <text x="1130.0" y="793.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">投稿前检查</text>
+  </g>
+
+  <g>
+    <rect x="1300" y="150" width="280" height="700" rx="16" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="1312" y="140" width="114" height="22" rx="6" fill="#0a0e1a" stroke="#10b981" stroke-width="1"/>
+    <text x="1369" y="155" fill="#10b981" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">⑤ 数据与基础设施</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="190" width="220" height="80" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="190" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="222.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">44 MCP Servers</text>
+    <text x="1440.0" y="248.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">完整金融数据</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="290" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="290" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="317.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 层 Fallback</text>
+    <text x="1440.0" y="343.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MCP → lib → HTTP → synthetic</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="380" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="380" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="407.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">27 计量方法</text>
+    <text x="1440.0" y="433.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DID/IV/RD/GMM</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="470" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="470" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="497.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">20+ 图表预设</text>
+    <text x="1440.0" y="523.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">≥300 DPI</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="560" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="560" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="587.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">34 期刊模板</text>
+    <text x="1440.0" y="613.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">JF/JFE/CTeX 等</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="650" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="650" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="677.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">180 测试</text>
+    <text x="1440.0" y="703.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">pytest 100% 通过</text>
+  </g>
+
+  <g>
+    <rect x="1330" y="740" width="220" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1330" y="740" width="220" height="3" rx="2" fill="#10b981"/>
+    <text x="1440.0" y="767.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">3 平台 CI</text>
+    <text x="1440.0" y="793.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">macOS/Linux/Windows</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_315_500" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="315" y1="500" x2="335" y2="500" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_315_500)"/>
+    
+  </g>
+
+  <g>
+    <defs><marker id="ah_625_500" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="625" y1="500" x2="645" y2="500" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_625_500)"/>
+    
+  </g>
+
+  <g>
+    <defs><marker id="ah_935_500" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="935" y1="500" x2="955" y2="500" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_935_500)"/>
+    
+  </g>
+
+  <g>
+    <defs><marker id="ah_1245_500" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="1245" y1="500" x2="1265" y2="500" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1245_500)"/>
+    
+  </g>
+
+  <!-- 页脚 -->
+  <line x1="60" y1="950" x2="1540" y2="950" stroke="#1e2738" stroke-width="1"/>
+  <text x="60" y="975" fill="#7a8499" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">图 1 / 5 · finai-research-workflow</text>
+  <text x="1540" y="975" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">开源 · MIT · 2026</text>
+</svg>

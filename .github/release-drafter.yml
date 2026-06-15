@@ -1,0 +1,38 @@
+# Release Drafter configuration
+# 自动从 PR 标题生成 release notes
+# https://github.com/release-drafter/release-drafter
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+version-resolver:
+  major:
+    labels: ["breaking", "major"]
+  minor:
+    labels: ["feature", "enhancement", "minor"]
+  patch:
+    labels: ["bug", "fix", "patch", "chore", "docs", "dependencies"]
+  default: patch
+categories:
+  - title: "🚨 Breaking Changes"
+    labels: ["breaking", "major"]
+  - title: "🚀 New Features"
+    labels: ["feature", "enhancement", "minor"]
+  - title: "🐛 Bug Fixes"
+    labels: ["bug", "fix", "patch"]
+  - title: "📚 Documentation"
+    labels: ["docs", "documentation"]
+  - title: "🔧 Maintenance"
+    labels: ["chore", "dependencies", "refactor"]
+  - title: "⚡ Performance"
+    labels: ["performance", "optimization"]
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+template: |
+  ## Changes
+
+  $CHANGES
+
+  ## Contributors
+
+  $CONTRIBUTORS
+
+  **Full Changelog**: https://github.com/csmar432/finai-research-workflow/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+exclude-labels: ["skip-changelog"]

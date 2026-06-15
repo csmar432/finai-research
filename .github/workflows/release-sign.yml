@@ -1,0 +1,56 @@
+name: Sign release artifacts with sigstore
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  sign:
+    name: Sign artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build distribution
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Sign with sigstore
+        uses: sigstore/gh-action/sigstore-sign@v2.1.0
+        with:
+          inputs: >-
+            ./dist/*.tar.gz
+            ./dist/*.whl
+          fail-on-error: true
+
+      - name: Verify signed artifacts
+        uses: sigstore/gh-action/verify-attestation@v2.1.0
+        with:
+          inputs: >-
+            ./dist/*.tar.gz
+            ./dist/*.whl
+          offline: true
+
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-dist
+          path: |
+            ./dist/*.tar.gz
+            ./dist/*.tar.gz.sig
+            ./dist/*.tar.gz.cert
+            ./dist/*.whl
+            ./dist/*.whl.sig
+            ./dist/*.whl.cert

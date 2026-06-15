@@ -13,11 +13,14 @@
         ↓
 ② 运行 python scripts/health_check.py --json
         ↓
+③ 检查 MCP：python scripts/register_mcp_servers.py --list（轻量）
+        ↓
   ┌─ API Key 缺失 → 简短提示（不阻塞）
   ├─ LLM 不可用 → 询问是否继续
+  ├─ MCP 未注册 → 提示运行 `python scripts/register_mcp_servers.py`（不阻塞）
   └─ 系统就绪 → 等待研究方向
         ↓
-③ 询问研究方向 → 用户描述 → 开始研究
+④ 询问研究方向 → 用户描述 → 开始研究
 ```
 
 **第一步问候是强制要求**，不要跳过。直接开始工作会显得突兀。

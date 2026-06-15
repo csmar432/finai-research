@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0d1220"/>
+    </linearGradient>
+    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+
+  <!-- 页眉 -->
+  <rect x="0" y="0" width="1600" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
+  <text x="60" y="48" fill="#e8edf5" font-size="32" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图 5: 部署与数据流 (Deployment &amp;amp; Data Flow)</text>
+  <text x="60" y="72" fill="#aab4c5" font-size="16" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">用户 → Profile → CI → MCP → 输出 + 3 层安全边界</text>
+  <text x="1540" y="48" fill="#aab4c5" font-size="14" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v1.0.0</text>
+  <text x="1540" y="72" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5-architecture series</text>
+  <line x1="60" y1="100" x2="1540" y2="100" stroke="#1e2738" stroke-width="1"/>
+
+  <g>
+    <rect x="60" y="180" width="280" height="600" rx="16" fill="none" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="72" y="170" width="174" height="22" rx="6" fill="#0a0e1a" stroke="#ec4899" stroke-width="1"/>
+    <text x="159" y="185" fill="#ec4899" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">A. 用户端 (Client)</text>
+  </g>
+
+  <g>
+    <rect x="80" y="220" width="240" height="70" rx="12" fill="#5e1a3b" stroke="#ec4899" stroke-width="1.5"/>
+    <rect x="80" y="220" width="240" height="3" rx="2" fill="#ec4899"/>
+    <text x="200.0" y="247.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Cursor / Claude Code</text>
+    <text x="200.0" y="273.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">IDE 集成</text>
+  </g>
+
+  <g>
+    <rect x="80" y="310" width="240" height="70" rx="12" fill="#5e1a3b" stroke="#ec4899" stroke-width="1.5"/>
+    <rect x="80" y="310" width="240" height="3" rx="2" fill="#ec4899"/>
+    <text x="200.0" y="337.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 Profile</text>
+    <text x="200.0" y="363.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">学生/老师/...</text>
+  </g>
+
+  <g>
+    <rect x="80" y="400" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="80" y="400" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="427.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">.env + Keychain</text>
+    <text x="200.0" y="453.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">API Key 安全</text>
+  </g>
+
+  <g>
+    <rect x="80" y="490" width="240" height="70" rx="12" fill="#1a3a6e" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="80" y="490" width="240" height="3" rx="2" fill="#3b82f6"/>
+    <text x="200.0" y="517.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Setup Wizard</text>
+    <text x="200.0" y="543.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">首次配置</text>
+  </g>
+
+  <g>
+    <rect x="80" y="580" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="80" y="580" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="607.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Interactive Checkpoint</text>
+    <text x="200.0" y="633.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">HITL 强制确认</text>
+  </g>
+
+  <g>
+    <rect x="80" y="670" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="80" y="670" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="200.0" y="697.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Health Check</text>
+    <text x="200.0" y="723.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">启动前自检</text>
+  </g>
+
+  <g>
+    <rect x="370" y="180" width="320" height="600" rx="16" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="382" y="170" width="244" height="22" rx="6" fill="#0a0e1a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="504" y="185" fill="#3b82f6" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">B. 编排层 (Orchestration)</text>
+  </g>
+
+  <g>
+    <rect x="390" y="220" width="280" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="390" y="220" width="280" height="3" rx="2" fill="#f59e0b"/>
+    <text x="530.0" y="247.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Agent Pipeline</text>
+    <text x="530.0" y="273.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">8 步编排</text>
+  </g>
+
+  <g>
+    <rect x="390" y="310" width="280" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="390" y="310" width="280" height="3" rx="2" fill="#f59e0b"/>
+    <text x="530.0" y="337.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">AI Router</text>
+    <text x="530.0" y="363.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DeepSeek/Claude/GPT</text>
+  </g>
+
+  <g>
+    <rect x="390" y="400" width="280" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="390" y="400" width="280" height="3" rx="2" fill="#f59e0b"/>
+    <text x="530.0" y="427.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Checkpoint / Autonomy</text>
+    <text x="530.0" y="453.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">状态持久化</text>
+  </g>
+
+  <g>
+    <rect x="390" y="490" width="280" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="390" y="490" width="280" height="3" rx="2" fill="#f59e0b"/>
+    <text x="530.0" y="517.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LLM Reviewer</text>
+    <text x="530.0" y="543.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">对抗性评审</text>
+  </g>
+
+  <g>
+    <rect x="390" y="580" width="280" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="390" y="580" width="280" height="3" rx="2" fill="#a855f7"/>
+    <text x="530.0" y="607.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">17 Skills</text>
+    <text x="530.0" y="633.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">完整研究能力</text>
+  </g>
+
+  <g>
+    <rect x="390" y="670" width="280" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="390" y="670" width="280" height="3" rx="2" fill="#a855f7"/>
+    <text x="530.0" y="697.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Provenance Tracker</text>
+    <text x="530.0" y="723.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据溯源</text>
+  </g>
+
+  <g>
+    <rect x="720" y="180" width="280" height="600" rx="16" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="732" y="170" width="174" height="22" rx="6" fill="#0a0e1a" stroke="#f59e0b" stroke-width="1"/>
+    <text x="819" y="185" fill="#f59e0b" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">C. 沙箱 (Sandbox)</text>
+  </g>
+
+  <g>
+    <rect x="740" y="220" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="740" y="220" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="860.0" y="247.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Subprocess 隔离</text>
+    <text x="860.0" y="273.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">subprocess.run</text>
+  </g>
+
+  <g>
+    <rect x="740" y="310" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="740" y="310" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="860.0" y="337.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">AST 静态分析</text>
+    <text x="860.0" y="363.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">禁止危险调用</text>
+  </g>
+
+  <g>
+    <rect x="740" y="400" width="240" height="70" rx="12" fill="#7a3b0e" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="740" y="400" width="240" height="3" rx="2" fill="#f59e0b"/>
+    <text x="860.0" y="427.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Restricted exec()</text>
+    <text x="860.0" y="453.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">受限命名空间</text>
+  </g>
+
+  <g>
+    <rect x="740" y="490" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="740" y="490" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="860.0" y="517.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Halt Rules</text>
+    <text x="860.0" y="543.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">动态停止</text>
+  </g>
+
+  <g>
+    <rect x="740" y="580" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="740" y="580" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="860.0" y="607.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Resource Limits</text>
+    <text x="860.0" y="633.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">内存/CPU/时间</text>
+  </g>
+
+  <g>
+    <rect x="740" y="670" width="240" height="70" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="740" y="670" width="240" height="3" rx="2" fill="#a855f7"/>
+    <text x="860.0" y="697.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Pre-commit Hooks</text>
+    <text x="860.0" y="723.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">私钥/AWS 检测</text>
+  </g>
+
+  <g>
+    <rect x="1030" y="180" width="510" height="600" rx="16" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="1042" y="170" width="304" height="22" rx="6" fill="#0a0e1a" stroke="#10b981" stroke-width="1"/>
+    <text x="1194" y="185" fill="#10b981" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">D. 数据与输出 (Data &amp;amp; Output)</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="220" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="220" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="247.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">44 MCP Servers</text>
+    <text x="1285.0" y="273.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">金融数据</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="310" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="310" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="337.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 层 Fallback</text>
+    <text x="1285.0" y="363.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MCP→lib→HTTP→synth</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="400" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="400" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="427.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">data/ 目录</text>
+    <text x="1285.0" y="453.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">用户上传/缓存</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="490" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="490" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="517.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">output/</text>
+    <text x="1285.0" y="543.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LaTeX/PDF/图表</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="580" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="580" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="607.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">knowledge/</text>
+    <text x="1285.0" y="633.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">skills/rules</text>
+  </g>
+
+  <g>
+    <rect x="1050" y="670" width="470" height="70" rx="12" fill="#0f4d2e" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="1050" y="670" width="470" height="3" rx="2" fill="#10b981"/>
+    <text x="1285.0" y="697.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">GitHub Releases</text>
+    <text x="1285.0" y="723.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">v1.0.0 标签</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_345_480" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="345" y1="480" x2="365" y2="480" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_345_480)"/>
+    
+  </g>
+
+  <g>
+    <defs><marker id="ah_695_480" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="695" y1="480" x2="715" y2="480" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_695_480)"/>
+    
+  </g>
+
+  <g>
+    <defs><marker id="ah_1005_480" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="1005" y1="480" x2="1025" y2="480" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1005_480)"/>
+    
+  </g>
+
+  <g>
+    <rect x="60" y="800" width="1480" height="110" rx="16" fill="none" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="72" y="790" width="284" height="22" rx="6" fill="#0a0e1a" stroke="#ef4444" stroke-width="1"/>
+    <text x="214" y="805" fill="#ef4444" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">3 层安全边界 (3-Layer Security)</text>
+  </g>
+<text x="200" y="845" fill="#e8edf5" font-size="14" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">① Pre-commit: 检测私钥/AWS 凭据 + ruff + mypy</text>
+<text x="200" y="870" fill="#e8edf5" font-size="14" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">② CI/CD: 3 OS matrix + pip-audit + secret scanning + dependabot</text>
+<text x="200" y="895" fill="#e8edf5" font-size="14" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">③ Runtime: Keychain + .env 隔离 + 沙箱 AST 验证 + Halt rules</text>
+
+  <!-- 页脚 -->
+  <line x1="60" y1="950" x2="1540" y2="950" stroke="#1e2738" stroke-width="1"/>
+  <text x="60" y="975" fill="#7a8499" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">图 5 / 5 · finai-research-workflow</text>
+  <text x="1540" y="975" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">开源 · MIT · 2026</text>
+</svg>

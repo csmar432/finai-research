@@ -1,0 +1,29 @@
+name: Release Drafter
+
+on:
+  push:
+    # branches to consider in the configuration (defaults to all)
+    branches:
+      - main
+  pull_request:
+    # types of activity which trigger a new draft release
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-drafter
+        uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-name: release-drafter.yml
+          tag: ${{ github.ref_name }}
+          # publish action runs in the github-actions bot, by default
+          publish: ${{ github.event_name != 'pull_request' }}

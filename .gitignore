@@ -2,12 +2,29 @@
 __pycache__/
 **/__pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 *.egg-info/
 dist/
 build/
 *.whl
 .venv/
 venv/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
 
 # Jupyter
 .ipynb_checkpoints/
@@ -23,6 +40,10 @@ data/finance/
 data/pipeline_drafts/
 data/review_cache/
 !data/national_province_data_2026.json
+
+# 动态实验目录：未来新增的 .json 不追踪（已追踪的 policy_database.json 保留）
+data/policy_experiments/*.json
+!data/policy_experiments/policy_database.json
 
 # Models
 *.pt
@@ -80,6 +101,9 @@ htmlcov/
 
 # Temp files
 *.tmp
+*.bak
+*~
+*.swp
 *.py.bak
 
 # Notebooks

@@ -9,7 +9,19 @@
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
 [![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/论文-研报工作流/actions)
 [![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/论文-研报工作流/actions)
+[![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
+[![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/论文-研报工作流/stargazers)
+
+---
+<!--
+[🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](README_EN.md)
+-->
+
+**Languages**: 🇨🇳 [简体中文](README.md) (默认) · 🇬🇧 [English](README_EN.md)
 
 ---
 
@@ -17,6 +29,10 @@
 
 | I'm looking for... | Go here |
 |---|---|
+| **🚀 发布 v1.0.0** | [docs/PUBLISHING_GUIDE.md](docs/PUBLISHING_GUIDE.md) · 45 分钟逐步操作 |
+| **📋 Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 53 项检查 |
+| **⚙️ 仓库设置建议** | [docs/REPOSITORY_SETUP.md](docs/REPOSITORY_SETUP.md) · 13 大类 |
+| **🔧 一键发布脚本** | [scripts/release.py](scripts/release.py) |
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
 | **Chinese architecture overview** | [使用指南.md - 系统概览](使用指南.md#1-系统概览) |
 | **Setup & installation** | [使用指南.md - 安装配置](使用指南.md#2-安装配置) |
@@ -42,6 +58,87 @@
 | **AI/ML researchers** | Explore LLM applications in financial research automation, provenance tracking, HITL design |
 
 > **Not sure?** If you've ever spent days downloading data, running regressions, formatting LaTeX tables, or searching for related work — this tool is for you.
+
+---
+
+## MCP Server Profile: Pick What Fits You
+
+`register_mcp_servers.py` supports 4 user-type profiles — pick the one matching your hardware and use case:
+
+| Profile | Servers | Startup | Memory | Best For |
+|---------|---------|---------|--------|----------|
+| `minimal`  | 5  | ~1s  | ~30 MB  | 演示/教学 (Demo / Teaching) — low-end laptops |
+| `academic` | 18 | ~4s  | ~100 MB | 学生/个人研究者 (Student / Individual) — no institution account |
+| `quant`    | 30 | ~8s  | ~180 MB | 机构/量化 (Quant / Institution) — has Tushare/Wind/CSMAR |
+| `full`     | 44 | ~12s | ~220 MB | 重度用户 (Power User) — all data sources, RAM ≥ 16 GB |
+
+```bash
+# 1) Dry-run first (推荐先看)
+python scripts/register_mcp_servers.py --profile academic --prune --dry-run
+
+# 2) Actually apply
+python scripts/register_mcp_servers.py --profile academic --prune
+
+# 3) List current registration
+python scripts/register_mcp_servers.py --list
+```
+
+See [config/mcp_profiles.json](config/mcp_profiles.json) for full server lists and the [使用指南.md](使用指南.md#2-安装配置) chapter on installation for step-by-step.
+
+> **Default behavior**: without `--profile`, all 44 servers are registered (matches `full` profile). Use `--prune` to remove out-of-profile servers.
+
+---
+
+## Cross-Platform Installation
+
+The project supports **macOS**, **Linux**, and **Windows** with platform-specific entry points:
+
+| OS | Entry Script | Prerequisites |
+|----|-------------|---------------|
+| **macOS** (12+) | `./run.sh` | Python 3.10+ (Homebrew recommended) |
+| **Linux** (Ubuntu 20.04+, Debian 11+, Fedora 35+) | `./run.sh` | `sudo apt install python3.10 python3-venv` (or distro equivalent) |
+| **Windows** (10/11) | `run.bat` | Python 3.10+ ([python.org](https://www.python.org/downloads/)) — **check "Add to PATH"** in installer |
+
+### Quick Start (any platform)
+
+```bash
+# 1) Install
+./run.sh                    # macOS / Linux (Git Bash, WSL)
+run.bat                     # Windows (cmd.exe / PowerShell)
+
+# 2) Configure API keys (optional)
+python scripts/keychain_setup.py       # macOS: stores in Keychain
+# Linux:  stores in SecretService (gnome-keyring, kwallet)
+# Windows: stores in Credential Manager
+
+# 3) Health check
+python scripts/health_check.py
+
+# 4) Try a demo
+python scripts/demo_research_report.py
+```
+
+### Platform-Specific Notes
+
+- **macOS**: Keychain is native; keyring uses `KeychainBackend` automatically
+- **Linux**: Keyring uses SecretService (gnome-keyring). For Chinese fonts, install `fonts-noto-cjk`:
+  ```bash
+  sudo apt install fonts-noto-cjk fonts-wqy-zenhei
+  ```
+- **Windows**: Keyring uses Credential Manager. Chinese fonts (`SimHei`, `Microsoft YaHei`) come pre-installed
+
+### What Works Cross-Platform
+
+- ✅ All `scripts/*.py` entry points
+- ✅ 44 MCP servers (pure Python stdlib)
+- ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
+- ✅ 170 unit tests (CI matrix runs on Ubuntu + macOS + Windows)
+
+### Known Cross-Platform Limitations
+
+- ⚠️ `event_monitor.py` uses `signal.pause()` which is Unix-only; on Windows it falls back to a polling loop
+- ⚠️ `keychain_setup.py` is macOS-specific; for Windows/Linux, use the cross-platform keyring via `scripts/keychain_manager.py`
+- ⚠️ `core/sandbox.py` uses `os.fork` (Unix-only); falls back to `subprocess` on Windows
 
 ---
 

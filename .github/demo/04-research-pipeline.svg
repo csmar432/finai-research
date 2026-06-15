@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="100%" stop-color="#0d1220"/>
+    </linearGradient>
+    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+
+  <!-- 页眉 -->
+  <rect x="0" y="0" width="1600" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
+  <text x="60" y="48" fill="#e8edf5" font-size="32" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图 4: 研究流水线 (8-Step Research Pipeline)</text>
+  <text x="60" y="72" fill="#aab4c5" font-size="16" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">想法 → 文献 → 验证 → 设计 → 数据 → 写作 → 评审 → 发布</text>
+  <text x="1540" y="48" fill="#aab4c5" font-size="14" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v1.0.0</text>
+  <text x="1540" y="72" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5-architecture series</text>
+  <line x1="60" y1="100" x2="1540" y2="100" stroke="#1e2738" stroke-width="1"/>
+
+  <g>
+    <rect x="60" y="200" width="150" height="100" rx="10" fill="#3b1a6e" stroke="#a855f7" stroke-width="2"/>
+    <circle cx="85" cy="225" r="18" fill="#a855f7"/>
+    <text x="85" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">0</text>
+    <text x="145.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">系统自检</text>
+    <text x="135.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">health_check.py</text>
+    <text x="135.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_210_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="210" y1="250" x2="226" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_210_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="226" y="200" width="150" height="100" rx="10" fill="#7a3b0e" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="251" cy="225" r="18" fill="#f59e0b"/>
+    <text x="251" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">1</text>
+    <text x="311.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">研究想法</text>
+    <text x="301.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">8-12 候选</text>
+    <text x="301.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_376_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="376" y1="250" x2="392" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_376_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="392" y="200" width="150" height="100" rx="10" fill="#7a3b0e" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="417" cy="225" r="18" fill="#f59e0b"/>
+    <text x="417" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">1.5</text>
+    <text x="477.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">想法-数据</text>
+    <text x="467.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">交叉验证</text>
+    <text x="467.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_542_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="542" y1="250" x2="558" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_542_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="558" y="200" width="150" height="100" rx="10" fill="#0f4d2e" stroke="#10b981" stroke-width="2"/>
+    <circle cx="583" cy="225" r="18" fill="#10b981"/>
+    <text x="583" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">2</text>
+    <text x="643.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">文献综述</text>
+    <text x="633.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">MCP 检索</text>
+    <text x="633.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_708_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="708" y1="250" x2="724" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_708_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="724" y="200" width="150" height="100" rx="10" fill="#0f4d2e" stroke="#10b981" stroke-width="2"/>
+    <circle cx="749" cy="225" r="18" fill="#10b981"/>
+    <text x="749" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">3</text>
+    <text x="809.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">新颖性验证</text>
+    <text x="799.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">顶刊查重</text>
+    <text x="799.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_874_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="874" y1="250" x2="890" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_874_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="890" y="200" width="150" height="100" rx="10" fill="#7a3b0e" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="915" cy="225" r="18" fill="#f59e0b"/>
+    <text x="915" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">4</text>
+    <text x="975.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">实证设计</text>
+    <text x="965.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">DID/IV/RD</text>
+    <text x="965.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_1040_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="1040" y1="250" x2="1056" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1040_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="1056" y="200" width="150" height="100" rx="10" fill="#0f4d2e" stroke="#10b981" stroke-width="2"/>
+    <circle cx="1081" cy="225" r="18" fill="#10b981"/>
+    <text x="1081" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5</text>
+    <text x="1141.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据获取</text>
+    <text x="1131.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">44 MCP</text>
+    <text x="1131.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_1206_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="1206" y1="250" x2="1222" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1206_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="1222" y="200" width="150" height="100" rx="10" fill="#7a3b0e" stroke="#f59e0b" stroke-width="2"/>
+    <circle cx="1247" cy="225" r="18" fill="#f59e0b"/>
+    <text x="1247" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">6</text>
+    <text x="1307.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">论文写作</text>
+    <text x="1297.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LaTeX</text>
+    <text x="1297.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <defs><marker id="ah_1372_250" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
+    </marker></defs>
+    <line x1="1372" y1="250" x2="1388" y2="250" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1372_250)"/>
+    
+  </g>
+
+  <g>
+    <rect x="1388" y="200" width="150" height="100" rx="10" fill="#3b1a6e" stroke="#a855f7" stroke-width="2"/>
+    <circle cx="1413" cy="225" r="18" fill="#a855f7"/>
+    <text x="1413" y="230" fill="#0a0e1a" font-size="14" font-weight="700" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">7</text>
+    <text x="1473.0" y="230" fill="#e8edf5" font-size="16" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">对抗 Review</text>
+    <text x="1463.0" y="265" fill="#aab4c5" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">多轮严格</text>
+    <text x="1463.0" y="285" fill="#7a8499" font-size="10" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">↳ checkpoint</text>
+  </g>
+
+  <g>
+    <rect x="60" y="400" width="1480" height="280" rx="16" fill="none" stroke="#ec4899" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="72" y="390" width="94" height="22" rx="6" fill="#0a0e1a" stroke="#ec4899" stroke-width="1"/>
+    <text x="119" y="405" fill="#ec4899" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">6 大核心约束</text>
+  </g>
+
+  <g>
+    <rect x="90" y="440" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="90" y="440" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="326.5" y="477.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据优先</text>
+    <text x="326.5" y="503.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">想法生成前先验证数据可行性</text>
+  </g>
+
+  <g>
+    <rect x="578" y="440" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="578" y="440" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="814.5" y="477.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">禁止静默 Fallback</text>
+    <text x="814.5" y="503.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">模拟数据必须经用户授权</text>
+  </g>
+
+  <g>
+    <rect x="1066" y="440" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1066" y="440" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="1302.5" y="477.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">强制 Checkpoint</text>
+    <text x="1302.5" y="503.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">每阶段暂停等用户确认</text>
+  </g>
+
+  <g>
+    <rect x="90" y="545" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="90" y="545" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="326.5" y="582.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据溯源</text>
+    <text x="326.5" y="608.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">每次数据获取记录来源+时间戳</text>
+  </g>
+
+  <g>
+    <rect x="578" y="545" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="578" y="545" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="814.5" y="582.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">中文顶刊标准</text>
+    <text x="814.5" y="608.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">经济研究/金融研究/管理世界</text>
+  </g>
+
+  <g>
+    <rect x="1066" y="545" width="473" height="90" rx="12" fill="#3b1a6e" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="1066" y="545" width="473" height="3" rx="2" fill="#a855f7"/>
+    <text x="1302.5" y="582.0" fill="#e8edf5" font-size="15" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">生成-评审分离</text>
+    <text x="1302.5" y="608.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">写作和 review 由不同模块处理</text>
+  </g>
+
+  <g>
+    <rect x="60" y="750" width="1480" height="130" rx="16" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
+    <rect x="72" y="740" width="234" height="22" rx="6" fill="#0a0e1a" stroke="#3b82f6" stroke-width="1"/>
+    <text x="189" y="755" fill="#3b82f6" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">流水线闭环 (Feedback Loop)</text>
+  </g>
+<text x="800.0" y="800" fill="#e8edf5" font-size="16" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">每个 step 失败时，可回退到上一步或更换方向；每步产出 checkpoint 文件</text>
+<text x="800.0" y="830" fill="#aab4c5" font-size="14" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIN_BRIEF.md → LIT_REVIEW.md → IDEA_REPORT.md → NOVELTY_REPORT.md → REFINED_DESIGN.md → DATA_READY.md → PAPER_OUTLINE.md → MANUSCRIPT.md → REVIEW_REPORT.md</text>
+<text x="800.0" y="855" fill="#7a8499" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">10 个文档作为流水线状态载体</text>
+
+  <!-- 页脚 -->
+  <line x1="60" y1="950" x2="1540" y2="950" stroke="#1e2738" stroke-width="1"/>
+  <text x="60" y="975" fill="#7a8499" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">图 4 / 5 · finai-research-workflow</text>
+  <text x="1540" y="975" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">开源 · MIT · 2026</text>
+</svg>

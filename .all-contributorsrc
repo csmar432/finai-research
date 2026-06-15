@@ -1,0 +1,59 @@
+{
+  "projectName": "FinAI Research Workflow",
+  "projectOwner": "csmar432",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md",
+    "使用指南.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "gitmoji",
+  "contributors": [],
+  "contributorsPerLine": 7,
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/github/all-contributors/csmar432/finai-research-workflow)](#contributors)",
+  "contributorTemplate": "<a href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" width=\"<%= options.imageSize %>px;\" alt=\"\"/><br /><sub><b><%= contributor.name %></b></sub></a>",
+  "types": {
+    "bug": {
+      "symbol": "🐛",
+      "description": "Bug reports",
+      "link": "https://github.com/csmar432/finai-research-workflow/issues?q=author%3A<%= contributor.login %>+label%3Abug"
+    },
+    "code": {
+      "symbol": "💻",
+      "description": "Code",
+      "link": "https://github.com/csmar432/finai-research-workflow/commits?author=<%= contributor.login %>"
+    },
+    "doc": {
+      "symbol": "📖",
+      "description": "Documentation",
+      "link": "https://github.com/csmar432/finai-research-workflow/commits?author=<%= contributor.login %>+path%3Adocs"
+    },
+    "infra": {
+      "symbol": "🚇",
+      "description": "Infrastructure",
+      "link": "https://github.com/csmar432/finai-research-workflow/commits?author=<%= contributor.login %>+path%3A.github"
+    },
+    "research": {
+      "symbol": "🔬",
+      "description": "Research & methodology",
+      "link": "https://github.com/csmar432/finai-research-workflow/commits?author=<%= contributor.login %>+path%3Ascripts/research_framework"
+    },
+    "test": {
+      "symbol": "⚠️",
+      "description": "Tests",
+      "link": "https://github.com/csmar432/finai-research-workflow/commits?author=<%= contributor.login %>+path%3Atests"
+    },
+    "review": {
+      "symbol": "👀",
+      "description": "Reviewed Pull Requests",
+      "link": "https://github.com/csmar432/finai-research-workflow/pulls?q=is%3Apr+reviewed-by%3A<%= contributor.login %>"
+    },
+    "ideas": {
+      "symbol": "🤔",
+      "description": "Ideas, Planning, & Feedback",
+      "link": "https://github.com/csmar432/finai-research-workflow/issues?q=author%3A<%= contributor.login %>"
+    }
+  }
+}

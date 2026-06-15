@@ -1,0 +1,96 @@
+# MANIFEST.in — sdist 打包文件清单
+# 当 `python -m build --sdist` 时，hatch 也会用此文件做兜底
+# 参考: https://packaging.python.org/guides/using-manifest-in/
+
+# ── 源码包 ────────────────────────────────────────────────────────────
+include README.md
+include README_EN.md
+include 使用指南.md
+include LICENSE
+include CHANGELOG.md
+include CITATION.cff
+include pyproject.toml
+include requirements.txt
+include requirements-optional.txt
+include mkdocs.yml
+
+# ── 文档 ──────────────────────────────────────────────────────────────
+recursive-include docs *.md *.py *.yml *.yaml
+recursive-include docs/api *.py *.md
+
+# ── 数据/资源（hatch 也会通过 force-include 处理） ────────────────────
+recursive-include config *.json *.yaml *.yml *.example
+recursive-include templates *.tex *.cls *.bst
+recursive-include knowledge *.md
+recursive-include mcp_servers *.py *.json *.yaml *.yml
+recursive-include examples *.py *.md *.ipynb
+recursive-include releases *.md
+
+# ── 构建/部署配置 ─────────────────────────────────────────────────────
+include Dockerfile
+include Dockerfile.dashboard
+include Dockerfile.gateway
+include Dockerfile.sse
+include docker-compose.yml
+include Makefile
+include run.sh
+include run.bat
+include .env.example
+include .pre-commit-config.yaml
+include .editorconfig
+include .gitattributes
+include .gitignore
+include .gitkeep
+
+# ── 测试 ──────────────────────────────────────────────────────────────
+recursive-include tests *.py *.json *.yaml
+
+# ── GitHub 模板（不含 internal-reports） ──────────────────────────────
+include .github/CODEOWNERS
+include .github/dependabot.yml
+include .github/release-drafter.yml
+include .github/labeler.yml
+include .github/copilot-instructions.md
+include .github/PULL_REQUEST_TEMPLATE.md
+include .github/FUNDING.yml
+include .github/ISSUE_TEMPLATE/*.yml
+include .github/workflows/*.yml
+recursive-include .github/demo *.svg *.png *.md
+
+# ── 排除 ──────────────────────────────────────────────────────────────
+# 内部审计报告（不公开）
+prune .github/internal-reports
+
+# 缓存和运行时产物
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.egg-info
+global-exclude *.so
+global-exclude .DS_Store
+global-exclude .env
+global-exclude .env.local
+global-exclude .env.*.local
+global-exclude Thumbs.db
+global-exclude *.db
+global-exclude *.db-journal
+global-exclude *.bak
+global-exclude *.swp
+global-exclude *.swo
+global-exclude .pytest_cache
+global-exclude .ruff_cache
+global-exclude .mypy_cache
+global-exclude .venv
+global-exclude venv
+global-exclude node_modules
+global-exclude .coverage
+global-exclude htmlcov
+global-exclude coverage.xml
+global-exclude dist
+global-exclude build
+global-exclude .eggs
+global-exclude *.egg
+global-exclude .idea
+global-exclude .vscode
+global-exclude .DS_Store
+global-exclude outputs
+global-exclude site

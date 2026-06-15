@@ -1,0 +1,43 @@
+name: 'Close stale issues and PRs'
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # 每周日 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    if: github.repository == 'csmar432/finai-research-workflow'
+    steps:
+      - name: Mark and close stale issues
+        uses: actions/stale@v9
+        with:
+          days-before-stale: 60
+          days-before-close: 14
+          stale-issue-message: |
+            👋 这个 issue 60 天未更新。可能是 stale 或被遗忘了。
+            如果仍需关注，请：
+            1. 更新 issue 状态
+            2. 添加评论
+            3. 应用 `keep-open` 标签
+          close-issue-message: |
+            🔒 由于持续无活动，14 天后自动关闭。
+            如果仍需关注，请随时重新打开。
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'pinned,security,priority,keep-open,good first issue'
+          max-issues: 50
+          # PR
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-message: |
+            👋 这个 PR 30 天未更新。请同步 main 分支或更新。
+          close-pr-message: |
+            🔒 自动关闭。请重新打开或重新创建。
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'pinned,work-in-progress,draft,keep-open'
+          operations-per-run: 100

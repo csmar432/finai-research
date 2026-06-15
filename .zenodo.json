@@ -1,0 +1,64 @@
+{
+  "title": "FinAI Research Workflow",
+  "description": "End-to-end AI agent pipeline for economic and financial academic research. Integrates 49 MCP data servers (academic papers, A-share data, US equities, macroeconomic indicators), 49 econometric methods (DID/IV/RDD/PSM/GMM and modern variants) at JF/JFE/RFS journal standard, 17 AI skills, and 34 journal templates (including top Chinese journals: 经济研究, 金融研究, 管理世界). Supports multi-agent debate for adversarial peer review. Distributed under MIT License.",
+  "creators": [
+    {
+      "name": "FinAI Research Workflow Contributors",
+      "orcid": "0000-0000-0000-0000"
+    }
+  ],
+  "keywords": [
+    "academic-research",
+    "financial-ai",
+    "literature-review",
+    "econometrics",
+    "paper-writing",
+    "latex",
+    "mcp",
+    "cursor",
+    "difference-in-differences",
+    "instrumental-variables",
+    "causal-inference",
+    "panel-data"
+  ],
+  "access_right": "open",
+  "license": {
+    "id": "MIT"
+  },
+  "upload_type": "software",
+  "publication_date": "2026-06-15",
+  "version": "1.0.0",
+  "language": "eng",
+  "communities": [
+    {
+      "identifier": "economics"
+    },
+    {
+      "identifier": "finance"
+    },
+    {
+      "identifier": "open-source"
+    },
+    {
+      "identifier": "python"
+    }
+  ],
+  "grants": [],
+  "subjects": [
+    {
+      "term": "Economics",
+      "identifier": "economics",
+      "scheme": "OECD"
+    },
+    {
+      "term": "Finance",
+      "identifier": "finance",
+      "scheme": "OECD"
+    },
+    {
+      "term": "Computer and Information Science",
+      "identifier": "computer-and-information-science",
+      "scheme": "OECD"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+# Pre-commit hooks — 提交前自动检查代码质量
+# 安装: pip install pre-commit && pre-commit install
+# 手动跑: pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'  # Markdown 需要行尾空格
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1024']  # 1MB+
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key
+        # CRITICAL: 阻止意外提交 SSH/PGP 私钥
+      - id: detect-aws-credentials
+        # CRITICAL: 阻止意外提交 AWS credentials
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ['--fix', '--ignore', 'E501,B028']
+      - id: ruff-format
+        exclude: ^(legacy|deprecated)/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        files: ^scripts/
+        additional_dependencies: [pydantic, types-requests, types-PyYAML]
+        args: ['--ignore-missing-imports', '--no-strict-optional']
+        # 慢，可选：手动跑
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        args: ['--skip', '*.po,*.pot,*.lock,*.json,*.jsonl']
+        # 检查拼写
+
+  # ── Commit message 规范 (Conventional Commits) ──────────
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+        # 强制 commit message 格式：
+        #   feat: 新功能
+        #   fix: bug 修复
+        #   docs: 文档
+        #   style: 格式
+        #   refactor: 重构
+        #   perf: 性能
+        #   test: 测试
+        #   build: 构建
+        #   ci: CI 配置
+        #   chore: 杂项
+        #   revert: 回退
+        # 示例: feat(research): add Callaway-Sant'Anna DID module

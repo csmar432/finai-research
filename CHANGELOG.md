@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`pyproject.toml`**: Removed unused `torch` and `accelerate` from `deep-learning` optional group (no imports found in codebase); marked as commented placeholders for future use
 
 ### Deprecated
-- **11 duplicate scripts**: `econometrics.py`, `econometrics_advanced.py`, `export_hubei_data.py`, `generate_hubei_excel.py`, `fetch_msci_cyh.py`, `fetch_msci_xu2.py`, `entity_list_data_fetcher.py`, `financial_report_structure.py`, `report_generator.py`, `professional_review_agent.py`, `review_layer.py` — all marked with deprecation header, see `scripts/DEPRECATED.md`
+- **11 duplicate scripts**: `econometrics.py`, `econometrics_advanced.py`, `export_hubei_data.py`, `generate_hubei_excel.py`, `fetch_msci_cyh.py`, `fetch_msci_esg_v2.py`, `entity_list_data_fetcher.py`, `financial_report_structure.py`, `report_generator.py`, `professional_review_agent.py`, `review_layer.py` — all marked with deprecation header, see `scripts/DEPRECATED.md`
 
 ### Fixed
 - **`tests/test_reviewer_calibrator.py`**: Fixed `CalibrationResult` → `CalibrationReport` field name mismatch (`calibrated_overall` → `calibrated_overall_score`)

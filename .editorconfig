@@ -1,0 +1,37 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# 一键保证 350+ Python 文件在所有 IDE 中缩进/换行一致
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+[*.{yml,yaml,json,toml}]
+indent_size = 2
+
+[*.{md,markdown}]
+trim_trailing_whitespace = false  # 允许行尾空格（Markdown 强调需要两个空格换行）
+
+[*.{bat,cmd}]
+end_of_line = crlf
+
+[*.{sh,bash}]
+indent_size = 2
+
+[*.{html,css,scss,sass,less}]
+indent_size = 2
+
+[*.{js,ts,jsx,tsx}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+
+[*.{tex,bib}]
+trim_trailing_whitespace = false

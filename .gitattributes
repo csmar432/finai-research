@@ -1,0 +1,79 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitattributes — line endings, language detection, diff & merge
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Auto detect text files and normalize line endings
+# (Mostly not needed if .gitignore is set correctly, but explicit is safer)
+*               text=auto eol=lf
+
+# Force LF for source code (cross-platform consistency)
+*.py            text eol=lf
+*.js            text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.jsx           text eol=lf
+*.json          text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.toml          text eol=lf
+*.sh            text eol=lf
+*.bash          text eol=lf
+*.md            text eol=lf
+*.txt           text eol=lf
+*.cfg           text eol=lf
+*.ini           text eol=lf
+
+# CRLF for Windows-only scripts
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+
+# Binary files (no diff, no merge)
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.zip           binary
+*.tar.gz        binary
+*.gz            binary
+*.7z            binary
+*.rar           binary
+*.mp4           binary
+*.mp3           binary
+*.wav           binary
+*.ttf           binary
+*.otf           binary
+*.woff          binary
+*.woff2         binary
+*.pyc           binary
+*.pyo           binary
+*.so            binary
+*.dll           binary
+*.dylib         binary
+*.db            binary
+*.sqlite        binary
+*.sqlite3       binary
+
+# Language detection for GitHub
+*.py            linguist-language=Python
+*.sh            linguist-language=Bash
+*.bat           linguist-language=Batch
+*.toml          linguist-language=TOML
+*.yml           linguist-language=YAML
+*.md            linguist-language=Markdown
+
+# Exclude vendored/dependency dirs from language stats
+/vendor/*       linguist-vendored
+/node_modules/* linguist-vendored
+/.venv/*        linguist-vendored
+/venv/*         linguist-vendored
+
+# Mark documentation (not source code) for language stats
+/docs/*         linguist-documentation
+*.md            linguist-documentation
+
+# Use git diff with patience (better for long lines)
+*.tex          diff=tex
+*.bib          diff=bibtex

@@ -13,8 +13,8 @@
 | `econometrics_advanced.py` | `research_framework/econometrics_extended.py` | 功能已整合到 econometrics_extended.py |
 | `export_hubei_data.py` | `fetch_provincial_stats.py` | 功能已整合到 fetch_provincial_stats.py |
 | `generate_hubei_excel.py` | `generate_hubei_excel_v2.py` | v1 版本，已由 v2 替代 |
-| `fetch_msci_cyh.py` | `fetch_msci_xu.py` | 仅演示数据，应使用 fetch_msci_xu.py |
-| `fetch_msci_xu2.py` | `fetch_msci_xu.py` | 仅演示数据，应使用 fetch_msci_xu.py |
+| `fetch_msci_cyh.py` | `fetch_msci_esg.py` | 仅演示数据，应使用 fetch_msci_esg.py |
+| `fetch_msci_esg_v2.py` | `fetch_msci_esg.py` | 仅演示数据，应使用 fetch_msci_esg.py |
 | `entity_list_data_fetcher.py` | `universal_data_fetcher.py` | 已被 universal_data_fetcher.py 整合替代 |
 | `financial_report_structure.py` | `demo_research_report.py` | 功能已整合到 demo_research_report.py |
 | `report_generator.py` | `demo_research_report.py` | 功能已整合到 demo_research_report.py |

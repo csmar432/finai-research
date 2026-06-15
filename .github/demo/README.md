@@ -2,32 +2,31 @@
 
 This directory contains visual assets for the project README and documentation.
 
-## workflow-diagram.png
+## 5 张互补架构图 (5 Complementary Diagrams)
 
-A high-resolution diagram showing the multi-agent research pipeline from idea
-to published paper.
+| # | 文件 | 一句话 | 视角 |
+|---|---|---|---|
+| 1 | `01-architecture-overview.svg/png` | 5 层端到端架构 (用户→接口→核心→技能→数据) | 高层鸟瞰 |
+| 2 | `02-skill-system-map.svg/png` | 17 个 skill 完整体系 (4 阶段) | 技能层 |
+| 3 | `03-mcp-ecosystem-map.svg/png` | 44 个 MCP server 生态 (8 类别 + 中心) | 数据层 |
+| 4 | `04-research-pipeline.svg/png` | 8 步研究流水线 (想法→论文) | 流程层 |
+| 5 | `05-deployment-data-flow.svg/png` | 部署/数据流 + 3 层安全边界 | 运维层 |
 
-**Recommended format:** PNG or SVG, minimum 1200px wide, light background.
+**设计原则**：每张图只讲一个故事，互不重叠。统一暗色背景 16:10 比例。
 
-**Recommended tool:** Draw.io, Excalidraw, or Mermaid diagrams → export as PNG.
+**自动生成**：
+```bash
+python scripts/gen_architecture_diagrams.py
+# 输出 → .github/demo/0[1-5]-*.{svg,png}
+```
 
-### Content to include:
-
-1. **Top layer:** AI Agent → Natural Language Input
-2. **Middle layer:** 5 pipeline stages (Outline → Literature → Plotting → Writing → Refinement)
-3. **Data layer:** MCP servers (A-shares, Macro, US Stocks, Academic)
-4. **Execution layer:** research_framework modules (DID, RDD, synthetic control, etc.)
-5. **Output layer:** LaTeX paper + PDF
-
-## other-recommended-assets/
-
-- `demo-screenshot.gif` — 15-second GIF showing the agent running (optional)
-- `architecture-overview.svg` — Vector version of the architecture diagram
-- `example-output.png` — Screenshot of a generated paper or report
-
-## How to add screenshots
-
-1. Generate or capture your demo screenshot/GIF
+**转换 PNG**（需要 rsvg-convert）：
+```bash
+brew install librsvg
+for f in .github/demo/0[1-5]-*.svg; do
+  rsvg-convert -w 1600 -h 1000 "$f" -o "${f%.svg}.png"
+done
+```
 2. Save it in this directory
 3. Update the README.md image link to point to your file
 4. Commit and push to GitHub

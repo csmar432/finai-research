@@ -1,0 +1,42 @@
+# CODEOWNERS — 自动指派 reviewer
+# 详细语法: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 默认 owner
+*       @csmar432
+
+# 核心安全相关
+/scripts/core/checkpoint.py          @csmar432
+/scripts/core/sandbox.py             @csmar432
+/scripts/core/sandbox_executor.py    @csmar432
+/scripts/core/hitl_gate.py           @csmar432
+/scripts/core/autonomy_loop.py       @csmar432
+/scripts/keychain_setup.py           @csmar432
+/scripts/keychain_manager.py         @csmar432
+/.env.example                        @csmar432
+/SECURITY.md                         @csmar432
+
+# CI/CD
+/.github/workflows/                  @csmar432
+/Dockerfile                          @csmar432
+/docker-compose.yml                  @csmar432
+/pyproject.toml                      @csmar432
+/requirements*.txt                   @csmar432
+
+# 文档
+/README.md                           @csmar432
+/CLAUDE.md                           @csmar432
+/AGENTS.md                           @csmar432
+/docs/                               @csmar432
+
+# MCP 服务器
+/mcp_servers/                        @csmar432
+/config/mcp_profiles.json            @csmar432
+/scripts/register_mcp_servers.py     @csmar432
+/scripts/mcp_diagnostic.py           @csmar432
+/scripts/health_check.py             @csmar432
+/scripts/keychain_setup.py           @csmar432
+
+# 核心研究框架
+/scripts/research_framework/         @csmar432
+/scripts/agent_pipeline.py           @csmar432
+/scripts/demo_research_report.py     @csmar432

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # run.sh — One-step end-to-end reproducibility for 论文-研报工作流
 #
 # Usage:

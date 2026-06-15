@@ -1,0 +1,93 @@
+# .dockerignore — 避免把 .env/secrets/data 等拷贝到 Docker 镜像
+# 这是项目安全最后一道防线
+
+# 1) 环境变量与凭据 (CRITICAL)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# 2) 缓存与运行产物
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+.pyre/
+*.egg-info/
+build/
+dist/
+
+# 3) 虚拟环境
+.venv/
+venv/
+env/
+.python-version
+
+# 4) IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# 5) Git 与 GitHub
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# 6) 大型数据 / 数据库 (mcp_diagnostic 默认 250MB+ 不应在镜像中)
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.log
+logs/
+
+# 7) 输出目录 (重新生成)
+output/
+.cache/
+.pytest_cache/
+.tmp/
+
+# 8) 测试
+tests/
+test_*/
+*_test.py
+
+# 9) 文档源文件 (生产镜像不需要 markdown)
+# docs/  ← 保留，因为 docs.yml workflow 会用
+# 但 mkdocs.yml 不需要
+mkdocs.yml
+
+# 10) 编辑器临时文件
+*.tmp
+*.swp
+*.bak
+*.orig
+
+# 11) 流水线内部报告
+.github/internal-reports/
+
+# 12) 临时 / 用户上传
+data/user_uploaded/
+data/processed/
+data/alternative_data/
+
+# 13) Node 生态 (项目未用，留作兼容)
+node_modules/
+.npm/
+.yarn/

@@ -41,11 +41,13 @@ pytest tests/ -v
         ↓
 ② 后台运行 python scripts/health_check.py --json
         ↓
+③ 检查 MCP 注册状态：python scripts/register_mcp_servers.py --list（轻量）
+        ↓
   ┌─ API Key 缺失 → 简短提示（不阻塞）
   ├─ LLM 不可用 → 询问是否继续
-  └─ 系统就绪 → 等待研究方向
+  └─ MCP 未注册 → 提示用户运行 `python scripts/register_mcp_servers.py`（不阻塞）
         ↓
-③ 询问研究方向 → 用户描述 → 开始研究
+④ 等待研究方向 → 用户描述 → 开始研究
 ```
 
 **第一步问候是强制要求**，不要跳过。直接开始工作会显得突兀。
@@ -181,6 +183,8 @@ output/                           # 输出目录
 | `scripts/data_source_checker.py` | 数据源预检查（**新**）|
 | `scripts/pipeline_checkpoint.py` | 强制交互 checkpoint（**新**）|
 | `scripts/setup_wizard.py --guided` | 交互式配置向导 |
+| `scripts/register_mcp_servers.py --list` | 列出 43 个 MCP 自动注册状态（首次必须跑）|
+| `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
 | `scripts/research_framework/pipeline.py` | 研究执行层 |
 | `scripts/research_framework/modern_did.py` | 现代 DID 回归 |
 | `scripts/research_framework/fin_charts.py` | 专业金融图表 |
@@ -234,13 +238,28 @@ output/                           # 输出目录
 第0步  系统自检     → python scripts/health_check.py → 确认工具就绪
 第1步  研究想法     → 描述方向 → 8-12个候选想法 → 确认
 第1.5步想法-数据交叉验证 → idea_data_checker.py → 用户决策（补充数据/授权模拟/更换）→ 确认
-第2步  文献综述     → MCP搜索 → 引文网络 → 识别研究缺口
-第3步  新颖性验证   → JF/JFE/RFS/arXiv/NBER检索 → 确认
-第4步  实证设计     → DID/IV/RDD → REFINED_DESIGN.md → data_source_checker.py → 确认
-第5步  数据获取     → 43个MCP → Python/Stata脚本 → 确认
-第6步  论文写作     → 大纲 → 正文 → 图表 → LaTeX草稿
-第7步  对抗性Review → 多轮严格评审 → 达到发表标准
+第2步  文献综述     → literature_download.py + arxiv/openalex/semantic_scholar MCP → 引文网络 → 识别研究缺口
+第3步  新颖性验证   → agent_pipeline.py --topic "..." (内部触发 NoveltyGate + llm_reviewer) → JF/JFE/RFS/arXiv/NBER 检索 → 输出新颖性评分 → 确认
+第4步  实证设计     → research_framework/pipeline.py → DID/IV/RDD → REFINED_DESIGN.md → data_source_checker.py → 确认
+第5步  数据获取     → universal_data_fetcher.py → 43个MCP → Python/Stata脚本 → 确认
+第6步  论文写作     → research_framework/report_generator.py → 大纲 → 正文 → 图表 → LaTeX草稿
+第7步  对抗性Review → core/llm_reviewer.py → 多轮严格评审 → 达到发表标准
 ```
+
+### 关键入口速查
+
+| 阶段 | 入口脚本 | 调用方式 |
+|---|---|---|
+| 0. 系统自检 | `scripts/health_check.py` | `python scripts/health_check.py --json` |
+| 1. 想法生成 | `scripts/agent_pipeline.py` | `--topic "..."` |
+| 1.5 想法-数据 | `scripts/idea_data_checker.py` | `--idea-file <path>` |
+| 2. 文献综述 | `scripts/literature_download.py` | `--query "..."` |
+| **3. 新颖性** | `scripts/agent_pipeline.py` | `--topic "..."` （内部 Stage: novelty-check，使用 `scripts/core/evolution_gate.py::NoveltyGate`） |
+| 4. 实证设计 | `scripts/research_framework/pipeline.py` | `--mode design --refined-design <path>` |
+| 5. 数据获取 | `scripts/universal_data_fetcher.py` | `--sources tushare,eastmoney` |
+| 6. 论文写作 | `scripts/research_framework/report_generator.py` | `--outline <path>` |
+| 7. Review | `scripts/core/llm_reviewer.py` | `--draft <path>` |
+| Checkpoint 工具 | `scripts/checkpoint.py` | `from scripts.checkpoint import InteractivePipelineCheckpoint` |
 
 ---
 

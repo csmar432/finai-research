@@ -1,0 +1,121 @@
+{
+  "$schema": "./mcp_profiles.schema.json",
+  "_comment": "MCP 服务器注册 profile 集合。根据用户类型选择。",
+  "_naming": "key 名 = mcp.json 中去掉 user- 前缀的 serverIdentifier",
+
+  "minimal": {
+    "name_zh": "极简（演示/教学）",
+    "name_en": "Minimal (Demo / Teaching)",
+    "target_users": [
+      "快速了解项目结构",
+      "教学演示",
+      "低配电脑 (RAM < 8GB)",
+      "不需要真实数据"
+    ],
+    "expected_servers": 5,
+    "startup_seconds": 1,
+    "memory_mb": 30,
+    "servers": [
+      "filesystem-mcp",
+      "latex-mcp",
+      "pandas-mcp",
+      "openalex",
+      "arxiv"
+    ]
+  },
+
+  "academic": {
+    "name_zh": "学术研究（学生/个人）",
+    "name_en": "Academic (Student / Individual)",
+    "target_users": [
+      "硕士/博士研究生",
+      "个人研究者",
+      "需要免费学术数据",
+      "无机构账号"
+    ],
+    "expected_servers": 18,
+    "startup_seconds": 4,
+    "memory_mb": 100,
+    "servers": [
+      "arxiv",
+      "openalex",
+      "semantic-scholar",
+      "context7",
+      "nber-wp",
+      "cnki",
+      "wanfang",
+      "chinese-literature",
+      "fed-data",
+      "wb-data",
+      "imf-data",
+      "oecd-data",
+      "yfinance",
+      "sec-edgar",
+      "filesystem-mcp",
+      "latex-mcp",
+      "pandas-mcp",
+      "nber-wp"
+    ]
+  },
+
+  "quant": {
+    "name_zh": "量化/机构研究",
+    "name_en": "Quant / Institutional Research",
+    "target_users": [
+      "对冲基金/资管研究员",
+      "量化策略开发者",
+      "有 Tushare/Wind/CSMAR 账号",
+      "机构终端用户"
+    ],
+    "expected_servers": 30,
+    "startup_seconds": 8,
+    "memory_mb": 180,
+    "servers": [
+      "tushare",
+      "wind",
+      "csmar",
+      "eastmoney-bond",
+      "eastmoney-fund",
+      "eastmoney-option",
+      "eastmoney-reports",
+      "enhanced-finance",
+      "province-stats",
+      "hubei-stats",
+      "wuhan-stats",
+      "eodhd",
+      "fed-data",
+      "wb-data",
+      "imf-data",
+      "oecd-data",
+      "bea-data",
+      "financial",
+      "macro-ceic",
+      "macro-datas",
+      "macro-stats",
+      "yfinance",
+      "sec-edgar",
+      "cryptocompare",
+      "filesystem-mcp",
+      "latex-mcp",
+      "pandas-mcp",
+      "pdf-excel",
+      "playwright-mcp",
+      "e2b-mcp"
+    ]
+  },
+
+  "full": {
+    "name_zh": "完整（当前默认，44 个）",
+    "name_en": "Full (Current Default, 44 servers)",
+    "target_users": [
+      "重度用户（不挑数据源）",
+      "项目作者/维护者",
+      "高配电脑 (RAM >= 16GB)",
+      "想解锁所有能力"
+    ],
+    "expected_servers": 44,
+    "startup_seconds": 12,
+    "memory_mb": 220,
+    "servers": "ALL"
+  }
+}

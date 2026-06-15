@@ -173,9 +173,10 @@
   <text x="700" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">Cursor Agent · Claude Code · Codex</text>
   <text x="700" y="206" text-anchor="middle" font-size="10" fill="#93c5fd">Orchestrator · Memory · Planner · Tool Selector · HITL Gates · Self-Evolution</text>
 
-  <!-- Arrow: agent → pipeline -->
-  <line x1="700" y1="224" x2="700" y2="246" stroke="#4a9eff" stroke-width="2" opacity="0.6"/>
-  <path d="M694,240 L700,248 L706,240" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.6"/>
+  <!-- Arrow: agent → pipeline (single main arrow, no slash through stages) -->
+  <line x1="700" y1="224" x2="700" y2="246" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
+  <path d="M694,240 L700,248 L706,240" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
+  <text x="708" y="240" font-size="9" fill="#4a9eff" opacity="0.7" font-style="italic">dispatch</text>
 
   <!-- ── 9-STAGE RESEARCH PIPELINE ─────────────────────────────────────────── -->
   <text x="25" y="262" font-size="9" fill="#4b5563" letter-spacing="2">RESEARCH PIPELINE — 11-STEP WORKFLOW</text>
@@ -184,92 +185,82 @@
   <!-- Stage 1: 想法生成 -->
   <rect x="25" y="272" width="130" height="85" rx="8" fill="url(#cardGreen)" stroke="#4ade80" stroke-width="1.5"/>
   <rect x="25" y="272" width="130" height="4" rx="2" fill="#4ade80" opacity="0.7"/>
-  <text x="90" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">① 想法生成</text>
-  <text x="90" y="306" text-anchor="middle" font-size="8" fill="#86efac">Research Ideas</text>
-  <text x="90" y="322" text-anchor="middle" font-size="8" fill="#6b7280">8-12候选想法</text>
-  <text x="90" y="336" text-anchor="middle" font-size="7.5" fill="#4b5563">→ 筛选确认</text>
-  <text x="90" y="350" text-anchor="middle" font-size="7" fill="#374151">idea_data_checker</text>
+  <text x="90" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">① 想法生成</text>
+  <text x="90" y="312" text-anchor="middle" font-size="8" fill="#86efac">Research Ideas</text>
+  <text x="90" y="328" text-anchor="middle" font-size="8" fill="#6b7280">8-12 候选想法</text>
+  <text x="90" y="346" text-anchor="middle" font-size="7" fill="#374151">idea_data_checker</text>
 
   <!-- Stage 2: 数据验证 -->
   <rect x="165" y="272" width="130" height="85" rx="8" fill="url(#cardAmber)" stroke="#fbbf24" stroke-width="1.5"/>
   <rect x="165" y="272" width="130" height="4" rx="2" fill="#fbbf24" opacity="0.7"/>
-  <text x="230" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">② 想法-数据</text>
-  <text x="230" y="306" text-anchor="middle" font-size="8" fill="#fcd34d">Idea ↔ Data</text>
-  <text x="230" y="322" text-anchor="middle" font-size="8" fill="#6b7280">数据可行性验证</text>
-  <text x="230" y="336" text-anchor="middle" font-size="7.5" fill="#374151">强制插入点 HITL</text>
-  <text x="230" y="350" text-anchor="middle" font-size="7" fill="#374151">用户决策checkpoint</text>
+  <text x="230" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">② 想法-数据</text>
+  <text x="230" y="312" text-anchor="middle" font-size="8" fill="#fcd34d">Idea ↔ Data</text>
+  <text x="230" y="328" text-anchor="middle" font-size="8" fill="#6b7280">数据可行性验证</text>
+  <text x="230" y="346" text-anchor="middle" font-size="7" fill="#374151">用户决策checkpoint</text>
 
   <!-- Stage 3: 文献综述 -->
   <rect x="305" y="272" width="130" height="85" rx="8" fill="url(#cardGreen)" stroke="#4ade80" stroke-width="1.5"/>
   <rect x="305" y="272" width="130" height="4" rx="2" fill="#4ade80" opacity="0.7"/>
-  <text x="370" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">③ 文献综述</text>
-  <text x="370" y="306" text-anchor="middle" font-size="8" fill="#86efac">Literature Review</text>
-  <text x="370" y="322" text-anchor="middle" font-size="8" fill="#6b7280">引文网络 · Gap分析</text>
-  <text x="370" y="336" text-anchor="middle" font-size="7.5" fill="#374151">OpenAlex/Semantic</text>
-  <text x="370" y="350" text-anchor="middle" font-size="7" fill="#374151">ArXiv · NBER · JF/JFE</text>
+  <text x="370" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">③ 文献综述</text>
+  <text x="370" y="312" text-anchor="middle" font-size="8" fill="#86efac">Literature Review</text>
+  <text x="370" y="328" text-anchor="middle" font-size="8" fill="#6b7280">引文网络 · Gap分析</text>
+  <text x="370" y="346" text-anchor="middle" font-size="7" fill="#374151">ArXiv · NBER · JF/JFE</text>
 
   <!-- Stage 4: 新颖性验证 -->
   <rect x="445" y="272" width="130" height="85" rx="8" fill="url(#cardPurple)" stroke="#a855f7" stroke-width="1.5"/>
   <rect x="445" y="272" width="130" height="4" rx="2" fill="#a855f7" opacity="0.7"/>
-  <text x="510" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">④ 新颖性验证</text>
-  <text x="510" y="306" text-anchor="middle" font-size="8" fill="#c084fc">Novelty Check</text>
-  <text x="510" y="322" text-anchor="middle" font-size="8" fill="#6b7280">JF/JFE/RFS/arXiv</text>
-  <text x="510" y="336" text-anchor="middle" font-size="7.5" fill="#374151">创新性评分</text>
-  <text x="510" y="350" text-anchor="middle" font-size="7" fill="#374151">HIGH ≥8 / MEDIUM 6-8</text>
+  <text x="510" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">④ 新颖性验证</text>
+  <text x="510" y="312" text-anchor="middle" font-size="8" fill="#c084fc">Novelty Check</text>
+  <text x="510" y="328" text-anchor="middle" font-size="8" fill="#6b7280">JF/JFE/RFS/arXiv</text>
+  <text x="510" y="346" text-anchor="middle" font-size="7" fill="#374151">HIGH ≥8 / MEDIUM 6-8</text>
 
   <!-- Stage 5: 实证设计 -->
   <rect x="585" y="272" width="130" height="85" rx="8" fill="url(#cardAmber)" stroke="#fbbf24" stroke-width="1.5"/>
   <rect x="585" y="272" width="130" height="4" rx="2" fill="#fbbf24" opacity="0.7"/>
-  <text x="650" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">⑤ 实证设计</text>
-  <text x="650" y="306" text-anchor="middle" font-size="8" fill="#fcd34d">Experiment Design</text>
-  <text x="650" y="322" text-anchor="middle" font-size="8" fill="#6b7280">DID / IV / RDD / PSM</text>
-  <text x="650" y="336" text-anchor="middle" font-size="7.5" fill="#374151">REFINED_DESIGN.md</text>
-  <text x="650" y="350" text-anchor="middle" font-size="7" fill="#374151">18类稳健性检验清单</text>
+  <text x="650" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">⑤ 实证设计</text>
+  <text x="650" y="312" text-anchor="middle" font-size="8" fill="#fcd34d">Experiment Design</text>
+  <text x="650" y="328" text-anchor="middle" font-size="8" fill="#6b7280">DID / IV / RDD / PSM</text>
+  <text x="650" y="346" text-anchor="middle" font-size="7" fill="#374151">18类稳健性检验清单</text>
 
   <!-- Stage 6: 数据获取 -->
   <rect x="725" y="272" width="130" height="85" rx="8" fill="url(#cardTeal)" stroke="#2dd4bf" stroke-width="1.5"/>
   <rect x="725" y="272" width="130" height="4" rx="2" fill="#2dd4bf" opacity="0.7"/>
-  <text x="790" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#2dd4bf">⑥ 数据获取</text>
-  <text x="790" y="306" text-anchor="middle" font-size="8" fill="#5eead4">Data Acquisition</text>
-  <text x="790" y="322" text-anchor="middle" font-size="8" fill="#6b7280">43 MCP Servers</text>
-  <text x="790" y="336" text-anchor="middle" font-size="7.5" fill="#374151">7层fallback保障</text>
-  <text x="790" y="350" text-anchor="middle" font-size="7" fill="#374151">data_fetcher.py</text>
+  <text x="790" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#2dd4bf">⑥ 数据获取</text>
+  <text x="790" y="312" text-anchor="middle" font-size="8" fill="#5eead4">Data Acquisition</text>
+  <text x="790" y="328" text-anchor="middle" font-size="8" fill="#6b7280">43 MCP Servers</text>
+  <text x="790" y="346" text-anchor="middle" font-size="7" fill="#374151">7层fallback保障</text>
 
   <!-- Stage 7: 论文大纲 -->
   <rect x="865" y="272" width="130" height="85" rx="8" fill="url(#cardBlue)" stroke="#60a5fa" stroke-width="1.5"/>
   <rect x="865" y="272" width="130" height="4" rx="2" fill="#60a5fa" opacity="0.7"/>
-  <text x="930" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#60a5fa">⑦ 论文大纲</text>
-  <text x="930" y="306" text-anchor="middle" font-size="8" fill="#93c5fd">Paper Outline</text>
-  <text x="930" y="322" text-anchor="middle" font-size="8" fill="#6b7280">PAPER_OUTLINE.md</text>
-  <text x="930" y="336" text-anchor="middle" font-size="7.5" fill="#374151">FIGURE_PLAN.md</text>
-  <text x="930" y="350" text-anchor="middle" font-size="7" fill="#374151">TABLE_PLAN.md</text>
+  <text x="930" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#60a5fa">⑦ 论文大纲</text>
+  <text x="930" y="312" text-anchor="middle" font-size="8" fill="#93c5fd">Paper Outline</text>
+  <text x="930" y="328" text-anchor="middle" font-size="8" fill="#6b7280">34 期刊模板</text>
+  <text x="930" y="346" text-anchor="middle" font-size="7" fill="#374151">PAPER_OUTLINE.md</text>
 
   <!-- Stage 8: 正文写作 -->
   <rect x="1005" y="272" width="130" height="85" rx="8" fill="url(#cardPurple)" stroke="#a855f7" stroke-width="1.5"/>
   <rect x="1005" y="272" width="130" height="4" rx="2" fill="#a855f7" opacity="0.7"/>
-  <text x="1070" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">⑧ 正文写作</text>
-  <text x="1070" y="306" text-anchor="middle" font-size="8" fill="#c084fc">Paper Drafting</text>
-  <text x="1070" y="322" text-anchor="middle" font-size="8" fill="#6b7280">Intro→Method→Result</text>
-  <text x="1070" y="336" text-anchor="middle" font-size="7.5" fill="#374151">LaTeX / CTeX</text>
-  <text x="1070" y="350" text-anchor="middle" font-size="7" fill="#374151">45种期刊模板</text>
+  <text x="1070" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">⑧ 正文写作</text>
+  <text x="1070" y="312" text-anchor="middle" font-size="8" fill="#c084fc">Paper Drafting</text>
+  <text x="1070" y="328" text-anchor="middle" font-size="8" fill="#6b7280">Intro→Method→Result</text>
+  <text x="1070" y="346" text-anchor="middle" font-size="7" fill="#374151">LaTeX / CTeX 模板</text>
 
   <!-- Stage 9: 图表生成 -->
   <rect x="1145" y="272" width="130" height="85" rx="8" fill="url(#cardRed)" stroke="#f87171" stroke-width="1.5"/>
   <rect x="1145" y="272" width="130" height="4" rx="2" fill="#f87171" opacity="0.7"/>
-  <text x="1210" y="292" text-anchor="middle" font-size="11" font-weight="700" fill="#f87171">⑨ 图表生成</text>
-  <text x="1210" y="306" text-anchor="middle" font-size="8" fill="#fca5a5">Figure Generation</text>
-  <text x="1210" y="322" text-anchor="middle" font-size="8" fill="#6b7280">matplotlib/seaborn</text>
-  <text x="1210" y="336" text-anchor="middle" font-size="7.5" fill="#374151">≥300 DPI · PDF/SVG</text>
-  <text x="1210" y="350" text-anchor="middle" font-size="7" fill="#374151">20种专业金融图表</text>
+  <text x="1210" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#f87171">⑨ 图表生成</text>
+  <text x="1210" y="312" text-anchor="middle" font-size="8" fill="#fca5a5">Figure Generation</text>
+  <text x="1210" y="328" text-anchor="middle" font-size="8" fill="#6b7280">matplotlib/seaborn</text>
+  <text x="1210" y="346" text-anchor="middle" font-size="7" fill="#374151">≥300 DPI · 20种预设</text>
 
   <!-- Stage 10: Review -->
   <rect x="1285" y="272" width="90" height="85" rx="8" fill="url(#cardOrange)" stroke="#fb923c" stroke-width="1.5"/>
   <rect x="1285" y="272" width="90" height="4" rx="2" fill="#fb923c" opacity="0.7"/>
-  <text x="1330" y="292" text-anchor="middle" font-size="10" font-weight="700" fill="#fb923c">⑩ 对抗</text>
-  <text x="1330" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#fb923c">Review</text>
-  <text x="1330" y="322" text-anchor="middle" font-size="8" fill="#fdba74">多轮严格评审</text>
-  <text x="1330" y="336" text-anchor="middle" font-size="7.5" fill="#374151">迭代修改</text>
-  <text x="1330" y="350" text-anchor="middle" font-size="7" fill="#374151">fin-review-loop</text>
+  <text x="1330" y="296" text-anchor="middle" font-size="10" font-weight="700" fill="#fb923c">⑩ 对抗 Review</text>
+  <text x="1330" y="312" text-anchor="middle" font-size="8" fill="#fdba74">Multi-round</text>
+  <text x="1330" y="328" text-anchor="middle" font-size="8" fill="#6b7280">迭代修改</text>
+  <text x="1330" y="346" text-anchor="middle" font-size="7" fill="#374151">fin-review-loop</text>
 
   <!-- Arrows between stages -->
   <line x1="155" y1="315" x2="163" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
@@ -291,12 +282,9 @@
   <line x1="1275" y1="315" x2="1283" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
   <path d="M1278,310 L1285,315 L1278,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
 
-  <!-- Arrow from Agent down to first stage -->
-  <path d="M700,248 L90,272" stroke="#4a9eff" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.4"/>
-  <path d="M700,248 L370,272" stroke="#4a9eff" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.4"/>
-  <path d="M700,248 L650,272" stroke="#4a9eff" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.4"/>
-  <path d="M700,248 L790,272" stroke="#4a9eff" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.4"/>
-  <path d="M700,248 L1210,272" stroke="#4a9eff" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.4"/>
+  <!-- Arrow from Agent to pipeline: single thin line down to the center of stages, no slash through cards -->
+  <line x1="700" y1="248" x2="700" y2="264" stroke="#4a9eff" stroke-width="1" fill="none" stroke-dasharray="3,3" opacity="0.35"/>
+  <path d="M696,260 L700,266 L704,260" fill="none" stroke="#4a9eff" stroke-width="1" opacity="0.35"/>
 
   <!-- ── MCP DATA SERVERS LAYER ────────────────────────────────────────────── -->
   <rect x="25" y="368" width="1350" height="158" rx="10" fill="#080c18" stroke="#2dd4bf" stroke-width="1.5" opacity="0.95"/>
