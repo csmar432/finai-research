@@ -66,7 +66,7 @@ jobs:
             tests/test_checkpoint.py tests/test_event_monitor.py \
             tests/test_llm_gateway.py tests/test_session.py \
             tests/test_tool_selector.py \
-            --cov=scripts --cov-append -x --tb=long --timeout=60 \
+            --cov=scripts --cov-append --tb=long --timeout=60 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch1.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -83,9 +83,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Fetch current state (main is fine base)
           git fetch origin main
-          # Create or rebase onto ci-debug
           if git ls-remote --heads origin ci-debug | grep -q ci-debug; then
             git fetch origin ci-debug
             git checkout -B ci-debug origin/ci-debug
@@ -100,7 +98,11 @@ jobs:
           echo "" >> .ci-fail-logs/INDEX.md
           git add .ci-fail-logs/
           git commit -m "ci: batch 1 fail log @ ${GITHUB_SHA:0:7}" || true
-          git push -f origin ci-debug 2>&1 | tail -5 || true
+          echo "=== git push start ==="
+          set -x
+          git push -f origin ci-debug
+          set +x
+          echo "=== git push end ==="
       - name: Surface fail reason via step summary
         if: failure()
         run: |
@@ -198,7 +200,7 @@ jobs:
             tests/test_triple_diff_did.py tests/test_latex_lint.py \
             tests/test_ollama_provider.py tests/test_project_config.py \
             tests/test_diagnostic_advanced.py tests/test_demo_research_report.py \
-            --cov=scripts --cov-append -x --tb=long --timeout=60 \
+            --cov=scripts --cov-append --tb=long --timeout=60 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch3.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -260,8 +262,9 @@ jobs:
           pip install --no-deps -e .
       - name: Cross-platform sanity check
         run: |
-          python -c "from scripts.core.checkpoint import _HAS_FCNTL, CheckpointManager; print('CheckpointManager loaded, fcntl=', _HAS_FCNTL)"
-          python -c "import importlib; mod = importlib.import_module('scripts.event_monitor'); print('event_monitor loaded')"
+          python -c "from scripts.core.checkpoint import CheckpointManager; print('CheckpointManager loaded:', CheckpointManager)"
+          python -c "import importlib; mod = importlib.import_module('scripts.event_monitor'); print('event_monitor loaded:', mod)"
+          python -c "from scripts.core.ide_platform import get_platform_info; print('platform:', get_platform_info())"
         shell: bash
       - name: Run subset tests
         run: |
