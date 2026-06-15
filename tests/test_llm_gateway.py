@@ -39,7 +39,16 @@ def mock_ai_router():
     router_mock.bridge._get_client = MagicMock(return_value=None)
     router_mock.bridge.supports_streaming = MagicMock(return_value=False)
 
-    with patch.dict("sys.modules", {"scripts.ai_router": MagicMock()}):
+    # Build a dedicated mock module so any lazy `import scripts.ai_router`
+    # inside llm_gateway.__init__ resolves to *our* router_mock consistently,
+    # regardless of which Python / patch.dict / coverage version is running.
+    ai_router_mock = MagicMock()
+    ai_router_mock.AI = router_mock
+    ai_router_mock.AIRouter = MagicMock(return_value=router_mock)
+    ai_router_mock.Task = MagicMock()
+    ai_router_mock._TASK_ROUTING = {}
+
+    with patch.dict("sys.modules", {"scripts.ai_router": ai_router_mock}):
         with patch("scripts.ai_router.AI", router_mock):
             with patch("scripts.ai_router.AIRouter", return_value=router_mock):
                 with patch("scripts.ai_router.Task", MagicMock()):
