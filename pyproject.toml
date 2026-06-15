@@ -40,54 +40,30 @@ classifiers = [
 ]
 
 requires-python = ">=3.10"
+# ── 核心依赖 (CI 必需) ─────────────────────────────────────────────────
+# 装 pyproject 包时只装这些, 保证 pip install 时间 < 30s。
+# 其余重型依赖 (streamlit, jupyter, fastapi, mcp, pdfplumber 等) 移到
+# optional-dependencies, 用户按需 pip install -e ".[extras]"。
 dependencies = [
-    # ── 数据处理 ─────────────────────────────────────────────────────────────
+    # 数据处理
     "pandas>=2.0.0",
     "numpy>=1.26.0",
-    "scikit-learn>=1.4.0",
     "scipy>=1.13.0",
     "statsmodels>=0.14.0",
-    # ── 知识图谱 ─────────────────────────────────────────────────────────────
+    "scikit-learn>=1.4.0",
     "networkx>=3.2.0",
-    # ── 可视化 ───────────────────────────────────────────────────────────────
+    # 可视化
     "matplotlib>=3.8.0",
     "seaborn>=0.13.0",
-    "plotly>=5.21.0",
-    # ── 文档解析 ─────────────────────────────────────────────────────────────
-    "pdfplumber>=0.11.0",
-    "python-docx>=1.1.0",
-    # python-pptx (PPT生成): 已移至 legacy 组，未集成
-    "Pillow>=10.3.0",
-    # ── 文本与格式 ───────────────────────────────────────────────────────────
-    "markdown>=3.4.0",
+    # 配置 / LLM 客户端
     "requests>=2.31.0",
-    "beautifulsoup4>=4.12.0",
-    # lxml (XML/HTML解析): 已移至 legacy 组，未集成
-    # ── 金融数据 ─────────────────────────────────────────────────────────────
-    "akshare>=1.18.63",
-    "yfinance>=0.2.0",
-    "fastmcp>=0.1.0",
-    "mcp>=1.0.0",
-    # ── LLM / AI ─────────────────────────────────────────────────────────────
-    "openai>=1.0.0",
-    "anthropic>=0.30.0",
-    "httpx>=0.27.0",
-    "tiktoken>=0.7.0",
-    # ── 计量经济 ─────────────────────────────────────────────────────────────
-    # linearmodels 已在 optional-dependencies.econometrics 中声明
-    # ── 环境变量 / 配置 ─────────────────────────────────────────────────────
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0.0",
     "pydantic>=2.0.0",
-    # ── 数据库 ───────────────────────────────────────────────────────────────
-    "duckdb>=0.9.0",
-    # ── Web 服务 ─────────────────────────────────────────────────────────────
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.30.0",
-    "streamlit>=1.32.0",
-    "pypandoc>=0.8.0",
-    # ── Excel ────────────────────────────────────────────────────────────────
-    "openpyxl>=3.1.0",
+    "httpx>=0.27.0",
+    "openai>=1.0.0",
+    "anthropic>=0.30.0",
+    "tiktoken>=0.7.0",
 ]
 
 [project.optional-dependencies]
@@ -98,9 +74,25 @@ dev = [
     "pytest-timeout>=2.2.0",
     "ruff>=0.1.0",
 ]
-# 原本 dev 组里 jupyter>=1.0.0 + ipykernel>=6.28.0 会拉 200+ 依赖 (jupyterlab, jupyter-server,
-# notebook, ipywidgets 等), 在 CI 干净环境极易触发 solver 冲突或下载超时。
-# 这两个是 docs/lint 用的, 不参与 pytest, 故移至 jupyter 独立组:
+# extras: 装 [dev,extras] 一次拿齐所有功能
+extras = [
+    "plotly>=5.21.0",
+    "pdfplumber>=0.11.0",
+    "python-docx>=1.1.0",
+    "Pillow>=10.3.0",
+    "markdown>=3.4.0",
+    "beautifulsoup4>=4.12.0",
+    "akshare>=1.18.63",
+    "yfinance>=0.2.0",
+    "mcp>=1.0.0",
+    "fastmcp>=0.1.0",
+    "duckdb>=0.9.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "streamlit>=1.32.0",
+    "pypandoc>=0.8.0",
+    "openpyxl>=3.1.0",
+]
 
 rag = [
     "chromadb>=0.4.22",
