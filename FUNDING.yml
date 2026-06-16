@@ -1,10 +1,4 @@
-# Funding configuration for FinAI Research Workflow
-#
-# GitHub Sponsors: https://github.com/sponsors/csmar432
-#   (Requires you to enable GitHub Sponsors separately at github.com/sponsors/csmar432)
-# Custom: 爱发电 (Afdian) - already configured below
-#
-# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-funding-files
+# Funding: GitHub Sponsors + 爱发电
 
-github: csmar432  # Your GitHub username for GitHub Sponsors
+github: csmar432
 custom: ["https://afdian.net/a/finresearch"]
