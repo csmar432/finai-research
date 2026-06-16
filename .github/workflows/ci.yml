@@ -531,6 +531,7 @@ jobs:
     needs: [test-batch-1, test-batch-2, test-batch-3]
     if: always()
     steps:
+      - uses: actions/checkout@v4
       - name: Skip when any test failed
         if: needs.test-batch-1.result != 'success' || needs.test-batch-2.result != 'success' || needs.test-batch-3.result != 'success'
         run: |
