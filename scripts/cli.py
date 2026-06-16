@@ -26,7 +26,7 @@ BANNER = """
 ║   经济金融领域 AI 学术研究工作流                            ║
 ║                                                          ║
 ║   v1.0.0 · MIT License · 2026                            ║
-║   49 MCP Servers · 49 Methods · 17 Skills                ║
+║   43 MCP Servers · 49 Methods · 17 Skills                ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
 """

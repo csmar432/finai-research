@@ -1,15 +1,7 @@
-# You can set up funding on GitHub Sponsors, Open Collective, or Ko-fi.
-# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-funding-files
-
-# These are supported funding platform targets
-github: []  # Your GitHub username or org for GitHub Sponsors
-patreon: []  # Replace with a single Patreon username
-open_collective: []  # Replace with a single Open Collective username
-ko_fi: []  # Replace with a single Ko-fi username
-tidelift: []  # Replace with a single Tidelift platform URL (e.g. "npm/babel")
-community_bridge: []  # Replace with a single Community Bridge project name (e.g. "ethereum")
-liberapay: []  # Replace with a single Liberapay username
-issuehunt: []  # Replace with a single IssueHunt username
-otechie: []  # Replace with a single Otechie username
-lfx_crowdfunding: []  # Replace with a single LFX Crowdfunding project name
-custom: ["https://afdian.net/a/finresearch"]  # Replace with up to 4 custom sponsorship URLs
+# Funding configuration for FinAI Research Workflow
+#
+# GitHub Sponsors: https://github.com/sponsors/csmar432
+# Custom: 爱发电 (Afdian)
+#
+github: csmar432
+custom: ["https://afdian.net/a/finresearch"]
