@@ -1,7 +1,5 @@
 # FinAI Research Workflow
 
-![Banner](.github/demo/banner.svg)
-
 > End-to-end AI agent pipeline for economic and financial academic research — from research idea to submission-ready paper. Integrates MCP data acquisition, causal inference (DID/IV/PSM/GMM), LaTeX typesetting, and adversarial review loops.
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
@@ -9,11 +7,11 @@
 [![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/论文-研报工作流/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/论文-研报工作流/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?logo=github&logoColor=white&color=yellow)](https://github.com/csmar432/论文-研报工作流/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
 [🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](#)
 
@@ -57,7 +55,7 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (43 MCP Servers, mostly no API key required)
+### 📊 Data Acquisition (50 MCP Servers, mostly no API key required)
 
 | What you need | MCP server |
 |---|---|
@@ -145,7 +143,7 @@ Step 2  Idea ↔ Data verify  → scripts/idea_data_checker.py (HITL checkpoint)
 Step 3  Literature review   → MCP multi-source, citation network, gap analysis
 Step 4  Novelty check       → JF/JFE/RFS/arXiv search
 Step 5  Empirical design    → DID/IV/RD/PSM/18 robustness checks
-Step 6  Data acquisition    → 43 MCP servers, 4-layer fallback
+Step 6  Data acquisition    → 50 MCP servers, 4-layer fallback
 Step 7  Paper writing       → outline → draft → figures → LaTeX
 Step 8  Adversarial review  → multi-round, until publishable
 ```
@@ -158,7 +156,7 @@ Each step is **independently callable** and **has its own output file** as a sta
 
 | Metric | Value |
 |---|---|
-| MCP data servers | **43** |
+| MCP data servers | **49** |
 | Tools exposed | **222** |
 | Econometric methods | **49** |
 | AI skills | **17** |

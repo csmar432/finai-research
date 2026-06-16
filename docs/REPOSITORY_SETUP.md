@@ -67,7 +67,7 @@
 - 📝 **Description**: 
   ```
   End-to-end AI agent pipeline for economic and financial research. 
-  43 MCP data servers, 49 econometric methods (DID/IV/RDD/PSM),
+  43 MCP data servers, 49 econometric methods (DID/IV/RDD/PSM), 
   17 AI skills, 70 journal templates.
   ```
 - 🔗 **Website**: 可指向 GitHub Pages
