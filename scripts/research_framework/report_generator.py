@@ -966,3 +966,88 @@ class ReportGenerator:
 
 
 __all__ = ["ReportGenerator", "TableFormatter"]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI entry point
+# ─────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        prog="report_generator.py",
+        description="经济金融论文生成器 — 输出 LaTeX 和 Word 格式（含数据溯源）。",
+    )
+    parser.add_argument("--topic", "-t", required=True, help="论文主题")
+    parser.add_argument(
+        "--outline", "-o",
+        help="大纲文件路径（JSON 或 YAML），或 PAPER_OUTLINE.md",
+    )
+    parser.add_argument(
+        "--journal", "-j",
+        default="JFE",
+        help="期刊模板 (JFE/JF/RFS/经济研究/金融研究, default: JFE)",
+    )
+    parser.add_argument(
+        "--language", "-l",
+        default="zh",
+        choices=["zh", "en"],
+        help="论文语言 (zh/en, default: zh)",
+    )
+    parser.add_argument(
+        "--output-dir", "-d",
+        default="output/fin-manuscript",
+        help="输出目录 (default: output/fin-manuscript)",
+    )
+    parser.add_argument(
+        "--no-compile",
+        action="store_true",
+        help="仅生成 LaTeX，不编译 PDF",
+    )
+
+    args = parser.parse_args()
+
+    from pathlib import Path
+
+    out_dir = Path(args.output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # 读取大纲
+    outline = {}
+    if args.outline:
+        p = Path(args.outline)
+        if p.exists():
+            raw = p.read_text(encoding="utf-8")
+            if p.suffix in (".json",):
+                import json
+                outline = json.loads(raw)
+            else:
+                import yaml
+                outline = yaml.safe_load(raw) or {}
+            print(f"大纲已加载: {p.name} ({len(outline)} 个章节)")
+        else:
+            print(f"警告: 大纲文件不存在: {args.outline}，使用空大纲", file=sys.stderr)
+
+    print(f"生成论文: {args.topic}")
+    print(f"期刊: {args.journal} | 语言: {args.language} | 输出: {out_dir}")
+
+    gen = ReportGenerator(output_dir=str(out_dir))
+    gen.set_language(args.language)
+
+    try:
+        tex_path = gen.generate(
+            topic=args.topic,
+            outline=outline,
+            regressions={},
+            references=[],
+            journal=args.journal,
+        )
+        print(f"\nLaTeX 已生成: {tex_path}")
+        if not args.no_compile:
+            print("PDF 编译（如需）：xelatex/pdflatex {tex_path}")
+    except Exception as e:
+        print(f"生成失败: {e}", file=sys.stderr)
+        sys.exit(1)
+

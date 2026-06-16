@@ -1,5 +1,7 @@
 # 论文-研报工作流 · FinResearch Agent
 
+![Banner](.github/demo/banner.svg)
+
 > 经济金融领域 AI 学术研究工作流 — 从研究想法到可投稿论文。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
@@ -14,7 +16,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/论文-研报工作流/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?logo=github&logoColor=white&color=yellow)](https://github.com/csmar432/论文-研报工作流/stargazers)
 
 ---
 <!--
@@ -22,6 +24,23 @@
 -->
 
 **Languages**: 🇨🇳 [简体中文](README.md) (默认) · 🇬🇧 [English](README_EN.md)
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# 1. Install
+pip install -e .          # or: git clone + pip install -r requirements.txt
+
+# 2. Check environment
+python scripts/health_check.py --json
+
+# 3. Run your first research pipeline
+python scripts/research_framework/pipeline.py --topic "碳排放权交易对企业绿色创新的影响"
+```
+
+> More in [5-Minute Setup](#5-minute-setup) below, or jump to [docs/tutorials/01-quickstart.md](docs/tutorials/01-quickstart.md).
 
 ---
 
@@ -132,7 +151,7 @@ python scripts/demo_research_report.py
 ### What Works Cross-Platform
 
 - ✅ All `scripts/*.py` entry points
-- ✅ 44 MCP servers (pure Python stdlib)
+- ✅ 43 MCP servers (pure Python stdlib)
 - ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
 - ✅ 170 unit tests (CI matrix runs on Ubuntu + macOS + Windows)
 
@@ -158,16 +177,16 @@ Describe your research in plain Chinese — the agent handles the rest:
 |-------|--------|
 | Literature Review | Citation graph + gap analysis (arXiv / NBER / OpenAlex / JF / JFE / RFS) |
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
-| Empirical Analysis | 42 econometric methods, automated robustness tests (19 types) |
+| Empirical Analysis | 49 econometric methods, automated robustness tests (19 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
 | Review Loop | Adversarial review until submission-ready |
 
 **Architecture overview:**
 
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
-*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 50 MCP Servers → 42 Econometric Methods → 20 Chart Types → LaTeX Paper*
+*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → 49 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
-> **Note:** Screenshots and demo videos coming soon. The project is actively maintained.
+> **Architecture** diagram above (`.github/demo/architecture-diagram.svg`). **Live demo:** record a GIF with [LICEcap](https://www.cockos.com/licecap/) or [ScreenToGif](https://www.screentogif.com/) and add it here to boost engagement.
 
 ---
 
@@ -178,7 +197,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 - **Write academic papers** — From literature review to LaTeX submission (JF/JFE/RFS/经济研究/金融研究/管理世界)
 - **Generate research reports** — Institutional-grade financial analysis for A-shares and global markets
 - **Run empirical analysis** — DID, IV, PSM, Panel GMM with automated validation
-- **Access financial data** — A-shares, US stocks, macro indicators via 50 MCP data servers (most require no API key)
+- **Access financial data** — A-shares, US stocks, macro indicators via 43 MCP data servers (most require no API key)
 
 > Architecture principle: **Local LLM (Claude Code / Cursor) as the core, external AI as supplement.**
 
@@ -189,8 +208,8 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Feature | Description |
 |---------|-------------|
 | **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
-| **50 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
-| **49+ Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
+| **43 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
+| **49 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
 | **6 Financial Analysts** | Parallel analysis: fundamental, valuation, risk, earnings, competitive, macro |
@@ -262,7 +281,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 50 MCP servers · 42 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks · 12 research directions
+**Key numbers:** 43 MCP servers · 49 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks · 12 research directions
 
 ---
 

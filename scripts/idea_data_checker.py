@@ -766,3 +766,106 @@ def quick_check(ideas: list[dict]) -> ValidationReport:
     report = validator.validate_all()
     validator.print_report(report)
     return report
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLI entry point
+# ─────────────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import argparse
+    import json
+    import sys
+
+    parser = argparse.ArgumentParser(
+        prog="idea_data_checker.py",
+        description="想法-数据交叉验证：检查研究想法所需数据的可用性。",
+    )
+    parser.add_argument(
+        "--ideas-file", "-f",
+        required=True,
+        help="想法文件路径（JSON 或 YAML），或包含 YAML/JSON 想法列表的文件",
+    )
+    parser.add_argument(
+        "--format", "-F",
+        default="auto",
+        choices=["auto", "json", "yaml"],
+        help="文件格式（默认: auto — 根据扩展名自动推断）",
+    )
+    parser.add_argument(
+        "--output", "-o",
+        help="将报告写入指定文件（JSON 格式）",
+    )
+    parser.add_argument(
+        "--summary-only", "-s",
+        action="store_true",
+        help="仅显示汇总，不打印详细分析",
+    )
+    args = parser.parse_args()
+
+    # 读取想法文件
+    path = Path(args.ideas_file)
+    if not path.exists():
+        print(f"Error: 文件不存在: {args.ideas_file}", file=sys.stderr)
+        sys.exit(1)
+
+    raw = path.read_text(encoding="utf-8")
+    ideas: list[dict]
+
+    if args.format == "json" or (args.format == "auto" and path.suffix in (".json",)):
+        data = json.loads(raw)
+        if isinstance(data, dict) and "ideas" in data:
+            ideas = data["ideas"]
+        elif isinstance(data, list):
+            ideas = data
+        else:
+            print("Error: JSON 文件必须包含 'ideas' 数组或顶级数组", file=sys.stderr)
+            sys.exit(1)
+    else:
+        import yaml
+        data = yaml.safe_load(raw)
+        if isinstance(data, dict):
+            ideas = data.get("ideas", [data])
+        elif isinstance(data, list):
+            ideas = data
+        else:
+            print("Error: 无法解析文件内容", file=sys.stderr)
+            sys.exit(1)
+
+    if not ideas:
+        print("Error: 想法列表为空", file=sys.stderr)
+        sys.exit(1)
+
+    # 运行验证
+    validator = IdeaDataValidator(ideas)
+    report = validator.validate_all()
+
+    if not args.summary_only:
+        validator.print_report(report)
+
+    # 输出汇总
+    print()
+    total = len(report.idea_results)
+    feasible = sum(1 for r in report.idea_results if r.feasibility == Feasibility.AVAILABLE)
+    partial = sum(1 for r in report.idea_results if r.feasibility == Feasibility.PARTIALLY_AVAILABLE)
+    gap = sum(1 for r in report.idea_results if r.feasibility == Feasibility.DATA_GAP)
+    auth = sum(1 for r in report.idea_results if r.feasibility == Feasibility.REQUIRES_AUTH)
+
+    print(f"汇总: {total} 个想法 | ✅可行={feasible} ⚠️部分={partial} ❌缺口={gap} 🔐需授权={auth}")
+
+    # 写入输出文件
+    if args.output:
+        out = {
+            "summary": {
+                "total": total, "feasible": feasible,
+                "partial": partial, "gap": gap, "requires_auth": auth,
+            },
+            "timestamp": datetime.now().isoformat(),
+            "file": str(path),
+        }
+        Path(args.output).write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"报告已写入: {args.output}")
+
+    # 退出码：0=全部可行, 1=部分/需授权, 2=全部不可行
+    sys.exit(0 if gap == 0 else (1 if feasible + partial > 0 else 2))
+

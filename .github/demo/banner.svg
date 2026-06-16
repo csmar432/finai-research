@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="50%" stop-color="#071520"/>
+      <stop offset="100%" stop-color="#0a1525"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0a4a4a"/>
+      <stop offset="100%" stop-color="#1a4a2e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="200" fill="url(#bg)" rx="8"/>
+
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="1280" height="3" fill="url(#bar)"/>
+
+  <!-- Left: Main title -->
+  <text x="32" y="82"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="40" font-weight="700" fill="#e8f4fd" letter-spacing="-0.5">
+    FinResearch Agent
+  </text>
+
+  <!-- Tagline -->
+  <text x="32" y="116"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="17" fill="#5ba8c8" letter-spacing="0.2">
+    ???? AI ???????
+  </text>
+
+  <!-- Subtitle -->
+  <text x="32" y="145"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="13" fill="#3d6a80">
+    From research idea ? paper draft ? LaTeX submission — fully automated
+  </text>
+
+  <!-- Separator line -->
+  <line x1="600" y1="20" x2="600" y2="180" stroke="#1a3a6e" stroke-width="1" opacity="0.5"/>
+
+  <!-- Stats grid (right side) -->
+  <!-- Row 1 -->
+  <text x="660" y="50"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#4ade80">
+    43
+  </text>
+  <text x="660" y="70"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    MCP Servers
+  </text>
+
+  <text x="790" y="50"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#60a5fa">
+    49
+  </text>
+  <text x="790" y="70"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    Econometric Methods
+  </text>
+
+  <text x="970" y="50"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#f472b6">
+    17
+  </text>
+  <text x="970" y="70"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    AI Skills
+  </text>
+
+  <!-- Row 2 -->
+  <text x="660" y="110"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#facc15">
+    41
+  </text>
+  <text x="660" y="130"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    Journal Templates
+  </text>
+
+  <text x="790" y="110"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#34d399">
+    8
+  </text>
+  <text x="790" y="130"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    Pipeline Stages
+  </text>
+
+  <text x="970" y="110"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="26" font-weight="700" fill="#c084fc">
+    3
+  </text>
+  <text x="970" y="130"
+        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="11" fill="#5ba8c8">
+    AI Tools Supported
+  </text>
+
+  <!-- Bottom pill badges -->
+  <rect x="660" y="152" width="70" height="22" rx="11" fill="#0a4a4a" opacity="0.8"/>
+  <text x="695" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
+        font-size="11" fill="#4ade80" text-anchor="middle">
+    Python
+  </text>
+
+  <rect x="740" y="152" width="85" height="22" rx="11" fill="#1a1f3e" opacity="0.8"/>
+  <text x="782" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
+        font-size="11" fill="#60a5fa" text-anchor="middle">
+    Cursor/Claude
+  </text>
+
+  <rect x="835" y="152" width="58" height="22" rx="11" fill="#1a0f2e" opacity="0.8"/>
+  <text x="864" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
+        font-size="11" fill="#c084fc" text-anchor="middle">
+    MIT
+  </text>
+
+  <rect x="905" y="152" width="80" height="22" rx="11" fill="#0a2e0a" opacity="0.8"/>
+  <text x="945" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
+        font-size="11" fill="#4ade80" text-anchor="middle">
+    18+ Stars
+  </text>
+
+  <!-- GitHub star -->
+  <text x="1140" y="140"
+        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
+        font-size="48" font-weight="800" fill="#e8f4fd" text-anchor="middle">
+    ?
+  </text>
+</svg>

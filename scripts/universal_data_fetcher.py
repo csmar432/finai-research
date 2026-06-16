@@ -43,6 +43,11 @@ from typing import Any, Callable, Optional
 import numpy as np
 import pandas as pd
 
+# 修复 yfinance 在某些环境下的 SSL/TLS 问题（必须在 yfinance 导入前设置）
+import os as _os
+_os.environ.setdefault("YFINANCE_USE_CURL_CFFI", "false")
+_os.environ.setdefault("HTTPX_DISABLE_CURL", "true")
+
 warnings.filterwarnings("ignore")
 logging.basicConfig(
     level=logging.INFO,
@@ -271,27 +276,53 @@ class AStockFinancialFetcher(DataFetcher):
         return False, None, "baostock returned empty data"
 
     def try_yfinance(self, ticker: str = "", **kwargs) -> tuple[bool, Any, str]:
-        """Layer 2c: yfinance（适用于港股和中概股）"""
-        # yfinance主要用于美股，A股部分有港股可尝试
+        """Layer 2c: yfinance（适用于美股、港股和中概股 ADR）
+
+        注：YFINANCE_USE_CURL_CFFI=false 在模块顶部设置（解决 SSL 不兼容问题）。
+        """
         if not ticker:
             return False, None, "no ticker"
-        # 映射A股到港股/ADR
+        # 常见 A股→ADR / 美股 / 港股映射
         ticker_map = {
-            "000001.SZ": "000001.SZ",  # 平安银行
-            "600519.SH": "600519.SS",   # 贵州茅台
-            "0700.HK": "0700.HK",       # 腾讯
+            "000001.SZ": "000001.SZ",
+            "600519.SH": "600519.SS",
+            "0700.HK": "0700.HK",
+            "9988.HK": "BABA",
+            "9618.HK": "JD",
+            "3690.HK": "MTQ",
+            "PDD": "PDD",
+            "BIDU": "BIDU",
+            "BABA": "BABA",
+            "TCEHY": "TCEHY",
+            "NVDA": "NVDA",
+            "AAPL": "AAPL",
+            "MSFT": "MSFT",
+            "GOOGL": "GOOGL",
+            "AMZN": "AMZN",
+            "TSLA": "TSLA",
+            "SPY": "SPY",
+            "QQQ": "QQQ",
         }
         mapped = ticker_map.get(ticker, ticker)
-        if "." not in mapped or mapped.endswith(".HK"):
+        try:
+            import yfinance as _yf
+            t = _yf.Ticker(mapped)
+            # 优先 .info（最稳定），fallback 到 financials
             try:
-                import yfinance as yf
-                t = yf.Ticker(mapped)
+                info = t.info
+                if info and isinstance(info, dict) and info.get("symbol"):
+                    return True, info, ""
+            except Exception:
+                pass
+            try:
                 financials = t.financials
-                if financials is not None and not financials.empty:
+                if financials is not None and hasattr(financials, "empty") and not financials.empty:
                     return True, financials, ""
-            except Exception as e:
-                return False, None, str(e)
-        return False, None, "yfinance not applicable for this stock"
+            except Exception:
+                pass
+            return False, None, f"yfinance returned no data for {mapped}"
+        except Exception as e:
+            return False, None, str(e)
 
     def try_http(self, stock: str = "", **kwargs) -> tuple[bool, Any, str]:
         """Layer 3: 直接HTTP请求到东方财富"""
@@ -341,25 +372,57 @@ class MacroDataFetcher(DataFetcher):
         return False, None, f"akshare macro:{indicator} failed"
 
     def try_http(self, indicator: str = "gdp", **kwargs) -> tuple[bool, Any, str]:
-        """Layer 3: World Bank API"""
+        """Layer 3: World Bank API (HTTPS) with fallback to requests"""
+        import time
+
+        indicator_codes = {
+            "gdp": "NY.GDP.MKTP.CD", "gdp_growth": "NY.GDP.MKTP.KD.ZG",
+            "cpi": "FP.CPI.TOTL.ZG", "m2": "FM.LBL.NGMA.GD.ZS",
+            "ppi": "FP.CPI.TOTL.ZG", "unemployment": "SL.UEM.TOTL.ZS",
+            "population": "SP.POP.TOTL", "trade": "NE.EXP.GNFS.ZS",
+        }
+        code = indicator_codes.get(indicator.lower(), "NY.GDP.MKTP.CD")
+
+        # Attempt 1: urllib with HTTPS
+        for attempt in range(2):
+            try:
+                url = (f"https://api.worldbank.org/v2/country/CN/indicator/{code}"
+                       f"?format=json&per_page=100")
+                req = urllib.request.Request(
+                    url,
+                    headers={"User-Agent": "FinResearch-Agent/1.0", "Accept": "application/json"},
+                )
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    raw = resp.read()
+                    if not raw:
+                        continue
+                    data = json.loads(raw)
+                if isinstance(data, list) and len(data) > 1 and data[1]:
+                    records = data[1]
+                    df = pd.DataFrame([{"year": r["date"], "value": r["value"]} for r in records])
+                    return True, df, ""
+            except Exception:
+                if attempt == 0:
+                    time.sleep(1)
+                    continue
+                break
+
+        # Attempt 2: requests library (more robust HTTP client)
         try:
-            import urllib.request
-            indicator_codes = {
-                "gdp": "NY.GDP.MKTP.CD", "gdp_growth": "NY.GDP.MKTP.KD.ZG",
-                "cpi": "FP.CPI.TOTL.ZG", "m2": "FM.LBL.NGMA.GD.ZS",
-            }
-            code = indicator_codes.get(indicator.lower(), "NY.GDP.MKTP.CD")
-            url = f"http://api.worldbank.org/v2/country/CN/indicator/{code}?format=json&per_page=100"
-            req = urllib.request.Request(url, headers={"User-Agent": "FinResearch-Agent/1.0"})
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                data = json.loads(resp.read())
-            if isinstance(data, list) and len(data) > 1:
-                records = data[1] or []
-                df = pd.DataFrame([{"year": r["date"], "value": r["value"]} for r in records])
-                return True, df, ""
+            import requests as _req
+            url = (f"https://api.worldbank.org/v2/country/CN/indicator/{code}"
+                   f"?format=json&per_page=100")
+            r = _req.get(url, headers={"User-Agent": "FinResearch-Agent/1.0"}, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                if isinstance(data, list) and len(data) > 1 and data[1]:
+                    records = data[1]
+                    df = pd.DataFrame([{"year": rec["date"], "value": rec["value"]} for rec in records])
+                    return True, df, ""
         except Exception as e:
-            return False, None, str(e)
-        return False, None, "World Bank API failed"
+            pass
+
+        return False, None, f"World Bank API failed for indicator={indicator}"
 
 
 # ─── 实体清单事件数据获取器 ──────────────────────────────────────────────────
@@ -508,6 +571,54 @@ class UniversalDataFetcher:
 
         return result
 
+    def diagnose(self, data_type: str = "a_stock_financial") -> dict:
+        """运行数据源可用性诊断。
+
+        Args:
+            data_type: 要诊断的数据类型。
+                       可选: "a_stock_financial" / "macro" / "entity_list" / "patent"
+                       或 "all"（诊断全部类型）。
+
+        Returns:
+            诊断报告字典，含每层的可用性状态。
+        """
+        import traceback as _tb
+
+        if data_type == "all":
+            types = list(self._fetchers.keys())
+        else:
+            types = [data_type]
+
+        report = {
+            "timestamp": datetime.now().isoformat(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+            "data_types": {},
+            "summary": {"available": 0, "failed": 0, "total": len(types)},
+        }
+
+        for dtype in types:
+            layer_report: dict[str, Any] = {"status": "unknown", "error": None, "available": False}
+            try:
+                result = self.fetch(dtype)
+                layer_report["status"] = result.source.value
+                layer_report["available"] = result.available
+                layer_report["provenance"] = result.provenance
+                if result.error:
+                    layer_report["error"] = str(result.error)[:200]
+                if result.available:
+                    report["summary"]["available"] += 1
+                else:
+                    report["summary"]["failed"] += 1
+            except Exception as e:
+                layer_report["status"] = "exception"
+                layer_report["error"] = str(e)[:200]
+                layer_report["traceback"] = _tb.format_exc()[-500:]
+                report["summary"]["failed"] += 1
+
+            report["data_types"][dtype] = layer_report
+
+        return report
+
     def fetch_a_stock_panel(
         self,
         stock_codes: list[str],
@@ -626,9 +737,10 @@ def _cli() -> int:
     p_fetch.add_argument("--output-json", default=None, help="Path to write the result as JSON")
 
     args = parser.parse_args()
-    fetcher = UniversalDataFetcher(
-        sources=[s.strip() for s in args.sources.split(",") if s.strip()],
-    )
+
+    # NOTE: UniversalDataFetcher.__init__ does NOT accept a sources argument.
+    # The sources parameter is only used by the 'fetch' subcommand.
+    fetcher = UniversalDataFetcher()
 
     if args.cmd == "diagnose":
         report = fetcher.diagnose(data_type=args.data_type)
@@ -643,6 +755,7 @@ def _cli() -> int:
             kwargs["ticker"] = args.ticker
         if args.indicator:
             kwargs["indicator"] = args.indicator
+        sources = [s.strip() for s in args.sources.split(",") if s.strip()]
         result = fetcher.fetch(args.data_type, **kwargs)
         summary = {
             "source": result.source.value,
