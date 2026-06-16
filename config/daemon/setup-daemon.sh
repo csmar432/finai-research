@@ -106,7 +106,7 @@ if [ "$PLATFORM" == "macos" ]; then
     fi
 
     # Replace placeholder paths
-    sed -e "s|/Users/xuzheyi/Desktop/论文-研报工作流|$PROJECT_ROOT|g" \
+    sed -e "s|__PROJECT_ROOT__|$PROJECT_ROOT|g" \
         "$PLIST_SRC" > /tmp/com.finai.research-workflow.event-monitor.plist
 
     mkdir -p "${HOME}/Library/LaunchAgents"
@@ -140,9 +140,9 @@ if [ "$PLATFORM" == "linux" ]; then
         echo "    systemctl --user daemon-reload"
         echo "    systemctl --user enable --now finai-event-monitor.service"
     else
-        # Replace paths in service file
-        sed -e "s|/home/username/论文-研报工作流|$PROJECT_ROOT|g" \
-            "$SERVICE_FILE" > /tmp/finai-event-monitor.service
+    # Replace paths in service file
+    sed -e "s|__PROJECT_ROOT__|$PROJECT_ROOT|g" \
+        "$SERVICE_FILE" > /tmp/finai-event-monitor.service
 
         cp /tmp/finai-event-monitor.service "$SYSTEMD_DIR/finai-event-monitor.service"
         systemctl daemon-reload

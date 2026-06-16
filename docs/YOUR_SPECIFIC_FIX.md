@@ -70,7 +70,7 @@
 ### Step 3 (15 min): 修邮箱 + push
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 # 1. 第一次 push: 用 .local 邮箱没关系, GitHub 仍会接受
 git add -A

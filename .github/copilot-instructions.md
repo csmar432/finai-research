@@ -193,6 +193,71 @@ knowledge/skills/           # 17 个技能文档（真相源）
 
 ---
 
+## 8 步研究流程
+
+无论使用哪个 AI 工具，工作流一致：
+
+| 步骤 | 入口命令 | 输出 |
+|---|---|---|
+| 0. 系统自检 | `python scripts/health_check.py --json` | 状态报告 |
+| 1. 研究想法 | `python scripts/agent_pipeline.py --topic "..."` | `output/fin-ideas/IDEA_REPORT.md` |
+| 1.5 想法-数据 | `python scripts/idea_data_checker.py --idea-file <path>` | 可行性报告 |
+| 2. 文献综述 | `python scripts/literature_download.py --query "..."` | `output/fin-literature/` |
+| 3. 新颖性验证 | `python scripts/agent_pipeline.py --topic "..." --novelty-check` | `output/fin-novelty/NOVELTY_REPORT.md` |
+| 4. 实证设计 | `python scripts/research_framework/pipeline.py --mode design --topic "..."` | `output/fin-refinement/REFINED_DESIGN.md` |
+| 5. 数据获取 | `python scripts/universal_data_fetcher.py fetch --data-type a_stock_financial` | CSV / Parquet |
+| 6. 论文写作 | `python scripts/agent_pipeline.py --topic "..." --venue "经济研究"` | `output/fin-manuscript/` |
+| 7. 对抗性 Review | `python scripts/core/llm_reviewer.py --draft paper.md --no-llm` | `output/fin-review/round_N/` |
+
+---
+
+## 关键入口脚本速查
+
+| 脚本 | 用途 | 必填参数 |
+|---|---|---|
+| `scripts/health_check.py` | 系统自检 | `--json` |
+| `scripts/setup_wizard.py` | 交互式配置向导 | `--guided` |
+| `scripts/register_mcp_servers.py` | 注册 MCP 服务器 | `--profile academic` |
+| `scripts/agent_pipeline.py` | 端到端流水线 / 新颖性检查 | `--topic "..."` |
+| `scripts/idea_data_checker.py` | 想法-数据交叉验证 | `--idea-file <path>` |
+| `scripts/literature_download.py` | 文献综述下载 | `--query "..."` |
+| `scripts/research_framework/pipeline.py` | 研究执行 | `--mode design\|full\|review` |
+| `scripts/universal_data_fetcher.py` | 数据获取 | `fetch --data-type ...` |
+| `scripts/core/llm_reviewer.py` | 对抗性 Review | `--draft <path>` |
+
+---
+
+## 故障排查
+
+### ModuleNotFoundError: No module named 'scripts'
+
+项目已添加 `scripts/core/_bootstrap.py` 自动注入 `sys.path`。如果仍报此错误：
+
+```bash
+# 方案 A：editable install
+pip install -e .
+
+# 方案 B：手动 PYTHONPATH
+PYTHONPATH=. python scripts/agent_pipeline.py --topic "..."
+```
+
+### 平台检测不到
+
+```bash
+python -c "from scripts.core.ide_platform import PLATFORM; print(PLATFORM)"
+```
+
+应输出 `cursor` / `claude_code` / `vscode` / `generic` 之一。
+
+### MCP 服务器没注册
+
+```bash
+python scripts/register_mcp_servers.py --list
+python scripts/register_mcp_servers.py --profile academic
+```
+
+---
+
 ## 约束
 
 - **禁止编造数据** — 始终使用 MCP 工具或用户提供的数据文件

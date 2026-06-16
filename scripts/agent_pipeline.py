@@ -50,6 +50,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# Bootstrap sys.path so `python scripts/agent_pipeline.py` works without `pip install -e .`
+from scripts.core import _bootstrap  # noqa: F401
+_bootstrap.bootstrap()
+
 from scripts.core.platform import (
     PROJECT_ROOT,
     get_canvas_file_path,
@@ -2549,8 +2553,60 @@ Examples:
         "--output-dir", "-o", type=str, default=None,
         help="论文输出目录（默认：output/papers/）",
     )
+    parser.add_argument(
+        "--novelty-check", action="store_true",
+        help=(
+            "Run Stage 3 (novelty verification) only — checks the --topic against "
+            "recent JF/JFE/RFS/经济研究/金融研究 literature via NoveltyGate. "
+            "Writes a NOVELTY_REPORT.md to --output-dir."
+        ),
+    )
+    parser.add_argument(
+        "--report-path", type=str, default=None,
+        help="When --novelty-check is set, override the output path (default: <output-dir>/NOVELTY_REPORT.md).",
+    )
 
     args = parser.parse_args()
+
+    # ── Stage 3 short-circuit: novelty check only ──
+    if args.novelty_check:
+        if not args.topic:
+            print("ERROR: --novelty-check requires --topic", file=sys.stderr)
+            raise SystemExit(2)
+        from scripts.core.evolution_gate import NoveltyGate  # local import to keep cold-start fast
+        gate = NoveltyGate()
+        result = gate.evaluate({"ideas": [args.topic]})
+        report_path = args.report_path or (
+            (args.output_dir or "output/fin-novelty") + "/NOVELTY_REPORT.md"
+        )
+        Path(report_path).parent.mkdir(parents=True, exist_ok=True)
+        lines = [
+            f"# Novelty Report — {args.topic}",
+            "",
+            f"- **Passed**: {result.passed}",
+            f"- **Score**: {result.score:.2f}",
+            f"- **Elapsed**: {result.elapsed_seconds:.1f}s",
+            f"- **Threshold**: {result.details.get('threshold')}",
+            f"- **Lookback years**: {result.details.get('lookback_years')}",
+            "",
+            "## Per-idea results",
+            "",
+        ]
+        for r in result.details.get("results", []):
+            mark = "✅" if r["passed"] else "❌"
+            lines.append(
+                f"- {mark} similarity={r['similarity']:.2f} — {r['idea']}"
+            )
+        if result.issues:
+            lines += ["", "## Issues", ""]
+            lines += [f"- {x}" for x in result.issues]
+        if result.suggestions:
+            lines += ["", "## Suggestions", ""]
+            lines += [f"- {x}" for x in result.suggestions]
+        Path(report_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print(f"✅ Novelty report written: {report_path}")
+        print(f"   passed={result.passed}  score={result.score:.2f}")
+        raise SystemExit(0 if result.passed else 1)
 
     config = AgentPipelineConfig(topic=args.topic or "")
     if args.venue:

@@ -63,7 +63,7 @@
 ## Step 3: 运行修复脚本 (1 min)
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 # 1. 干跑 (不改任何东西, 预览效果)
 python scripts/fix_git_authorship.py \

@@ -253,7 +253,7 @@ git diff HEAD | grep -E "1[3-9][0-9]{9}|[\d]{17}[0-9X]" | head -10
 ### Phase 1: 基础设施 (10 min)
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 # 1. 元数据文件 (10 个, 必看)
 for f in AGENTS.md DEPRECATED.md FAQ.md MANIFEST.in PROFILE_README.md \

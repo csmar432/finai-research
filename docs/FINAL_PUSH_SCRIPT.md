@@ -22,7 +22,7 @@
 ## 步骤 1: 添加 47 个公开项目文件
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 # 一次性添加所有公开项目内容
 git add .all-contributorsrc .dockerignore .editorconfig .gitattributes \
@@ -128,7 +128,7 @@ Infrastructure:
 ## 步骤 5: 修 commit 作者 + push
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 # 5.1 修本地 commit 的作者 (用 noreply 邮箱, 让绿点显示)
 # 替换 USERNAME/EMAIL 为你的实际值
@@ -189,7 +189,7 @@ git reset --hard <旧 hash>
 ## 📊 推送前最终自检
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 
 echo "===== 自检 1: 没有误 add 的本地材料 ====="
 for f in PROFILE_README.md \

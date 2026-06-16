@@ -45,11 +45,18 @@ import logging
 import os
 import re
 import subprocess
+import sys
 import time
 import warnings
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+
+# Bootstrap sys.path so `python scripts/ai_router.py` works
+# without requiring `pip install -e .` first.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 import openai
 from dotenv import load_dotenv

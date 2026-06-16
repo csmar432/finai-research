@@ -58,7 +58,7 @@ agent
 用项目里已有的截图：
 
 ```
-/Users/xuzheyi/Desktop/论文-研报工作流/.github/demo/01-architecture-overview.png
+$REPO_ROOT/.github/demo/01-architecture-overview.png
 ```
 
 或者重新生成：

@@ -44,12 +44,19 @@
 from __future__ import annotations
 
 import re
+import sys
 import urllib.request
 import urllib.error
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Optional
+
+# Bootstrap sys.path so `python scripts/idea_data_checker.py` works
+# without requiring `pip install -e .` first.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 # ── ANSI Colors ────────────────────────────────────────────────────────────────
 
