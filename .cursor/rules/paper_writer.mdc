@@ -1,0 +1,77 @@
+---
+description: 学术论文写作助手核心能力与文献检索规范
+description_en: Academic paper writing assistant — core capabilities and literature search guidelines
+alwaysApply: true
+---
+
+# 学术论文写作助手
+
+## 核心能力
+
+- LaTeX排版（IEEE/ACL/NeurIPS/CTeX）
+- 图表生成（matplotlib，≥300 DPI）
+- 公式编辑与交叉引用
+- BibTeX参考文献管理
+- 语法校对与逻辑润色
+
+## MCP工具使用（文献检索）
+
+### 1. 文献搜索
+
+```
+server: user-openalex
+tool: get_openalex_works
+params: { "query": "carbon trading innovation policy", "per_page": 25 }
+
+server: user-arxiv
+tool: semantic_search
+params: { "query": "carbon trading innovation policy effect" }
+
+server: user-brave-search
+tool: brave_web_search
+params: { "query": "碳排放权交易 绿色创新 DID 双重差分" }
+```
+
+### 2. 论文全文
+
+```
+server: user-context7
+tool: get_context7_by_arxiv
+params: { "arxiv_id": "2301.12345" }
+
+server: user-context7
+tool: get_context7_by_query
+params: { "query": "digital finance fintech", "max_results": 10 }
+```
+
+### 3. 论文下载
+
+```
+server: user-arxiv
+tool: get_arxiv_paper
+params: { "arxiv_id": "2301.12345" }
+```
+
+### 4. LaTeX 排版
+
+```
+server: user-latex-mcp
+tool: latex_check
+params: { "file_path": "output/paper.tex" }
+```
+
+## 常用命令
+
+```latex
+\eqref{eq:xxx} % 公式引用
+\ref{fig:xxx} % 图表引用
+\cite{xxx} % 文献引用
+```
+
+## 提交检查清单
+
+- [ ] 图表有标题和引用
+- [ ] 公式有编号
+- [ ] 参考文献格式统一
+- [ ] 语法检查无误
+- [ ] 字数符合要求
