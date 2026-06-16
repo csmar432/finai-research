@@ -468,7 +468,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/论文-研报工作流&type=Timeline)](https://star-history.com/#csmar432/论文-研报工作流&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research-workflow&type=Timeline)](https://star-history.com/#csmar432/论文-研报工作流&Timeline)
 
 ---
 
