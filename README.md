@@ -1,6 +1,10 @@
-# 论文-研报工作流 · FinResearch Agent
+# 论文-研报工作流 · FinAI Research Workflow
 
-> 经济金融领域 AI 学术研究工作流 — 从研究想法到可投稿论文。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。
+> **Tell me your research topic. Get a submittable paper.**
+>
+> An end-to-end AI agent pipeline for economic and financial research — from raw idea to submission-ready manuscript. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 45 journals, and adversarial review loops.
+
+![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -44,6 +48,25 @@
 | **17 AI Skills** | [knowledge/skills/](knowledge/skills/) |
 | **API reference** | [scripts/](scripts/) 目录下的每个模块都含 docstring 和类型注解 |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
+
+## 60-Second Demo
+
+```bash
+$ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+```
+
+![Quickstart](docs/assets/quickstart.svg)
+
+**From a one-line research question to a submission-ready LaTeX draft — in 6 minutes, for ~$0.20 in API costs.** All eight stages (idea generation → literature review → novelty check → empirical design → data acquisition → analysis → writing → adversarial review) run automatically with human-in-the-loop checkpoints.
+
+## Why FinAI Research Workflow?
+
+- **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 18 robustness checks, parallel-trend plots).
+- **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/CSMAR/Wind), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent.
+- **42 econometric methods, not just OLS** — modern staggered DiD (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH), synthetic control, instrumental variables, panel GMM, RDD, event studies, mediation, and more.
+- **45 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
+- **17 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
+- **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
 
 > **For Chinese users:** The most comprehensive guide is **[使用指南.md](使用指南.md)** — a complete 13-chapter manual covering installation, workflows, data sources, econometric methods, paper writing, and FAQ.
 
@@ -478,3 +501,38 @@ This project is maintained by **[@csmar432](https://github.com/csmar432)**.
 - 💖 **Sponsor / support**: [GitHub Sponsors](https://github.com/sponsors/csmar432) · [爱发电](https://afdian.net/a/finresearch)
 
 > Contributions of all sizes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+
+## Star History
+
+If this project helps your research, **give it a ⭐** — it tells other economists the project is worth their time.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research-workflow&type=Date)](https://star-history.com/#csmar432/finai-research-workflow&Date)
+
+## Cite This Work
+
+If you use FinAI Research Workflow in published research, please cite it as:
+
+```bibtex
+@software{finai2026,
+  title  = {FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research},
+  author = {csmar432},
+  year   = {2026},
+  month  = jun,
+  url    = {https://github.com/csmar432/finai-research-workflow},
+  doi    = {10.5281/zenodo.PENDING}
+}
+```
+
+## Related Projects
+
+- [**dowhy**](https://github.com/py-why/dowhy) — causal inference library (8.1K ⭐)
+- [**StatsPAI**](https://github.com/brycewang-stanford/StatsPAI) — agent-native causal inference toolkit (50 ⭐)
+- [**moderndid**](https://github.com/jordandeklerk/moderndid) — GPU-accelerated modern DiD
+- [**diff-diff**](https://github.com/igerber/diff-diff) — sklearn-like DiD in Python
+- [**PaperOrchestra**](https://github.com/google-research/paper-orchestra) — Google's multi-agent paper writing (58 ⭐)
+- [**E2ER-project**](https://github.com/bhanneke/E2ER-project) — end-to-end empirical research pipeline
+- [**econ-paper-studio**](https://github.com/gaaiyun/econ-paper-studio) — agent-native CLI for empirical economics
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for the full text.
