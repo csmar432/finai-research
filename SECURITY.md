@@ -12,7 +12,7 @@ If you discover a security vulnerability, please report it responsibly:
 
 1. **Do NOT** open a public GitHub Issue.
 2. Send a private disclosure to the maintainers via:
-   - GitHub Security Advisories (preferred): [Report a vulnerability](https://github.com/csmar432/论文-研报工作流/security/advisories/new)
+   - GitHub Security Advisories (preferred): [Report a vulnerability](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
    - Or email the maintainers directly.
 
 3. Please include as much of the following as possible:
