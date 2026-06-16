@@ -55,7 +55,7 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (49 MCP Servers, mostly no API key required)
+### 📊 Data Acquisition (50 MCP Servers, mostly no API key required)
 
 | What you need | MCP server |
 |---|---|
@@ -143,7 +143,7 @@ Step 2  Idea ↔ Data verify  → scripts/idea_data_checker.py (HITL checkpoint)
 Step 3  Literature review   → MCP multi-source, citation network, gap analysis
 Step 4  Novelty check       → JF/JFE/RFS/arXiv search
 Step 5  Empirical design    → DID/IV/RD/PSM/18 robustness checks
-Step 6  Data acquisition    → 49 MCP servers, 4-layer fallback
+Step 6  Data acquisition    → 50 MCP servers, 4-layer fallback
 Step 7  Paper writing       → outline → draft → figures → LaTeX
 Step 8  Adversarial review  → multi-round, until publishable
 ```

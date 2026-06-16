@@ -21,10 +21,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.core.platform import (
-    PLATFORM,
     get_mcp_config,
     get_mcp_config_paths,
 )
+from scripts.core.ide_platform import PLATFORM
 
 VENV_PYTHON = ROOT / ".venv" / "bin" / "python"
 

@@ -905,6 +905,306 @@ class FinancialChartFactory:
         self._save(fig, output_name)
         return fig
 
+    # ── Additional 8 chart types (V2 extensions) ───────────────────────────────
+
+    def plot_event_study(
+        self,
+        df: pd.DataFrame,
+        coef_col: str = "coef",
+        se_col: str = "se",
+        period_col: str = "period",
+        ref_period: int = -1,
+        ci_level: float = 0.95,
+        output_name: str = "event_study",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Event-study plot: lead/lag coefficients around a treatment event.
+
+        Parameters
+        ----------
+        df : DataFrame with one row per event-time period
+        coef_col : column with point estimates
+        se_col : column with standard errors
+        period_col : column with event-time integers (..., -2, -1, 0, 1, 2, ...)
+        ref_period : omitted reference period (drawn as a dashed vertical line)
+        ci_level : confidence level (default 0.95)
+        """
+        df = df.sort_values(period_col).reset_index(drop=True)
+        z = {0.90: 1.645, 0.95: 1.96, 0.99: 2.576}.get(ci_level, 1.96)
+        df["lo"] = df[coef_col] - z * df[se_col]
+        df["hi"] = df[coef_col] + z * df[se_col]
+
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        ax.fill_between(df[period_col], df["lo"], df["hi"], alpha=0.2,
+                        color=self._palette(0), label=f"{int(ci_level*100)}% CI")
+        ax.plot(df[period_col], df[coef_col], "o-", color=self._palette(0),
+                linewidth=2, markersize=6, label="Point estimate")
+        ax.axhline(0, color="grey", linewidth=0.7, linestyle="--")
+        ax.axvline(ref_period, color="red", linewidth=0.7, linestyle=":",
+                   label=f"Reference period = {ref_period}")
+        ax.set_xlabel("Event time (relative to treatment)")
+        ax.set_ylabel("Coefficient")
+        ax.set_title("Event Study")
+        ax.legend(loc="best", fontsize=9)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_did_scatter(
+        self,
+        df: pd.DataFrame,
+        x_col: str,
+        y_col: str,
+        treat_col: str,
+        time_col: str,
+        output_name: str = "did_scatter",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        DID scatter: outcome vs time, treatment vs control groups, with two
+        fitted lines drawn pre/post the treatment cut-off.
+        """
+        treat_period = df[time_col].median()
+        pre = df[df[time_col] <= treat_period]
+        post = df[df[time_col] > treat_period]
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+        for label, subset, marker, color in [
+            ("Control", df[df[treat_col] == 0], "o", self._palette(1)),
+            ("Treated", df[df[treat_col] == 1], "s", self._palette(0)),
+        ]:
+            ax.scatter(subset[time_col], subset[y_col], alpha=0.5, s=18,
+                       marker=marker, color=color, label=label)
+
+        for label, color in [("Control", self._palette(1)), ("Treated", self._palette(0))]:
+            for region, marker in [(pre, "pre"), (post, "post")]:
+                sub = region[region[treat_col] == (1 if label == "Treated" else 0)]
+                if len(sub) > 1:
+                    coef = np.polyfit(sub[time_col], sub[y_col], 1)
+                    xs = np.linspace(sub[time_col].min(), sub[time_col].max(), 50)
+                    ax.plot(xs, np.polyval(coef, xs), "--", color=color, alpha=0.7,
+                            linewidth=1.5)
+
+        ax.axvline(treat_period, color="red", linestyle=":", linewidth=0.8,
+                   label=f"Treatment onset ≈ {treat_period}")
+        ax.set_xlabel(time_col)
+        ax.set_ylabel(y_col)
+        ax.set_title("Difference-in-Differences Scatter")
+        ax.legend(loc="best", fontsize=9)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_heterogeneity_forest(
+        self,
+        results: dict[str, tuple[float, float]],
+        output_name: str = "heterogeneity_forest",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Forest plot of subgroup treatment effects.
+
+        Parameters
+        ----------
+        results : mapping {subgroup_name: (coef, se)}
+        """
+        names = list(results.keys())
+        coefs = np.array([results[k][0] for k in names])
+        ses = np.array([results[k][1] for k in names])
+        z = 1.96
+        lo, hi = coefs - z * ses, coefs + z * ses
+        y = np.arange(len(names))[::-1]
+
+        fig, ax = plt.subplots(figsize=(8, max(3, 0.45 * len(names))))
+        ax.errorbar(coefs, y, xerr=[coefs - lo, hi - coefs], fmt="o",
+                    color=self._palette(0), ecolor="grey", capsize=3,
+                    markersize=6, linewidth=1.5)
+        ax.axvline(0, color="black", linewidth=0.7, linestyle="--")
+        ax.set_yticks(y)
+        ax.set_yticklabels(names)
+        ax.set_xlabel("Treatment effect (95% CI)")
+        ax.set_title("Heterogeneity — Forest Plot")
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_sensitivity_tornado(
+        self,
+        baseline: float,
+        perturbations: dict[str, tuple[float, float]],
+        output_name: str = "sensitivity_tornado",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Sensitivity tornado: one row per assumption, two horizontal bars for the
+        resulting estimate (low / high), sorted by absolute swing.
+        """
+        items = sorted(perturbations.items(),
+                       key=lambda kv: abs(kv[1][1] - kv[1][0]), reverse=True)
+        names = [k for k, _ in items]
+        y = np.arange(len(names))[::-1]
+        lows = np.array([v[0] for _, v in items])
+        highs = np.array([v[1] for _, v in items])
+
+        fig, ax = plt.subplots(figsize=(8, max(3, 0.4 * len(names))))
+        for i, (lo, hi) in enumerate(zip(lows, highs)):
+            ax.barh(y[i], hi - lo, left=lo, color=self._palette(0), alpha=0.7,
+                    edgecolor="black", linewidth=0.4)
+        ax.axvline(baseline, color="red", linewidth=0.8, linestyle="--",
+                   label=f"Baseline = {baseline:.3f}")
+        ax.set_yticks(y)
+        ax.set_yticklabels(names, fontsize=9)
+        ax.set_xlabel("Estimate")
+        ax.set_title("Sensitivity Analysis (Tornado)")
+        ax.legend(loc="best", fontsize=9)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_coefficient_evolution(
+        self,
+        df: pd.DataFrame,
+        time_col: str,
+        coef_col: str,
+        se_col: str,
+        output_name: str = "coef_evolution",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Plot a coefficient's estimate ± 1.96 SE over time (rolling regressions,
+        subsample splits, etc.).
+        """
+        df = df.sort_values(time_col)
+        z = 1.96
+        fig, ax = plt.subplots(figsize=(9, 4.5))
+        ax.fill_between(df[time_col],
+                        df[coef_col] - z * df[se_col],
+                        df[coef_col] + z * df[se_col],
+                        alpha=0.2, color=self._palette(0), label="95% CI")
+        ax.plot(df[time_col], df[coef_col], "o-", color=self._palette(0),
+                linewidth=2, label="Estimate")
+        ax.axhline(0, color="grey", linestyle="--", linewidth=0.7)
+        ax.set_xlabel(time_col)
+        ax.set_ylabel(coef_col)
+        ax.set_title("Coefficient Evolution Over Time")
+        ax.legend(loc="best", fontsize=9)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_dose_response(
+        self,
+        df: pd.DataFrame,
+        dose_col: str,
+        outcome_col: str,
+        bin_col: str | None = None,
+        n_bins: int = 10,
+        output_name: str = "dose_response",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Dose-response curve: bin a continuous treatment 'dose' and plot the
+        mean outcome ± SE per bin. If ``bin_col`` is supplied, that is used
+        directly; otherwise equal-width bins are derived from ``dose_col``.
+        """
+        work = df.copy()
+        if bin_col is None:
+            work["_bin"] = pd.cut(work[dose_col], bins=n_bins, include_lowest=True)
+            bin_col = "_bin"
+
+        grouped = work.groupby(bin_col, observed=True)[outcome_col].agg(["mean", "sem", "count"])
+        grouped = grouped.dropna()
+        x = np.arange(len(grouped))
+
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        ax.errorbar(x, grouped["mean"], yerr=1.96 * grouped["sem"], fmt="o-",
+                    color=self._palette(0), capsize=3, linewidth=1.5,
+                    markersize=6)
+        ax.set_xticks(x)
+        ax.set_xticklabels([str(idx) for idx in grouped.index], rotation=30, ha="right",
+                           fontsize=8)
+        ax.set_xlabel(f"Bins of {dose_col}")
+        ax.set_ylabel(f"Mean {outcome_col} (95% CI)")
+        ax.set_title("Dose-Response Curve")
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_balance_table(
+        self,
+        before: pd.Series,
+        after: pd.Series,
+        var_names: list[str] | None = None,
+        output_name: str = "balance_table",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Visualise standardised mean differences pre- and post-matching
+        (or pre- and post-weighting). Horizontal bars per variable.
+        """
+        if var_names is None:
+            var_names = list(before.index)
+        before = before.reindex(var_names)
+        after = after.reindex(var_names)
+        y = np.arange(len(var_names))[::-1]
+
+        fig, ax = plt.subplots(figsize=(8, max(3, 0.4 * len(var_names))))
+        ax.barh(y - 0.2, before.values, height=0.4, color=self._palette(1),
+                label="Before", alpha=0.8)
+        ax.barh(y + 0.2, after.values, height=0.4, color=self._palette(0),
+                label="After", alpha=0.8)
+        ax.axvline(0, color="black", linewidth=0.7)
+        ax.axvline(0.1, color="grey", linewidth=0.5, linestyle="--",
+                   label="|SMD| = 0.1 threshold")
+        ax.axvline(-0.1, color="grey", linewidth=0.5, linestyle="--")
+        ax.set_yticks(y)
+        ax.set_yticklabels(var_names, fontsize=9)
+        ax.set_xlabel("Standardised mean difference")
+        ax.set_title("Covariate Balance — Before / After Matching")
+        ax.legend(loc="best", fontsize=9)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
+    def plot_event_timeline(
+        self,
+        events: list[tuple[str, str]],
+        output_name: str = "event_timeline",
+        **kwargs,
+    ) -> "plt.Figure":
+        """
+        Gantt-style timeline of research milestones / regulatory events.
+
+        Parameters
+        ----------
+        events : list of (label, ISO-date) or (label, 'YYYY-MM-DD')
+        """
+        from datetime import datetime
+        parsed: list[tuple[str, datetime]] = []
+        for label, date_str in events:
+            try:
+                parsed.append((label, datetime.fromisoformat(date_str)))
+            except ValueError:
+                continue
+        if not parsed:
+            raise ValueError("plot_event_timeline: no parseable events")
+        parsed.sort(key=lambda x: x[1])
+        y = np.arange(len(parsed))[::-1]
+        fig, ax = plt.subplots(figsize=(9, max(3, 0.5 * len(parsed))))
+        for i, (label, dt) in enumerate(parsed):
+            ax.scatter(dt, y[i], s=80, color=self._palette(0), zorder=3)
+            ax.annotate(label, (dt, y[i]), xytext=(6, 0), textcoords="offset points",
+                        fontsize=9, va="center")
+        ax.set_yticks([])
+        ax.set_yticklabels([])
+        ax.set_xlabel("Date")
+        ax.set_title("Event Timeline")
+        ax.grid(axis="x", linestyle=":", alpha=0.4)
+        fig.tight_layout()
+        self._save(fig, output_name)
+        return fig
+
     # ── Generic wrapper ──────────────────────────────────────────────────────────
 
     def plot(
@@ -932,6 +1232,15 @@ class FinancialChartFactory:
             "synthetic_control": self.plot_synthetic_control,
             "psm_distribution": self.plot_psm_distribution,
             "timeseries": self.plot_timeseries,
+            # V2 extensions
+            "event_study": self.plot_event_study,
+            "did_scatter": self.plot_did_scatter,
+            "heterogeneity_forest": self.plot_heterogeneity_forest,
+            "sensitivity_tornado": self.plot_sensitivity_tornado,
+            "coef_evolution": self.plot_coefficient_evolution,
+            "dose_response": self.plot_dose_response,
+            "balance_table": self.plot_balance_table,
+            "event_timeline": self.plot_event_timeline,
         }
 
         runner = dispatch.get(chart_type)

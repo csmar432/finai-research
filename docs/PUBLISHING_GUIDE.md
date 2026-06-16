@@ -268,7 +268,7 @@ causal-inference
 ## 4.1 提交当前所有改动 (1 min)
 
 ```bash
-cd /Users/xuzheyi/Desktop/论文-研报工作流
+cd $REPO_ROOT
 git add -A
 git commit -m "chore(release): prepare v1.0.0 - CLI, MANIFEST, publish workflow, badges"
 git push origin main

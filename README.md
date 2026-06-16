@@ -33,6 +33,8 @@
 | **📋 Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 53 项检查 |
 | **⚙️ 仓库设置建议** | [docs/REPOSITORY_SETUP.md](docs/REPOSITORY_SETUP.md) · 13 大类 |
 | **🔧 一键发布脚本** | [scripts/release.py](scripts/release.py) |
+| **🧭 交互式配置向导** | `python scripts/setup_wizard.py --guided` · 首次安装推荐 |
+| **🩺 系统自检** | `python scripts/health_check.py --json` · 验证环境就绪 |
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
 | **Chinese architecture overview** | [使用指南.md - 系统概览](使用指南.md#1-系统概览) |
 | **Setup & installation** | [使用指南.md - 安装配置](使用指南.md#2-安装配置) |
@@ -156,14 +158,14 @@ Describe your research in plain Chinese — the agent handles the rest:
 |-------|--------|
 | Literature Review | Citation graph + gap analysis (arXiv / NBER / OpenAlex / JF / JFE / RFS) |
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
-| Empirical Analysis | 49 econometric methods, automated robustness tests (18 types) |
+| Empirical Analysis | 42 econometric methods, automated robustness tests (19 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
 | Review Loop | Adversarial review until submission-ready |
 
 **Architecture overview:**
 
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
-*Multi-agent pipeline: User Input → AI Agent → 5-Stage Research Pipeline → 43 MCP Servers → 49+ Econometric Methods → LaTeX Paper*
+*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 50 MCP Servers → 42 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
 > **Note:** Screenshots and demo videos coming soon. The project is actively maintained.
 
@@ -176,7 +178,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 - **Write academic papers** — From literature review to LaTeX submission (JF/JFE/RFS/经济研究/金融研究/管理世界)
 - **Generate research reports** — Institutional-grade financial analysis for A-shares and global markets
 - **Run empirical analysis** — DID, IV, PSM, Panel GMM with automated validation
-- **Access financial data** — A-shares, US stocks, macro indicators via 43 MCP data servers (most require no API key)
+- **Access financial data** — A-shares, US stocks, macro indicators via 50 MCP data servers (most require no API key)
 
 > Architecture principle: **Local LLM (Claude Code / Cursor) as the core, external AI as supplement.**
 
@@ -187,7 +189,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Feature | Description |
 |---------|-------------|
 | **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
-| **43 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
+| **50 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
 | **49+ Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
@@ -260,7 +262,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 43 MCP servers · 49 econometric methods · 17 Skills · 41 research_framework modules · 12 research directions
+**Key numbers:** 50 MCP servers · 42 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks · 12 research directions
 
 ---
 

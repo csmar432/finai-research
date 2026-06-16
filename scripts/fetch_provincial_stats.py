@@ -262,8 +262,12 @@ def fetch_bulletin_content(url: str) -> str | None:
                 timeout=15, verify=True, allow_redirects=True,
             )
         except Exception as ssl_err:
-            # SSL 验证失败时降级（省级政府网站常有证书问题）
+            # Some provincial government sites have expired/misconfigured TLS
+            # certificates. We re-try with verification off, but suppress the
+            # InsecureRequestWarning so it doesn't pollute CI logs.
             _log.debug(f"SSL verification failed, retrying without: {ssl_err}")
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
             resp = requests.get(
                 url,
                 headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"},

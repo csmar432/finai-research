@@ -27,10 +27,23 @@ from __future__ import annotations
 import json
 import logging
 import re
+import sys
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
+
+# Bootstrap sys.path so `python scripts/core/llm_reviewer.py` works.
+# This MUST come before any third-party import that may transitively
+# import stdlib `platform` (e.g. numpy, faiss, zstandard).
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+# Drop the script's own directory from sys.path so `import platform` resolves
+# to the stdlib, not scripts/core/platform.py.
+_scripts_core_dir = str(Path(__file__).resolve().parent)
+sys.path[:] = [p for p in sys.path if p != _scripts_core_dir]
+sys.path.insert(0, str(_PROJECT_ROOT))
 
 import numpy as np
 
@@ -1376,3 +1389,114 @@ class LLMReviewer:
             ),
             "llm_scores": {k: v.score for k, v in review.scores.items()},
         }
+
+
+# ─────────────────────────────────────────
+# CLI entry point
+# ─────────────────────────────────────────
+def _cli() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="llm_reviewer.py",
+        description=(
+            "LLM-based paper reviewer. Reads a draft (.md/.tex/.txt) and emits a "
+            "structured 6-dimension scorecard as JSON."
+        ),
+    )
+    parser.add_argument("--draft", required=True, help="Path to draft file (.md/.tex/.txt)")
+    parser.add_argument(
+        "--venue", default="SSRN",
+        help="Target venue (e.g. JF, JFE, 经济研究, 金融研究, SSRN). Default: SSRN",
+    )
+    parser.add_argument(
+        "--language", default="en", choices=["en", "zh"],
+        help="Draft language (default: en)",
+    )
+    parser.add_argument(
+        "--output-json", default=None,
+        help="Write the full review JSON to this path (default: stdout summary)",
+    )
+    parser.add_argument(
+        "--no-llm", action="store_true",
+        help="Disable LLM judging (use heuristic-only review; safe for CI without API key)",
+    )
+    args = parser.parse_args()
+
+    draft_path = Path(args.draft)
+    if not draft_path.is_file():
+        print(f"ERROR: draft file not found: {draft_path}", file=sys.stderr)
+        return 2
+    paper_text = draft_path.read_text(encoding="utf-8", errors="replace")
+
+    # When --no-llm is set, build a deterministic heuristic ReviewResult
+    # directly. This avoids the LLM call and is safe for CI without API keys.
+    if args.no_llm:
+        from scripts.core.llm_reviewer import (  # type: ignore
+            ReviewScore,
+            ReviewResult,
+        )
+        # Crude heuristic: longer drafts score higher on rigor; novelty defaults
+        # to a neutral 5/10; everything else is a function of length.
+        word_count = len(paper_text.split())
+        rigor = min(8, max(3, int(word_count / 1500) + 4))
+        novelty = 5
+        clarity = min(8, max(3, int(word_count / 2000) + 5))
+        repro = 4
+        significance = 5
+        fit = 5
+        scores = {
+            "methodology_rigor": ReviewScore(score=rigor, confidence=0.3, reasoning=f"{word_count} words; heuristic."),
+            "novelty": ReviewScore(score=novelty, confidence=0.3, reasoning="Heuristic (no LLM)."),
+            "clarity": ReviewScore(score=clarity, confidence=0.3, reasoning=f"{word_count} words; heuristic."),
+            "reproducibility": ReviewScore(score=repro, confidence=0.3, reasoning="Heuristic (no LLM)."),
+            "significance": ReviewScore(score=significance, confidence=0.3, reasoning="Heuristic (no LLM)."),
+            "fit": ReviewScore(score=fit, confidence=0.3, reasoning="Heuristic (no LLM)."),
+        }
+        avg = sum(s.score for s in scores.values()) / len(scores)
+        review = ReviewResult(
+            scores=scores,
+            overall_score=avg,
+            overall_recommendation=(
+                "Accept" if avg >= 7 else "Reject" if avg < 4 else "Weak Accept"
+            ),
+            summary=f"Heuristic review of {word_count} words (no LLM invoked).",
+            strengths=["--no-llm: heuristic only."],
+            weaknesses=["--no-llm: did not invoke LLM; scores are placeholders."],
+            detailed_feedback="",
+            confidence=0.3,
+            metadata={"mode": "no-llm-heuristic", "word_count": word_count, "venue": args.venue, "language": args.language},
+        )
+    else:
+        reviewer = LLMReviewer(
+            judge_model="gpt5",
+            default_venue=args.venue,
+            enable_cache=True,
+        )
+        review = reviewer.review(
+            paper_content=paper_text,
+            venue=args.venue,
+            language=args.language,
+        )
+    payload = {
+        "venue": getattr(review, "venue", args.venue),
+        "language": getattr(review, "language", args.language),
+        "overall_recommendation": review.overall_recommendation,
+        "aggregate_score": getattr(review, "overall_score", None) or getattr(review, "aggregate_score", None),
+        "scores": {
+            k: {"score": v.score, "justification": v.reasoning}
+            for k, v in review.scores.items()
+        },
+        "strengths": review.strengths,
+        "weaknesses": review.weaknesses,
+    }
+    if args.output_json:
+        Path(args.output_json).write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(_cli())

@@ -588,3 +588,79 @@ class UniversalDataFetcher:
                 for r in self._results
             ],
         }
+
+
+# ─────────────────────────────────────────
+# CLI entry point
+# ─────────────────────────────────────────
+def _cli() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="universal_data_fetcher.py",
+        description=(
+            "Universal data fetcher with 4-layer fallback (MCP → CLI lib → HTTP → synthetic). "
+            "Run a single data fetch or a self-diagnostic to see which sources are available."
+        ),
+    )
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p_diag = sub.add_parser("diagnose", help="Run source-availability diagnostic")
+    p_diag.add_argument(
+        "--data-type", default="a_stock_financial",
+        help="Data type to diagnose (default: a_stock_financial)",
+    )
+
+    p_fetch = sub.add_parser("fetch", help="Fetch a single dataset")
+    p_fetch.add_argument("--data-type", required=True,
+                         help="e.g. a_stock_financial / us_stock_financial / macro_china_gdp")
+    p_fetch.add_argument("--ts-code", default=None, help="Tushare-style code, e.g. 000001.SZ")
+    p_fetch.add_argument("--ticker", default=None, help="yfinance-style ticker, e.g. AAPL")
+    p_fetch.add_argument("--indicator", default=None, help="Macro indicator key")
+    p_fetch.add_argument("--start-year", type=int, default=2015)
+    p_fetch.add_argument("--end-year", type=int, default=2025)
+    p_fetch.add_argument(
+        "--sources", default="mcp,cli,http,synthetic",
+        help="Comma-separated fallback order (default: mcp,cli,http,synthetic)",
+    )
+    p_fetch.add_argument("--output-json", default=None, help="Path to write the result as JSON")
+
+    args = parser.parse_args()
+    fetcher = UniversalDataFetcher(
+        sources=[s.strip() for s in args.sources.split(",") if s.strip()],
+    )
+
+    if args.cmd == "diagnose":
+        report = fetcher.diagnose(data_type=args.data_type)
+        print(json.dumps(report, indent=2, ensure_ascii=False, default=str))
+        return 0
+
+    if args.cmd == "fetch":
+        kwargs: dict[str, Any] = {"start_year": args.start_year, "end_year": args.end_year}
+        if args.ts_code:
+            kwargs["ts_code"] = args.ts_code
+        if args.ticker:
+            kwargs["ticker"] = args.ticker
+        if args.indicator:
+            kwargs["indicator"] = args.indicator
+        result = fetcher.fetch(args.data_type, **kwargs)
+        summary = {
+            "source": result.source.value,
+            "provenance": result.provenance,
+            "available": result.available,
+            "error": result.error,
+            "row_count": 0 if result.data is None else len(result.data),
+        }
+        if args.output_json:
+            Path(args.output_json).write_text(
+                json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return 0 if result.available else 2
+
+    parser.print_help()
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(_cli())
