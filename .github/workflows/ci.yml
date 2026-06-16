@@ -93,14 +93,14 @@ jobs:
           exit 0
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-batch1-log
           path: pytest-batch1.log
           retention-days: 7
       - name: Upload coverage data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-batch1
           path: .coverage
@@ -221,14 +221,14 @@ jobs:
           ls -la .coverage .coverage.* 2>&1 || true
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-batch2-log
           path: pytest-batch2.log
           retention-days: 7
       - name: Upload coverage data
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-batch2
           path: .coverage
@@ -345,14 +345,14 @@ jobs:
           ls -la .coverage .coverage.* 2>&1 || true
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-batch3-log
           path: pytest-batch3.log
           retention-days: 7
       - name: Upload coverage data
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-batch3
           path: .coverage
@@ -464,7 +464,7 @@ jobs:
           RELAY_API_KEY: dummy_key
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-cs-${{ matrix.os }}-log
           path: pytest-cs.log
