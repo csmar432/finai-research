@@ -35,7 +35,7 @@ jobs:
         # 这些链接在 GitHub 仓库中可正常跳转, 仅是 mkdocs 的 markdown 文件集不同。
         run: mkdocs build -f mkdocs.yml
       - name: Upload site artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mkdocs-site
           path: site
