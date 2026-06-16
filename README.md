@@ -7,14 +7,14 @@
 [![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/论文-研报工作流/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/论文-研报工作流/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/论文-研报工作流/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
 ---
 <!--
@@ -205,7 +205,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/finai-research/finai-research-workflow.git
+git clone https://github.com/csmar432/finai-research-workflow.git
 cd finai-research-workflow
 
 # 2. Install dependencies
@@ -449,7 +449,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/论文-研报工作流&type=Timeline)](https://star-history.com/#csmar432/论文-研报工作流&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/论文-研报工作流&type=Timeline)](https://star-history.com/#csmar432/finai-research-workflow&Timeline)
 
 ---
 

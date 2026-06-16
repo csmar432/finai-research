@@ -2,7 +2,7 @@
 """
 Example 04: MCP Data Fetching · 从 MCP 服务器拉取数据
 
-演示如何从 49 个 MCP 数据源获取金融数据。
+演示如何从 43 个 MCP 数据源获取金融数据。
 覆盖 4 层 fallback：MCP → Python lib → HTTP → synthetic。
 """
 import sys

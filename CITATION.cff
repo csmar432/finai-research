@@ -42,11 +42,11 @@ abstract: |
   the entire research workflow for economic and financial scholars: from
   literature review and idea generation, through empirical design and data
   acquisition, to LaTeX paper writing and submission-ready formatting.
-  The system integrates 49 Model Context Protocol (MCP) data servers covering
+  The system integrates 43 Model Context Protocol (MCP) data servers covering
   academic papers, A-share data, US equities, macroeconomic indicators, and
   alternative data; 49 econometric methods (DID/IV/RDD/PSM/GMM and modern
   variants) at JF/JFE/RFS journal standard; 17 specialized AI skills; and
-  34 journal templates (including top Chinese journals: 经济研究, 金融研究,
+  70 journal templates (including top Chinese journals: 经济研究, 金融研究,
   管理世界). The pipeline enforces Human-in-the-Loop (HITL) checkpoints
   with full data provenance tracking, and supports multi-agent debate
   for adversarial peer review. Distributed under MIT License.

@@ -14,7 +14,7 @@
 
 1. Fork 本仓库
 2. 创建功能分支：`git checkout -b feature/your-feature-name`
-3. 编写代码并确保测试通过：`python scripts/agent.py --test`
+3. 编写代码并确保测试通过：`pytest tests/` 或 `finai test`
 4. 提交：`git commit -m "feat: add something useful"`
 5. 推送到您的 Fork：`git push origin feature/your-feature-name`
 6. 发起 Pull Request
@@ -23,20 +23,19 @@
 
 - 遵循 PEP 8，使用 `ruff check scripts/` 检查
 - 所有新增功能必须有对应的测试
-- 提交前运行完整测试：`python scripts/agent.py --test`
+- 提交前运行完整测试：`pytest tests/` 或 `finai test`
 
 ### 测试要求
 
 ```bash
 # 运行所有测试
-python scripts/agent.py --test
+pytest tests/
 
 # 运行单个模块测试
-.venv/bin/python -m pytest scripts/core/test_memory.py -v
-.venv/bin/python -m pytest scripts/core/test_planner.py -v
-.venv/bin/python -m pytest scripts/core/test_tool_selector.py -v
-.venv/bin/python -m pytest scripts/core/test_reflector.py -v
-.venv/bin/python -m pytest scripts/core/test_session.py -v
+.venv/bin/python -m pytest tests/test_llm_reviewer.py -v
+.venv/bin/python -m pytest tests/test_modern_did.py -v
+.venv/bin/python -m pytest tests/test_checkpoint.py -v
+.venv/bin/python -m pytest tests/test_event_monitor.py -v
 ```
 
 ## 模块说明
