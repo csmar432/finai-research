@@ -1,0 +1,104 @@
+{
+  "name": "finai-research-workflow",
+  "displayName": "FinAI Research Workflow",
+  "description": "End-to-end AI agent for economic & financial research papers. 43 MCP data sources, 42 econometric methods, 17 Skills, 45 journal templates.",
+  "version": "1.0.0",
+  "publisher": "csmar432",
+  "engines": {
+    "vscode": "^1.85.0",
+    "cursor": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "academic-research",
+    "economic-research",
+    "finance",
+    "causal-inference",
+    "did",
+    "difference-in-differences",
+    "mcp",
+    "finai"
+  ],
+  "homepage": "https://github.com/csmar432/finai-research-workflow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/csmar432/finai-research-workflow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/csmar432/finai-research-workflow/issues"
+  },
+  "license": "MIT",
+  "activationEvents": [
+    "onLanguage:latex",
+    "onLanguage:markdown",
+    "workspaceContains:REFINED_DESIGN.md"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "finai.runPipeline",
+        "title": "FinAI: Run full pipeline",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runIdeaDiscovery",
+        "title": "FinAI: Idea discovery",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runLitReview",
+        "title": "FinAI: Literature review",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runNoveltyCheck",
+        "title": "FinAI: Novelty check",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runExperimentDesign",
+        "title": "FinAI: Experiment design",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runDataAcquisition",
+        "title": "FinAI: Data acquisition",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runPaperDraft",
+        "title": "FinAI: Generate paper draft",
+        "category": "FinAI"
+      },
+      {
+        "command": "finai.runReviewLoop",
+        "title": "FinAI: Adversarial review loop",
+        "category": "FinAI"
+      }
+    ],
+    "configuration": {
+      "title": "FinAI Research Workflow",
+      "properties": {
+        "finai.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Python executable for the FinAI pipeline"
+        },
+        "finai.llmProvider": {
+          "type": "string",
+          "enum": ["deepseek", "openai", "anthropic", "ollama"],
+          "default": "deepseek",
+          "description": "LLM provider for the agent"
+        },
+        "finai.dataPath": {
+          "type": "string",
+          "default": "~/finai_data",
+          "description": "Local cache directory for downloaded data"
+        }
+      }
+    }
+  }
+}
