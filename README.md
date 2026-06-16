@@ -491,6 +491,99 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ---
 
+## Architecture Diagrams
+
+### Pipeline DAG (8 Stages + 4 Human-in-the-Loop Checkpoints)
+
+```mermaid
+flowchart TD
+    Start([User inputs research topic]) --> S1[1. Idea Generation<br/>LLM + Lit Survey]
+    S1 -->|checkpoint 1| S2[2. Literature Review<br/>OpenAlex + ArXiv + Context7]
+    S2 -->|checkpoint 2| S3[3. Novelty Check<br/>2M+ papers search]
+    S3 -->|checkpoint 3| S4[4. Empirical Design<br/>DID/IV/RDD/PSM selector]
+    S4 --> S5[5. Data Acquisition<br/>43 MCP data sources]
+    S5 --> S6[6. Empirical Analysis<br/>Staggered DID, IV, GMM]
+    S6 --> S7[7. Paper Writing<br/>45 journal templates]
+    S7 --> S8[8. Adversarial Review<br/>4 rounds, score-based]
+    S8 -->|checkpoint 4| Done([Submission-ready PDF])
+
+    style S1 fill:#e94560,color:#fff
+    style S2 fill:#0f3460,color:#fff
+    style S3 fill:#16213e,color:#fff
+    style S4 fill:#533483,color:#fff
+    style S5 fill:#0f3460,color:#fff
+    style S6 fill:#16213e,color:#fff
+    style S7 fill:#e94560,color:#fff
+    style S8 fill:#533483,color:#fff
+    style Start fill:#1a1a2e,color:#fff
+    style Done fill:#1a1a2e,color:#fff
+```
+
+### MCP Data Source Selection (43 Sources with 4-Layer Fallback)
+
+```mermaid
+flowchart LR
+    Req[Data Request<br/>e.g. A-share ROA] --> Router{Smart Router}
+    Router --> Tier1[Tier 1<br/>CSMAR/Wind<br/>Highest quality]
+    Router -->|unavailable| Tier2[Tier 2<br/>Tushare<br/>+ patent data]
+    Router -->|no key| Tier3[Tier 3<br/>akshare<br/>Free, slower]
+    Router -->|no data| Tier4[Tier 4<br/>yfinance/synthetic<br/>Last resort]
+    Tier1 --> Cache[(Local Cache<br/>SQLite)]
+    Tier2 --> Cache
+    Tier3 --> Cache
+    Tier4 --> Cache
+    Cache --> Result[Validated Data +<br/>Provenance Hash]
+
+    style Tier1 fill:#28c840,color:#fff
+    style Tier2 fill:#febc2e,color:#000
+    style Tier3 fill:#0f3460,color:#fff
+    style Tier4 fill:#e94560,color:#fff
+    style Cache fill:#1a1a2e,color:#fff
+```
+
+### Modern DID Estimator Selection
+
+```mermaid
+flowchart TD
+    DID[DID with Staggered Treatment] --> Check{Never-treated<br/>available?}
+    Check -->|Yes| Q1{Heterogeneous<br/>effects suspected?}
+    Check -->|No| Q2{Continuous<br/>treatment?}
+    Q1 -->|Yes| CS[Callaway-Sant'Anna<br/>2021 - default]
+    Q1 -->|No| SA[Sun-Abraham<br/>2021]
+    Q1 -->|Wants imputation| BJJ[Borusyak-Jaravel-Spiess<br/>2024]
+    Q2 -->|Yes| ContDID[Continuous DID<br/>Callaway-DiTraglia 2024]
+    Q2 -->|No| Decompose[Bacon Decomposition<br/>diagnose TWFE bias]
+    CS --> Synth[Synthetic DiD<br/>Arkhangelsky 2021]
+    SA --> Synth
+    BJJ --> Synth
+
+    style CS fill:#e94560,color:#fff
+    style SA fill:#0f3460,color:#fff
+    style BJJ fill:#533483,color:#fff
+    style Synth fill:#16213e,color:#fff
+    style Decompose fill:#16213e,color:#fff
+    style ContDID fill:#0f3460,color:#fff
+```
+
+---
+
+## Comparison with Existing Tools
+
+| Feature | **FinAI Research Workflow** | [StatsPAI](https://github.com/brycewang-stanford/StatsPAI) | [PaperOrchestra](https://github.com/google-research/paper-orchestra) | [E2ER-project](https://github.com/bhanneke/E2ER-project) | [dowhy](https://github.com/py-why/dowhy) |
+|---|---|---|---|---|---|
+| **Focus** | Economic & financial research papers | Causal inference toolkit | Multi-agent paper writing | End-to-end empirical papers | Industrial causal inference |
+| **Data sources** | 43 MCP servers | None (data import only) | None | 3 (yfinance/FRED/Allium) | None |
+| **Econometric methods** | 42 (modern DiD focus) | 550+ (general) | 0 | Limited | 0 (general framework) |
+| **Journal templates** | 45 (incl. 6 Chinese top) | 0 | 1 (NeurIPS-style) | 1 (LaTeX generic) | 0 |
+| **Chinese data integration** | ✅ (Tushare/CSMAR/Wind/CNRDS) | ❌ | ❌ | ❌ | ❌ |
+| **Human-in-the-loop** | ✅ (4 checkpoints) | ❌ | Partial | ❌ | ❌ |
+| **Adversarial review** | ✅ (4 rounds) | ❌ | ✅ (single pass) | ✅ (1 round) | ❌ |
+| **Skill system** | 17 specialised Skills | Agent-native functions | Agents | Pipeline | N/A |
+| **License** | MIT | MIT | Apache 2.0 | MIT | MIT |
+| **Best for** | Economists writing JF/经济研究 | Causal inference devs | AI researchers | Quick empirical demos | Production ML |
+
+---
+
 ## Maintainer
 
 This project is maintained by **[@csmar432](https://github.com/csmar432)**.
