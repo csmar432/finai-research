@@ -59,7 +59,7 @@
    - **Description**: 英文短描述
      ```
      End-to-end AI agent pipeline for economic and financial research. 
-     49 MCP data sources, 49 econometric methods, 17 AI skills.
+     43 MCP data sources, 49 econometric methods, 17 AI skills.
      ```
    - **Public** ✅ (必须)
    - ❌ 不要勾选 "Initialize with README" (会冲突本地)

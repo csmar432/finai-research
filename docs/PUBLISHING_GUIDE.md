@@ -34,8 +34,8 @@
 
 ```
 End-to-end AI agent pipeline for economic and financial research. 
-49 MCP data servers, 49 econometric methods (DID/IV/RDD/PSM), 
-17 AI skills, 34 journal templates. 
+43 MCP data servers, 49 econometric methods (DID/IV/RDD/PSM), 
+17 AI skills, 70 journal templates. 
 Designed for JF/JFE/RFS/经济研究/金融研究 submissions.
 ```
 

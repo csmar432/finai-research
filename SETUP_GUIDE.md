@@ -197,7 +197,7 @@ Add to Cursor MCP settings:
 pip install tushare
 
 # Configure token
-echo "TUSHARE_TOKEN=your-token" >> .env
+echo "TUSHARE_TOKEN=your-tushare-token" >> .env
 ```
 
 #### user-financial (全球宏观)
@@ -214,7 +214,7 @@ echo "TUSHARE_TOKEN=your-token" >> .env
 pip install eodhd
 
 # Configure key
-echo "EODHD_API_KEY=your-key" >> .env
+echo "EODHD_API_KEY=your-eodhd-api-key" >> .env
 ```
 
 ---
@@ -401,7 +401,7 @@ pip install -e .
 
 ### Getting Help
 
-1. Check existing issues: [GitHub Issues](https://github.com/csmar432/论文-研报工作流/issues)
+1. Check existing issues: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
 2. Run with verbose logging:
 
 ```bash
