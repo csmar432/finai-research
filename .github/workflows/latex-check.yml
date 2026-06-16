@@ -17,6 +17,10 @@ on:
       - "output/**/*.bib"
   workflow_dispatch:
 
+# 最小权限: 减少 token scope, 符合 GitHub security hardening
+permissions:
+  contents: read
+
 concurrency:
   group: latex-${{ github.ref }}
   cancel-in-progress: true
@@ -51,7 +55,7 @@ jobs:
       - name: Install Python (for bib check)
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Find .tex files
         id: find_tex

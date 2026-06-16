@@ -106,7 +106,7 @@ pytest tests/ -v
 
 ### 论文写作
 
-- LaTeX 输出（41种期刊格式，英文/中文30种+日文3种+德文4种）
+- LaTeX 输出（45种期刊格式，英文/中文30种+日文3种+德文4种+其他8种）
 - JF / JFE / RFS / JAE / JPE / Econometrica 等英文顶刊
 - 经济研究 / 金融研究 / 管理世界 / 会计研究 等中文顶刊
 - 多轮对抗性 review 循环
@@ -125,7 +125,7 @@ pytest tests/ -v
 ```
 scripts/
 ├── agent_pipeline.py              # 主入口：端到端流水线
-├── research_framework/           # 研究执行层（41个模块）
+├── research_framework/           # 研究执行层（42个模块）
 │   ├── pipeline.py            # 标准流水线
 │   ├── modern_did.py          # 现代 DID（CS/SunAb/Borusyak/GB/dCdH）
 │   ├── synthetic_control.py  # 合成控制法（Abadie et al. 2010）
@@ -195,7 +195,7 @@ output/                           # 输出目录
 
 ---
 
-## 可用技能（17个）
+## 可用技能（18个）
 
 技能文档在 `.claude/skills/`（Claude Code）、`.github/skills/`（Copilot）和 `knowledge/skills/`（真相源）。在 Cursor 中直接用 `Skill:` 语法触发。
 
@@ -209,7 +209,7 @@ output/                           # 输出目录
 | `fin-experiment-design` | 完整实证设计（DID/IV/RD/PSM）|
 | `fin-paper-writing` | 论文写作编排 |
 | `fin-paper-draft` | 正文生成（LaTeX）|
-| `fin-paper-plan` | 大纲生成（41种期刊模板）|
+| `fin-paper-plan` | 大纲生成（45种期刊模板）|
 | `fin-paper-figure` | 图表生成（≥300 DPI，20+类型）|
 | `fin-paper-convert` | LaTeX 编译 |
 | `fin-review-loop` | 多轮对抗性 review |
@@ -288,10 +288,10 @@ output/                           # 输出目录
 | `CLAUDE.md` | Claude Code（主要）/ Cursor / Codex | 项目主入口 |
 | `.claude/` | Claude Code | 命令 + 技能文档 |
 | `.cursor/rules/` | Cursor | 角色规则（analyst/paper_writer/researcher/mcp_tools/system-init）|
-| `.cursor/skills/` | Cursor | 17 个 Skill 文件（原生 Skill 系统）|
+| `.cursor/skills/` | Cursor | 18 个 Skill 文件（原生 Skill 系统）|
 | `.cursor/agents/` | Cursor | Agent 指令（literature-scout）|
 | `.github/copilot-instructions.md` | GitHub Copilot | Copilot 指令文件 |
-| `knowledge/skills/` | Claude Code / Copilot | 17 个技能文档（真相源，目录副本到 .claude/skills/ 和 .github/skills/）|
+| `knowledge/skills/` | Claude Code / Copilot | 18 个技能文档（真相源，目录副本到 .claude/skills/ 和 .github/skills/）|
 
 ## Skill: 语法（Cursor 专用）
 

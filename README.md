@@ -7,14 +7,15 @@
 [![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
+<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。详见 docs/PUBLISHING_GUIDE.md L197 -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
 ---
 <!--
@@ -41,7 +42,7 @@
 | **11-step workflow** | [使用指南.md - 完整工作流程](使用指南.md#7-完整工作流程) |
 | **49 econometric methods** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
 | **43 MCP data sources** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源) |
-| **17 AI Skills** | [knowledge/skills/](knowledge/skills/) |
+| **18 AI Skills** | [knowledge/skills/](knowledge/skills/) |
 | **API reference** | [docs/api_reference.md](docs/api_reference.md) |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
 
@@ -449,7 +450,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/论文-研报工作流&type=Timeline)](https://star-history.com/#csmar432/finai-research-workflow&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research-workflow&type=Timeline)](https://star-history.com/#csmar432/finai-research-workflow&Timeline)
 
 ---
 

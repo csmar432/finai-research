@@ -66,9 +66,15 @@ Thumbs.db
 # Cursor IDE
 # .cursor/settings.json 不提交（含MCP server paths等环境相关配置）
 # .cursor/rules/ 是项目规范文档，需要提交版本控制
-.cursor/
+# .cursor/skills/ 和 .cursor/agents/ 包含 Cursor 原生 Skill 系统与 Agent 指令
+# 顺序重要: 先 .cursor/ 排除, 然后逐个反白名单
+.cursor/*
 !.cursor/rules/
-!.cursor/rules/*.mdc
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
+!.cursor/agents/
+!.cursor/agents/**
 
 # Env
 .env

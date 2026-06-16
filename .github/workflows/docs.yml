@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# 最小权限: 减少 token scope, 符合 GitHub security hardening
+permissions:
+  contents: read
+
 # 注: GitHub Pages 部署需要仓库有 Pages 启用 + 特定权限。
 # 本 workflow 仅做 mkdocs build 校验, 部署由 GitHub UI 手动触发或
 # 单独的 deploy workflow 处理。

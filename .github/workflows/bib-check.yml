@@ -17,6 +17,10 @@ on:
       - "**/*.bib"
   workflow_dispatch:
 
+# 最小权限: 减少 token scope, 符合 GitHub security hardening
+permissions:
+  contents: read
+
 concurrency:
   group: bibcheck-${{ github.ref }}
   cancel-in-progress: true
@@ -34,7 +38,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Run BibTeX reference check
         run: python scripts/check_bib.py

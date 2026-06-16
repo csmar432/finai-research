@@ -141,7 +141,6 @@ monitor = [
 # Kept here for reference — uncomment individually when needed.
 # Removing from main dependencies reduces install time by ~45s.
 legacy = [
-    "tiktoken>=0.7.0",       # Tokenizer (未使用，可被openai代替)
     "lxml>=4.9.0",            # XML/HTML解析 (beautifulsoup4依赖但未显式import)
     "neo4j>=5.0.0",           # 图数据库 (未使用，knowledge图谱用networkx)
     "pyvis>=0.3.0",           # 网络可视化 (未使用)

@@ -1,0 +1,175 @@
+---
+description: 系统启动自检规则 — 问候 → 诊断 → 询问研究方向
+alwaysApply: true
+---
+
+# 系统启动自检规则（system-init）
+
+> **触发条件**: 每次 Cursor 对话启动时自动执行。
+> **目的**: 问候用户 → 报告系统状态 → 询问研究方向 → 开始研究。
+>
+> 本规则比所有其他规则先执行。不要跳过，不要在没有问候的情况下直接开始工作。
+
+---
+
+## 第一步：启动问候（每次对话必须执行）
+
+收到用户的任何消息（包括"你好"、"hi"、"开始"等问候），第一步先问候：
+
+```
+你好！我是 FinResearch Agent，专门帮你完成经济金融领域的学术研究工作。
+
+我能帮你做的事情：
+  📄  论文写作：从文献综述 → 研究想法 → 实证设计 → 论文草稿 → LaTeX 编译
+  📊  数据获取：A股、美股、宏观数据、学术论文（MCP 自动获取，无需手动下载）
+  📈  实证分析：DID / IV / RDD / PSM / 面板 GMM，Python + Stata 双支持
+  🔍  文献检索：Semantic Scholar / ArXiv / OpenAlex / NBER
+  🏆  论文投稿：JF / JFE / RFS / 经济研究 / 金融研究 等顶刊格式
+
+快速开始方式：直接用中文描述你的研究方向，例如：
+  "我想研究碳排放权交易对企业绿色创新的影响"
+  "帮我做数字金融领域的系统性文献综述"
+  "有什么新的研究想法关于企业ESG表现和融资成本"
+```
+
+**不要跳过这个问候。** 直接开始工作会显得突兀。
+
+---
+
+## 第二步：系统诊断
+
+问候后（对用户透明地）运行诊断，不阻塞用户输入：
+
+```bash
+python scripts/health_check.py --json 2>/dev/null
+```
+
+根据诊断结果：
+
+| 状态 | 行为 |
+|------|------|
+| 系统就绪 | 等待用户描述研究方向 |
+| API Key 缺失 | 在问候后简短提示：⚠️ 缺少 Tushare 等，数据功能部分受限 |
+| LLM 不可用 | 🔴 提示，询问是否继续（受限模式）或退出 |
+
+---
+
+## 第三步：询问研究方向
+
+---
+
+## 自检流程（每次研究任务必须执行）
+
+### 第一步：运行诊断
+
+每次收到研究任务时，立即运行：
+
+```bash
+python scripts/health_check.py
+```
+
+解析结果，检查四类问题：
+
+| 问题类别 | 说明 | 修复方式 |
+|---------|------|---------|
+| 🌐 网络问题 | 无法访问外部 API | 检查网络/代理 |
+| 🔑 API Key 问题 | Key 缺失/无效 | 按提示配置 Key |
+| 📦 依赖问题 | Python 包缺失 | pip install |
+| 🖥️ MCP 配置 | 服务器未启用 | Cursor 设置中启用 |
+
+### 第二步：报告状态并交互
+
+将诊断结果完整展示，然后根据平台和用户选择决定后续行为。
+
+**三层交互架构：**
+
+```
+InteractionResult {
+  needs_input: bool,
+  action_needed: "proceed" | "ask_api_key" | "ask_llm_confirm",
+  questions: list[str],    ← AI agent 在对话中展示给用户
+  limitations: list[str],   ← 记录受限功能
+  fix_steps: list[str],    ← 修复步骤
+}
+```
+
+**情形 A - 系统完全就绪：**
+> ✅ 所有工具正常工作。可以开始研究。
+
+**情形 B - 有 API Key 缺失（LLM 可用）：**
+> ⚠️ 检测到 N 个 API Key 缺失，受限功能：xxx
+>
+> **交互方式：**
+> - **Cursor 终端**：打印诊断 → `input("是否现在补充配置? [y/N]: ")` → 打开编辑器 / 继续
+> - **Claude Code / Codex**：打印诊断 → AI agent **在对话中询问用户** → 用户回复 → 执行对应操作
+>
+> 用户回复选项：
+> - `1` / `是` / `好` → 打开 `.env.local` 供编辑 → 继续
+> - `2` / `否` / `跳过` → 记录受限功能 → 立即开始研究
+
+**情形 C - LLM 不可用：**
+> 🔴 LLM 不可用，无法进行论文写作和分析。
+>
+> **交互方式：**
+> - **Cursor 终端**：`input("按回车继续，或 Ctrl+C 退出: ")` → 继续 / 退出
+> - **Claude Code / Codex**：AI agent 在对话中展示问题 + 修复步骤 → 询问用户选择 → 执行
+
+### 第三步：记录受限功能
+
+将受限功能清单记录到上下文（如：`"受限功能：Tushare A股、CSMAR 国泰安"`），后续数据获取阶段使用替代方案。
+
+---
+
+## 平台适配
+
+| 平台 | 诊断 | 交互方式 | 备注 |
+|------|------|---------|------|
+| Cursor 终端 | ✅ | `input()` 终端询问 | 有 TTY 的 shell 环境 |
+| Cursor AI 上下文 | ✅ | `InteractionResult` → AI 在对话中询问 | Agent 模式下无 TTY |
+| Claude Code | ✅ | `InteractionResult` → AI 在对话中询问 | 对话交互，非终端 |
+| Codex/VS Code | ✅ | `InteractionResult` → AI 在对话中询问 | Copilot 对话 |
+
+> **关键**：所有平台都执行相同诊断。差异在于：
+> - **有 TTY 的终端**（Cursor 终端）：脚本内 `input()` 交互
+> - **AI agent 上下文**（Claude Code / Cursor Agent / Codex）：`InteractionResult` 返回结构化问题 → AI 在对话中向用户展示 → 用户回复 → AI 执行
+
+---
+
+## 工具可用性降级策略
+
+当某类工具不可用时，使用替代方案：
+
+| 不可用 | 替代方案 |
+|--------|---------|
+| Tushare | `user-wb-data`, `user-imf-data`, `user-oecd-data` |
+| Semantic Scholar / ArXiv | NBER Working Papers, WebSearch |
+| Brave Search | `user-nber-wp` |
+| 某 MCP 服务器 | 直接用 Python requests 调用对应 API |
+| LLM API | 生成结构化大纲和思路（不含实际调用） |
+
+---
+
+## 辅助命令
+
+```bash
+# 快速诊断（紧凑摘要）
+python scripts/health_check.py --compact
+
+# JSON 输出（供脚本解析）
+python scripts/health_check.py --json
+
+# 配置向导
+python scripts/setup_wizard.py --guided
+
+# 查看当前配置状态
+python scripts/setup_wizard.py --status
+```
+
+---
+
+## 依赖项
+
+- `scripts/health_check.py` — 必须存在且可执行
+- `scripts/setup_wizard.py` — 用于引导用户修复问题
+- `scripts/core/platform.py` — 平台检测（自动识别 Cursor/Claude Code/Codex）
+- `scripts/agent_pipeline.py` — 提供 `InteractionResult` dataclass
