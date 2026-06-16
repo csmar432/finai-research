@@ -8,7 +8,7 @@
 
 ## 🚀 我做了什么
 
-- **FinAI Research Workflow** — 端到端 AI 学术研究工作流（49 个 MCP 数据源、49 个计量方法、17 个 AI 技能、34 种期刊模板）
+- **FinAI Research Workflow** — 端到端 AI 学术研究工作流（43 个 MCP 数据源、49 个计量方法、17 个 AI 技能、70 种期刊模板）
 - **论文写作 / 文献综述 / 实证设计** 自动化
 - 集成 Claude Code / Cursor / GitHub Copilot 的多工具适配
 
@@ -20,7 +20,7 @@
 
 ```
 AI/ML     : LLM-based agents · 检索增强生成 (RAG) · 工具调用
-数据获取   : MCP 协议 (49 个数据服务器) · akshare · Tushare · yfinance · ArXiv · OpenAlex
+数据获取   : MCP 协议 (43 个数据服务器) · akshare · Tushare · yfinance · ArXiv · OpenAlex
 计量经济   : DID (Callaway-Sant'Anna, Sun-Abraham, Goodman-Bacon)
            IV/RDD · 合成控制 · 面板 GMM · 局部投影
 论文工具   : LaTeX (CTeX/ACLTEX) · BibTeX · matplotlib/seaborn (300+ DPI)

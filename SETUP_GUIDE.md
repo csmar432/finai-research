@@ -197,7 +197,7 @@ Add to Cursor MCP settings:
 pip install tushare
 
 # Configure token
-echo "TUSHARE_TOKEN=your-token" >> .env
+echo "TUSHARE_TOKEN=your-tushare-token" >> .env
 ```
 
 #### user-financial (全球宏观)
@@ -214,7 +214,7 @@ echo "TUSHARE_TOKEN=your-token" >> .env
 pip install eodhd
 
 # Configure key
-echo "EODHD_API_KEY=your-key" >> .env
+echo "EODHD_API_KEY=your-eodhd-api-key" >> .env
 ```
 
 ---

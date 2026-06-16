@@ -7,7 +7,7 @@
 | 1 | [01-quickstart-pipeline.py](01-quickstart-pipeline.py) | 5 行代码跑完整研究流水线 | ⭐ |
 | 2 | [02-did-analysis.py](02-did-analysis.py) | Callaway-Sant'Anna DID 实证 | ⭐⭐ |
 | 3 | [03-paper-latex.py](03-paper-latex.py) | 自动生成可投稿 LaTeX 论文 | ⭐⭐ |
-| 4 | [04-mcp-data-fetch.py](04-mcp-data-fetch.py) | 从 49 MCP 服务器拉取数据 | ⭐ |
+| 4 | [04-mcp-data-fetch.py](04-mcp-data-fetch.py) | 从 43 MCP 服务器拉取数据 | ⭐ |
 | 5 | [05-charts-figures.py](05-charts-figures.py) | 20+ 种学术金融图表 | ⭐ |
 
 ## 🚀 快速开始
