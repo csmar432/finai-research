@@ -7,11 +7,12 @@
 [![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/论文-研报工作流/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.finai-research-workflow.svg)](https://doi.org/10.5281/zenodo.finai-research-workflow)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/论文-研报工作流?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
+<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。详见 docs/PUBLISHING_GUIDE.md L197 -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
 [🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](#)
 
@@ -89,7 +90,7 @@
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
-### 🤖 17 AI Skills (Claude Code / Cursor / Copilot)
+### 🤖 18 AI Skills (Claude Code / Cursor / Copilot)
 
 - **Discovery**: `fin-idea-discovery` · `fin-generate-idea` · `fin-novelty-check` · `fin-lit-review`
 - **Design**: `fin-experiment-design` · `fin-data-acquisition`
