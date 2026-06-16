@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload compiled PDFs
         if: always() && steps.find_tex.outputs.HAS_TEX == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: latex-compile-pdfs
           path: |
