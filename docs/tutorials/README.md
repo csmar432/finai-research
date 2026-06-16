@@ -2,6 +2,20 @@
 
 > 从零开始掌握「论文-研报工作流」的完整使用路径。
 
+> **📌 Language note / 语言说明**
+>
+> 教程采用"**中文优先**"策略：
+> - **Tutorial 1 (快速入门)**: 全中文，是新手必读
+> - **Tutorial 2-5**: 主体英文（因示例代码含较多英文 API/库名，中英混杂影响可读性）
+>
+> 如需中文版本，请参考 [`使用指南.md`](../../使用指南.md) 的对应章节。如发现翻译错误或希望贡献中文版本，欢迎提 PR。
+>
+> Tutorials adopt a "**Chinese-first**" policy:
+> - **Tutorial 1 (Quickstart)**: Chinese only — required reading for new users
+> - **Tutorials 2-5**: English-dominant (because example code contains many English APIs; mixed CN/EN hurts readability)
+>
+> For Chinese versions, see [`使用指南.md`](../../使用指南.md). PRs welcome for any translation improvements.
+
 ---
 
 ## 教程目录

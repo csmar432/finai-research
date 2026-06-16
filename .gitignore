@@ -73,10 +73,44 @@ Thumbs.db
 # Env
 .env
 .env.local
+.env.*.local
+.env.production
+.env.development
+.env.staging
+.env.test
 # Local MCP server secrets
 mcp_servers/*/.env
 mcp_servers/*/.env.local
 mcp_servers/*/.cache
+
+# Secrets / keys / certificates (NEVER commit)
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.der
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+id_ecdsa
+id_ecdsa.*
+id_dsa
+id_dsa.*
+authorized_keys
+known_hosts
+.netrc
+.gnupg/
+.aws/credentials
+.gcp/credentials.json
+.azure/
+config.json
+secrets.json
+credentials.json
+service-account*.json
+gha-creds-*.json
 
 # LaTeX
 *.aux

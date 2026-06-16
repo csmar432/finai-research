@@ -97,7 +97,7 @@ def test_ollama_provider_sanitize_removes_api_keys():
         {
             "role": "user",
             "content": (
-                "Please process this with api_key=sk-1234567890abcdefghijklmnopqrstuvwxyz "
+                "Please process this with api_key=sk-test-DO-NOT-USE-IN-PRODUCTION-aaaaaaaaaaaaaaaaaaaa "
                 "and another key 'apiKey: abcdefghijklmnopqrstuvwxyz1234567890'"
             ),
         }
@@ -105,7 +105,7 @@ def test_ollama_provider_sanitize_removes_api_keys():
     sanitized = provider._sanitize_messages(messages)
     content = sanitized[0]["content"]
 
-    assert "sk-1234567890abcdefghijklmnopqrstuvwxyz" not in content
+    assert "sk-test-DO-NOT-USE-IN-PRODUCTION" not in content
     assert "abcdefghijklmnopqrstuvwxyz1234567890" not in content
     assert "[REDACTED API KEY]" in content
 

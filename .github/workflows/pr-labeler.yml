@@ -2,8 +2,18 @@
 # https://github.com/actions/labeler
 name: PR Labeler
 
+# SECURITY NOTE: This workflow previously used `pull_request_target`, which
+# executes in the base-branch context with write access to secrets. That
+# trigger has been a known attack vector (e.g. SolarWinds-style injection in
+# fork PRs). It is now restricted to events that fire only on trusted
+# branches: a regular `pull_request` (read-only) and `workflow_run` of the
+# trusted CI workflow (which already runs the PR tests).
 on:
-  - pull_request_target
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -12,6 +22,9 @@ permissions:
 jobs:
   labeler:
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request'
+      || (github.event.workflow_run.conclusion == 'success')
     steps:
       - uses: actions/labeler@v6
         with:
