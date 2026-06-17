@@ -260,6 +260,7 @@ tests/test_validate_econometrics.py
 
 # ── Local audit & development files ─────────────────────────────────────────
 AUDIT_2026-06-10.md
+docs/MANUAL_TASKS_RUNBOOK.md
 docs/adr/ADR-002-provenance-chain.md
 scripts/DEPRECATED.md
 scripts/benchmark_econometrics.py
