@@ -43,7 +43,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Wanfang MCP Server" \
       org.opencontainers.image.description="万方数据学术论文检索 — 网页爬虫实现，免费无需 Key" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-wanfang" \
       finresearch.mcp.api="Wanfang Web Scraping" \

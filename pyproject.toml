@@ -9,7 +9,8 @@ description = "经济金融领域 AI 学术研究工作流 — 论文写作（JF
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "FinAI Research Workflow Contributors"}
+    {name = "FinAI Research Workflow Maintainers"},
+    {name = "csmar432", email = "noreply@users.noreply.github.com"},
 ]
 keywords = [
     "academic-research",

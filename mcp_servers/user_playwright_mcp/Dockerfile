@@ -38,7 +38,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Playwright MCP Server" \
       org.opencontainers.image.description="浏览器自动化 MCP — 网页导航/截图/表格抓取/表单填写/JS执行/文件下载" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_playwright_mcp" \
       finresearch.mcp.api="API" \

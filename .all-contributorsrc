@@ -10,7 +10,22 @@
   "imageSize": 100,
   "commit": false,
   "commitConvention": "gitmoji",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "csmar432",
+      "name": "csmar432",
+      "avatar_url": "https://avatars.githubusercontent.com/u/csmar432",
+      "profile": "https://github.com/csmar432",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "research",
+        "test",
+        "review"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "badgeTemplate": "[![All Contributors](https://img.shields.io/github/all-contributors/csmar432/finai-research-workflow)](#contributors)",
   "contributorTemplate": "<a href=\"<%= contributor.profile %>\"><img src=\"<%= contributor.avatar_url %>\" width=\"<%= options.imageSize %>px;\" alt=\"\"/><br /><sub><b><%= contributor.name %></b></sub></a>",

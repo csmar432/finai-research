@@ -1,6 +1,6 @@
 {
   "title": "FinAI Research Workflow",
-  "description": "End-to-end AI agent pipeline for economic and financial academic research. Integrates 43 MCP data servers (academic papers, A-share data, US equities, macroeconomic indicators), 49 econometric methods (DID/IV/RDD/PSM/GMM and modern variants) at JF/JFE/RFS journal standard, 17 AI skills, and 70 journal templates (including top Chinese journals: 经济研究, 金融研究, 管理世界). Supports multi-agent debate for adversarial peer review. Distributed under MIT License.",
+  "description": "End-to-end AI agent pipeline for economic and financial academic research. Integrates 43 MCP data servers (academic papers, A-share data, US equities, macroeconomic indicators), 42 econometric methods (DID/IV/RDD/PSM/GMM and modern variants) at JF/JFE/RFS journal standard, 17 AI skills, and 45 journal templates (including top Chinese journals: 经济研究, 金融研究, 管理世界). Supports multi-agent debate for adversarial peer review. Distributed under MIT License.",
   "creators": [
     {
       "name": "FinAI Research Workflow Contributors"
