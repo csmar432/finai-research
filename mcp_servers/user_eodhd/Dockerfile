@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="EODHD MCP Server" \
       org.opencontainers.image.description="全球经济数据 MCP — 宏观经济指标、国债收益率曲线、经济日历" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_eodhd" \
       finresearch.mcp.api="API" \

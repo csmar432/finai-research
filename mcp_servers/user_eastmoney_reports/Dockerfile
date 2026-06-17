@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Eastmoney Reports MCP Server" \
       org.opencontainers.image.description="东方财富研报与宏观数据 — 券商研报摘要/宏观指标" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_eastmoney_reports" \
       finresearch.mcp.api="API" \

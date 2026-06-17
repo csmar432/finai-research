@@ -1,6 +1,10 @@
-# 论文-研报工作流 · FinResearch Agent
+# 论文-研报工作流 · FinAI Research Workflow
 
-> 经济金融领域 AI 学术研究工作流 — 从研究想法到可投稿论文。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。
+> **Tell me your research topic. Get a submittable paper.**
+>
+> An end-to-end AI agent pipeline for economic and financial research — from raw idea to submission-ready manuscript. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 45 journals, and adversarial review loops.
+
+![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -13,7 +17,7 @@
 [![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。详见 docs/PUBLISHING_GUIDE.md L197 -->
+<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。 -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
@@ -30,21 +34,39 @@
 
 | I'm looking for... | Go here |
 |---|---|
-| **🚀 发布 v1.0.0** | [docs/PUBLISHING_GUIDE.md](docs/PUBLISHING_GUIDE.md) · 45 分钟逐步操作 |
-| **📋 Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 53 项检查 |
-| **⚙️ 仓库设置建议** | [docs/REPOSITORY_SETUP.md](docs/REPOSITORY_SETUP.md) · 13 大类 |
-| **🔧 一键发布脚本** | [scripts/release.py](scripts/release.py) |
+| **🚀 发布 v1.0.0** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 项检查 + [releases/v1.0.0.md](releases/v1.0.0.md) |
+| **📋 Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 项检查 |
+| **🔧 一键发布脚本** | `python scripts/release.py` |
 | **🧭 交互式配置向导** | `python scripts/setup_wizard.py --guided` · 首次安装推荐 |
 | **🩺 系统自检** | `python scripts/health_check.py --json` · 验证环境就绪 |
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
 | **Chinese architecture overview** | [使用指南.md - 系统概览](使用指南.md#1-系统概览) |
 | **Setup & installation** | [使用指南.md - 安装配置](使用指南.md#2-安装配置) |
 | **11-step workflow** | [使用指南.md - 完整工作流程](使用指南.md#7-完整工作流程) |
-| **49 econometric methods** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
+| **42 econometric methods** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
 | **43 MCP data sources** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源) |
-| **18 AI Skills** | [knowledge/skills/](knowledge/skills/) |
-| **API reference** | [docs/api_reference.md](docs/api_reference.md) |
+| **17 AI Skills** | [knowledge/skills/](knowledge/skills/) |
+| **API reference** | [scripts/](scripts/) 目录下的每个模块都含 docstring 和类型注解 |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
+
+## 60-Second Demo
+
+```bash
+$ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+```
+
+![Quickstart](docs/assets/quickstart.svg)
+
+**From a one-line research question to a submission-ready LaTeX draft — in 6 minutes, for ~$0.20 in API costs.** All eight stages (idea generation → literature review → novelty check → empirical design → data acquisition → analysis → writing → adversarial review) run automatically with human-in-the-loop checkpoints.
+
+## Why FinAI Research Workflow?
+
+- **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 18 robustness checks, parallel-trend plots).
+- **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/CSMAR/Wind), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent.
+- **42 econometric methods, not just OLS** — modern staggered DiD (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH), synthetic control, instrumental variables, panel GMM, RDD, event studies, mediation, and more.
+- **45 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
+- **17 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
+- **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
 
 > **For Chinese users:** The most comprehensive guide is **[使用指南.md](使用指南.md)** — a complete 13-chapter manual covering installation, workflows, data sources, econometric methods, paper writing, and FAQ.
 
@@ -133,9 +155,9 @@ python scripts/demo_research_report.py
 ### What Works Cross-Platform
 
 - ✅ All `scripts/*.py` entry points
-- ✅ 44 MCP servers (pure Python stdlib)
+- ✅ 43 MCP servers (pure Python stdlib)
 - ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
-- ✅ 170 unit tests (CI matrix runs on Ubuntu + macOS + Windows)
+- ✅ 2,088 unit tests (CI matrix runs on Ubuntu + macOS + Windows)
 
 ### Known Cross-Platform Limitations
 
@@ -159,14 +181,14 @@ Describe your research in plain Chinese — the agent handles the rest:
 |-------|--------|
 | Literature Review | Citation graph + gap analysis (arXiv / NBER / OpenAlex / JF / JFE / RFS) |
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
-| Empirical Analysis | 42 econometric methods, automated robustness tests (19 types) |
+| Empirical Analysis | 42 econometric methods, automated robustness tests (18 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
 | Review Loop | Adversarial review until submission-ready |
 
 **Architecture overview:**
 
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
-*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 50 MCP Servers → 42 Econometric Methods → 20 Chart Types → LaTeX Paper*
+*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → 49 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
 > **Note:** Screenshots and demo videos coming soon. The project is actively maintained.
 
@@ -179,7 +201,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 - **Write academic papers** — From literature review to LaTeX submission (JF/JFE/RFS/经济研究/金融研究/管理世界)
 - **Generate research reports** — Institutional-grade financial analysis for A-shares and global markets
 - **Run empirical analysis** — DID, IV, PSM, Panel GMM with automated validation
-- **Access financial data** — A-shares, US stocks, macro indicators via 50 MCP data servers (most require no API key)
+- **Access financial data** — A-shares, US stocks, macro indicators via 43 MCP data servers (most require no API key)
 
 > Architecture principle: **Local LLM (Claude Code / Cursor) as the core, external AI as supplement.**
 
@@ -190,7 +212,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Feature | Description |
 |---------|-------------|
 | **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
-| **50 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
+| **43 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
 | **49+ Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
@@ -263,7 +285,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 50 MCP servers · 42 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks · 12 research directions
+**Key numbers:** 43 MCP servers · 42 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 18 robustness checks · 12 research directions
 
 ---
 
@@ -311,7 +333,7 @@ Each skill is documented in `.claude/skills/` (Claude Code) and `.github/skills/
 | `fin-experiment-design` | Complete empirical design | `modern_did.py`, `regression_engine.py` |
 | `fin-paper-writing` | Writing orchestration | `report_generator.py` |
 | `fin-paper-draft` | Body text generation (LaTeX) | `journal_template.py` |
-| `fin-paper-plan` | Outline generation | 70 journal templates |
+| `fin-paper-plan` | Outline generation | 45 journal templates |
 | `fin-paper-figure` | Chart generation (≥300 DPI) | `fin_charts.py`, `chart_factory.py` |
 | `fin-paper-convert` | LaTeX compilation | `xelatex`/`pdflatex` + journal templates |
 | `fin-review-loop` | Multi-round adversarial review | 5-dimension scoring |
@@ -466,3 +488,144 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 | **Testing** | pytest, ruff |
 | **Documentation** | MkDocs Material |
 | **Containerization** | Docker, Docker Compose |
+
+---
+
+## Architecture Diagrams
+
+### Pipeline DAG (8 Stages + 4 Human-in-the-Loop Checkpoints)
+
+```mermaid
+flowchart TD
+    Start([User inputs research topic]) --> S1[1. Idea Generation<br/>LLM + Lit Survey]
+    S1 -->|checkpoint 1| S2[2. Literature Review<br/>OpenAlex + ArXiv + Context7]
+    S2 -->|checkpoint 2| S3[3. Novelty Check<br/>2M+ papers search]
+    S3 -->|checkpoint 3| S4[4. Empirical Design<br/>DID/IV/RDD/PSM selector]
+    S4 --> S5[5. Data Acquisition<br/>43 MCP data sources]
+    S5 --> S6[6. Empirical Analysis<br/>Staggered DID, IV, GMM]
+    S6 --> S7[7. Paper Writing<br/>45 journal templates]
+    S7 --> S8[8. Adversarial Review<br/>4 rounds, score-based]
+    S8 -->|checkpoint 4| Done([Submission-ready PDF])
+
+    style S1 fill:#e94560,color:#fff
+    style S2 fill:#0f3460,color:#fff
+    style S3 fill:#16213e,color:#fff
+    style S4 fill:#533483,color:#fff
+    style S5 fill:#0f3460,color:#fff
+    style S6 fill:#16213e,color:#fff
+    style S7 fill:#e94560,color:#fff
+    style S8 fill:#533483,color:#fff
+    style Start fill:#1a1a2e,color:#fff
+    style Done fill:#1a1a2e,color:#fff
+```
+
+### MCP Data Source Selection (43 Sources with 4-Layer Fallback)
+
+```mermaid
+flowchart LR
+    Req[Data Request<br/>e.g. A-share ROA] --> Router{Smart Router}
+    Router --> Tier1[Tier 1<br/>CSMAR/Wind<br/>Highest quality]
+    Router -->|unavailable| Tier2[Tier 2<br/>Tushare<br/>+ patent data]
+    Router -->|no key| Tier3[Tier 3<br/>akshare<br/>Free, slower]
+    Router -->|no data| Tier4[Tier 4<br/>yfinance/synthetic<br/>Last resort]
+    Tier1 --> Cache[(Local Cache<br/>SQLite)]
+    Tier2 --> Cache
+    Tier3 --> Cache
+    Tier4 --> Cache
+    Cache --> Result[Validated Data +<br/>Provenance Hash]
+
+    style Tier1 fill:#28c840,color:#fff
+    style Tier2 fill:#febc2e,color:#000
+    style Tier3 fill:#0f3460,color:#fff
+    style Tier4 fill:#e94560,color:#fff
+    style Cache fill:#1a1a2e,color:#fff
+```
+
+### Modern DID Estimator Selection
+
+```mermaid
+flowchart TD
+    DID[DID with Staggered Treatment] --> Check{Never-treated<br/>available?}
+    Check -->|Yes| Q1{Heterogeneous<br/>effects suspected?}
+    Check -->|No| Q2{Continuous<br/>treatment?}
+    Q1 -->|Yes| CS[Callaway-Sant'Anna<br/>2021 - default]
+    Q1 -->|No| SA[Sun-Abraham<br/>2021]
+    Q1 -->|Wants imputation| BJJ[Borusyak-Jaravel-Spiess<br/>2024]
+    Q2 -->|Yes| ContDID[Continuous DID<br/>Callaway-DiTraglia 2024]
+    Q2 -->|No| Decompose[Bacon Decomposition<br/>diagnose TWFE bias]
+    CS --> Synth[Synthetic DiD<br/>Arkhangelsky 2021]
+    SA --> Synth
+    BJJ --> Synth
+
+    style CS fill:#e94560,color:#fff
+    style SA fill:#0f3460,color:#fff
+    style BJJ fill:#533483,color:#fff
+    style Synth fill:#16213e,color:#fff
+    style Decompose fill:#16213e,color:#fff
+    style ContDID fill:#0f3460,color:#fff
+```
+
+---
+
+## Comparison with Existing Tools
+
+| Feature | **FinAI Research Workflow** | [StatsPAI](https://github.com/brycewang-stanford/StatsPAI) | [PaperOrchestra](https://github.com/google-research/paper-orchestra) | [E2ER-project](https://github.com/bhanneke/E2ER-project) | [dowhy](https://github.com/py-why/dowhy) |
+|---|---|---|---|---|---|
+| **Focus** | Economic & financial research papers | Causal inference toolkit | Multi-agent paper writing | End-to-end empirical papers | Industrial causal inference |
+| **Data sources** | 43 MCP servers | None (data import only) | None | 3 (yfinance/FRED/Allium) | None |
+| **Econometric methods** | 42 (modern DiD focus) | 550+ (general) | 0 | Limited | 0 (general framework) |
+| **Journal templates** | 45 (incl. 6 Chinese top) | 0 | 1 (NeurIPS-style) | 1 (LaTeX generic) | 0 |
+| **Chinese data integration** | ✅ (Tushare/CSMAR/Wind/CNRDS) | ❌ | ❌ | ❌ | ❌ |
+| **Human-in-the-loop** | ✅ (4 checkpoints) | ❌ | Partial | ❌ | ❌ |
+| **Adversarial review** | ✅ (4 rounds) | ❌ | ✅ (single pass) | ✅ (1 round) | ❌ |
+| **Skill system** | 17 specialised Skills | Agent-native functions | Agents | Pipeline | N/A |
+| **License** | MIT | MIT | Apache 2.0 | MIT | MIT |
+| **Best for** | Economists writing JF/经济研究 | Causal inference devs | AI researchers | Quick empirical demos | Production ML |
+
+---
+
+## Maintainer
+
+This project is maintained by **[@csmar432](https://github.com/csmar432)**.
+
+- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
+- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research-workflow/discussions)
+- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
+- 💖 **Sponsor / support**: [GitHub Sponsors](https://github.com/sponsors/csmar432) · [爱发电](https://afdian.net/a/finresearch)
+
+> Contributions of all sizes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+
+## Star History
+
+If this project helps your research, **give it a ⭐** — it tells other economists the project is worth their time.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research-workflow&type=Date)](https://star-history.com/#csmar432/finai-research-workflow&Date)
+
+## Cite This Work
+
+If you use FinAI Research Workflow in published research, please cite it as:
+
+```bibtex
+@software{finai2026,
+  title  = {FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research},
+  author = {csmar432},
+  year   = {2026},
+  month  = jun,
+  url    = {https://github.com/csmar432/finai-research-workflow},
+  doi    = {10.5281/zenodo.PENDING}
+}
+```
+
+## Related Projects
+
+- [**dowhy**](https://github.com/py-why/dowhy) — causal inference library (8.1K ⭐)
+- [**StatsPAI**](https://github.com/brycewang-stanford/StatsPAI) — agent-native causal inference toolkit (50 ⭐)
+- [**moderndid**](https://github.com/jordandeklerk/moderndid) — GPU-accelerated modern DiD
+- [**diff-diff**](https://github.com/igerber/diff-diff) — sklearn-like DiD in Python
+- [**PaperOrchestra**](https://github.com/google-research/paper-orchestra) — Google's multi-agent paper writing (58 ⭐)
+- [**E2ER-project**](https://github.com/bhanneke/E2ER-project) — end-to-end empirical research pipeline
+- [**econ-paper-studio**](https://github.com/gaaiyun/econ-paper-studio) — agent-native CLI for empirical economics
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for the full text.

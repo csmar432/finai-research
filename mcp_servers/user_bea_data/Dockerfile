@@ -40,7 +40,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="BEA MCP Server" \
       org.opencontainers.image.description="美国经济分析局数据（GDP/GDI/NIPA/行业，需免费注册API Key）" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_bea_data" \
       finresearch.mcp.api="API" \

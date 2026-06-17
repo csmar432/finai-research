@@ -26,13 +26,17 @@ keywords:
   - causal-inference
   - panel-data
 authors:
-  - name: "FinAI Research Workflow Contributors"
-    email: "xuzheyi@users.noreply.github.com"
+  - family-names: csmar432
+    given-names: ""
+    affiliation: "FinAI Research Workflow"
+    email: "noreply@users.noreply.github.com"
+    orcid: "https://github.com/csmar432"
 preferred-citation:
   type: article
   title: "FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research"
   authors:
-    - name: "FinAI Research Workflow Contributors"
+    - family-names: csmar432
+      affiliation: "FinAI Research Workflow"
   journal: "GitHub"
   year: 2026
   month: 6
@@ -44,9 +48,9 @@ abstract: |
   acquisition, to LaTeX paper writing and submission-ready formatting.
   The system integrates 43 Model Context Protocol (MCP) data servers covering
   academic papers, A-share data, US equities, macroeconomic indicators, and
-  alternative data; 49 econometric methods (DID/IV/RDD/PSM/GMM and modern
+  alternative data; 42 econometric methods (DID/IV/RDD/PSM/GMM and modern
   variants) at JF/JFE/RFS journal standard; 17 specialized AI skills; and
-  70 journal templates (including top Chinese journals: 经济研究, 金融研究,
+  45 journal templates (including top Chinese journals: 经济研究, 金融研究,
   管理世界). The pipeline enforces Human-in-the-Loop (HITL) checkpoints
   with full data provenance tracking, and supports multi-agent debate
   for adversarial peer review. Distributed under MIT License.

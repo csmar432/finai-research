@@ -288,7 +288,7 @@ output/                           # 输出目录
 | `CLAUDE.md` | Claude Code（主要）/ Cursor / Codex | 项目主入口 |
 | `.claude/` | Claude Code | 命令 + 技能文档 |
 | `.cursor/rules/` | Cursor | 角色规则（analyst/paper_writer/researcher/mcp_tools/system-init）|
-| `.cursor/skills/` | Cursor | 18 个 Skill 文件（原生 Skill 系统）|
+| `.cursor/skills/` | Cursor | 17 个 Skill 文件（原生 Skill 系统）|
 | `.cursor/agents/` | Cursor | Agent 指令（literature-scout）|
 | `.github/copilot-instructions.md` | GitHub Copilot | Copilot 指令文件 |
 | `knowledge/skills/` | Claude Code / Copilot | 18 个技能文档（真相源，目录副本到 .claude/skills/ 和 .github/skills/）|

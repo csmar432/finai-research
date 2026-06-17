@@ -41,7 +41,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="SIPO Patent MCP Server" \
       org.opencontainers.image.description="国家知识产权局专利数据。基本信息/法律状态/引文/质押/许可/转让/诉讼。" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-sipo" \
       finresearch.mcp.api="CNIPA Patent Query API" \

@@ -42,7 +42,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="CNRDS MCP Server" \
       org.opencontainers.image.description="中国研究数据服务平台。专利/学术论文/上市公司财务/高企认定数据。" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-cnrd" \
       finresearch.mcp.api="CNRDS API" \

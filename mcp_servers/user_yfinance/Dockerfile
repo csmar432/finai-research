@@ -38,7 +38,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Yahoo Finance MCP Server" \
       org.opencontainers.image.description="美股/港股数据（基于 Yahoo Finance），支持股票行情/历史价格/财务报表/期权/ETF" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_yfinance" \
       finresearch.mcp.api="API" \

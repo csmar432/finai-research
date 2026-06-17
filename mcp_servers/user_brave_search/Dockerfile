@@ -42,7 +42,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Brave Search MCP Server" \
       org.opencontainers.image.description="Brave Search 网络搜索服务。需 BRAVE_SEARCH_API_KEY（免费注册）。" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-brave-search" \
       finresearch.mcp.api="Brave Search API" \

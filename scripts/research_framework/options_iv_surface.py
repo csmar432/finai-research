@@ -1018,9 +1018,9 @@ class IVSurfaceModel:
             "  \\end{tabular}",
             "  \\begin{tablenotes}",
             "    \\small",
-            "    \\item \\textit{Notes:} ATM = at-the-money (K=S). "
+            f"    \\item \\textit{{Notes:}} ATM = at-the-money (K=S). "
             "Skew = IV(K/S=0.95) $-$ IV(K/S=1.00) for put skew. "
-            f"Spot = {spot:.2f}, r = {r:.2f}\\%.".format(spot=spot, r=r),
+            f"Spot = {spot:.2f}, r = {r:.2f}\\%.",
             "  \\end{tablenotes}",
             "  \\end{threeparttable}",
             "\\end{table}",

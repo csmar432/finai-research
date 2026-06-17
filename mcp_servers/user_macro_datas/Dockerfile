@@ -38,7 +38,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="MacroDatas MCP Server" \
       org.opencontainers.image.description="马克数据网 + 科技部公报数据指引 — 含R&D/科技/产业/教育面板数据" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_macro_datas" \
       finresearch.mcp.api="API" \

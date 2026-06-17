@@ -41,7 +41,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Chinese Customs MCP Server" \
       org.opencontainers.image.description="中国海关进出口数据。按HS编码/贸易伙伴/省份/企业性质获取进出口金额与数量。" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-chinese-customs" \
       finresearch.mcp.api="China Customs Statistics API" \

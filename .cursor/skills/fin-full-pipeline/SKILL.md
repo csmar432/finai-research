@@ -66,8 +66,8 @@ argument-hint: "[research-direction]"
 ### 系统准备（每次启动必须执行）
 
 ```bash
-# 检查环境并初始化输出目录
-PROJECT_DIR="/Users/xuzheyi/Desktop/论文-研报工作流"
+# 检查环境并初始化输出目录（PROJECT_DIR 自动取当前目录）
+PROJECT_DIR="$(pwd)"
 cd "$PROJECT_DIR" || exit 1
 
 # 创建所有输出目录
@@ -715,8 +715,8 @@ Skill: fin-paper-draft
 **执行前准备：**
 
 ```bash
-# 创建 LaTeX 目录结构
-PROJECT_DIR="/Users/xuzheyi/Desktop/论文-研报工作流"
+# 创建 LaTeX 目录结构（PROJECT_DIR 自动取当前目录）
+PROJECT_DIR="$(pwd)"
 DRAFT_DIR="$PROJECT_DIR/output/fin-manuscript/draft_v1"
 mkdir -p "$DRAFT_DIR/figures" "$DRAFT_DIR/tables" "$DRAFT_DIR/scripts"
 ```
@@ -808,7 +808,7 @@ Skill: fin-review-loop
 **编译脚本：**
 
 ```bash
-PROJECT_DIR="/Users/xuzheyi/Desktop/论文-研报工作流"
+PROJECT_DIR="$(pwd)"
 DRAFT_DIR="$PROJECT_DIR/output/fin-manuscript/draft_v1"
 cd "$DRAFT_DIR"
 
