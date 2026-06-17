@@ -1140,9 +1140,8 @@ class AShareVariableFetcher:
                 "ESG data unavailable.\n"
                 "  Options:\n"
                 "  (1) Use data/msci_esg_ratings.json (50 stocks already loaded)\n"
-                "  (2) Run: python scripts/fetch_msci_xu.py --update\n"
-                "  (3) Implement user-esg MCP server calling Sina MSCI API\n"
-                "  (4) For Chinese ESG: 商道融绿 (Syntao) or 中证ESG数据"
+                "  (2) Implement user-esg MCP server calling Sina MSCI API\n"
+                "  (3) For Chinese ESG: 商道融绿 (Syntao) or 中证ESG数据"
             ),
         )
 

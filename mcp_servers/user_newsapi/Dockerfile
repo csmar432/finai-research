@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="NewsAPI MCP Server" \
       org.opencontainers.image.description="财经新闻聚合（基于 NewsAPI，支持检索全球财经新闻，免费tier每月100次）" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_newsapi" \
       finresearch.mcp.api="API" \

@@ -38,7 +38,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="LaTeX MCP Server" \
       org.opencontainers.image.description="LaTeX 论文写作工具链 — 编译 PDF、语法检查、公式渲染、BibTeX 检查" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_latex_mcp" \
       finresearch.mcp.api="API" \

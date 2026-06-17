@@ -1,0 +1,95 @@
+name: 'FinAI Paper Quality Check'
+description: 'Run FinAI Research Workflow quality checks on a draft paper'
+author: 'csmar432'
+
+branding:
+  icon: 'book'
+  color: 'blue'
+
+inputs:
+  draft-path:
+    description: 'Path to the LaTeX draft (relative to repo root)'
+    required: true
+    default: 'draft.tex'
+  refined-design-path:
+    description: 'Path to REFINED_DESIGN.md'
+    required: false
+    default: 'REFINED_DESIGN.md'
+  empirical-results-path:
+    description: 'Path to EMPIRICAL_RESULTS.md'
+    required: false
+    default: 'EMPIRICAL_RESULTS.md'
+  strict:
+    description: 'Fail on warnings (not just errors)'
+    required: false
+    default: 'false'
+
+outputs:
+  score:
+    description: 'Overall quality score (0-5)'
+  issues:
+    description: 'JSON array of issues found'
+  passed:
+    description: 'Whether the draft passed all checks'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install FinAI Research Workflow
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        pip install finai-research-workflow
+
+    - name: Run quality checks
+      id: check
+      shell: bash
+      run: |
+        finai check \
+          --draft "${{ inputs.draft-path }}" \
+          --refined-design "${{ inputs.refined-design-path }}" \
+          --empirical-results "${{ inputs.empirical-results-path }}" \
+          --strict ${{ inputs.strict }} \
+          --json > check-results.json
+
+        SCORE=$(jq -r '.score' check-results.json)
+        PASSED=$(jq -r '.passed' check-results.json)
+        ISSUES=$(jq -c '.issues' check-results.json)
+
+        echo "score=$SCORE" >> "$GITHUB_OUTPUT"
+        echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+        echo "issues=$ISSUES" >> "$GITHUB_OUTPUT"
+
+    - name: Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const results = JSON.parse(fs.readFileSync('check-results.json', 'utf8'));
+          const score = results.score;
+          const passed = results.passed;
+          const issues = results.issues;
+
+          const emoji = passed ? '✅' : '❌';
+          const body = [
+            `## ${emoji} FinAI Paper Quality Check`,
+            ``,
+            `**Score**: ${score.toFixed(2)}/5.0`,
+            `**Status**: ${passed ? 'PASSED' : 'FAILED'}`,
+            ``,
+            `### Issues (${issues.length})`,
+            ...issues.slice(0, 20).map(i => `- ${i.severity}: ${i.message}`),
+          ].join('\n');
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.owner,
+            repo: context.repo,
+            body: body
+          });

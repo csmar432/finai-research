@@ -41,7 +41,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Third-Party ESG MCP Server" \
       org.opencontainers.image.description="第三方ESG评级。整合SynTao/CSI/中证ESG/富时ESG，覆盖评分、评级、争议事件。" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user-third-party-esg" \
       finresearch.mcp.api="SynTao/CSI/CSI-ESG/FTSE ESG APIs" \

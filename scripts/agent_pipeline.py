@@ -1195,14 +1195,14 @@ class AgentPipeline:
         if not _CHECKPOINT_AVAILABLE or self.checkpoint_manager is None:
             return ""
         try:
-            checkpoint = PipelineCheckpoint(
+            PipelineCheckpoint(
                 pipeline_id=self.pipeline_id,
                 pipeline_name="paper_pipeline",
-                stage=stage_name,
                 timestamp=time.time(),
                 context=context,
                 completed_stage_index=-1,
                 completed_stages=[],
+                metadata={"last_stage": stage_name},
             )
             cp_id = self.checkpoint_manager.save(
                 pipeline_id=self.pipeline_id,
@@ -1702,6 +1702,7 @@ class AgentPipeline:
                     result.auto_review_reports["refinement"] = arr
 
         # ── DID Chart Auto-generation ─────────────────────────────────────────────
+        return result
 
     def _auto_generate_did_charts(
         self,

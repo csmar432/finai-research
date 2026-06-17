@@ -40,7 +40,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="CEIC Macro MCP Server" \
       org.opencontainers.image.description="CEIC经济数据库风格（数据来自akshare/World Bank API，数据为演示性质）" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_macro_ceic" \
       finresearch.mcp.api="API" \

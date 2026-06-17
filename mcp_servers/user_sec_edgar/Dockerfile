@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="SEC EDGAR MCP Server" \
       org.opencontainers.image.description="美国SEC EDGAR公告获取（10-K年报/10-Q季报/8-K重大事件/DEF14A委托声明）" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_sec_edgar" \
       finresearch.mcp.api="API" \

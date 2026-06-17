@@ -6,7 +6,7 @@
 
 ```
 knowledge/
-├── skills/              # 技能文档真相源（18个技能）
+├── skills/              # 技能文档真相源（17个技能）
 │   ├── fin-full-pipeline.md
 │   ├── fin-idea-discovery.md
 │   ├── fin-lit-review.md
