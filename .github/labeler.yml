@@ -1,83 +1,94 @@
 # .github/labeler.yml
-# Schema: actions/labeler v5 (each label value MUST be an array of config objects)
-# Docs: https://github.com/actions/labeler
+# Schema: actions/labeler v5/v6 (https://github.com/actions/labeler)
 #
-# v4 → v5 breaking change: the simple `label: [glob, glob]` form is no longer
-# accepted. Each entry must be an object with at least one of:
-#   - changed-files    (glob list)
-#   - base-branches    (branch list)
-#   - headings         (PR title regex)
-#   - title-glob       (PR title glob)
-#   - description-glob (PR body glob)
-# Glob behaviour is the same (default = match changed-files).
+# v4 → v5 breaking change: each label value MUST be an array of config
+# objects, and glob lists must be wrapped in `any-glob-to-any-file`:
+#
+#   label-name:
+#     - changed-files:
+#         - any-glob-to-any-file: ['glob1', 'glob2']
+#
+# Migration from previous file: only the wrapper changed. Glob behaviour
+# is identical (default = any-glob-to-any-file, which is the v4 semantics).
 
 # ── 代码 ──────────────────────────────────────────────────────────
 code:
   - changed-files:
-      - scripts/**
-      - mcp_servers/**/server.py
+      - any-glob-to-any-file:
+          - scripts/**
+          - mcp_servers/**/server.py
 
 tests:
   - changed-files:
-      - tests/**
+      - any-glob-to-any-file:
+          - tests/**
 
 ci:
   - changed-files:
-      - .github/workflows/**
-      - .github/labeler.yml
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/labeler.yml
 
 # ── 文档 ──────────────────────────────────────────────────────────
 docs:
   - changed-files:
-      - docs/**
-      - "**/*.md"
-      - "**/*.rst"
+      - any-glob-to-any-file:
+          - docs/**
+          - "**/*.md"
+          - "**/*.rst"
 
 # ── 论文/研报 ─────────────────────────────────────────────────────
 paper:
   - changed-files:
-      - "**/*.tex"
-      - "**/*.bib"
+      - any-glob-to-any-file:
+          - "**/*.tex"
+          - "**/*.bib"
 
 output:
   - changed-files:
-      - output/**
+      - any-glob-to-any-file:
+          - output/**
 
 # ── 配置 ──────────────────────────────────────────────────────────
 config:
   - changed-files:
-      - "**/*.json"
-      - "**/*.yml"
-      - "**/*.yaml"
-      - "**/*.toml"
-      - "**/*.ini"
-      - ".env.example"
-      - "pyproject.toml"
+      - any-glob-to-any-file:
+          - "**/*.json"
+          - "**/*.yml"
+          - "**/*.yaml"
+          - "**/*.toml"
+          - "**/*.ini"
+          - ".env.example"
+          - pyproject.toml
 
 # ── 依赖 ──────────────────────────────────────────────────────────
 dependencies:
   - changed-files:
-      - "**/requirements*.txt"
-      - "**/pyproject.toml"
-      - "**/uv.lock"
-      - "**/poetry.lock"
+      - any-glob-to-any-file:
+          - "**/requirements*.txt"
+          - "**/pyproject.toml"
+          - "**/uv.lock"
+          - "**/poetry.lock"
 
 # ── 数据 (一般不进 git, 但偶尔有 schema/seed) ─────────────────────
 data:
   - changed-files:
-      - data/**
-      - "**/*.csv"
-      - "**/*.parquet"
-      - "**/*.xlsx"
+      - any-glob-to-any-file:
+          - data/**
+          - "**/*.csv"
+          - "**/*.parquet"
+          - "**/*.xlsx"
 
 # ── Skills / Knowledge ───────────────────────────────────────────
 skills:
   - changed-files:
-      - knowledge/skills/**
-      - .claude/commands/**
-      - .claude/skills/**
+      - any-glob-to-any-file:
+          - knowledge/skills/**
+          - .claude/commands/**
+          - .claude/skills/**
 
 # ── 特殊分类 ──────────────────────────────────────────────────────
 mcp:
   - changed-files:
-      - mcp_servers/**
+      - any-glob-to-any-file:
+          - mcp_servers/**

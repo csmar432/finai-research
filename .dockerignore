@@ -49,7 +49,10 @@ Thumbs.db
 .github/
 
 # 6) 大型数据 / 数据库 (mcp_diagnostic 默认 250MB+ 不应在镜像中)
-data/
+# 重要: 用 data/* 而非 data/，否则否定规则 !data/.gitkeep 不生效
+# (Docker 文档: 否定模式仅在父目录未被排除时生效)
+data/*
+!data/.gitkeep
 *.db
 *.sqlite
 *.sqlite3
