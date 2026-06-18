@@ -111,6 +111,31 @@ class RegressionEngine:
         self._results: list[dict] = []
         self._warnings: list[str] = []
 
+        # ── P2-QUAL-2: Simulated data integrity check ──────────────────────
+        # Scan df.attrs or columns metadata for is_simulated=True flags.
+        # If any simulated variable is present, log a clear warning so the
+        # user is aware that downstream regressions may use synthetic data.
+        # This is a research-integrity guardrail: simulated results should
+        # never be silently passed off as real empirical findings.
+        try:
+            df_meta = getattr(df, "attrs", {}) or {}
+            is_simulated = bool(df_meta.get("is_simulated", False))
+            simulated_vars = list(df_meta.get("simulated_vars", []))
+            if is_simulated or simulated_vars:
+                msg = (
+                    "[RegressionEngine] WARNING: dataframe contains "
+                    f"{len(simulated_vars)} simulated variable(s): "
+                    f"{simulated_vars[:5]}"
+                    + (" ..." if len(simulated_vars) > 5 else "")
+                    + ". Downstream regression results MUST NOT be reported "
+                    "as empirical findings. See DISCLAIMER in report_generator.py."
+                )
+                _log.warning(msg)
+                self._warnings.append(msg)
+        except Exception:
+            # Never block regression on meta-check failure
+            pass
+
     # ─────────────────────────────────────
     # DEGREES OF FREEDOM CHECK
     # ─────────────────────────────────────

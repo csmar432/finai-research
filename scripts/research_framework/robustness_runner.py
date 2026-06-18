@@ -251,6 +251,24 @@ class RobustnessRunner:
         self._pending_tests: list[tuple[str, dict]] = []
         self._report: RobustnessReport | None = None
 
+        # ── P2-QUAL-2: Simulated data integrity check ──────────────────────
+        # Mirror RegressionEngine's safeguard: if df.attrs flags simulated
+        # variables, emit a loud warning. Robustness results on synthetic
+        # data must not be used as empirical evidence.
+        try:
+            df_meta = getattr(df, "attrs", {}) or {}
+            is_simulated = bool(df_meta.get("is_simulated", False))
+            simulated_vars = list(df_meta.get("simulated_vars", []))
+            if is_simulated or simulated_vars:
+                msg = (
+                    "[RobustnessRunner] WARNING: input dataframe contains "
+                    f"{len(simulated_vars)} simulated variable(s). "
+                    "Robustness checks on synthetic data are demonstration only."
+                )
+                _log.warning(msg)
+        except Exception:
+            pass
+
     def add_test(
         self,
         test_name: str,
@@ -531,22 +549,104 @@ class RobustnessRunner:
         return (np.nan, np.nan, 1.0)
 
     def _test_iv(self, config: dict) -> RobustnessTest:
-        """工具变量检验。"""
-        return RobustnessTest(
-            test_name="IV Robustness",
-            test_type="Instrumental Variable",
-            did_coef=np.nan, did_se=np.nan, did_pval=1.0,
-            note="use IVPanel from iv_panel.py",
+        """工具变量检验：委托 IVPanel 执行 2SLS。
+
+        Falls back to NaN (with informative note) if IVPanel is unavailable
+        or the data lacks an instrument column.
+        """
+        # Look for an instrument column in df (common conventions: iv, instrument, z, excluded)
+        iv_candidates = ["iv", "instrument", "z", "excluded_iv", "instrument_var"]
+        iv_col = next(
+            (c for c in iv_candidates if c in self.df.columns),
+            config.get("iv_var"),
         )
+        if iv_col is None or iv_col not in self.df.columns:
+            return RobustnessTest(
+                test_name="IV Robustness",
+                test_type="Instrumental Variable",
+                did_coef=np.nan, did_se=np.nan, did_pval=1.0,
+                note="No instrument column found (looked for: iv, instrument, z, excluded_iv)",
+            )
+        try:
+            from scripts.research_framework.iv_panel import IVPanel
+            iv_engine = IVPanel(
+                df=self.df,
+                y_var=self.y_var,
+                treat_var=self.treat_var,
+                instrument_var=iv_col,
+                x_vars=self.x_vars,
+                unit_var=self.unit_var,
+                time_var=self.time_var,
+                cluster_var=self.unit_var,
+            )
+            iv_result = iv_engine.fit(method="2sls")
+            coef = float(getattr(iv_result, "coef", np.nan))
+            se = float(getattr(iv_result, "se", np.nan))
+            pval = float(getattr(iv_result, "pval", 1.0))
+            if not np.isfinite(coef):
+                raise ValueError("IVPanel returned non-finite coefficient")
+            return RobustnessTest(
+                test_name="IV Robustness (2SLS)",
+                test_type="Instrumental Variable",
+                did_coef=coef, did_se=se, did_pval=pval,
+                is_consistent=(coef * self.baseline_result.get("coef", 0) > 0),
+                is_significant=(pval < 0.05),
+                note=f"iv_col={iv_col}",
+            )
+        except Exception as exc:
+            return RobustnessTest(
+                test_name="IV Robustness",
+                test_type="Instrumental Variable",
+                did_coef=np.nan, did_se=np.nan, did_pval=1.0,
+                note=f"IVPanel failed: {type(exc).__name__}: {exc}",
+            )
 
     def _test_wild_bootstrap(self, config: dict) -> RobustnessTest:
-        """Wild Cluster Bootstrap。"""
-        return RobustnessTest(
-            test_name="Wild Bootstrap",
-            test_type="Wild Cluster Bootstrap",
-            did_coef=np.nan, did_se=np.nan, did_pval=1.0,
-            note="use ModernDiDEngine.wild_bootstrap()",
-        )
+        """Wild Cluster Bootstrap：委托 ModernDiDEngine.wild_bootstrap()。
+
+        Falls back to NaN with informative note if engine is unavailable,
+        no cluster_var is set, or the underlying TWFE fit fails.
+        """
+        B = int(config.get("B", 999))
+        seed = int(config.get("seed", 42))
+        bootstrap_type = config.get("bootstrap_type", "rademacher")
+        cluster_var = config.get("cluster_var", self.unit_var)
+        try:
+            from scripts.research_framework.modern_did import ModernDiDEngine
+            engine = ModernDiDEngine(
+                df=self.df,
+                y_var=self.y_var,
+                treat_var=self.treat_var,
+                time_var=self.time_var,
+                unit_var=self.unit_var,
+                cluster_var=cluster_var,
+            )
+            # fit() is the entry point; pass df explicitly per signature
+            engine.fit(df=self.df, y=self.y_var, treat=self.treat_var,
+                       post=self.time_var, cluster=cluster_var)
+            boot = engine.wild_bootstrap(
+                cluster_var=cluster_var, B=B, bootstrap_type=bootstrap_type
+            )
+            coef = float(boot.get("coef", np.nan))
+            se = float(boot.get("se", np.nan))
+            pval = float(boot.get("pval", 1.0))
+            if not np.isfinite(coef):
+                raise ValueError(f"Wild bootstrap returned non-finite coefficient: {boot}")
+            return RobustnessTest(
+                test_name=f"Wild Bootstrap (B={B})",
+                test_type="Wild Cluster Bootstrap",
+                did_coef=coef, did_se=se, did_pval=pval,
+                is_consistent=(coef * self.baseline_result.get("coef", 0) > 0),
+                is_significant=(pval < 0.05),
+                note=f"bootstrap_type={bootstrap_type}, cluster={cluster_var}",
+            )
+        except Exception as exc:
+            return RobustnessTest(
+                test_name="Wild Bootstrap",
+                test_type="Wild Cluster Bootstrap",
+                did_coef=np.nan, did_se=np.nan, did_pval=1.0,
+                note=f"ModernDiDEngine.wild_bootstrap failed: {type(exc).__name__}: {exc}",
+            )
 
     def _test_sub_sample(
         self,
