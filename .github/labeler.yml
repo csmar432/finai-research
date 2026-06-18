@@ -1,83 +1,53 @@
-# .github/labeler.yml
-# Schema: actions/labeler v5 (each label value MUST be an array of config objects)
-# Docs: https://github.com/actions/labeler
-#
-# v4 → v5 breaking change: the simple `label: [glob, glob]` form is no longer
-# accepted. Each entry must be an object with at least one of:
-#   - changed-files    (glob list)
-#   - base-branches    (branch list)
-#   - headings         (PR title regex)
-#   - title-glob       (PR title glob)
-#   - description-glob (PR body glob)
-# Glob behaviour is the same (default = match changed-files).
-
-# ── 代码 ──────────────────────────────────────────────────────────
 code:
-  - changed-files:
-      - scripts/**
-      - mcp_servers/**/server.py
-
+- changed-files:
+  - any-glob-to-any-file:
+    - scripts/**
+    - mcp_servers/**/server.py
 tests:
-  - changed-files:
-      - tests/**
-
+- changed-files:
+  - tests/**
 ci:
-  - changed-files:
-      - .github/workflows/**
-      - .github/labeler.yml
-
-# ── 文档 ──────────────────────────────────────────────────────────
+- changed-files:
+  - .github/workflows/**
+  - .github/labeler.yml
 docs:
-  - changed-files:
-      - docs/**
-      - "**/*.md"
-      - "**/*.rst"
-
-# ── 论文/研报 ─────────────────────────────────────────────────────
+- changed-files:
+  - docs/**
+  - '**/*.md'
+  - '**/*.rst'
 paper:
-  - changed-files:
-      - "**/*.tex"
-      - "**/*.bib"
-
+- changed-files:
+  - '**/*.tex'
+  - '**/*.bib'
 output:
-  - changed-files:
-      - output/**
-
-# ── 配置 ──────────────────────────────────────────────────────────
+- changed-files:
+  - output/**
 config:
-  - changed-files:
-      - "**/*.json"
-      - "**/*.yml"
-      - "**/*.yaml"
-      - "**/*.toml"
-      - "**/*.ini"
-      - ".env.example"
-      - "pyproject.toml"
-
-# ── 依赖 ──────────────────────────────────────────────────────────
+- changed-files:
+  - '**/*.json'
+  - '**/*.yml'
+  - '**/*.yaml'
+  - '**/*.toml'
+  - '**/*.ini'
+  - .env.example
+  - pyproject.toml
 dependencies:
-  - changed-files:
-      - "**/requirements*.txt"
-      - "**/pyproject.toml"
-      - "**/uv.lock"
-      - "**/poetry.lock"
-
-# ── 数据 (一般不进 git, 但偶尔有 schema/seed) ─────────────────────
+- changed-files:
+  - '**/requirements*.txt'
+  - '**/pyproject.toml'
+  - '**/uv.lock'
+  - '**/poetry.lock'
 data:
-  - changed-files:
-      - data/**
-      - "**/*.csv"
-      - "**/*.parquet"
-      - "**/*.xlsx"
-
-# ── Skills / Knowledge ───────────────────────────────────────────
+- changed-files:
+  - data/**
+  - '**/*.csv'
+  - '**/*.parquet'
+  - '**/*.xlsx'
 skills:
-  - changed-files:
-      - knowledge/skills/**
-      - .claude/commands/**
-      - .claude/skills/**
-
-# ── 特殊分类 ──────────────────────────────────────────────────────
+- changed-files:
+  - knowledge/skills/**
+  - .claude/commands/**
+  - .claude/skills/**
 mcp:
-  - changed-files:
-      - mcp_servers/**
+- changed-files:
+  - mcp_servers/**
