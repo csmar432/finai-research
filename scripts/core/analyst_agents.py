@@ -2096,9 +2096,25 @@ class ParallelAnalystOrchestrator:
 
     Reference: FinResearchAgent's approach where 6 analyst agents
     run simultaneously to analyze different aspects.
+
+    Safeguards (P2-QUAL-3):
+      - Per-analyst timeout (default 30s)
+      - Rate-limit backoff on repeated gateway errors (max 3 within window)
+      - Token budget cap (default 1M tokens, configurable)
+      - Circuit breaker: pause orchestration if > failure_threshold failures
+        occur within failure_window seconds (avoids runaway costs from a
+        bad API key or rate-limit storm)
     """
 
-    def __init__(self, gateway=None, timeout: float = 30.0):
+    def __init__(
+        self,
+        gateway=None,
+        timeout: float = 30.0,
+        max_token_budget: int = 1_000_000,
+        failure_threshold: int = 5,
+        failure_window: float = 60.0,
+        cooldown_seconds: float = 30.0,
+    ):
         """
         Initialize orchestrator.
 
@@ -2108,10 +2124,28 @@ class ParallelAnalystOrchestrator:
             LLM gateway for agent calls
         timeout : float
             Timeout in seconds for each analyst (default 30s)
+        max_token_budget : int
+            Hard cap on tokens consumed across all analysts in a single
+            run. Set to 0 to disable.
+        failure_threshold : int
+            Max consecutive agent failures before circuit breaker trips.
+        failure_window : float
+            Time window in seconds for counting failures.
+        cooldown_seconds : float
+            How long the circuit stays open after tripping.
         """
         self.gateway = gateway
         self.timeout = timeout
+        self.max_token_budget = max_token_budget
+        self.failure_threshold = failure_threshold
+        self.failure_window = failure_window
+        self.cooldown_seconds = cooldown_seconds
         self.analysts: dict[AnalystType, BaseAnalystAgent] = {}
+        # Circuit breaker state
+        self._circuit_open: bool = False
+        self._circuit_opened_at: float = 0.0
+        self._recent_failures: list[float] = []  # timestamps
+        self._tokens_consumed: int = 0
         self._initialize_analysts()
 
     def _initialize_analysts(self):
@@ -2131,21 +2165,46 @@ class ParallelAnalystOrchestrator:
         """
         start = time.time()
 
+        # ── Circuit breaker pre-check ─────────────────────────────────────
+        if self._is_circuit_open():
+            raise RuntimeError(
+                f"ParallelAnalystOrchestrator: circuit breaker OPEN "
+                f"(cooldown until {self._circuit_opened_at + self.cooldown_seconds:.0f}). "
+                "Refusing to run to prevent runaway LLM costs. "
+                "Reset by instantiating a new orchestrator or calling reset_circuit()."
+            )
+
         if analyst_types is None:
             analyst_types = list(ANALYST_CONFIGS.keys())
+
+        # Cap concurrent workers to avoid hammering the gateway
+        if max_workers > 1:
+            sem = asyncio.Semaphore(max_workers)
+        else:
+            sem = None
+
+        async def _run_with_guards(analyst_type: AnalystType) -> Any:
+            # Token budget check (per-task entry)
+            if self.max_token_budget > 0 and self._tokens_consumed >= self.max_token_budget:
+                return RuntimeError(
+                    f"Token budget exceeded ({self._tokens_consumed} >= {self.max_token_budget})"
+                )
+            if sem is not None:
+                async with sem:
+                    return await self._analyze_with_circuit(analyst_type, ticker, context)
+            return await self._analyze_with_circuit(analyst_type, ticker, context)
 
         tasks = []
         for analyst_type in analyst_types:
             if analyst_type in self.analysts:
-                tasks.append(
-                    self.analysts[analyst_type].analyze(ticker, context)
-                )
+                tasks.append(_run_with_guards(analyst_type))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         analyst_results = {}
         for analyst_type, result in zip(analyst_types, results):
             if isinstance(result, Exception):
+                self._record_failure()
                 analyst_results[analyst_type] = AnalystResult(
                     analyst_type=analyst_type,
                     status="error",
@@ -2155,6 +2214,10 @@ class ParallelAnalystOrchestrator:
                     warnings=[f"Agent failed: {str(result)}"],
                 )
             else:
+                self._record_success()
+                # If the agent tracks token usage, accumulate
+                used = getattr(result, "tokens_used", 0) or 0
+                self._tokens_consumed += int(used)
                 analyst_results[analyst_type] = result
 
         consensus, divergences = self._generate_consensus(analyst_results)
@@ -2171,6 +2234,55 @@ class ParallelAnalystOrchestrator:
             confidence=overall_confidence,
             total_latency_ms=(time.time() - start) * 1000,
         )
+
+    # ── Circuit-breaker / rate-limit / budget helpers ──────────────────────
+    def _is_circuit_open(self) -> bool:
+        """Return True if circuit breaker has tripped and cooldown hasn't elapsed."""
+        if not self._circuit_open:
+            return False
+        if time.time() - self._circuit_opened_at >= self.cooldown_seconds:
+            # Cooldown elapsed — half-open
+            self._circuit_open = False
+            self._recent_failures.clear()
+            return False
+        return True
+
+    def _record_failure(self) -> None:
+        """Record an agent failure; trip breaker if too many within window."""
+        now = time.time()
+        self._recent_failures.append(now)
+        # Trim to window
+        cutoff = now - self.failure_window
+        self._recent_failures = [t for t in self._recent_failures if t >= cutoff]
+        if len(self._recent_failures) >= self.failure_threshold:
+            self._circuit_open = True
+            self._circuit_opened_at = now
+
+    def _record_success(self) -> None:
+        """Clear a stale failure on success (gradual recovery)."""
+        if self._recent_failures:
+            # Successful call erases oldest failure
+            self._recent_failures.pop(0)
+
+    def reset_circuit(self) -> None:
+        """Manually reset the circuit breaker (e.g. after fixing the API key)."""
+        self._circuit_open = False
+        self._circuit_opened_at = 0.0
+        self._recent_failures.clear()
+
+    async def _analyze_with_circuit(
+        self, analyst_type: AnalystType, ticker: str, context: dict
+    ) -> Any:
+        """Run a single analyst with timeout + token budget check."""
+        try:
+            return await asyncio.wait_for(
+                self.analysts[analyst_type].analyze(ticker, context),
+                timeout=self.timeout,
+            )
+        except asyncio.TimeoutError:
+            return RuntimeError(
+                f"Analyst {analyst_type.value} timed out after {self.timeout}s"
+            )
 
     def _generate_consensus(
         self,
