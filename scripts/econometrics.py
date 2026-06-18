@@ -8,9 +8,10 @@
 # 如需使用，请改用对应的新版本脚本。
 # 本文件仅保留用于历史参考，不建议在实际研究流程中使用。
 #
-# 强制退出：导入此模块时立即终止，防止误用
-import sys as _sys
-_sys.exit(1)
+# v6 fix (P0): 删除 _sys.exit(1) — 之前"导入即崩溃"导致 8 个外部脚本
+# (carbon_economics/real_estate/fintech/political_economy/green_credit/
+#  generate_empirical_tables/interactive_paper_pipeline/empirical_agent)
+# 一旦 import 就 process exit(1)。改为保留兼容层，让现有 import 仍可工作。
 # ─────────────────────────────────────────────────────────────────────────────
 # [原文件内容继续]
 

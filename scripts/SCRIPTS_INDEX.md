@@ -123,7 +123,7 @@
 || `empirical_advisor.py` | 1444 | `EmpiricalAdvisor`, `DiagnosticSuite` | `empirical_agent`, `generate_empirical_tables`, `econometrics_extended`, `agent_pipeline`, `research_directions/` |
 || `econometrics.py` | 3654 | `did()`, `ols()`, `psm_did()`, `panel_data()` | `empirical_advisor`, `generate_empirical_tables`, `green_credit_regression`, `econometrics_extended` |
 || `econometrics_extended.py` | 2083 | `RDDRegression`, `FamaMacBeth`, `PanelThresholdReg`, `EventStudyCAR` | `empirical_advisor`, `research_directions/` |
-|| `econometrics_advanced.py` | 963 | Wild bootstrap, Baron-Kenny mediation | `econometrics_extended` |
+|| ~~`econometrics_advanced.py`~~ | ~~963~~ | ~~Wild bootstrap, Baron-Kenny mediation~~ | **v6 已删除**（0 import，2026-06-18）|
 || `journal_template.py` | 3991 | `JournalTemplate`, `generate_latex()`, `JOURNAL_METADATA` | `agent_pipeline`, `paper_write`, `paper_full_pipeline` |
 || `knowledge_graph.py` | 1152 | `CitationGraph`, `build_graph()`, `find_papers()` | `paper_write`, `paper_reader`, `research_rag`, `review_layer`, `__init__.py` |
 || `experiment_tracker.py` | 909 | `ExperimentTracker`, `track()`, `compare()` | `agent_pipeline`, `dashboard`, `paper_write`, `review_layer` |

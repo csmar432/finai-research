@@ -9,8 +9,8 @@
 
 | 废弃脚本 | 替代版本 | 废弃原因 |
 |----------|----------|----------|
-| `econometrics.py` | `research_framework/econometrics_extended.py` | 功能已整合到 econometrics_extended.py |
-| `econometrics_advanced.py` | `research_framework/econometrics_extended.py` | 功能已整合到 econometrics_extended.py |
+| `econometrics.py` | `research_framework/econometrics_extended.py` (新代码) / 保留作为兼容层 (兼容 v6) | v6 修复后保留兼容层，仍被 8 个脚本使用；新代码应使用 research_framework/econometrics_extended.py |
+| ~~`econometrics_advanced.py`~~ | ~~`research_framework/econometrics_extended.py`~~ | **v6 已删除**（0 import，975 行死代码，2026-06-18）|
 | `export_hubei_data.py` | `fetch_provincial_stats.py` | 功能已整合到 fetch_provincial_stats.py |
 | `generate_hubei_excel.py` | `generate_hubei_excel_v2.py` | v1 版本，已由 v2 替代 |
 | `fetch_msci_cyh.py` | `fetch_msci_esg.py` | 仅演示数据，应使用 fetch_msci_esg.py |

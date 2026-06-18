@@ -1015,6 +1015,21 @@ class RegressionEngine:
         ])
         return "\n".join(lines)
 
+    def get_warnings(self) -> list[str]:
+        """Return list of warnings collected during this engine's lifetime.
+
+        Used by test suite and downstream code to surface simulation
+        warnings, DOF fallbacks, and other non-fatal issues.
+
+        v6 fix: added as a public accessor — v4 QUAL-2 introduced
+        self._warnings accumulation but never exposed a getter.
+        """
+        return list(self._warnings)
+
+    def clear_warnings(self) -> None:
+        """Reset the warning list (useful in test fixtures)."""
+        self._warnings = []
+
     @staticmethod
     def get_table_note(format: str = "english") -> str:
         """Get formatted table note for different journal standards.
