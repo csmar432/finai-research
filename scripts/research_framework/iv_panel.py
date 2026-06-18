@@ -45,6 +45,22 @@ _log.setLevel(logging.INFO)
 warnings.filterwarnings("ignore")
 
 
+def _format_fmb_summary(results: dict) -> str:
+    """Format Fama-MacBeth per-variable summary for log line.
+
+    Extracted to a helper so the call site can use a plain f-string —
+    the original nested f-string `f"{k}={v['mean_coef']:.4f}"` violates
+    PEP 701 (3.11 cannot parse same-quote literal inside an outer
+    f-string expression), so we build the string with str.format or
+    concatenation here.
+    """
+    parts = []
+    for k, v in results.items():
+        mean_coef = v["mean_coef"]
+        parts.append("{}={:.4f}".format(k, mean_coef))
+    return ", ".join(parts)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PANEL DIAGNOSTIC
 # ─────────────────────────────────────────────────────────────────────────────
@@ -714,7 +730,7 @@ class FamaMacBeth:
 
         _log.info(
             f"[FamaMacBeth] {len(results)} variables, "
-            f"{n_periods} periods: {', '.join(f'{k}={v['mean_coef']:.4f}' for k,v in results.items())}"
+            f"{n_periods} periods: {_format_fmb_summary(results)}"
         )
         return results
 
