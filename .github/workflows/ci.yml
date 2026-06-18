@@ -209,6 +209,7 @@ jobs:
             tests/test_halt_rules.py \
             tests/test_halt_rules_registry.py tests/test_citation_verifier.py \
             tests/test_agent_loader.py tests/test_data_cache.py \
+            tests/test_agent_pipeline_core.py \
             --cov=scripts --cov-append --cov-branch -x --tb=long --timeout=60 \
             -v 2>&1 | tee pytest-batch2.log
         env:
@@ -571,46 +572,55 @@ jobs:
           echo "  batch 3: ${{ needs.test-batch-3.result }}"
 
       # Explicit per-artifact download (avoids pattern-glob issues in PR runs).
-      # Each batch uploaded its .coverage as a separate named artifact.
+      # Download each batch only if that batch succeeded; combine whatever is available.
+      # This fixes the prior overly-strict condition requiring ALL 3 batches to succeed.
       - name: Download coverage-batch1
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
+        if: needs.test-batch-1.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: coverage-batch1
           path: coverage-data/batch1
       - name: Download coverage-batch2
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
+        if: needs.test-batch-2.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: coverage-batch2
           path: coverage-data/batch2
       - name: Download coverage-batch3
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
+        if: needs.test-batch-3.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: coverage-batch3
           path: coverage-data/batch3
 
       - name: Set up Python
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install coverage reporter
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
         run: pip install coverage[toml]
       - name: Combine coverage reports
         id: combine
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
         run: |
           set -x
           ls -la coverage-data/ || true
           ls -la coverage-data/batch1/ coverage-data/batch2/ coverage-data/batch3/ 2>&1 || true
-          # Each batch dir contains the uploaded .coverage file at the root.
-          coverage combine --keep coverage-data/batch1/.coverage coverage-data/batch2/.coverage coverage-data/batch3/.coverage
-          coverage report -m
+          # Build coverage combine command from available artifacts
+          COV_FILES=""
+          for batch in batch1 batch2 batch3; do
+            if [ -f "coverage-data/$batch/.coverage" ]; then
+              COV_FILES="$COV_FILES coverage-data/$batch/.coverage"
+            fi
+          done
+          echo "Combining: $COV_FILES"
+          if [ -n "$COV_FILES" ]; then
+            coverage combine --keep $COV_FILES
+            coverage report -m
+          else
+            echo "No coverage data available — skipping combine"
+          fi
       - name: Upload to Codecov
-        if: needs.test-batch-1.result == 'success' && needs.test-batch-2.result == 'success' && needs.test-batch-3.result == 'success'
+        if: needs.test-batch-1.result == 'success' || needs.test-batch-2.result == 'success' || needs.test-batch-3.result == 'success'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
