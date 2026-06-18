@@ -490,7 +490,14 @@ class PatentDataFetcher(DataFetcher):
         try:
             import urllib.request
             encoded = urllib.parse.quote(company_name)
-            url = f"https://api.patentsview.org/patents/query?q={{\"_or\":[{{\"assignee_first_name\":\"{company_name}\"}}]}}&o={{\"page\":1,\"per_page\":25}}"
+            # Build URL with concatenation to avoid f-string-escape issues
+            # (PEP 701 forbids backslash-escapes inside f-string expressions
+            # in Python < 3.12)
+            url = (
+                "https://api.patentsview.org/patents/query?q="
+                + '{"_or":[{"assignee_first_name":"' + company_name + '"}]}'
+                + '&o={"page":1,"per_page":25}'
+            )
             req = urllib.request.Request(url, headers={"User-Agent": "FinResearch-Agent/1.0"})
             with urllib.request.urlopen(req, timeout=15) as resp:
                 data = json.loads(resp.read())
