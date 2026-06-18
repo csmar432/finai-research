@@ -285,7 +285,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 43 MCP servers · 42 econometric methods · 17 Skills · 45 journal templates · 20 chart types · 18 robustness checks · 12 research directions
+**Key numbers:** 43 MCP servers · 47 econometric modules (49+ method variants including DID/IV/RDD/PSM/GMM/Synthetic-DID) · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
 
 ---
 
