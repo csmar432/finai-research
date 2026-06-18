@@ -141,7 +141,12 @@ class ProvenanceTracker:
         )
 
     def flag_simulated(self, field: str, reason: str = "") -> None:
-        """Mark a field as simulated/fake data."""
+        """Mark a field as simulated/fake data.
+
+        v3 QUAL-2 enhancement: also write the simulated flag to df.attrs
+        (when df is bound) so downstream RegressionEngine / RobustnessRunner
+        can detect synthetic data via the standard pandas metadata channel.
+        """
         if field in self._r:
             record = self._r[field]
             record["is_simulated"] = True
@@ -158,6 +163,14 @@ class ProvenanceTracker:
                 is_fallback=False,
                 note=reason,
             )
+        # Mirror to bound DataFrame's attrs (best-effort)
+        df_bound = getattr(self, "_df", None)
+        if df_bound is not None and hasattr(df_bound, "attrs"):
+            existing = list(df_bound.attrs.get("simulated_vars", []))
+            if field not in existing:
+                existing.append(field)
+            df_bound.attrs["simulated_vars"] = existing
+            df_bound.attrs["is_simulated"] = True
 
     def flag_fallback(self, field: str, method: str = "") -> None:
         """Mark a field as filled via a fallback/proxy method."""
