@@ -233,7 +233,10 @@ mcp_servers/user_tushare/tools/get_institutional_holdings.json
 mcp_servers/user_tushare/tools/get_top_holders.json
 
 # ── Test files (local development, not for public repo) ───────────────────────
-tests/test_agent_pipeline_core.py
+# v5 fix: tests/test_agent_pipeline_core.py was removed from this ignore list
+# because .github/workflows/ci.yml batch-2 references it. v2 commit (a32fba5)
+# added the ci.yml reference but forgot to git add the file, leaving CI red
+# for 5 consecutive commits. See AUDIT_V5_2026-06-18.md.
 tests/test_agent_state.py
 tests/test_ai_parliament.py
 tests/test_auto_review_rules.py
@@ -258,7 +261,6 @@ tests/test_specialized_agents.py
 tests/test_user_data_merger.py
 tests/test_validate_econometrics.py
 
-# ── Local audit & development files ─────────────────────────────────────────
 AUDIT_2026-06-10.md
 docs/MANUAL_TASKS_RUNBOOK.md
 docs/adr/ADR-002-provenance-chain.md
