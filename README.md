@@ -157,7 +157,7 @@ python scripts/demo_research_report.py
 - ✅ All `scripts/*.py` entry points
 - ✅ 43 MCP servers (pure Python stdlib)
 - ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
-- ✅ 2,088 unit tests (CI matrix runs on Ubuntu + macOS + Windows)
+- ✅ 2,085 unit tests (CI matrix: Ubuntu + macOS; no Windows)
 
 ### Known Cross-Platform Limitations
 
@@ -286,6 +286,8 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 ```
 
 **Key numbers:** 43 MCP servers · 47 econometric modules (49+ method variants including DID/IV/RDD/PSM/GMM/Synthetic-DID) · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
+
+> **数字来源（v5 审计）**：所有数字均通过 AST 静态分析或 `ls | wc -l` 实测，见 [AUDIT_V5_2026-06-18.md](AUDIT_V5_2026-06-18.md)。tests 计数口径：`pytest --collect-only` + AST 解析 def test_*(2,085) ≈ README 2,088。
 
 ---
 
