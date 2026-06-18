@@ -333,8 +333,8 @@ def to_latex_table(
     parts = [
         "\\begin{table}[" + position + "]",
         "  \\centering",
-        f"  \\caption{"{" + caption + "}" if caption else ""}",
-        f"  \\label{"{" + label + "}" if label else ""}",
+        f"  \\caption{{{caption}}}" if caption else "",
+        f"  \\label{{{label}}}" if label else "",
         "  \\begin{threeparttable}",
         f"  \\begin{{tabular}}{{{fmt}}}",
         "    \\toprule",
