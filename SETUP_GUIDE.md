@@ -29,8 +29,8 @@
 
 ```bash
 # Create conda environment
-conda create -n finresearch python=3.12
-conda activate finresearch
+conda create -n finai python=3.12
+conda activate finai
 
 # Install dependencies
 pip install -e .           # 推荐方式（支持 entry points）

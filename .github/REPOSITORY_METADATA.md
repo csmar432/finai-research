@@ -7,7 +7,7 @@
 ## 1. Description (顶部 "About" 卡片)
 
 ```
-End-to-end AI agent workflow for economic & financial research: lit review → idea generation → empirical design (DID/IV/RDD) → paper writing. 43 MCP data servers, 49 econometric methods, 17 AI skills, 70 journal templates.
+End-to-end AI agent workflow for economic & financial research: lit review → idea generation → empirical design (DID/IV/RDD) → paper writing. 43 MCP data servers, 42 econometric methods, 17 AI skills, 45 journal templates.
 ```
 
 ## 2. Website
@@ -55,39 +55,12 @@ agent
 
 ## 5. Social Preview（1280×640 PNG）
 
-用项目里已有的截图：
+Social preview 已在仓库根目录的 `.github/social-preview.png` 提供（已加入 .gitignore，**在 release 流程中自动生成并上传**）。
 
-```
-$REPO_ROOT/.github/demo/01-architecture-overview.png
-```
-
-或者重新生成：
-
-```bash
-# 用 SVG 渲染
-python -c "
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-fig, ax = plt.subplots(figsize=(12.8, 6.4), dpi=100)
-ax.set_xlim(0, 12.8); ax.set_ylim(0, 6.4); ax.axis('off')
-ax.set_facecolor('#0d1117')
-fig.patch.set_facecolor('#0d1117')
-# 标题
-ax.text(6.4, 4.8, 'FinAI Research Workflow', ha='center', fontsize=42, color='white', weight='bold')
-ax.text(6.4, 3.8, 'AI-powered research workflow for finance & economics', ha='center', fontsize=18, color='#8b949e')
-# 三个 box
-for i, (x, label, color) in enumerate([
-    (1.5, '43 MCP\\nData Sources', '#58a6ff'),
-    (6.4, '49 Econometric\\nMethods (DID/IV/RDD)', '#7ee787'),
-    (11.3, '70 Journal\\nTemplates', '#ffa657'),
-]):
-    ax.add_patch(mpatches.FancyBboxPatch((x-1.2, 1.4), 2.4, 1.4, boxstyle='round,pad=0.05', facecolor='#161b22', edgecolor=color, linewidth=2))
-    ax.text(x, 2.1, label, ha='center', va='center', fontsize=12, color=color, weight='bold')
-ax.text(6.4, 0.6, 'github.com/csmar432/FinAI-Research-Workflow', ha='center', fontsize=14, color='#8b949e')
-plt.savefig('.github/social-preview.png', dpi=100, facecolor='#0d1117')
-print('saved')
-"
-```
+> 如需重新生成本地预览图，运行：
+> ```bash
+> python scripts/gen_social_preview.py
+> ```
 
 ## 6. Branch Protection Rules（main 分支）
 

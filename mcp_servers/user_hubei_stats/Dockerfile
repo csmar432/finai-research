@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Hubei Stats MCP Server" \
       org.opencontainers.image.description="湖北省统计年鉴数据 — akshare全国宏观 + 湖北已知数据汇总" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_hubei_stats" \
       finresearch.mcp.api="API" \

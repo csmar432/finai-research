@@ -40,7 +40,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Fed Data MCP Server" \
       org.opencontainers.image.description="Federal Reserve Economic Data (FOMC/褐皮书/收益率曲线/联邦基金利率)" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_fed_data" \
       finresearch.mcp.api="API" \

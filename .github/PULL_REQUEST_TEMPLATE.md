@@ -1,44 +1,50 @@
-## Pull Request Description
+## Summary
 
-<!-- Thank you for contributing! Please fill out this template to help maintain code quality. -->
+<!-- One-paragraph description of the change. -->
 
-### Type of Change
+## Related Issues
 
-- [ ] Bug fix (please link issue: Fixes #___)
-- [ ] New feature
-- [ ] Documentation update
-- [ ] Code refactoring
-- [ ] Test update
-- [ ] Other (please describe)
+<!-- Link to issues this PR addresses. Use "Fixes #123" to auto-close. -->
 
-### Motivation and Context
+Fixes #
+Related to #
 
-<!-- Why is this change needed? What problem does it solve? -->
+## Type of Change
 
-### How Has This Been Tested?
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would break existing functionality)
+- [ ] 📚 Documentation (no code change)
+- [ ] 🧪 Test (adding or improving tests)
+- [ ] 🔧 Refactor (no functional change)
+- [ ] ⚡ Performance
+- [ ] 🔒 Security
 
-<!-- Please describe the tests that you ran to verify your changes. -->
+## Testing
 
-- [ ] Existing tests pass (`pytest tests/`)
-- [ ] Manual smoke test (describe what you tested)
-- [ ] Tested on [OS/environment]
+- [ ] I have added tests that prove my fix/feature works
+- [ ] New and existing unit tests pass locally (`pytest tests/`)
+- [ ] I have run `python scripts/health_check.py --json` and the system is healthy
 
-### Checklist
+### Test Output
 
-- [ ] Code follows the project's style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] Documentation updated (if applicable)
-- [ ] Changes do not introduce new warnings or lint errors
-- [ ] Branch is up-to-date with main branch
-- [ ] No sensitive data committed (API keys, tokens, etc.)
+```
+# Paste pytest output here
+```
 
-### Screenshots (if applicable)
+## Checklist
 
-<!-- If your change affects the UI or output, include screenshots. -->
+- [ ] My code follows the project's style guidelines (`ruff check scripts/ tests/`)
+- [ ] I have performed a self-review of my code
+- [ ] I have commented complex / non-obvious code
+- [ ] I have updated the relevant documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added an entry to [CHANGELOG.md](../blob/main/CHANGELOG.md) under "Unreleased"
 
----
+## Screenshots / Demo
 
-### Notes for Reviewers
+<!-- If applicable, add screenshots or GIFs of the change. -->
 
-<!-- Any additional context you want to give to reviewers? -->
+## Additional Notes
+
+<!-- Anything else reviewers should know. -->

@@ -39,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Labels
 LABEL org.opencontainers.image.title="Pandas MCP Server" \
       org.opencontainers.image.description="数据分析 MCP — 读取CSV/JSON/Excel、描述性统计、分组聚合、相关性分析、透视表" \
-      org.opencontainers.image.source="https://github.com/xuzheyi/finresearch" \
+      org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow" \
       org.opencontainers.image.version="1.0.0" \
       finresearch.mcp.server="user_pandas_mcp" \
       finresearch.mcp.api="API" \

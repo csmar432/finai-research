@@ -1,14 +1,13 @@
-# 👋 你好，我是许哲逸 / Xu Zheyí
+# 👋 FinAI Research Workflow
 
 > 📊 经济金融 × AI 学术研究 × 开发者工具
 > 🎓 关注论文工作流的自动化与可复现性
-> 🌏 中国 · 时区 UTC+8
 
 ---
 
-## 🚀 我做了什么
+## 🚀 项目简介
 
-- **FinAI Research Workflow** — 端到端 AI 学术研究工作流（43 个 MCP 数据源、49 个计量方法、17 个 AI 技能、70 种期刊模板）
+- **FinAI Research Workflow** — 端到端 AI 学术研究工作流（43 个 MCP 数据源、42 个计量方法、17 个 AI 技能、45 种期刊模板）
 - **论文写作 / 文献综述 / 实证设计** 自动化
 - 集成 Claude Code / Cursor / GitHub Copilot 的多工具适配
 
@@ -37,7 +36,7 @@ AI/ML     : LLM-based agents · 检索增强生成 (RAG) · 工具调用
 
 ---
 
-## 📚 我关注的领域
+## 📚 关注领域
 
 - 🏦 **绿色金融 / 碳经济学** — 碳排放权交易、绿色创新
 - 📈 **数字金融** — 金融科技、互联网金融
@@ -46,24 +45,14 @@ AI/ML     : LLM-based agents · 检索增强生成 (RAG) · 工具调用
 
 ---
 
-## ✍️ 学术输出 (in progress)
-
-> 暂无公开发表的论文，但正在用本工具包做以下研究：
-> - 碳排放权交易与企业绿色创新 (DID)
-> - 数字金融与中小企业融资 (PSM-DID)
-> - ESG 评级分歧与资本成本 (工具变量)
-
----
-
-## 💬 与我交流
+## 💬 与我们交流
 
 | 渠道 | 链接 |
 |---|---|
 | **GitHub Issues** | [项目问题](https://github.com/csmar432/finai-research-workflow/issues) |
 | **GitHub Discussions** | [Q&A / 想法](https://github.com/csmar432/finai-research-workflow/discussions) |
-| **Email** | (通过 GitHub Private Message) |
 
-> 📝 **注意**: 我不在公开场合公开个人邮箱。GitHub 是唯一联系渠道。
+> 📝 **注意**: 通过 GitHub Issue / Discussion 联系我们。
 
 ---
 
@@ -84,4 +73,4 @@ AI/ML     : LLM-based agents · 检索增强生成 (RAG) · 工具调用
 
 ---
 
-<sub>📖 关注学术诚信 · 开源 MIT License · Made with ❤️ in 中国</sub>
+<sub>📖 关注学术诚信 · 开源 MIT License</sub>

@@ -1,0 +1,25 @@
+{
+  "name": "finai-research-workflow",
+  "version": "1.0.0",
+  "description": "FinAI Research Workflow as a Claude Code plugin",
+  "author": {
+    "name": "csmar432",
+    "url": "https://github.com/csmar432/finai-research-workflow"
+  },
+  "homepage": "https://github.com/csmar432/finai-research-workflow",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csmar432/finai-research-workflow.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "academic-research",
+    "economic-research",
+    "finai"
+  ],
+  "engines": {
+    "claude-code": ">=1.0.0"
+  }
+}

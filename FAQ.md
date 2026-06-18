@@ -261,7 +261,7 @@ print(gdp)
 chmod -R u+rw data/
 
 # 方案2：使用用户目录
-export DATA_DIR=~/finresearch_data
+export DATA_DIR=~/finai_data
 mkdir -p $DATA_DIR
 ```
 

@@ -10,7 +10,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
 [![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
-<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。详见 docs/PUBLISHING_GUIDE.md L197 -->
+<!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。 -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
@@ -26,15 +26,13 @@
 
 | I'm looking for... | Go here |
 |---|---|
-| **🚀 Publishing v1.0.0** | [docs/PUBLISHING_GUIDE.md](docs/PUBLISHING_GUIDE.md) · 45-min step-by-step |
-| **Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 53 items |
-| **Repository settings** | [docs/REPOSITORY_SETUP.md](docs/REPOSITORY_SETUP.md) · 13 categories |
-| **One-line publish script** | [scripts/release.py](scripts/release.py) |
-| **API reference** | [docs/api_reference.md](docs/api_reference.md) |
+| **🚀 Publishing v1.0.0** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 items + [releases/v1.0.0.md](releases/v1.0.0.md) |
+| **Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 items |
+| **One-line publish script** | `python scripts/release.py` |
+| **API reference** | [scripts/](scripts/) modules with type hints and docstrings |
 | **Architecture overview** | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | **17 AI skills** | [knowledge/skills/](knowledge/skills/) |
-| **Project evaluation** | [PROJECT_EVALUATION.md](PROJECT_EVALUATION.md) |
-| **Troubleshooting FAQ** | [FAQ.md](FAQ.md) |
+| **Architecture overview** | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | **Troubleshooting FAQ** | [FAQ.md](FAQ.md) |
 | **Chinese comprehensive guide** | [使用指南.md](使用指南.md) (1049 lines, 13 chapters) |
 
@@ -56,7 +54,7 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (50 MCP Servers, mostly no API key required)
+### 📊 Data Acquisition (43 MCP Servers, mostly no API key required)
 
 | What you need | MCP server |
 |---|---|
@@ -90,7 +88,7 @@
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
-### 🤖 18 AI Skills (Claude Code / Cursor / Copilot)
+### 🤖 17 AI Skills (Claude Code / Cursor / Copilot)
 
 - **Discovery**: `fin-idea-discovery` · `fin-generate-idea` · `fin-novelty-check` · `fin-lit-review`
 - **Design**: `fin-experiment-design` · `fin-data-acquisition`
@@ -144,7 +142,7 @@ Step 2  Idea ↔ Data verify  → scripts/idea_data_checker.py (HITL checkpoint)
 Step 3  Literature review   → MCP multi-source, citation network, gap analysis
 Step 4  Novelty check       → JF/JFE/RFS/arXiv search
 Step 5  Empirical design    → DID/IV/RD/PSM/18 robustness checks
-Step 6  Data acquisition    → 50 MCP servers, 4-layer fallback
+Step 6  Data acquisition    → 43 MCP servers, 4-layer fallback
 Step 7  Paper writing       → outline → draft → figures → LaTeX
 Step 8  Adversarial review  → multi-round, until publishable
 ```
@@ -197,6 +195,19 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 - **Cite this work**: See [CITATION.cff](CITATION.cff)
 - **Full Changelog**: [CHANGELOG.md](CHANGELOG.md)
 - **Releases**: [releases/](releases/)
+
+---
+
+## 👤 Maintainer
+
+This project is maintained by **[@csmar432](https://github.com/csmar432)**.
+
+- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
+- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research-workflow/discussions)
+- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
+- 💖 **Sponsor / support**: [GitHub Sponsors](https://github.com/sponsors/csmar432) · [爱发电](https://afdian.net/a/finresearch)
+
+> Contributions of all sizes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
 
 ---
 
