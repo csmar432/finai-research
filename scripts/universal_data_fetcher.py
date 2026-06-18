@@ -100,6 +100,21 @@ class DataResult:
         if not self.timestamp:
             self.timestamp = datetime.now().isoformat()
 
+    def is_synthetic(self) -> bool:
+        """是否使用了模拟数据（任何上游 synthetic 都算）"""
+        return self.source == DataSource.SYNTHETIC or "synthetic" in (self.provenance or "")
+
+
+class SyntheticDataForbiddenError(RuntimeError):
+    """Raised when fetch() would fall back to synthetic data without
+    explicit opt-in. Serious empirical work MUST NOT silently get fake
+    numbers. Callers must pass `allow_synthetic=True` to override.
+
+    This replaces the v1 behavior of returning synthetic data
+    transparently with a `_synthetic` column — which was easy to
+    overlook in pandas columns during a regression.
+    """
+
 
 # ─── 已知制裁事件（初始数据，可后续从BIS官网更新）───────────────────────────────
 
@@ -129,18 +144,38 @@ KNOWN_ENTITY_LIST: list[dict] = [
 # ─── 数据获取器基类 ────────────────────────────────────────────────────────────
 
 class DataFetcher:
-    """单个数据类型的获取器基类"""
+    """单个数据类型的获取器基类
+
+    v2 行为（更严格）：
+    - 默认 `try_mcp()` 抛 NotImplementedError 而非返回 False。
+      调用方 fetch() 会捕获并记录到 provenance，但不再"成功 fallback
+      到 None"，而是显示 "no mcp impl"。
+    - 默认 `synthetic()` 抛 SyntheticDataForbiddenError。
+      fetch() 在所有层失败时，**默认**抛 SyntheticDataForbiddenError，
+      必须显式 `allow_synthetic=True` 才返回模拟数据。
+    - 子类按需重写 try_mcp / try_akshare / try_baostock / try_yfinance
+      / try_http / synthetic 之一或多个。
+    """
 
     def __init__(self, name: str):
         self.name = name
         self._provenance: list[str] = []
 
     def try_mcp(self, *args, **kwargs) -> tuple[bool, Any, str]:
-        """Layer 1: 尝试MCP调用（返回True表示成功）"""
-        return False, None, "MCP not implemented for this fetcher"
+        """Layer 1: 尝试MCP调用。子类应该重写此方法。
+
+        v2 行为：基类默认抛 NotImplementedError（而不是静默返回 False），
+        让"未实现"在 fetch 流程中显式可见。
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__}.try_mcp is not implemented. "
+            "MCP server bindings are only available inside Cursor/MCP "
+            "runtime; standalone scripts that need real data should "
+            "override try_akshare / try_yfinance / try_http instead."
+        )
 
     def try_cli(self, *args, **kwargs) -> tuple[bool, Any, str]:
-        """Layer 2: 尝试CLI库调用"""
+        """Layer 2: 尝试CLI库调用（基类泛型）"""
         return False, None, "CLI not implemented for this fetcher"
 
     def try_http(self, *args, **kwargs) -> tuple[bool, Any, str]:
@@ -148,11 +183,27 @@ class DataFetcher:
         return False, None, "HTTP fallback not implemented"
 
     def synthetic(self, *args, **kwargs) -> Any:
-        """Layer 4: 生成模拟数据"""
-        return None
+        """Layer 4: 生成模拟数据。子类应该重写此方法。
 
-    def fetch(self, *args, **kwargs) -> DataResult:
-        """按顺序尝试所有层，返回最终结果"""
+        v2 行为：基类默认抛 SyntheticDataForbiddenError，迫使调用方
+        显式 opt-in。
+        """
+        raise SyntheticDataForbiddenError(
+            f"{type(self).__name__}.synthetic is not implemented. "
+            "Refusing to return fake data. Pass allow_synthetic=True "
+            "to fetch() if you really want simulation output."
+        )
+
+    def fetch(self, *args, allow_synthetic: bool = False, **kwargs) -> DataResult:
+        """按顺序尝试所有层，返回最终结果。
+
+        Args:
+            *args, **kwargs: forwarded to try_mcp / try_akshare / ...
+            allow_synthetic: 默认 False。如果所有层都失败且该值为
+                False，抛 SyntheticDataForbiddenError。仅在你**明确**
+                想要模拟数据用于演示/测试时设为 True。严肃实证研究
+                **永远不要** 设为 True。
+        """
         provenance = []
 
         # Layer 1: MCP
@@ -162,6 +213,9 @@ class DataFetcher:
                 provenance.append("mcp")
                 return DataResult(data=data, source=DataSource.MCP,
                                provenance="→".join(provenance), available=True)
+            provenance.append(f"mcp_miss:{err[:30] if err else 'no_impl'}")
+        except NotImplementedError as e:
+            provenance.append("mcp_no_impl")
         except Exception as e:
             provenance.append(f"mcp_err:{str(e)[:30]}")
 
@@ -191,10 +245,21 @@ class DataFetcher:
                 provenance.append("http")
                 return DataResult(data=data, source=DataSource.HTTP_DIRECT,
                                provenance="→".join(provenance), available=True)
+            provenance.append(f"http_miss:{err[:30] if err else 'no_impl'}")
+        except NotImplementedError as e:
+            provenance.append("http_no_impl")
         except Exception as e:
             provenance.append(f"http_err:{str(e)[:20]}")
 
-        # Layer 4: Synthetic
+        # Layer 4: Synthetic — opt-in only
+        if not allow_synthetic:
+            raise SyntheticDataForbiddenError(
+                f"{type(self).__name__}.fetch exhausted all real-data layers "
+                f"(provenance: {'→'.join(provenance)}). "
+                "Refusing to fall back to synthetic data. "
+                "If you want simulation output, pass allow_synthetic=True."
+            )
+
         try:
             data = self.synthetic(*args, **kwargs)
             provenance.append("synthetic")
@@ -203,14 +268,15 @@ class DataFetcher:
                 source=DataSource.SYNTHETIC,
                 provenance="→".join(provenance),
                 available=False,
-                error=f"All layers exhausted. Synthetic data generated. {provenance[-1] if provenance else ''}"
+                error=f"All layers exhausted. Synthetic data generated (opt-in). {provenance[-1] if provenance else ''}"
             )
+        except SyntheticDataForbiddenError:
+            raise
         except Exception as e:
             provenance.append("synthetic_err")
-            return DataResult(
-                data=None, source=DataSource.SYNTHETIC,
-                provenance="→".join(provenance), available=False,
-                error=f"All data layers failed: {'; '.join(provenance)}"
+            raise SyntheticDataForbiddenError(
+                f"{type(self).__name__}.fetch all real-data layers failed "
+                f"and synthetic layer also failed: {e}"
             )
 
 
@@ -501,7 +567,12 @@ class PatentDataFetcher(DataFetcher):
         return False, None, "CNIPA and USPTO patent APIs failed"
 
     def synthetic(self, stock: str = "", **kwargs) -> pd.DataFrame:
-        """Layer 4: 生成专利模拟数据（基于R&D强度代理）"""
+        """Layer 4: 生成专利模拟数据（基于R&D强度代理）
+
+        v2: 该方法只在 fetch(allow_synthetic=True) 时才会被调用。
+        之前是静默 fallback → 真实问题（用户把 np.random 数据
+        当真实数据用）。现在需要显式 opt-in。
+        """
         import numpy as np
         np.random.seed(42)
         years = list(range(2015, 2026))
@@ -624,36 +695,58 @@ class UniversalDataFetcher:
         stock_codes: list[str],
         years: list[int],
         variables: list[str] | None = None,
+        allow_synthetic: bool = False,
     ) -> pd.DataFrame:
-        """批量获取A股面板数据（支持四层fallback）"""
+        """批量获取A股面板数据（支持四层fallback）
+
+        v2: 默认禁止静默合成数据。如果所有股票都拿不到真实数据，
+        抛 SyntheticDataForbiddenError。设 allow_synthetic=True 才会
+        退到 numpy.random 的合成面板。
+        """
         all_rows = []
 
         for code in stock_codes:
             for year in years:
-                result = self.fetch("a_stock_financial", stock=code, year=year)
+                try:
+                    result = self.fetch("a_stock_financial", stock=code, year=year)
+                except SyntheticDataForbiddenError:
+                    # 真实数据不可用，停止尝试后续 stock
+                    if not allow_synthetic:
+                        raise
+                    # allow_synthetic=True 时直接落到下面的合成面板逻辑
+                    break
                 if result.data is not None and isinstance(result.data, pd.DataFrame):
                     if "_synthetic" not in result.data.columns:
                         result.data["stock_code"] = code
                         result.data["year"] = year
                         all_rows.append(result.data)
 
-        if not all_rows:
-            log.warning("No real data fetched for any stock. Generating SYNTHETIC panel.")
-            # 生成模拟面板
-            import numpy as np
-            np.random.seed(42)
-            panel_rows = []
-            for code in stock_codes:
-                for year in years:
-                    panel_rows.append({
-                        "stock_code": code, "year": year,
-                        "rd_ratio": np.random.uniform(2, 15),
-                        "roa": np.random.uniform(0.02, 0.15),
-                        "lev": np.random.uniform(0.3, 0.7),
-                        "size": np.random.uniform(20, 25),
-                        "_synthetic": True,
-                    })
-            return pd.DataFrame(panel_rows)
+        if all_rows:
+            return pd.concat(all_rows, ignore_index=True)
+
+        if not allow_synthetic:
+            raise SyntheticDataForbiddenError(
+                f"fetch_a_stock_panel could not get any real data for "
+                f"{len(stock_codes)} stocks × {len(years)} years. "
+                "Pass allow_synthetic=True to fall back to a numpy.random panel."
+            )
+
+        log.warning("No real data fetched for any stock. Generating SYNTHETIC panel "
+                    "(allow_synthetic=True).")
+        import numpy as np
+        np.random.seed(42)
+        panel_rows = []
+        for code in stock_codes:
+            for year in years:
+                panel_rows.append({
+                    "stock_code": code, "year": year,
+                    "rd_ratio": np.random.uniform(2, 15),
+                    "roa": np.random.uniform(0.02, 0.15),
+                    "lev": np.random.uniform(0.3, 0.7),
+                    "size": np.random.uniform(20, 25),
+                    "_synthetic": True,
+                })
+        return pd.DataFrame(panel_rows)
 
         df = pd.concat(all_rows, ignore_index=True)
         df["_source"] = result.source.value
