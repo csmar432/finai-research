@@ -103,6 +103,7 @@ class RegressionEngine:
         tracker=None,
         firm_col: str = "ticker",
         year_col: str = "year",
+        strict_no_simulated: bool = False,
     ):
         self.df = df
         self.tracker = tracker
@@ -110,6 +111,39 @@ class RegressionEngine:
         self.year_col = year_col
         self._results: list[dict] = []
         self._warnings: list[str] = []
+        self.strict_no_simulated = strict_no_simulated
+
+        # ── P2-QUAL-2: Simulated data integrity check ──────────────────────
+        # Scan df.attrs or columns metadata for is_simulated=True flags.
+        # If any simulated variable is present, log a clear warning so the
+        # user is aware that downstream regressions may use synthetic data.
+        # In strict_no_simulated mode, raise ValueError instead.
+        try:
+            df_meta = getattr(df, "attrs", {}) or {}
+            is_simulated = bool(df_meta.get("is_simulated", False))
+            simulated_vars = list(df_meta.get("simulated_vars", []))
+            if is_simulated or simulated_vars:
+                msg = (
+                    "[RegressionEngine] WARNING: dataframe contains "
+                    f"{len(simulated_vars)} simulated variable(s): "
+                    f"{simulated_vars[:5]}"
+                    + (" ..." if len(simulated_vars) > 5 else "")
+                    + ". Downstream regression results MUST NOT be reported "
+                    "as empirical findings. See DISCLAIMER in report_generator.py."
+                )
+                _log.warning(msg)
+                self._warnings.append(msg)
+                if strict_no_simulated:
+                    raise ValueError(
+                        f"RegressionEngine(strict_no_simulated=True): "
+                        f"df contains simulated variables {simulated_vars}. "
+                        "Refusing to run to protect research integrity."
+                    )
+        except ValueError:
+            raise
+        except Exception:
+            # Never block regression on meta-check failure
+            pass
 
         # ── P2-QUAL-2: Simulated data integrity check ──────────────────────
         # Scan df.attrs or columns metadata for is_simulated=True flags.

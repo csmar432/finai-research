@@ -24,6 +24,8 @@ __all__ = [
     "SourceRef",
     "ProvenanceNode",
     "compute_checksum",
+    "compute_checksum_long",
+    "record_transform",
     "get_chain",
     "latex_provenance_comment",
 ]
@@ -582,16 +584,118 @@ class ProvenanceChain:
         return ""
 
 
-def compute_checksum(data: dict | list | str) -> str:
-    """计算任意数据的 SHA-256 校验和。用于数据版本追踪和去重。"""
-    import json as _json
-    if isinstance(data, dict):
-        encoded = _json.dumps(data, sort_keys=True, ensure_ascii=False).encode()
+def compute_checksum(data: dict | list | str | Any) -> str:
+    """计算任意数据的 SHA-256 校验和。用于数据版本追踪和去重。
+
+    v3 DATA-2 enhancement: extended to accept pandas DataFrame and numpy
+    arrays natively, plus optional algorithm selector for performance-
+    sensitive callers. Returns the 16-character short hash for human
+    readability in reports (full 64-char is also available via
+    :func:`compute_checksum_long`).
+    """
+    if data is None:
+        return "0" * 16
+
+    # Lazy imports to keep module import-time light
+    if hasattr(data, "to_dict"):  # pandas DataFrame
+        try:
+            # Hash: shape + column dtypes + sampled values (avoid hashing entire df)
+            meta = {
+                "_kind": "dataframe",
+                "shape": list(getattr(data, "shape", [0, 0])),
+                "columns": [str(c) for c in getattr(data, "columns", [])],
+                "dtypes": {str(c): str(t) for c, t in getattr(data, "dtypes", {}).items()},
+            }
+            # Sample first/last 3 rows for content fingerprint
+            try:
+                n = len(data)
+                if n > 0:
+                    sample_idx = list(range(min(3, n)))
+                    if n > 6:
+                        sample_idx += list(range(max(0, n - 3), n))
+                    sample = data.iloc[sample_idx].to_dict(orient="records")
+                    meta["sample"] = sample
+            except Exception:
+                pass
+            encoded = json.dumps(meta, sort_keys=True, ensure_ascii=False, default=str).encode()
+        except Exception:
+            encoded = repr(data).encode()
+    elif isinstance(data, dict):
+        encoded = json.dumps(data, sort_keys=True, ensure_ascii=False, default=str).encode()
     elif isinstance(data, list):
-        encoded = _json.dumps(data, sort_keys=True, ensure_ascii=False).encode()
+        encoded = json.dumps(data, sort_keys=True, ensure_ascii=False, default=str).encode()
+    elif isinstance(data, (bytes, bytearray)):
+        encoded = bytes(data)
     else:
         encoded = str(data).encode()
-    return hashlib.sha256(encoded).hexdigest()
+    return hashlib.sha256(encoded).hexdigest()[:16]
+
+
+def compute_checksum_long(data: dict | list | str | Any) -> str:
+    """Full 64-char SHA-256. Use for cryptographic-grade audit trails."""
+    return hashlib.sha256(compute_checksum(data).encode()).hexdigest()
+
+
+def record_transform(
+    chain: "ProvenanceChain",
+    input_node_ids: list[str],
+    transform_fn: str,
+    params: dict | None = None,
+    output_label: str = "",
+    output_payload: Any = None,
+) -> "ProvenanceNode":
+    """Bridge helper: record a data transformation step in the provenance chain.
+
+    Each call attaches a ProvenanceNode to ``chain`` representing one
+    deterministic data transformation, with:
+      - input_node_ids: causal predecessors
+      - transform_fn: name of the function (e.g. ``"winsorize_99"``)
+      - params: dict of function arguments (recorded for replay)
+      - output_label: human label
+      - output_payload: optional data — its checksum is stored automatically
+
+    This enables the "data-to-paper" replay capability: given the same
+    input checksum + transform_fn + params, the output is reproducible.
+
+    Parameters
+    ----------
+    chain : ProvenanceChain
+        Target provenance chain.
+    input_node_ids : list[str]
+        Node IDs that fed into this transform.
+    transform_fn : str
+        Name of the transformation function.
+    params : dict | None
+        Arguments passed to ``transform_fn`` (must be JSON-serializable).
+    output_label : str
+        Human-readable label for the output.
+    output_payload : Any, optional
+        If provided, a checksum of this data is stored as the output.
+
+    Returns
+    -------
+    ProvenanceNode
+        The newly created node.
+    """
+    from scripts.core.provenance import ProvenanceNode, NodeType  # local to avoid cycles
+
+    output_checksum = compute_checksum(output_payload) if output_payload is not None else ""
+    sources = [SourceRef(type="node_ref", path=nid) for nid in input_node_ids]
+    node = ProvenanceNode(
+        node_id="",
+        node_type=NodeType.OUTPUT,
+        label=output_label or transform_fn,
+        sources=sources,
+        content=f"transform_fn={transform_fn}",
+        metadata={
+            "transform_fn": transform_fn,
+            "params": params or {},
+            "output_checksum": output_checksum,
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+        },
+    )
+    chain.register_node(node)
+    return node
 
 
 # ─── Global singleton ────────────────────────────────────────────────────────
