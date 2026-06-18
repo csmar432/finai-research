@@ -1303,7 +1303,7 @@ class ModernDiDEngine:
             "  \\end{tabular}",
             "  \\begin{tablenotes}",
             "    \\small",
-            "    \\item Standard errors in parentheses. $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$.",
+            r"    \item Standard errors in parentheses. $^{***}p<0.01$, $^{**}p<0.05$, ^{*}p<0.10.",
             "  \\end{tablenotes}",
             "  \\end{threeparttable}",
             "\\end{table}",
@@ -1414,6 +1414,49 @@ def cs_did_hte(
             "se": float(att_gt.get("se", 0.0)),
             "n_obs": len(df_sub),
             "n_treated": int((df_sub[g_col] < float("inf")).sum()),
+        }
+
+    # Compute overall ATT with bootstrap SE (uses n_boot parameter)
+    all_att_values = list(subgroup_ats.values())
+    all_se_values = list(subgroup_ses.values())
+    all_n_values = list(subgroup_ns.values())
+
+    if all_n_values and sum(all_n_values) > 0 and all_att_values:
+        # Pooled ATT: sample-size-weighted average
+        total_n = sum(all_n_values)
+        overall_att = sum(a * n for a, n in zip(all_att_values, all_n_values)) / total_n
+
+        # Bootstrap SE: resample subgroups with replacement, weight by n
+        boot_attempts: list[float] = []
+        n_subgroups = len(all_att_values)
+        rng = np.random.default_rng(seed)
+
+        for _ in range(n_boot):
+            boot_indices = rng.integers(0, n_subgroups, size=n_subgroups)
+            boot_atts = [all_att_values[i] for i in boot_indices]
+            boot_ns = [all_n_values[i] for i in boot_indices]
+            boot_total = sum(boot_ns)
+            if boot_total > 0:
+                boot_att = sum(a * n for a, n in zip(boot_atts, boot_ns)) / boot_total
+                boot_attempts.append(boot_att)
+
+        if len(boot_attempts) > 1:
+            boot_se = float(np.std(boot_attempts, ddof=1))
+            overall_pval = 2 * (1 - stats.norm.cdf(abs(overall_att / boot_se))) if boot_se > 0 else 1.0
+        else:
+            # Fallback: delta-method SE from subgroup SEs
+            overall_variance = sum((n / total_n) ** 2 * s ** 2
+                                   for n, s in zip(all_n_values, all_se_values))
+            boot_se = float(np.sqrt(overall_variance))
+            overall_pval = 2 * (1 - stats.norm.cdf(abs(overall_att / boot_se))) if boot_se > 0 else 1.0
+
+        results["overall_att"] = {
+            "att": float(overall_att),
+            "se": boot_se,
+            "pval": float(overall_pval),
+            "n_total": int(total_n),
+            "n_subgroups": n_subgroups,
+            "method": f"CS(2021)-IPW+Bootstrap({n_boot})",
         }
 
     # Heterogeneity test: are ATTs equal across subgroups?
@@ -1822,8 +1865,8 @@ class CSDIDHTE:
             "  \\end{tabular}",
             "  \\begin{tablenotes}",
             "    \\small",
-            "    \\item ATT with clustered standard errors in parentheses. "
-            "$^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$.",
+            r"    \item ATT with clustered standard errors in parentheses. "
+            r"$^{***}p<0.01$, $^{**}p<0.05$, ^{*}p<0.10.",
             "  \\end{tablenotes}",
             "  \\end{threeparttable}",
             "\\end{table}",

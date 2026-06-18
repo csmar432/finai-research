@@ -52,7 +52,18 @@ __all__ = [
 
 
 class PipelineStage(Enum):
-    """流水线阶段枚举，与 AgentPipeline.stage 一致。"""
+    """流水线阶段枚举，与 AgentPipeline.stage 一致。
+
+    设计说明（解决"stage_map 只映射 5/10"疑虑）：
+    - INPUT / OUTPUT：流水线边界标记，无实际执行体
+    - HITL_OUTLINE / HITL_LITERATURE / HITL_WRITING：HITL 审批记录节点，
+      由 AgentOrchestratorPipeline.execute() 在 QualityGates 和 AutoReviewRules
+      层面处理，不调用底层 agent
+    - OUTLINE / LITERATURE / PLOTTING / WRITING / REFINEMENT：实际执行阶段
+      （共 5 个），DEFAULT_STAGES 正确配置了这 5 个
+
+    因此 DEFAULT_STAGES 的 5 个 stage 配置与 PipelineStage 枚举中的 5 个
+    执行阶段一一对应，不存在映射缺失。"""
     INPUT = "input"
     OUTLINE = "outline"
     LITERATURE = "literature"
@@ -397,61 +408,99 @@ class AgentOrchestratorPipeline:
         initial_data: dict | None,
     ) -> Any:
         """
-        调用实际的 AgentPipeline 执行 stage。
+        Execute a single pipeline stage via the AgentOrchestrator.
 
-        这里通过延迟导入避免与 agent_pipeline.py 的循环依赖。
+        Architecture note (P0-1 fix):
+        Before this fix, _call_agent() called pipeline.run() which internally calls
+        AgentOrchestrator.run_pipeline() for ALL 5 stages (outline→literature→
+        plotting→writing→refinement). With 5 stages in AgentOrchestratorPipeline,
+        this resulted in 5 × 5 = 25 full pipeline runs (25× overhead).
+
+        The correct approach: build a single-step pipeline and pass it directly
+        to AgentOrchestrator.run_pipeline(). This executes exactly one stage.
         """
         try:
-            from scripts.agent_pipeline import AgentPipeline, AgentPipelineConfig
+            from scripts.core.orchestrator import AgentOrchestrator, PipelineStep
+            from scripts.core.agents.base import AgentResult
 
-            config = AgentPipelineConfig(
-                topic=topic,
-                venue=venue,
-                research_field=field,
-                use_hitl=self.enable_hitl,
-                use_evolution=False,
-                visualize=False,  # 由 Pipeline 层级控制可视化
-            )
-            pipeline = AgentPipeline(config=config)
-
-            # Map PipelineStage → AgentPipeline stage
-            stage_map = {
+            # ── Build single-step pipeline for this stage only ──────────────────
+            # Map PipelineStage → orchestrator agent name
+            stage_agent_map = {
                 PipelineStage.OUTLINE: "outline",
                 PipelineStage.LITERATURE: "literature",
                 PipelineStage.PLOTTING: "plotting",
                 PipelineStage.WRITING: "writing",
                 PipelineStage.REFINEMENT: "refinement",
             }
-            mapped_stage = stage_map.get(stage, stage.value)
+            agent_name = stage_agent_map.get(stage, stage.value)
 
-            # Execute via orchestrator
+            # Build context with topic, venue, field
+            context: dict[str, Any] = {
+                "topic": topic,
+                "venue": venue,
+                "field": field,
+                **(initial_data or {}),
+            }
+
+            step = PipelineStep(
+                stage=stage,
+                agent_name=agent_name,
+                depends_on=[],
+                hitl_gate=False,  # HITL handled by AgentOrchestratorPipeline layer
+                skip=False,
+            )
+
+            # Build minimal orchestrator with just the agents needed for this stage
             try:
-                result = pipeline.run(topic=topic)
-            except Exception as call_exc:
-                # AgentPipeline 内部组件（如 CitationVerifier）初始化失败时
-                # 不阻止编排逻辑，使用 fallback mock output
-                return {
-                    "stage": stage.value,
-                    "topic": topic,
-                    "venue": venue,
-                    "output": f"[Mock output for {stage.value}]",
-                    "_call_error": str(call_exc),
-                }
+                from scripts.core.llm_gateway import LLMGateway
+                gateway = LLMGateway()
+            except ImportError:
+                gateway = None
 
-            # Extract output for this stage
-            if hasattr(result, "stages"):
-                return result.stages.get(mapped_stage, {})
-            return result
+            orch = AgentOrchestrator(gateway)
+            orch.register_default_agents()
 
-        except ImportError:
-            # Fallback: return mock output for testing
+            # Execute ONLY this stage — no full pipeline
+            pipeline_result = orch.run_pipeline(
+                pipeline_name=f"single_stage_{stage.value}",
+                steps=[step],
+                input_data=context,
+            )
+
+            # Extract result for this stage
+            stage_result: Any = None
+            for s_key, s_result in pipeline_result.stage_results.items():
+                if s_key == stage:
+                    stage_result = s_result.output
+                    break
+            if stage_result is None and stage.value in pipeline_result.stage_results:
+                stage_result = getattr(
+                    list(pipeline_result.stage_results.values())[0], "output", None
+                )
+
+            return stage_result
+
+        except ImportError as ie:
+            # Missing dependencies: warn clearly, do NOT silently mock
+            import logging as _log
+            _log.getLogger("agent_pipeline_core").warning(
+                "[_call_agent] ImportError — module unavailable: %s. "
+                "This stage cannot be executed. "
+                "Install missing dependency to enable: pip install <package>",
+                ie.name,
+            )
             return {
                 "stage": stage.value,
                 "topic": topic,
                 "venue": venue,
-                "output": f"[Mock output for {stage.value}]",
+                "error": f"import_error:{ie.name}",
+                "output": None,
             }
         except Exception as exc:
+            import logging as _log
+            _log.getLogger("agent_pipeline_core").error(
+                "[_call_agent] Stage %s failed: %s", stage.value, exc, exc_info=True
+            )
             raise RuntimeError(f"Stage {stage.value} failed: {exc}") from exc
 
     def _run_quality_gate(self, stage: PipelineStage, content: Any) -> QualityGateResult:
@@ -558,11 +607,12 @@ class AgentOrchestratorPipeline:
                 adj[dep].append(cfg.stage)
                 in_degree[cfg.stage] += 1
 
-        queue = [s for s, d in in_degree.items() if d == 0]
+        from collections import deque
+        queue: deque[PipelineStage] = deque(s for s, d in in_degree.items() if d == 0)
         result: list[PipelineStage] = []
 
         while queue:
-            node = queue.pop(0)
+            node = queue.popleft()
             result.append(node)
             for neighbor in adj[node]:
                 in_degree[neighbor] -= 1
