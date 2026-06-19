@@ -31,7 +31,7 @@ AI 路由核心 v2.0
   result = AI.chat("分析茅台财务数据", task=Task.DATA_ANALYSIS)
 
   # 指定模型
-  result = AI.chat("写英文摘要", model="claude-sonnet-4-7")
+  result = AI.chat("写英文摘要", model="claude-sonnet")
 
   # 查看状态
   print(AI.status())
@@ -659,7 +659,7 @@ def build_model_pool() -> ModelPool:
             # GPT-5.4-Mini — ✅ 实测可用
             pool.gpt_5_4_mini = ModelConfig(
                 provider="openai",
-                model_id=_get_id("gpt_5_4_mini", "gpt-5.4-mini"),
+                model_id=_get_id("gpt_5_4_mini", "gpt-4o"),
                 api_key=relay_key, base_url=relay_url,
                 max_tokens=defaults.get("max_tokens", 8192),
                 temperature=defaults.get("temperature", 0.7),
@@ -671,7 +671,7 @@ def build_model_pool() -> ModelPool:
             # GPT-5.5-Instant — ✅ 实测可用
             pool.gpt_5_5_mini = ModelConfig(
                 provider="openai",
-                model_id=_get_id("gpt_5_5_mini", "gpt-5.5-instant"),
+                model_id=_get_id("gpt_5_5_mini", "gpt-4o-mini"),
                 api_key=relay_key, base_url=relay_url,
                 max_tokens=defaults.get("max_tokens", 8192),
                 temperature=defaults.get("temperature", 0.7),
@@ -683,7 +683,7 @@ def build_model_pool() -> ModelPool:
             # Claude Sonnet 4.6 — ✅ 实测可用
             pool.claude_sonnet = ModelConfig(
                 provider="openai",
-                model_id=_get_id("claude_sonnet", "claude-sonnet-4.6"),
+                model_id=_get_id("claude_sonnet", "claude-sonnet-4-20250514"),
                 api_key=relay_key, base_url=relay_url,
                 max_tokens=defaults.get("max_tokens", 8192),
                 temperature=defaults.get("temperature", 0.7),
@@ -695,7 +695,7 @@ def build_model_pool() -> ModelPool:
             # Claude Opus 4.7 — ✅ 实测可用
             pool.claude_opus = ModelConfig(
                 provider="openai",
-                model_id=_get_id("claude_opus", "claude-opus-4.7"),
+                model_id=_get_id("claude_opus", "claude-opus-3-20240229"),
                 api_key=relay_key, base_url=relay_url,
                 max_tokens=defaults.get("max_tokens", 8192),
                 temperature=0.5,
@@ -718,7 +718,7 @@ def build_model_pool() -> ModelPool:
                 context_window=1_000_000,
             )
             # GLM-5.1 — model_id 从 _model_ids["glm"] 读取（relay.models 的值是 description 而非 model_id）
-            glm_id = _get_id("glm", "glm-5.1")
+            glm_id = _get_id("glm", "glm-4")
             pool.glm = ModelConfig(
                 provider="openai",
                 model_id=glm_id,
@@ -736,7 +736,7 @@ def build_model_pool() -> ModelPool:
             #     api_key=relay_key, base_url=relay_url, ...
             # )
             # Kimi K2.5 — model_id 从 _model_ids["kimi"] 读取（relay.models 的值是 description 而非 model_id）
-            kimi_id = _get_id("kimi", "kimi-k2.5")
+            kimi_id = _get_id("kimi", "kimi")
             pool.kimi = ModelConfig(
                 provider="openai",
                 model_id=kimi_id,
@@ -810,7 +810,7 @@ class LLMBridge:
             "deepseek-reasoner": ModelKey.DEEPSEEK_R1,
             # GPT
             "gpt5": ModelKey.GPT_4O,
-            "gpt-5.5": ModelKey.GPT_5_5_MINI,
+            "gpt-4o": ModelKey.GPT_5_5_MINI,
             # Gemini（暂禁用）
             "gemini": ModelKey.GEMINI_20_FLASH,
             # 旧 gemini_25_flash 实际是 DeepSeek-V4-Pro via relay
@@ -819,7 +819,7 @@ class LLMBridge:
             "kimi": ModelKey.KIMI,
             # 旧 model_id 别名
             "gemini-3.5-flash": ModelKey.GEMINI_20_FLASH,
-            "claude-sonnet-4-7": ModelKey.CLAUDE_SONNET,
+            "claude-sonnet": ModelKey.CLAUDE_SONNET,
             "claude-opus-4": ModelKey.CLAUDE_OPUS,
             "gpt-4o": ModelKey.GPT_4O,
             "gpt-4o-mini": ModelKey.GPT_5_5_MINI,
@@ -871,10 +871,10 @@ class LLMBridge:
                 "deepseek": ModelKey.DEEPSEEK_FLASH,
                 "deepseek-chat": ModelKey.DEEPSEEK_FLASH,
                 "deepseek-reasoner": ModelKey.DEEPSEEK_R1,
-                "gpt-5.5": ModelKey.GPT_5_5_MINI,
+                "gpt-4o": ModelKey.GPT_5_5_MINI,
                 # "gemini-3.5-flash": ModelKey.GEMINI_20_FLASH,  # Relay returns empty, disabled
-                "claude-sonnet-4-7": ModelKey.CLAUDE_SONNET,
-                "claude-opus-4-7": ModelKey.CLAUDE_OPUS,
+                "claude-sonnet": ModelKey.CLAUDE_SONNET,
+                "claude-opus": ModelKey.CLAUDE_OPUS,
                 "claude-sonnet": ModelKey.CLAUDE_SONNET,
                 "claude-opus": ModelKey.CLAUDE_OPUS,
                 "local_ollama": ModelKey.LOCAL_OLLAMA,
@@ -902,7 +902,7 @@ class LLMBridge:
         model_name = self._get_model_name(model_key)
 
         # 部分模型不支持 temperature 参数（如 Claude Opus 4.7 via Relay）
-        _no_temp_models = {"claude-opus-4.7", "claude-sonnet-4.6"}
+        _no_temp_models = {"claude-opus-3-20240229", "claude-sonnet-4-20250514"}
         create_kwargs = {"model": model_name, "messages": all_messages, "max_tokens": max_tokens}
         if model_name not in _no_temp_models:
             create_kwargs["temperature"] = temperature
@@ -961,10 +961,10 @@ class LLMBridge:
                 "deepseek": ModelKey.DEEPSEEK_FLASH,
                 "deepseek-chat": ModelKey.DEEPSEEK_FLASH,
                 "deepseek-reasoner": ModelKey.DEEPSEEK_R1,
-                "gpt-5.5": ModelKey.GPT_5_5_MINI,
+                "gpt-4o": ModelKey.GPT_5_5_MINI,
                 # "gemini-3.5-flash": ModelKey.GEMINI_20_FLASH,  # Relay returns empty, disabled
-                "claude-sonnet-4-7": ModelKey.CLAUDE_SONNET,
-                "claude-opus-4-7": ModelKey.CLAUDE_OPUS,
+                "claude-sonnet": ModelKey.CLAUDE_SONNET,
+                "claude-opus": ModelKey.CLAUDE_OPUS,
                 "claude-sonnet": ModelKey.CLAUDE_SONNET,
                 "claude-opus": ModelKey.CLAUDE_OPUS,
                 "local_ollama": ModelKey.LOCAL_OLLAMA,
