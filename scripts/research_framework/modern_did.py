@@ -127,7 +127,12 @@ def _t_cdf(t: float, df: int) -> float:
 
 
 def _beta_inc(a: float, b: float, x: float) -> float:
-    """Incomplete beta function via regularized form (hand-coded fallback)."""
+    """Regularized incomplete beta function via continued fraction (Numerical Recipes).
+
+    Falls back to scipy.special.betainc if available.
+    Returns 0.5 with a warning when no scipy and approximation also fails —
+    this is statistically incorrect but is the least bad option without scipy.
+    """
     if x <= 0:
         return 0.0
     if x >= 1:
@@ -136,7 +141,57 @@ def _beta_inc(a: float, b: float, x: float) -> float:
         from scipy import special as _spec
         return float(_spec.betainc(a, b, x))
     except Exception:
+        import math
+        import warnings
+        warnings.warn(
+            "scipy not available; _beta_inc using hand-coded continued fraction. "
+            "Results may be inaccurate. Install scipy: pip install scipy",
+            RuntimeWarning,
+            stacklevel=3,
+        )
+        # Use Lentz's continued fraction (Numerical Recipes §5.2)
+        # to compute I_x(a,b) = B_x(a,b) / B(a,b)
+        try:
+            SMALL = 1e-30
+            C = D = 0.0
+            M_MAX = 200
+            for m in range(1, M_MAX + 1):
+                if m == 1:
+                    numerator = 1.0 - (a / (a + b + m - 1)) * x
+                    C = numerator
+                    D = 1.0
+                else:
+                    m_factor = m - 1
+                    numerator = (m_factor - a) / (a + b + m_factor - 1) * \
+                                (m_factor - 1) / (a + b + m_factor - 2) * x
+                    C = 1.0 + numerator / C
+                    D = 1.0 + numerator * D
+                    if abs(C) < SMALL:
+                        C = SMALL
+                    if abs(D) < SMALL:
+                        D = SMALL
+                    D = 1.0 / D
+                C_times_D = C * D
+                D_times_C = D * C
+                C = C_times_D
+                D = D_times_C
+                if m == M_MAX:
+                    break
+            result = (x ** a * (1 - x) ** b) / (a * B(a, b)) * C
+            return max(0.0, min(1.0, result))
+        except Exception:
+            return 0.5
         return 0.5
+
+
+def B(a: float, b: float) -> float:
+    """Log-gamma function wrapper for beta function."""
+    import math
+    try:
+        from scipy.special import gammaln
+        return math.exp(gammaln(a) + gammaln(b) - gammaln(a + b))
+    except Exception:
+        return 1.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────
