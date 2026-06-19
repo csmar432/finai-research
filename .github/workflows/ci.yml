@@ -172,7 +172,9 @@ jobs:
             git checkout -b ci-debug origin/main
           fi
           mkdir -p .ci-fail-logs
-          cp pytest-batch1.log .ci-fail-logs/batch1-${GITHUB_SHA:0:7}.log
+          if [ -f pytest-batch1.log ]; then
+            cp pytest-batch1.log .ci-fail-logs/batch1-${GITHUB_SHA:0:7}.log
+          fi
           echo "### batch 1 fail at ${GITHUB_SHA:0:7}" >> .ci-fail-logs/INDEX.md
           echo "- ${{ github.workflow }} #${{ github.run_number }} ($(date -u +%FT%TZ))" >> .ci-fail-logs/INDEX.md
           echo "" >> .ci-fail-logs/INDEX.md
@@ -188,7 +190,11 @@ jobs:
         run: |
           echo "## batch 1 fail" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 80 pytest-batch1.log >> $GITHUB_STEP_SUMMARY
+          if [ -f pytest-batch1.log ]; then
+            tail -n 80 pytest-batch1.log >> $GITHUB_STEP_SUMMARY
+          else
+            echo "pytest-batch1.log not found — pytest may not have run (install step failed?)" >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   test-batch-2:
@@ -295,7 +301,9 @@ jobs:
             git checkout -b ci-debug origin/main
           fi
           mkdir -p .ci-fail-logs
-          cp pytest-batch2.log .ci-fail-logs/batch2-${GITHUB_SHA:0:7}.log
+          if [ -f pytest-batch2.log ]; then
+            cp pytest-batch2.log .ci-fail-logs/batch2-${GITHUB_SHA:0:7}.log
+          fi
           echo "### batch 2 fail at ${GITHUB_SHA:0:7}" >> .ci-fail-logs/INDEX.md
           echo "- ${{ github.workflow }} #${{ github.run_number }} ($(date -u +%FT%TZ))" >> .ci-fail-logs/INDEX.md
           echo "" >> .ci-fail-logs/INDEX.md
@@ -307,7 +315,11 @@ jobs:
         run: |
           echo "## batch 2 fail" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 80 pytest-batch2.log >> $GITHUB_STEP_SUMMARY
+          if [ -f pytest-batch2.log ]; then
+            tail -n 80 pytest-batch2.log >> $GITHUB_STEP_SUMMARY
+          else
+            echo "pytest-batch2.log not found — pytest may not have run (install step failed?)" >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   test-batch-3:
@@ -419,7 +431,9 @@ jobs:
             git checkout -b ci-debug origin/main
           fi
           mkdir -p .ci-fail-logs
-          cp pytest-batch3.log .ci-fail-logs/batch3-${GITHUB_SHA:0:7}.log
+          if [ -f pytest-batch3.log ]; then
+            cp pytest-batch3.log .ci-fail-logs/batch3-${GITHUB_SHA:0:7}.log
+          fi
           echo "### batch 3 fail at ${GITHUB_SHA:0:7}" >> .ci-fail-logs/INDEX.md
           echo "- ${{ github.workflow }} #${{ github.run_number }} ($(date -u +%FT%TZ))" >> .ci-fail-logs/INDEX.md
           echo "" >> .ci-fail-logs/INDEX.md
@@ -431,7 +445,11 @@ jobs:
         run: |
           echo "## batch 3 fail" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 80 pytest-batch3.log >> $GITHUB_STEP_SUMMARY
+          if [ -f pytest-batch3.log ]; then
+            tail -n 80 pytest-batch3.log >> $GITHUB_STEP_SUMMARY
+          else
+            echo "pytest-batch3.log not found — pytest may not have run (install step failed?)" >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   cross-platform:
@@ -532,7 +550,9 @@ jobs:
             git checkout -b ci-debug origin/main
           fi
           mkdir -p .ci-fail-logs
-          cp pytest-cs.log .ci-fail-logs/cs-${{ matrix.os }}-${GITHUB_SHA:0:7}.log
+          if [ -f pytest-cs.log ]; then
+            cp pytest-cs.log .ci-fail-logs/cs-${{ matrix.os }}-${GITHUB_SHA:0:7}.log
+          fi
           echo "### cs (${{ matrix.os }}) fail at ${GITHUB_SHA:0:7}" >> .ci-fail-logs/INDEX.md
           echo "- ${{ github.workflow }} #${{ github.run_number }} ($(date -u +%FT%TZ))" >> .ci-fail-logs/INDEX.md
           echo "" >> .ci-fail-logs/INDEX.md
@@ -544,7 +564,11 @@ jobs:
         run: |
           echo "## cs (${{ matrix.os }}) fail" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 60 pytest-cs.log >> $GITHUB_STEP_SUMMARY
+          if [ -f pytest-cs.log ]; then
+            tail -n 60 pytest-cs.log >> $GITHUB_STEP_SUMMARY
+          else
+            echo "pytest-cs.log not found — pytest may not have run (install step failed?)" >> $GITHUB_STEP_SUMMARY
+          fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   docker:
