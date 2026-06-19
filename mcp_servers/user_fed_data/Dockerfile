@@ -34,8 +34,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)" || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD kill -0 1
 
 # Labels
 LABEL org.opencontainers.image.title="Fed Data MCP Server" \

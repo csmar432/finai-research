@@ -36,8 +36,8 @@ ENV PYTHONUNBUFFERED=1 \
     PATH=/root/.local/bin:$PATH
 
 # Health check: verify the MCP server responds
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import sys; sys.exit(0)" || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD kill -0 1
 
 # Labels
 LABEL org.opencontainers.image.title="Brave Search MCP Server" \
