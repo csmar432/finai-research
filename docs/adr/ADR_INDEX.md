@@ -20,7 +20,7 @@
 | 层级6: Simulated Data（需授权） | ✅ | `scripts/research_framework/data_fetcher.py` 中的 `is_simulated_data` 标注 |
 | 层级7: Abort with DataUnavailableError | ✅ | 异常类定义 |
 | ProvenanceChain 数字溯源 | ✅ | `scripts/core/provenance.py` |
-| 数字注入向量数据库 | ✅ | `scripts/core/provenance_rag.py` (v1.6.0) |
+| 数字注入向量数据库 | ✅ | `scripts/core/provenance_rag.py` (v0.1.0) |
 
 **实现说明**：所有数据获取必须经过 `CachedDataFetcher.fetch_with_fallback()` 方法。模拟数据会被标记，用户可见警告。
 
@@ -39,9 +39,9 @@
 | 数字提取（8类）| ✅ | `scripts/core/provenance_rag.py` → `NumberExtractor` |
 | ChromaDB 向量模式 | ✅ | `scripts/core/provenance_rag.py` → `ProvenanceRAG` |
 | SQLite 回退模式 | ✅ | `scripts/core/provenance_rag.py` → `ProvenanceRAG` |
-| 静默 Random Fallback 警告 | ✅ | v1.6.0 修复：`is_random_fallback` + `check_fallback_warning()` |
+| 静默 Random Fallback 警告 | ✅ | v0.1.0 修复：`is_random_fallback` + `check_fallback_warning()` |
 
-**实现说明**：v1.6.0 增加了 `provenance_rag.py`，支持对图表中的数字进行向量化溯源检索，并通过 `check_fallback_warning()` 消除静默 fallback。
+**实现说明**：v0.1.0 增加了 `provenance_rag.py`，支持对图表中的数字进行向量化溯源检索，并通过 `check_fallback_warning()` 消除静默 fallback。
 
 ---
 
@@ -58,10 +58,10 @@
 | 持久化 | ✅ | `scripts/core/self_evolution.py` → SQLite/JSON 持久化 |
 | Hook 系统 | ✅ | `scripts/core/self_evolution.py` → `EvolutionHook` |
 | 遥测 | ✅ | `scripts/core/checkpoint.py` → `PipelineTelemetry` |
-| BiasHistoryDB 偏见趋势分析 | ✅ | `scripts/core/reviewer_calibrator.py` → `BiasHistoryDB` (v1.6.0) |
-| PersistentCalibratorFeedbackLoop | ✅ | `scripts/core/reviewer_calibrator.py` (v1.6.0) |
+| BiasHistoryDB 偏见趋势分析 | ✅ | `scripts/core/reviewer_calibrator.py` → `BiasHistoryDB` (v0.1.0) |
+| PersistentCalibratorFeedbackLoop | ✅ | `scripts/core/reviewer_calibrator.py` (v0.1.0) |
 
-**实现说明**：v1.6.0 新增了 `PersistentCalibratorFeedbackLoop` 和 `BiasHistoryDB`，使 SEPL 的 Optimize 阶段能够基于历史偏见数据进行自动 prompt 调整。
+**实现说明**：v0.1.0 新增了 `PersistentCalibratorFeedbackLoop` 和 `BiasHistoryDB`，使 SEPL 的 Optimize 阶段能够基于历史偏见数据进行自动 prompt 调整。
 
 ---
 
@@ -77,10 +77,10 @@
 | Command 结构 | ✅ | `enhanced_hitl_gate.py` → `HITLCommand` |
 | 超时自动回退 | ✅ | `enhanced_hitl_gate.py` |
 | CheckpointManager 集成 | ✅ | `scripts/core/checkpoint.py` |
-| 自动评分规则 | ✅ | `scripts/core/auto_review_rules.py` (v1.6.1) |
-| QualityGates 质量下限 | ✅ | `scripts/core/quality_gates.py` (v1.6.1) |
+| 自动评分规则 | ✅ | `scripts/core/auto_review_rules.py` (v0.1.0) |
+| QualityGates 质量下限 | ✅ | `scripts/core/quality_gates.py` (v0.1.0) |
 
-**实现说明**：v1.6.1 新增了 `QualityGates`（论文写作过程质量下限）和 `AutoReviewRules`（自动评分引擎），使 HITL 在人工审核前增加了自动质量门控层。
+**实现说明**：v0.1.0 新增了 `QualityGates`（论文写作过程质量下限）和 `AutoReviewRules`（自动评分引擎），使 HITL 在人工审核前增加了自动质量门控层。
 
 ---
 
@@ -93,9 +93,9 @@
 | 工具注册表 | ✅ | `scripts/core/mcp_tool_market.py` → `ToolRegistry` |
 | 动态注册 | ✅ | `ToolRegistry.register()` |
 | 工具选择器 | ✅ | `scripts/core/tool_selector.py` |
-| Schema 验证 | ✅ | `scripts/mcp_schema_check.py` (v1.6.0) |
+| Schema 验证 | ✅ | `scripts/mcp_schema_check.py` (v0.1.0) |
 | 41个 MCP 服务器 | ✅ | `mcp_servers/` |
-| 216个工具 inputSchema.description | ✅ | 全部补全 (v1.6.0) |
+| 216个工具 inputSchema.description | ✅ | 全部补全 (v0.1.0) |
 | 工具 Capabilities | ✅ | `mcp_servers/*/tools/*.json` |
 
 ---
@@ -108,5 +108,5 @@
 
 ## 更新日志
 
-- 2026-06-09: v1.6.1 更新，新增 QualityGates、AutoReviewRules；ADR-004 同步状态更新
-- 2026-06-09: v1.6.0 更新，新增 provenance_rag.py、BiasHistoryDB、PersistentCalibratorFeedbackLoop；ADR-002/003 同步状态更新
+- 2026-06-09: v0.1.0 更新，新增 QualityGates、AutoReviewRules；ADR-004 同步状态更新
+- 2026-06-09: v0.1.0 更新，新增 provenance_rag.py、BiasHistoryDB、PersistentCalibratorFeedbackLoop；ADR-002/003 同步状态更新
