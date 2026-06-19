@@ -4,7 +4,7 @@
 
 | Version | Supported          | Notes |
 | ------- | ------------------ | ----- |
-| 1.x.x   | :white_check_mark: | Current stable release |
+| 0.1.x   | :white_check_mark: | Current stable release |
 
 ## Reporting a Vulnerability
 
@@ -21,7 +21,7 @@ If you discover a security vulnerability, please report it responsibly:
    - Potential impact
    - Any suggested fixes (optional)
 
-4. We aim to acknowledge within **48 hours** and provide a timeline for the fix.
+4. We aim to acknowledge within **48 hours** and provide a timeline for the fix. Response times may vary depending on complexity.
 
 ## Security Best Practices for Users
 
@@ -83,7 +83,7 @@ When using this project, be aware of the following:
 >
 > 1. **No warranty**: This software is provided "as is", without warranty of any kind.
 > 2. **Compliance required**: You are solely responsible for ensuring your use complies with all applicable laws, regulations, and the terms of service of CNKI (cnki.net) and 万方数据 (wanfangdata.com.cn).
-> 3. **robots.txt**: These servers respect `robots.txt` where possible. However, respecting `robots.txt` does not constitute legal permission to scrape any site.
+> 3. **robots.txt**: CNKI's robots.txt explicitly prohibits automated access. This server implements `robots.txt`-compliant behavior but this does not constitute legal permission to scrape. Users must obtain proper authorization before use.
 > 4. **Rate limiting**: These servers implement rate limiting and request delays. Exceeding reasonable access frequencies may violate local laws or platform terms and may result in IP blocking.
 > 5. **Licensed access preferred**: For production use, obtain proper institutional licenses from CNKI and 万方数据 directly. Many universities have campus licenses that provide API access.
 > 6. **No liability**: The authors and maintainers of this project accept no liability for any legal consequences arising from the use of these scraping servers.

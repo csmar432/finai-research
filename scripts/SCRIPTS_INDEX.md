@@ -56,15 +56,14 @@
 ||------|------|------|
 || `empirical_agent.py` | `python scripts/empirical_agent.py` | 智能实证分析 Agent（自动诊断 + 调参） |
 || `empirical_advisor.py` | via class | 实证分析顾问（5级调参策略，被 `empirical_agent.py` 使用） |
-|| `econometrics_extended.py` | `python scripts/econometrics_extended.py` | 核心计量引擎（DID / OLS / PSM / GMM / Heckman 等，替代废弃的 `econometrics.py`） |
+|| `econometrics_extended.py` | `python scripts/econometrics_extended.py` | 核心计量引擎（DID / OLS / PSM / GMM / Heckman 等） |
 
 ### 1.4 金融分析
 
 || 脚本 | 命令 | 说明 |
 ||------|------|------|
 || `demo_research_report.py` | `python scripts/demo_research_report.py` | A股研报端到端演示（招商银行 600036） |
-|| `report_generator.py` | `python scripts/report_generator.py` | 研报生成器（**已废弃** → 使用 `demo_research_report.py`） |
-|| `factor_models.py` | `python scripts/factor_models.py` | Fama-French / Fama-MacBeth 因子模型 |
+||| `factor_models.py` | `python scripts/factor_models.py` | Fama-French / Fama-MacBeth 因子模型 |
 || `quantitative_factor_library.py` | `python scripts/quantitative_factor_library.py` | 量化因子库 + 事件研究 |
 
 ### 1.5 监测与可视化
@@ -99,8 +98,7 @@
 || 脚本 | 命令 | 说明 |
 ||------|------|------|
 || `data_version.py` | `python scripts/data_version.py` | 数据版本管理器 |
-|| `generate_hubei_excel.py` | `python scripts/generate_hubei_excel.py` | 湖北省数据 Excel 报告生成（9 sheets） |
-|| `generate_hubei_excel_v2.py` | `python scripts/generate_hubei_excel_v2.py` | v2 版（样式更丰富） |
+||| `generate_hubei_excel_v2.py` | `python scripts/generate_hubei_excel_v2.py` | v2 版（样式更丰富） |
 || `generate_national_excel.py` | `python scripts/generate_national_excel.py` | 全国各省 Excel 报告 |
 
 ### 1.9 特殊用途
@@ -108,8 +106,7 @@
 || 脚本 | 命令 | 说明 |
 ||------|------|------|
 || `on_enter.py` | 在 `.zshrc` 中自动调用 | 进入目录时自动唤醒研究 Agent |
-|| `professional_review_agent.py` | `python scripts/professional_review_agent.py` | 基于 Halt-Rules 的专业评审 Agent |
-|| `cleanup_paper_index.py` | `python scripts/cleanup_paper_index.py` | 一次性：清理 paper_index.json 中的过期记录 |
+||| `cleanup_paper_index.py` | `python scripts/cleanup_paper_index.py` | 一次性：清理 paper_index.json 中的过期记录 |
 
 ---
 
@@ -121,8 +118,7 @@
 ||------|------|------------|-----------|
 || `ai_router.py` | 1355 | `AIRouter`, `ModelKey`, `ModelPool` | `agent_pipeline`, `paper_write`, `paper_tools_core`, `empirical_advisor`, `dashboard`, `paper_full_pipeline`, `interactive_paper_pipeline`, `paper_reader`, `paper_quality_scorer`, `paper_visualizer`, `paper_submit`, `core/llm_gateway`, `core/llm_reviewer` |
 || `empirical_advisor.py` | 1444 | `EmpiricalAdvisor`, `DiagnosticSuite` | `empirical_agent`, `generate_empirical_tables`, `econometrics_extended`, `agent_pipeline`, `research_directions/` |
-|| `econometrics.py` | 3654 | `did()`, `ols()`, `psm_did()`, `panel_data()` | `empirical_advisor`, `generate_empirical_tables`, `green_credit_regression`, `econometrics_extended` |
-|| `econometrics_extended.py` | 2083 | `RDDRegression`, `FamaMacBeth`, `PanelThresholdReg`, `EventStudyCAR` | `empirical_advisor`, `research_directions/` |
+||| `econometrics_extended.py` | 2083 | `RDDRegression`, `FamaMacBeth`, `PanelThresholdReg`, `EventStudyCAR` | `empirical_advisor`, `research_directions/` |
 || ~~`econometrics_advanced.py`~~ | ~~963~~ | ~~Wild bootstrap, Baron-Kenny mediation~~ | **v6 已删除**（0 import，2026-06-18）|
 || `journal_template.py` | 3991 | `JournalTemplate`, `generate_latex()`, `JOURNAL_METADATA` | `agent_pipeline`, `paper_write`, `paper_full_pipeline` |
 || `knowledge_graph.py` | 1152 | `CitationGraph`, `build_graph()`, `find_papers()` | `paper_write`, `paper_reader`, `research_rag`, `review_layer`, `__init__.py` |
@@ -134,8 +130,7 @@
 || `paper_versioning.py` | 708 | `PaperVersionManager`, `commit()`, `diff()`, `restore()` | `paper_write`, `agent_pipeline` |
 || `prisma_tracker.py` | 463 | `PRISMATracker`, `generate_flow_diagram()` | （纯库函数，无广泛外部导入） |
 || `citation_stance.py` | 419 | `CitationStanceClassifier`, `classify()` | `knowledge_graph`, `citation_graph` |
-|| `financial_report_structure.py` | 613 | 研报结构定义（`FINANCIAL_REPORT_SECTIONS` 等） | `report_generator`, `dashboard` |
-|| `data_pipeline.py` | 174 | 轻量数据管道（大部分已被 `research_framework/` 替代） | `interactive_paper_pipeline` |
+||| `data_pipeline.py` | 174 | 轻量数据管道（大部分已被 `research_framework/` 替代） | `interactive_paper_pipeline` |
 || `__init__.py` | 37 | 重新导出 `AI`, `Task`, `KnowledgeGraph`, `ResearchRAG` | — |
 
 ---
@@ -148,8 +143,7 @@
 ||------|------|------|
 || `auto_register_tools.py` | MCP 注册 | 修补 `tool_selector.py` 注册表 |
 || `cleanup_paper_index.py` | 数据清理 | 清理 paper_index.json 过期记录 |
-|| `export_hubei_data.py` | 数据导出 | 湖北数据导出为 Excel |
-|| `fetch_msci_xu.py` | 数据采集 | MSCI ESG 评级批量抓取（支持 --person 参数）|
+||| `fetch_msci_xu.py` | 数据采集 | MSCI ESG 评级批量抓取（支持 --person 参数）|
 || `fetch_msci_cyh.py` | 数据采集 | MSCI ESG 评级批量抓取（支持 --person 参数）|
 || `fetch_msci_xu2.py` | 数据采集 | `fetch_msci_xu.py` 的修订版（无独立入口） |
 || `fetch_provincial_stats.py` | 数据采集 | 各省统计数据获取 |
@@ -167,8 +161,7 @@
 || `us_esg_formatter.py` | ESG 格式 | 美国 ESG 论文格式化（无独立入口） |
 || `us_esg_regression.py` | ESG 回归 | 美国能源板块 ESG 回归 |
 || `verify_metadata.py` | 数据验证 | 元数据一次性验证 |
-|| `generate_hubei_excel.py` | Excel 报告 | 湖北数据 Excel 报告 |
-|| `generate_hubei_excel_v2.py` | Excel 报告 | v2 版 |
+||| `generate_hubei_excel_v2.py` | Excel 报告 | v2 版 |
 || `generate_national_excel.py` | Excel 报告 | 全国各省 Excel 报告 |
 
 ---

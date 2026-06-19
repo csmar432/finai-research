@@ -94,7 +94,6 @@ extras = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
     "streamlit>=1.32.0",
-    "pypandoc>=0.8.0",
     "openpyxl>=3.1.0",
 ]
 
@@ -125,8 +124,7 @@ econometrics = [
 ]
 
 knowledge = [
-    "neo4j>=5.0.0",
-    "pyvis>=0.3.0",
+    # neo4j, pyvis removed — knowledge graph uses networkx (core dep)
 ]
 
 sandbox = [
@@ -144,13 +142,13 @@ monitor = [
 # Legacy: packages declared in dependencies but not currently imported in scripts/tests.
 # Kept here for reference — uncomment individually when needed.
 # Removing from main dependencies reduces install time by ~45s.
-legacy = [
-    "lxml>=4.9.0",            # XML/HTML解析 (beautifulsoup4依赖但未显式import)
-    "neo4j>=5.0.0",           # 图数据库 (未使用，knowledge图谱用networkx)
-    "pyvis>=0.3.0",           # 网络可视化 (未使用)
-    "pypandoc>=0.8.0",       # Pandoc包装器 (未使用)
-    "python-pptx>=0.6.23",   # PPT生成 (未使用)
-]
+# legacy = [
+#     "lxml>=4.9.0",           # XML/HTML解析
+#     "neo4j>=5.0.0",           # Graph DB (not used, networkx)
+#     "pyvis>=0.3.0",           # Network viz (not used)
+#     "pypandoc>=0.8.0",       # Pandoc wrapper (not used)
+#     "python-pptx>=0.6.23",    # PPT generation (not used)
+# ]
 
 all = [
     "finai-research-workflow[dev,rag,deep-learning,econometrics,knowledge,sandbox,browser,monitor,legacy]",
