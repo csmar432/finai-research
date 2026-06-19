@@ -33,17 +33,9 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-# Bootstrap sys.path so `python scripts/core/llm_reviewer.py` works.
-# This MUST come before any third-party import that may transitively
-# import stdlib `platform` (e.g. numpy, faiss, zstandard).
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-# Drop the script's own directory from sys.path so `import platform` resolves
-# to the stdlib, not scripts/core/platform.py.
-_scripts_core_dir = str(Path(__file__).resolve().parent)
-sys.path[:] = [p for p in sys.path if p != _scripts_core_dir]
-sys.path.insert(0, str(_PROJECT_ROOT))
+from scripts.core._bootstrap import bootstrap
+
+bootstrap()
 
 import numpy as np
 
