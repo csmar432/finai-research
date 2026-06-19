@@ -151,7 +151,7 @@ monitor = [
 # ]
 
 all = [
-    "finai-research-workflow[dev,rag,deep-learning,econometrics,knowledge,sandbox,browser,monitor,legacy]",
+    "finai-research-workflow[dev,rag,deep-learning,econometrics,knowledge,sandbox,browser,monitor]",
 ]
 
 [project.scripts]
@@ -185,7 +185,7 @@ exclude = [
     "projects",
     "canvases",
     ".github",
-    "scripts/legacy",
+    "scripts/legacy",    # (removed in v12 — kept for reference)
     "scripts/deprecated",
     "scripts/__pycache__",
     "**/__pycache__",
@@ -207,7 +207,6 @@ exclude = [
 "knowledge" = "finai_research_workflow/knowledge"
 "mcp_servers" = "finai_research_workflow/mcp_servers"
 "examples" = "finai_research_workflow/examples"
-"releases" = "finai_research_workflow/releases"
 
 [tool.hatch.build.targets.sdist]
 include = [

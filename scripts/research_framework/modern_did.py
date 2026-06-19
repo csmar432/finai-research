@@ -197,31 +197,40 @@ def B(a: float, b: float) -> float:
 # ─────────────────────────────────────────────────────────────────────────────
 # RANDOM SEED TRACKING
 # ─────────────────────────────────────────────────────────────────────────────
+# NOTE: modern_did.py uses np.random.default_rng(seed) internally, NOT
+# np.random.seed().  The old monkey-patch of np.random.seed could NOT track
+# these calls.  Use enable_random_seed_tracking() below for explicit control.
 __random_seeds: dict[int, int] = {}
+_tracking_enabled: bool = False
 
 
-def record_random_seed(seed: int) -> None:
-    """Record a np.random.seed() call for reproducibility tracking."""
-    import traceback
-    stack = traceback.extract_stack()
-    for frame in reversed(stack[:-1]):
-        if "modern_did.py" not in frame.filename:
-            __random_seeds[seed] = len(__random_seeds)
-            return
+def enable_random_seed_tracking(enabled: bool = True) -> None:
+    """Enable/disable random seed tracking.
+
+    When enabled, record_random_seed() will record seeds set via
+    np.random.seed() calls made *after* this function is called.
+    Note: modern_did.py internally uses np.random.default_rng(seed),
+    which is NOT affected by np.random.seed() and must be tracked explicitly.
+    """
+    global _tracking_enabled
+    _tracking_enabled = enabled
+
+
+def record_random_seed(seed: int, source: str = "unknown") -> None:
+    """Record a random seed for reproducibility tracking.
+
+    Args:
+        seed: The random seed value.
+        source: Descriptive label for where this seed was set.
+    """
+    if not _tracking_enabled:
+        return
     __random_seeds[seed] = len(__random_seeds)
 
 
 def get_random_seeds() -> dict[int, int]:
     """Return a copy of all recorded random seeds."""
     return dict(__random_seeds)
-
-
-# Monkey-patch np.random.seed so all internal calls are tracked
-_original_np_seed = np.random.seed
-def _tracked_seed(seed: int) -> None:
-    record_random_seed(seed)
-    _original_np_seed(seed)
-np.random.seed = _tracked_seed  # type: ignore[method-assign]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
