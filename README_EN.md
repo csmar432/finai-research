@@ -26,12 +26,10 @@
 
 | I'm looking for... | Go here |
 |---|---|
-| **🚀 Publishing v1.0.0** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 items + [releases/v1.0.0.md](releases/v1.0.0.md) |
-| **Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 items |
 | **One-line publish script** | `python scripts/release.py` |
 | **API reference** | [scripts/](scripts/) modules with type hints and docstrings |
 | **Architecture overview** | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
-| **17 AI skills** | [knowledge/skills/](knowledge/skills/) |
+| **18 AI skills** | [knowledge/skills/](knowledge/skills/) |
 | **Architecture overview** | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | **Troubleshooting FAQ** | [FAQ.md](FAQ.md) |
 | **Chinese comprehensive guide** | [使用指南.md](使用指南.md) (1049 lines, 13 chapters) |
@@ -88,7 +86,7 @@
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
-### 🤖 17 AI Skills (Claude Code / Cursor / Copilot)
+### 🤖 18 AI Skills (Claude Code / Cursor / Copilot)
 
 - **Discovery**: `fin-idea-discovery` · `fin-generate-idea` · `fin-novelty-check` · `fin-lit-review`
 - **Design**: `fin-experiment-design` · `fin-data-acquisition`
@@ -158,7 +156,7 @@ Each step is **independently callable** and **has its own output file** as a sta
 | MCP data servers | **49** |
 | Tools exposed | **222** |
 | Econometric methods | **49** |
-| AI skills | **17** |
+| AI skills | **18** |
 | Journal templates | **34** |
 | Test files | **86** |
 | Documentation | **149 markdown files** |

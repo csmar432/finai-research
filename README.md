@@ -34,18 +34,12 @@
 
 | I'm looking for... | Go here |
 |---|---|
-| **🚀 发布 v1.0.0** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 项检查 + [releases/v1.0.0.md](releases/v1.0.0.md) |
-| **📋 Pre-release checklist** | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) · 61 项检查 |
-| **🔧 一键发布脚本** | `python scripts/release.py` |
 | **🧭 交互式配置向导** | `python scripts/setup_wizard.py --guided` · 首次安装推荐 |
 | **🩺 系统自检** | `python scripts/health_check.py --json` · 验证环境就绪 |
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
-| **Chinese architecture overview** | [使用指南.md - 系统概览](使用指南.md#1-系统概览) |
-| **Setup & installation** | [使用指南.md - 安装配置](使用指南.md#2-安装配置) |
-| **11-step workflow** | [使用指南.md - 完整工作流程](使用指南.md#7-完整工作流程) |
 | **42 econometric methods** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
 | **43 MCP data sources** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源) |
-| **17 AI Skills** | [knowledge/skills/](knowledge/skills/) |
+| **18 AI Skills** | [knowledge/skills/](knowledge/skills/) |
 | **API reference** | [scripts/](scripts/) 目录下的每个模块都含 docstring 和类型注解 |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
 
@@ -65,7 +59,7 @@ $ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 - **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/CSMAR/Wind), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent.
 - **42 econometric methods, not just OLS** — modern staggered DiD (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH), synthetic control, instrumental variables, panel GMM, RDD, event studies, mediation, and more.
 - **45 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
-- **17 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
+- **18 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
 - **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
 
 > **For Chinese users:** The most comprehensive guide is **[使用指南.md](使用指南.md)** — a complete 13-chapter manual covering installation, workflows, data sources, econometric methods, paper writing, and FAQ.
@@ -285,7 +279,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 43 MCP servers · 47 econometric modules (49+ method variants including DID/IV/RDD/PSM/GMM/Synthetic-DID) · 17 Skills · 45 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
+**Key numbers:** 43 MCP servers · 42 econometric methods · 18 Skills · 45 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
 
 ---
 

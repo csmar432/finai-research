@@ -118,7 +118,7 @@ mcp_servers/
 {
   "name": "user_your_server",
   "description": "Your custom data source for research",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "Your Name",
   "capabilities": ["stock_data", "financial_statements"],
   "requires_api_key": false

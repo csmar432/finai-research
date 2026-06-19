@@ -14,7 +14,7 @@ assignees: ''
 
 - **OS**: (e.g., macOS 14.5, Ubuntu 22.04, Windows 11)
 - **Python version**: (e.g., 3.11.5)
-- **FinAI version**: (e.g., 1.0.0 — run `python -c "import finai; print(finai.__version__)"`)
+- **FinAI version**: (e.g., 0.1.0 — run `python -c "import finai; print(finai.__version__)"`)
 - **Install method**: (e.g., `pip install -e .`, `pip install finai-research-workflow`, `conda`)
 - **LLM provider**: (e.g., DeepSeek, OpenAI, Claude, Ollama)
 
