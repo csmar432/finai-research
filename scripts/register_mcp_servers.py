@@ -66,8 +66,14 @@ def load_existing_mcp_json() -> dict:
 
 
 def discover_servers() -> list[dict]:
+    # Servers that require explicit opt-in due to legal/TOS concerns.
+    # These are still present in mcp_servers/ but NOT auto-registered.
+    OPTIN_ONLY = {"user_cnki", "user_wanfang"}
+
     servers = []
     for d in sorted((ROOT / "mcp_servers").glob("user_*/")):
+        if d.name in OPTIN_ONLY:
+            continue  # skip auto-registration
         mdata_path = d / "SERVER_METADATA.json"
         module = get_module_name(d.name)
         if mdata_path.exists():

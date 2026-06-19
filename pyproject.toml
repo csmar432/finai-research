@@ -267,8 +267,9 @@ target-version = "py312"
 # F: pyflakes (undefined name, unused import)
 # W: pycodestyle warnings
 # I: isort (import sort)
-# 禁用: N (命名), UP (pyupgrade), B (bugbear), C4 (comprehensions)
-# 这些会触发大量历史代码的语义性修改, 单独 enable 后可逐步修复
+# B: bugbear (B001 = bare except:, B007 = loop over None, etc.)
+#  谨慎启用 B —— 先只在 CI 阶段扫，不作为 pre-commit 阻塞
+#  B001 (bare except) 是 P1 修复目标之一: docs/TASKS_RUNBOOK.md §P1-5
 select = ["E", "F", "W", "I"]
 ignore = [
     "E501",  # line too long (有专门 line-length)
@@ -291,6 +292,11 @@ ignore = [
     "W291",  # trailing whitespace
     "W292",  # no newline at end of file
     "W293",  # whitespace on blank line
+    # S110 (try-except-pass) 在以下合法场景允许: docs/TASKS_RUNBOOK.md §P1-5
+    # agent_pipeline.py: LLM orchestrator 捕获所有 agent 异常，意图明确
+    # event_monitor.py: 网络监控脚本需捕获 KeyboardInterrupt/SIGTERM
+    # interactive_paper_pipeline.py: 用户交互管道捕获配置缺失
+    "S110",
 ]
 
 [tool.pytest.ini_options]

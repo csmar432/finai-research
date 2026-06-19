@@ -157,7 +157,7 @@ python scripts/demo_research_report.py
 - ✅ All `scripts/*.py` entry points
 - ✅ 43 MCP servers (pure Python stdlib)
 - ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
-- ✅ 2,085 unit tests (CI matrix: Ubuntu + macOS; no Windows)
+- ✅ 2,136 unit tests (pytest --collect-only; CI matrix: Ubuntu + macOS; no Windows)
 
 ### Known Cross-Platform Limitations
 

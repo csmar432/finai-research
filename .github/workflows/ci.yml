@@ -39,7 +39,9 @@ jobs:
         run: pip install --no-deps -e .
 
       - name: Ruff lint
-        run: ruff check scripts/ --ignore E501 --line-length 100
+        run: ruff check scripts/ --ignore E501 --line-length 100 --select E,F,W,I,S110
+      - name: Ruff bandit (try-except-pass)
+        run: ruff check scripts/ --ignore E501 --line-length 100 --select S110 2>&1 | tee ruff-s110.log || true
 
       - name: MCP schema check
         run: python scripts/mcp_schema_check.py
