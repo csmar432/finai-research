@@ -13,31 +13,31 @@
   title     = {{FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research}},
   year      = {2026},
   month     = jun,
-  version   = {1.0.0},
+  version   = {0.1.0},
   url       = {https://github.com/csmar432/finai-research-workflow},
   doi       = {10.5281/zenodo.PENDING},  % Replace after Zenodo release
-  note      = {43 MCP data sources, 42 econometric methods, 17 AI skills, 45 journal templates}
+  note      = {43 MCP data sources, 42 econometric methods, 18 AI skills, 45 journal templates}
 }
 ```
 
 ## 2. APA (7th edition)
 
 ```
-csmar432. (2026). FinAI Research Workflow (Version 1.0.0) [Computer software].
+csmar432. (2026). FinAI Research Workflow (Version 0.1.0) [Computer software].
 https://github.com/csmar432/finai-research-workflow
 ```
 
 ## 3. Chicago (Author-Date)
 
 ```
-csmar432. 2026. "FinAI Research Workflow." Version 1.0.0.
+csmar432. 2026. "FinAI Research Workflow." Version 0.1.0.
 https://github.com/csmar432/finai-research-workflow.
 ```
 
 ## 4. MLA (9th edition)
 
 ```
-csmar432. "FinAI Research Workflow." Version 1.0.0, 2026,
+csmar432. "FinAI Research Workflow." Version 0.1.0, 2026,
 github.com/csmar432/finai-research-workflow.
 ```
 
@@ -45,7 +45,7 @@ github.com/csmar432/finai-research-workflow.
 
 ```
 csmar432. FinAI Research Workflow: 经济金融领域端到端AI智能体流水线
-[软件]. 版本 1.0.0. 2026.
+[软件]. 版本 0.1.0. 2026.
 https://github.com/csmar432/finai-research-workflow.
 ```
 
