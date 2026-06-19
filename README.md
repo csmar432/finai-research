@@ -2,7 +2,7 @@
 
 > **Tell me your research topic. Get a submittable paper.**
 >
-> An end-to-end AI agent pipeline for economic and financial research — from raw idea to submission-ready manuscript. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 45 journals, and adversarial review loops.
+> An end-to-end AI agent pipeline for economic and financial research — from raw idea to submission-ready manuscript. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 44 journals, and adversarial review loops.
 
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
@@ -58,7 +58,7 @@ $ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 - **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 18 robustness checks, parallel-trend plots).
 - **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/CSMAR/Wind), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent.
 - **42 econometric methods, not just OLS** — modern staggered DiD (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH), synthetic control, instrumental variables, panel GMM, RDD, event studies, mediation, and more.
-- **45 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
+- **44 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
 - **18 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
 - **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
 
@@ -279,7 +279,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 43 MCP servers · 42 econometric methods · 18 Skills · 45 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
+**Key numbers:** 43 MCP servers · 42 econometric methods · 18 Skills · 44 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
 
 ---
 
@@ -327,7 +327,7 @@ Each skill is documented in `.claude/skills/` (Claude Code) and `.github/skills/
 | `fin-experiment-design` | Complete empirical design | `modern_did.py`, `regression_engine.py` |
 | `fin-paper-writing` | Writing orchestration | `report_generator.py` |
 | `fin-paper-draft` | Body text generation (LaTeX) | `journal_template.py` |
-| `fin-paper-plan` | Outline generation | 45 journal templates |
+| `fin-paper-plan` | Outline generation | 44 journal templates |
 | `fin-paper-figure` | Chart generation (≥300 DPI) | `fin_charts.py`, `chart_factory.py` |
 | `fin-paper-convert` | LaTeX compilation | `xelatex`/`pdflatex` + journal templates |
 | `fin-review-loop` | Multi-round adversarial review | 5-dimension scoring |
@@ -497,7 +497,7 @@ flowchart TD
     S3 -->|checkpoint 3| S4[4. Empirical Design<br/>DID/IV/RDD/PSM selector]
     S4 --> S5[5. Data Acquisition<br/>43 MCP data sources]
     S5 --> S6[6. Empirical Analysis<br/>Staggered DID, IV, GMM]
-    S6 --> S7[7. Paper Writing<br/>45 journal templates]
+    S6 --> S7[7. Paper Writing<br/>44 journal templates]
     S7 --> S8[8. Adversarial Review<br/>4 rounds, score-based]
     S8 -->|checkpoint 4| Done([Submission-ready PDF])
 
