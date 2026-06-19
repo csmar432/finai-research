@@ -106,7 +106,7 @@ pytest tests/ -v
 
 ### 论文写作
 
-- LaTeX 输出（45种期刊格式，英文/中文30种+日文3种+德文4种+其他8种）
+- LaTeX 输出（44种期刊格式，英文/中文30种+日文3种+德文4种+其他7种）
 - JF / JFE / RFS / JAE / JPE / Econometrica 等英文顶刊
 - 经济研究 / 金融研究 / 管理世界 / 会计研究 等中文顶刊
 - 多轮对抗性 review 循环
@@ -209,7 +209,7 @@ output/                           # 输出目录
 | `fin-experiment-design` | 完整实证设计（DID/IV/RD/PSM）|
 | `fin-paper-writing` | 论文写作编排 |
 | `fin-paper-draft` | 正文生成（LaTeX）|
-| `fin-paper-plan` | 大纲生成（45种期刊模板）|
+| `fin-paper-plan` | 大纲生成（44种期刊模板）|
 | `fin-paper-figure` | 图表生成（≥300 DPI，20+类型）|
 | `fin-paper-convert` | LaTeX 编译 |
 | `fin-review-loop` | 多轮对抗性 review |
