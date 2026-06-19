@@ -417,11 +417,14 @@ python scripts/agent.py --goal "xxx" --verbose
 ### Essential Commands
 
 ```bash
-# NOTE: Makefile not yet created. Common commands:
-#   pip install -e ".[dev]"  # Full dev setup
-#   pip install -e ".[all]"  # All optional dependencies
-#   python -m pytest tests/   # Run tests
-#   ruff check scripts/        # Lint code
+# Full dev setup
+pip install -e ".[dev]"
+# Run tests
+make test
+# Lint code
+make lint
+# Health check
+make health
 ```
 
 ### File Locations

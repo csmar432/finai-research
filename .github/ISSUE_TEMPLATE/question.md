@@ -24,7 +24,7 @@ assignees: ''
 
 - **OS**: (e.g., macOS 14.5, Ubuntu 22.04)
 - **Python version**: (e.g., 3.11.5)
-- **FinAI version**: (e.g., 1.0.0)
+- **FinAI version**: (e.g., 0.1.0)
 
 ## Checklist
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finai-research-workflow"
-version = "1.0.0"
+version = "0.1.0"
 description = "经济金融领域 AI 学术研究工作流 — 论文写作（JF/JFE/RFS/经济研究/金融研究）与金融研报生成。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。"
 readme = "README.md"
 license = {text = "MIT"}

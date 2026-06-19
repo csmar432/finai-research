@@ -14,7 +14,7 @@
 || [🔧 Tool Scripts](#三-tool-scripts-工具脚本) | 25 | 专项工具，非主流研究流程 |
 || [🗑️ Obsolete](#四-obsolete-废弃) | 1 | 已废弃，不应使用 |
 || **合计** | **72** | |
-| **v1.8.1 新增** | **10 个计量模块** | Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR-DCC-GARCH / 生存分析 / 因果森林 / 面板协整 |
+| **v0.1.0 新增** | **10 个计量模块** | Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR-DCC-GARCH / 生存分析 / 因果森林 / 面板协整 |
 
 > **快速导航**: 如果不确定一个脚本的用途，先查这里。
 > 如果脚本不在 Entry Points 列表中，它通常是被其他脚本导入使用的。
@@ -192,7 +192,7 @@
 || 目录 | 内容 |
 ||------|------|
 || `scripts/core/` | 核心 Agent 系统（79个文件，72个非测试模块）：orchestrator, memory, planner, reflector, session, tool_selector, hitl_gate, llm_gateway, latex_lint, latex_diff, pdf_vision_check, sandbox, self_evolution, cross_session_knowledge, literature_vector_store, macro_event_bus, checkpoint, provenance, mcp_tool_market, agent_state, reviewer_calibrator, chart_factory, chart_pipeline, ai_parliament, collaboration, presence_server, sandbox_executor, plotstyle_validator, vlm_chart_critic 等 |
-|| `scripts/research_framework/` | 实证研究框架（**41个模块**，v1.8.1 新增10个）：pipeline, data_fetcher, data_validator, regression_engine, modern_did, synthetic_control, synthetic_did, rdd, spatial_regression, iv_panel, robustness_runner, panel_quantile_regression, interactive_fixed_effects, local_projections_did, triple_diff_did, vuong_kob, leamer_sensitivity, diagnostic_reporter, finance_sensitivity, kob_decomposition, vuong_test, enhanced_pipeline, fin_charts, report_generator, a_share_variables, policy_database, base, journal_templates_multilang, provenance_rag, **panel_var**, **discrete_choice**, **volatility_models**, **time_varying_models**, **survival_analysis**, **causal_ml**, **panel_cointegration**, mediation_test, panel_threshold_regression, prisma_compliance, **green_bond_model**, **options_iv_surface** |
+|| `scripts/research_framework/` | 实证研究框架（**41个模块**，v0.1.0 新增10个）：pipeline, data_fetcher, data_validator, regression_engine, modern_did, synthetic_control, synthetic_did, rdd, spatial_regression, iv_panel, robustness_runner, panel_quantile_regression, interactive_fixed_effects, local_projections_did, triple_diff_did, vuong_kob, leamer_sensitivity, diagnostic_reporter, finance_sensitivity, kob_decomposition, vuong_test, enhanced_pipeline, fin_charts, report_generator, a_share_variables, policy_database, base, journal_templates_multilang, provenance_rag, **panel_var**, **discrete_choice**, **volatility_models**, **time_varying_models**, **survival_analysis**, **causal_ml**, **panel_cointegration**, mediation_test, panel_threshold_regression, prisma_compliance, **green_bond_model**, **options_iv_surface** |
 || `scripts/research_directions/` | 研究方向定义（12个）：digital_finance, green_finance, carbon_economics, corporate_finance, macro_finance, asset_pricing, behavioral_finance, fintech_innovation, real_estate_finance, international_finance, political_economy_finance, esg_finance |
 
 ---
@@ -224,4 +224,4 @@ report_*.py           # 报告生成（小写下划线）
 
 ---
 
-*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-06-13（v1.8.1 新增7个计量模块：Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR/DCC-GARCH / 生存分析 / 因果森林 / 面板协整）*
+*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-06-13（v0.1.0 新增7个计量模块：Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR/DCC-GARCH / 生存分析 / 因果森林 / 面板协整）*
