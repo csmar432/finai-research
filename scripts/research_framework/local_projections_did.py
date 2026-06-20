@@ -235,7 +235,8 @@ def _build_lp_data(
             how="inner",
         )
     else:
-        # Backward LP: outcome at t+h vs t-1 (h < 0 means looking backward)
+        # Backward LP: outcome at t+h vs t+1 (pre-treatment symmetric construction)
+        # For h < 0, target = t + h (pre-period), base = t + 1 (immediate pre-period)
         df["_target_t"] = df["_t_numeric"] + horizon
         df_lp = df.merge(
             df[[unit_var, time_var, outcome_var]].rename(
@@ -244,7 +245,8 @@ def _build_lp_data(
             on=[unit_var, "_target_t"],
             how="inner",
         )
-        df["_base_t"] = df["_t_numeric"] - 1
+        # Baseline for backward: t+1 (symmetric to t-1 for forward)
+        df["_base_t"] = df["_t_numeric"] + 1
         df_lp = df_lp.merge(
             df[[unit_var, "_base_t", outcome_var]].rename(
                 columns={"_base_t": time_var, outcome_var: "_y_base"}

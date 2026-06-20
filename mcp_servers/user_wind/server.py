@@ -172,6 +172,8 @@ async def handle_credit_spread(args: dict) -> list[TextContent]:
                 {"date": "2024-06", "rating": "AA+", "period": "3Y", "spread_bps": 78},
                 {"date": "2024-06", "rating": "AA", "period": "3Y", "spread_bps": 115},
             ],
+            "_is_mock": True,
+            "_mock_source": "user-wind/handle_credit_spread",
             "note": "信用利差数据（企业债收益率 - 国债收益率），单位：bp"
         }
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]

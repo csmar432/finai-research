@@ -41,8 +41,8 @@ fastmcp>=0.1.0
 mcp>=1.0.0
 
 # ── LLM / AI ─────────────────────────────────────────────────────────────────
-openai>=2.0.0
-anthropic>=7.0.0
+openai>=1.0.0
+anthropic>=0.30.0
 httpx>=0.27.0
 tiktoken>=0.7.0
 
@@ -81,8 +81,9 @@ sentence-transformers>=2.3.0
 jieba>=0.42.0
 
 # ── Deep Learning Extras ─────────────────────────────────────────────────────
-torch>=2.12.0
-accelerate>=1.14.0
+# Optional: only needed for scripts/research_directions/deep_learning*.py
+# torch>=2.12.0
+# accelerate>=1.14.0
 
 # ── Econometrics Extras ──────────────────────────────────────────────────────
 pandas-datareader>=0.10.0

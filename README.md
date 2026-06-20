@@ -229,6 +229,9 @@ cd finai-research-workflow
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 
+# Optional: install econometrics extras (includes diff-in-diff2 for CS/BJS/Gardner DiD)
+pip install -e ".[econometrics]"
+
 # 3. Configure API key (at least one required)
 cp .env.example .env
 # Edit .env and add: DEEPSEEK_API_KEY=sk-your-key

@@ -167,6 +167,8 @@ async def handle_financial(args: dict) -> list[TextContent]:
                     {"item": "期末现金", "amount": 45000000000, "yoy": 18.5},
                 ]
             }
+        result["_is_mock"] = True
+        result["_mock_source"] = "user-csmar/handle_financial"
         result["note"] = "CSMAR财务报表数据，金额单位：元"
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
     except Exception as e:
@@ -221,6 +223,8 @@ async def handle_corporate(args: dict) -> list[TextContent]:
                     "equity_incentive": 5800000,
                 }
             }
+        result["_is_mock"] = True
+        result["_mock_source"] = "user-csmar/handle_corporate"
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
     except Exception as e:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
@@ -248,6 +252,8 @@ async def handle_trading(args: dict) -> list[TextContent]:
             ],
             "note": "CSMAR日频交易数据，价格单位：元，成交量单位：股，金额单位：元"
         }
+        result["_is_mock"] = True
+        result["_mock_source"] = "user-csmar/handle_trading"
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
     except Exception as e:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]
@@ -272,6 +278,8 @@ async def handle_analyst(args: dict) -> list[TextContent]:
             ],
             "note": "CSMAR分析师预测数据"
         }
+        result["_is_mock"] = True
+        result["_mock_source"] = "user-csmar/handle_analyst"
         return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
     except Exception as e:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}))]

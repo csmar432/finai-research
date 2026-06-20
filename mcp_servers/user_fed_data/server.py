@@ -381,6 +381,12 @@ async def handle_fomc(args: dict) -> list[TextContent]:
 
     result = {
         "_data_source": "Federal Reserve FOMC (federalreserve.gov)",
+        "_is_mock": True,
+        "_mock_note": (
+            "FOMC_SCHEDULE is a hardcoded dictionary of known FOMC meeting dates. "
+            "Real rate decisions require FRED DFEDTAR series for post-meeting data. "
+            "Upcoming meetings (decision=pending) are placeholders."
+        ),
         "_source_url": f"https://www.federalreserve.gov/monetarypolicy/fomccalendars{year}.htm",
         "year": year,
         "meetings": schedule,
