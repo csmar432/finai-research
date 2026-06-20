@@ -163,7 +163,7 @@ scripts/
 │   ├── data_fetcher.py       # MCP数据获取（7层fallback）
 │   ├── report_generator.py    # LaTeX/Word双格式
 │   └── robustness_runner.py   # 18类稳健性检验
-├── core/                         # Agent编排层（83个非测试模块）
+├── core/                         # Agent编排层（89个非测试模块）
 │   ├── provenance.py            # 数据溯源追踪
 │   ├── checkpoint.py             # 断点续传
 │   ├── event_monitor.py          # 宏观事件监控（NFP/CPI/FOMC）
