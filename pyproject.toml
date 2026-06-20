@@ -338,8 +338,10 @@ filterwarnings = [
     "ignore::UserWarning",
 ]
 # Minimum coverage to pass CI
-# Set lower than production target to allow incremental improvement
-# 目标是 80%, 当前设为 60% (在 ci.yml 中)
+# Set to 30% as first-step incremental target.
+# Project currently ~7% coverage. A conservative 30% gate avoids blocking
+# contributors while still requiring meaningful test additions.
+# Long-term target: 60% (see CLAUDE.md 质量保障 section).
 minversion = "7.0"
 
 # ── Coverage configuration ─────────────────────────────────────────────
@@ -361,9 +363,9 @@ omit = [
 ]
 
 [tool.coverage.report]
-# NOTE: fail_under = 60 added in v18 but current total coverage is ~7%.
-# Uncomment when the project has reached 60% test coverage.
-# fail_under = 60
+# Progressive coverage gate: start at 30%, increase as tests are added.
+# Current project coverage: ~7%.
+fail_under = 30
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",
