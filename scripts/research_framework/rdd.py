@@ -25,6 +25,35 @@ Usage:
     engine.covariate_balance()
     engine.mccrary_test()
     engine.to_latex()
+
+Quick Start
+-----------
+最小可运行示例（Sharp RDD 在 cutoff=0.5）：
+
+>>> import numpy as np
+>>> import pandas as pd
+>>> from scripts.research_framework.rdd import RDDEngine
+
+>>> # 1) 构造合成 RDD 数据：N=2000, cutoff=0, treatment effect=2.0
+>>> rng = np.random.default_rng(42)
+>>> N = 2000
+>>> x = rng.uniform(-1.0, 1.0, N)
+>>> treatment = (x >= 0).astype(int)
+>>> y = 1.0 + 2.0 * x + 2.0 * treatment + rng.normal(0, 0.5, N)
+>>> covariate = rng.normal(0, 1, N)
+>>> df = pd.DataFrame({"score": x, "treat": treatment, "y": y, "cov1": covariate})
+
+>>> # 2) 初始化 RDD 引擎（Sharp RDD）
+>>> engine = RDDEngine(df, y_var="y", x_var="score", cutoff=0.0)
+
+>>> # 3) 拟合（自动带宽选择 IK 2012）
+>>> result = engine.fit()
+>>> 0.0 < result.coef  # treatment effect should be positive
+True
+>>> 0.0 <= result.pval <= 1.0
+True
+>>> result.n_obs > 100
+True
 """
 
 from __future__ import annotations

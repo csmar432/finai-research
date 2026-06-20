@@ -20,6 +20,53 @@ Usage:
     engine.plot_placebo(save_path="placebo.png")
     inference = engine.inference(n_placebos=999)
 
+Quick Start
+-----------
+最小可运行示例（California-style 合成控制数据）：
+
+>>> import numpy as np
+>>> import pandas as pd
+>>> from scripts.research_framework.synthetic_control import SyntheticControlEngine
+
+>>> # 1) 构造合成数据：1 treated unit + 4 donor units × 20 年（1980-1999）
+>>> years = list(range(1980, 2000))  # 1989 = treatment year
+>>> rows = []
+>>> donor_units = ["texas", "new_york", "ohio", "pennsylvania"]
+>>> for unit in ["california"] + donor_units:
+...     rng = np.random.default_rng(hash(unit) % (2**32))
+...     base = rng.normal(0, 1, len(years)).cumsum()
+...     is_treated = unit == "california"
+...     for i, year in enumerate(years):
+...         treat_add = 5.0 if (is_treated and year >= 1989) else 0.0
+...         rows.append({
+...             "state": unit,
+...             "year": year,
+...             "gdp_per_capita": 30 + base[i] + treat_add,
+...             "pop_density": 100 + i * 0.5,
+...             "invest_rate": 0.2 + 0.001 * i,
+...         })
+>>> df = pd.DataFrame(rows)
+
+>>> # 2) 初始化合成控制引擎
+>>> engine = SyntheticControlEngine(
+...     df=df,
+...     y_var="gdp_per_capita",
+...     unit_var="state",
+...     time_var="year",
+...     treat_unit="california",
+...     treat_period=1989,
+...     x_vars=["pop_density", "invest_rate"],
+... )
+
+>>> # 3) 拟合权重
+>>> result = engine.fit()
+>>> isinstance(result.rmspe_ratio, float)
+True
+>>> result.n_post_periods == 11  # 1989-1999 inclusive
+True
+>>> result.n_donors == 4  # 4 donor units
+True
+
 References:
     Abadie, A., Diamond, A., & Hainmueller, J. (2010). Synthetic Control... JASA.
     Abadie, A., Diamond, A., & Hainmueller, J. (2015). Comparative... JASA.

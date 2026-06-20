@@ -1,6 +1,7 @@
 # Agent Orchestration Architecture
 
 > Created: 2026-05-28
+> Last Updated: 2026-06-20
 > Status: Active
 
 This document describes the two distinct orchestrator systems in the codebase and their architectural boundaries.

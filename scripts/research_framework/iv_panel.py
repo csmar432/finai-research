@@ -19,6 +19,34 @@ Usage:
     # Fama-MacBeth
     fb = FamaMacBeth(df, y_var="roa", x_vars=["lev","size"])
     result = fb.fit()
+
+Quick Start
+-----------
+最小可运行示例（IV 2SLS）：
+
+>>> import numpy as np
+>>> import pandas as pd
+>>> from scripts.research_framework.iv_panel import IVPanel
+
+>>> # 1) 构造合成 IV 数据：内生变量 X 受到工具变量 Z 的影响
+>>> rng = np.random.default_rng(42)
+>>> N = 500
+>>> Z = rng.normal(0, 1, N)  # 工具变量
+>>> X = 0.5 * Z + rng.normal(0, 1, N)  # 内生变量（受 Z 影响）
+>>> y = 1.0 + 2.0 * X + rng.normal(0, 0.5, N)  # y 由 X 决定
+>>> df = pd.DataFrame({"Z": Z, "X": X, "y": y, "id": range(N), "year": [2020] * N})
+
+>>> # 2) 初始化 IV 面板模型
+>>> model = IVPanel(df, y_var="y", x_vars=["X"], iv_vars=["Z"], unit_var="id", time_var="year")
+
+>>> # 3) 拟合（默认 2SLS）
+>>> result = model.fit(method="2sls")
+>>> result.params["endog"] > 0  # endogenous X's coefficient should be ~2.0
+True
+>>> result.first_stage.diagnostics["f.stat"].iloc[0] > 10  # weak instrument test (Staiger-Stock)
+True
+>>> result.nobs == N
+True
 """
 
 from __future__ import annotations

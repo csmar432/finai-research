@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **CI pipeline robustness** (PR #46): Added `if [ -f pytest-batch*.log ]` guards to all failure-step log operations across batch1/batch2/batch3/cross-platform. Fixes the recurring `LOG READ ERR: ENOENT: no such file or directory, open 'pytest-cs.log'` when pytest never runs (e.g. install step fails).
+- **QualityGates / AutoReviewRules load diagnostics** (PR #47): Distinguish `ImportError` (module missing) from other exceptions when initializing `PaperQualityGates` and `AutoReviewRules` in `agent_pipeline.py`. Logged warnings/errors now make it visible whether quality gates are NO-OP due to missing module or runtime error.
+- **Journal template count correction** (PR #46): Updated `README.md`/`CLAUDE.md`/`CITATION.cff` to reflect the actual count of 44 journal templates (was 45) and 44 MCP servers (was 43 in some places).
+- **DOI badge and citation** (PR #47): Replaced dead `zenodo.org/PENDING` link with shields.io `PENDING` badge. Added explicit notes in `README.md`/`docs/CITATION_GUIDE.md` explaining how to obtain a real DOI via Zenodo.
+
+### Changed
+- **Project metadata** (PR #48): `config/project_config.json` author changed from placeholder `Your Name <your.email@example.com>` to `csmar432 <https://github.com/csmar432>`.
+- **`scripts/research_framework/regression_engine.py`** (PR #48): Expanded top docstring with Quick Start / Examples sections (Issue #22 first module — synthetic DID data).
+
+### Added
+- **docstring examples** (PR #48, Issue #22): Quick Start sections added to four core econometric modules — `modern_did.py`, `synthetic_control.py`, `rdd.py`, `iv_panel.py`, `regression_engine.py`. All examples use synthetic data (numpy.random) and run independently of external data sources.
+
+### Closed
+- **Issue #42** (PR #48): CI fail log issue (49 bot comments) closed after v13 PR #46 fix landed and CI went green across v12/v13/v14/current main.
+
+---
+
 ## [v0.1.0] — 2026-06-17
 
 ### Added

@@ -10,11 +10,65 @@ Key features:
 - All simulated variables flagged
 - BOTH Chinese and English variable name support
 
+Quick Start
+-----------
+最小可运行示例（合成 DID 数据）：
+
+>>> import numpy as np
+>>> import pandas as pd
+>>> from scripts.research_framework.regression_engine import RegressionEngine
+
+>>> # 1) 构造合成面板：200 家企业 × 4 年（2018-2021），2020 年起部分企业接受处理
+>>> rng = np.random.default_rng(42)
+>>> rows = []
+>>> for firm_id in range(200):
+...     is_treated = firm_id >= 100
+...     for year in [2018, 2019, 2020, 2021]:
+...         rows.append({
+...             "firm_id": f"firm_{firm_id}",
+...             "year": year,
+...             "roa": 0.04 + 0.005 * (year - 2018) + rng.normal(0, 0.01)
+...                    + (0.015 if (is_treated and year >= 2020) else 0),
+...             "lev": 0.4 + rng.normal(0, 0.1),
+...             "size": np.log(1e8 + rng.normal(0, 1e7)),
+...             "tangibility": 0.3 + rng.normal(0, 0.05),
+...             "esg_high": int(is_treated),
+...             "post": int(year >= 2020),
+...         })
+>>> df = pd.DataFrame(rows)
+
+>>> # 2) 初始化引擎
+>>> engine = RegressionEngine(df)
+
+>>> # 3) DID 回归（处理变量 × 时间虚拟变量）
+>>> result = engine.did(
+...     y_var="roa",
+...     treat_var="esg_high",
+...     time_var="post",
+...     x_vars=["lev", "size", "tangibility"],
+... )
+>>> round(result["did_coef"], 3)  # ~ 0.015 (treatment effect)
+0.015
+>>> 0.0 <= result["did_pval"] <= 1.0
+True
+>>> result["n_obs"] > 500
+True
+
 Usage:
     engine = RegressionEngine(df, tracker)
     result = engine.did("lev", "esg_high", "post", x_vars=["ln_assets","roa","tangibility"])
     engine.print_table([result1, result2], ["(1) lev", "(2) ltd"])
     engine.save_latex("table1.tex")
+
+Examples
+--------
+Examples 段对应 Issue #22 — 为 5 个核心计量模块添加可独立运行的 docstring 示例。
+本模块中的所有示例使用合成数据（numpy.random），可独立于外部数据源运行。
+
+参见：
+  - tests/conftest.py 中的 ``mock_panel_df`` fixture（类似数据布局）
+  - tests/test_regression_engine.py 中的端到端测试用例
+  - docs/api_reference.md 中的 API 文档
 """
 
 from __future__ import annotations
