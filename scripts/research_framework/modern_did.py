@@ -14,14 +14,60 @@
   5. Honest DiD（Rambachan-Roth 2023 敏感性分析）
   6. Wild Cluster Bootstrap
 
-Usage:
-    engine = ModernDiDEngine(df, y_var="roa", treat_var="did", time_var="post")
-    result = engine.cs()        # Callaway-Sant'Anna
-    result = engine.bjs()       # Borusyak-Jaravel-Spinks
-    result = engine.gardner()    # Gardner Two-Stage
-    engine.plot_event_study()    # 事件研究图
-    engine.bacon_decomposition()  # Bacon 分解
-    engine.honest_did(m=0.5)     # Honest DiD 敏感性
+Quick Start
+-----------
+最小可运行示例（使用合成 2x2 DID 数据）：
+
+>>> import numpy as np
+>>> import pandas as pd
+>>> from scripts.research_framework.modern_did import ModernDiDEngine
+
+>>> # 1) 构造合成面板：100 家企业 × 4 年（2018-2021），2020 年起部分企业接受处理
+>>> rng = np.random.default_rng(42)
+>>> rows = []
+>>> for firm_id in range(100):
+...     is_treated = firm_id >= 50
+...     for year in [2018, 2019, 2020, 2021]:
+...         rows.append({
+...             "firm_id": f"firm_{firm_id}",
+...             "year": year,
+...             "roa": 0.05 + 0.01 * (year - 2018) + rng.normal(0, 0.01)
+...                    + (0.02 if (is_treated and year >= 2020) else 0),
+...             "did": int(is_treated and year >= 2020),
+...             "post": int(year >= 2020),
+...             "treat": int(is_treated),
+...         })
+>>> df = pd.DataFrame(rows)
+
+>>> # 2) 初始化引擎
+>>> engine = ModernDiDEngine(df, y_var="roa", treat_var="did",
+...                         time_var="post", unit_var="firm_id")
+
+>>> # 3) 经典 2x2 DID（始终可用）
+>>> result = engine.did_2x2(cluster_var="firm_id")
+>>> round(result.coef, 3)  # ~ 0.01（理论处理效应为 0.02，受随机噪声影响）
+0.01
+>>> result.n_obs
+400
+>>> 0.0 <= result.pval <= 1.0
+True
+
+>>> # 4) 交错处理 DID（需要安装 diff_in_diff2：pip install diff-in-diff2）
+>>> # cs_result = engine.cs()  # Callaway-Sant'Anna
+>>> # bjs_result = engine.bjs()  # Borusyak-Jaravel-Spinks
+
+>>> # 5) Bacon 分解（仅依赖 statsmodels）
+>>> decomp = engine.bacon_decomposition()  # doctest: +SKIP
+
+Examples
+--------
+Examples 段对应 Issue #22 — 为 5 个核心计量模块添加可独立运行的 docstring 示例。
+本模块中的所有示例使用合成数据（numpy.random），可独立于外部数据源运行。
+
+参见：
+  - tests/conftest.py 中的 ``mock_did_df`` fixture（相同数据布局）
+  - tests/test_modern_did.py 中的端到端测试用例
+  - docs/api_reference.md 中的 API 文档
 """
 
 from __future__ import annotations

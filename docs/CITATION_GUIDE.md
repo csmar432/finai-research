@@ -15,8 +15,8 @@
   month     = jun,
   version   = {0.1.0},
   url       = {https://github.com/csmar432/finai-research-workflow},
-  doi       = {10.5281/zenodo.PENDING},  % Replace after Zenodo release
-  note      = {43 MCP data sources, 42 econometric methods, 18 AI skills, 45 journal templates}
+  doi       = {10.5281/zenodo.PENDING},  % NOTE: PENDING. Replace after Zenodo release (https://zenodo.org)
+  note      = {44 MCP data sources, 42 econometric methods, 17 AI skills, 44 journal templates}
 }
 ```
 
@@ -90,7 +90,7 @@ the FinAI contributors for their work.
 发布到 Zenodo 后，每个 release 都有独立 DOI。引用时建议引用**特定版本**：
 
 ```
-DOI: 10.5281/zenodo.PENDING  (replace with actual)
+DOI: 10.5281/zenodo.PENDING  (replace with actual after Zenodo release — see https://zenodo.org)
 ```
 
 **为什么用 Zenodo？**
