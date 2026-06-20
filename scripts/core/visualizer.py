@@ -1702,13 +1702,13 @@ def create_tracked_chart(
 
     if tracker is not None:
         # Only register if at least one referenced data source exists
-        refs = [s for s in data_sources if s in tracker.nodes]
+        # Guard against trackers where nodes attribute was not initialized
+        node_ids = getattr(tracker, "nodes", {}) or {}
+        refs = [s for s in data_sources if s in node_ids]
         if refs:
             tracker.register_chart(
-                node_id=chart_id,
-                title=f"{title} ({chart_type})",
-                data_source_ref=refs[0],
-                chart_type=chart_type,
+                metadata=chart_id,  # register_chart signature: (metadata, data_node_id, tracker=None)
+                data_node_id=refs[0],
             )
 
     return EnhancedChart(
