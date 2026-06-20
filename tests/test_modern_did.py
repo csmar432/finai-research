@@ -289,10 +289,43 @@ class TestModernDiDBacon:
 
 
 class TestModernDiDHonestDid:
-    """Honest DiD sensitivity tests."""
+    """Honest DiD sensitivity tests.
 
-    def test_honest_did(self, mock_did_df):
-        """honest_did() returns sensitivity analysis dict."""
+    Requires honestdid package for full functionality:
+        pip install honestdid
+
+    Without honestdid, honest_did() raises EstimatorUnavailableError.
+    """
+
+    def test_honest_did_requires_honestdid(self, mock_did_df):
+        """honest_did() raises EstimatorUnavailableError when honestdid not installed."""
+        from scripts.research_framework.modern_did import (
+            ModernDiDEngine,
+            EstimatorUnavailableError,
+        )
+
+        engine = ModernDiDEngine(
+            df=mock_did_df,
+            y_var="roa",
+            treat_var="did",
+            time_var="post",
+            unit_var="firm_id",
+        )
+        # honestdid is not installed in test environment — must raise
+        with pytest.raises(EstimatorUnavailableError) as exc_info:
+            engine.honest_did(m=0.5)
+
+        err = exc_info.value
+        assert "honestdid" in str(err)
+        assert "pip install" in str(err) or "install" in str(err)
+
+    def test_honest_did_returns_correct_structure_with_honestdid(self, mock_did_df):
+        """honest_did() returns correct dict structure when honestdid is installed.
+
+        This test is only run when honestdid is available.
+        """
+        pytest.importorskip("honestdid")
+
         from scripts.research_framework.modern_did import ModernDiDEngine
 
         engine = ModernDiDEngine(
@@ -304,15 +337,24 @@ class TestModernDiDHonestDid:
         )
         result = engine.honest_did(m=0.5)
 
+        # Keys present when honestdid is available
         assert isinstance(result, dict)
         assert "coef" in result
         assert "se" in result
+        assert "base_ci_lower" in result
+        assert "base_ci_upper" in result
+        assert "m" in result
         assert "breakdown_value" in result
-        assert "delta_grid" in result
-        assert "ci_bounds" in result
+        assert "sensitivity_smoothness" in result
+        assert "interpretation" in result
+        assert "citation" in result
+        assert result["package"] == "honestdid (PyPI, v0.1.1, MIT License)"
+        assert result["honestdid_available"] is True
 
     def test_honest_did_interpretation(self, mock_did_df):
         """honest_did() includes human-readable interpretation."""
+        pytest.importorskip("honestdid")
+
         from scripts.research_framework.modern_did import ModernDiDEngine
 
         engine = ModernDiDEngine(
@@ -326,6 +368,7 @@ class TestModernDiDHonestDid:
 
         assert "interpretation" in result
         assert isinstance(result["interpretation"], str)
+        assert "Rambachan-Roth" in result["interpretation"] or "RR2023" in result["interpretation"]
 
 
 class TestModernDiDWildBootstrap:

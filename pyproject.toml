@@ -121,6 +121,9 @@ econometrics = [
     "pandas-datareader>=0.10.0",
     "pandasql>=0.7.3",
     "diff-in-diff2>=1.0.0",
+    "honestdid>=0.1.0",  # Rambachan-Roth (2023) Honest DiD sensitivity analysis
+    # honestdid requires: torch>=1.9, cvxpy>=1.1, scipy>=1.6, numpy>=1.19, pandas>=1.2
+    # Install separately: pip install honestdid
 ]
 
 knowledge = [
