@@ -307,7 +307,7 @@ def _build_wf_payload(
                     "temperature": getattr(agent_config, "temperature", 0.7),
                     "output_format": getattr(agent_config, "output_format", "text"),
                 }
-        except Exception:
+        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
             pass
 
         nodes.append({
@@ -604,7 +604,7 @@ def _print_canvas_hint(stage: str, detail: str = "") -> None:
             }, ensure_ascii=False),
             encoding="utf-8",
         )
-    except Exception:
+    except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
         pass
 
 
@@ -1365,7 +1365,7 @@ class AgentPipeline:
                 content=summary,
             )
             self.provenance_chain.register_node(provenance_node)
-        except Exception:
+        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
             pass
 
     async def _parliament_review(self, paper_content: dict) -> dict:
@@ -1520,7 +1520,7 @@ class AgentPipeline:
                     label=f"Pipeline {self.pipeline_id} started",
                 )
                 self._provenance_initialized = True
-            except Exception:
+            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
                 pass
 
         # ── 首次运行配置检测 ────────────────────────────────────────────────
@@ -1588,7 +1588,7 @@ class AgentPipeline:
                             label=f"Stage orchestrator completed in {elapsed:.1f}s",
                         )
                     )
-                except Exception:
+                except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
                     pass
         except Exception as exc:
             if self.telemetry:
@@ -1611,7 +1611,7 @@ class AgentPipeline:
             if self.provenance_chain:
                 try:
                     self.provenance_chain.export_report(Path("output/provenance/report.md"))
-                except Exception:
+                except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
                     pass
 
         # Push live data to Canvas for real-time visualization
@@ -1880,7 +1880,7 @@ class AgentPipeline:
                 self._register_provenance_result("plotting", result.plotting)
                 self._register_provenance_result("writing", result.writing)
                 self._register_provenance_result("refinement", result.refinement)
-            except Exception:
+            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
                 pass
 
         # ── Telemetry: record total duration ────────────────────────────────────
@@ -1888,7 +1888,7 @@ class AgentPipeline:
             self.telemetry.ended_at = time.time()
             try:
                 self.telemetry.save()
-            except Exception:
+            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
                 pass
 
         # Visualization
@@ -1922,7 +1922,7 @@ class AgentPipeline:
             info = get_platform_info()
             if not info.is_cursor:
                 return False
-        except Exception:
+        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
             pass
 
         # 备用：检查是否有 TTY
@@ -1930,7 +1930,7 @@ class AgentPipeline:
             import sys
             if hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
                 return True
-        except Exception:
+        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
             pass
 
         return False

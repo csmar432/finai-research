@@ -975,7 +975,7 @@ class CCEPanelEstimator:
             try:
                 beta_final, _, _, _ = np.linalg.lstsq(X_dm_flat, resid + X_dm_flat @ beta[:k_exog], rcond=None)
                 beta = beta_final
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
         else:

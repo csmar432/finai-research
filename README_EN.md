@@ -71,18 +71,22 @@
 
 > **4-layer fallback** for every data request: `MCP → Python lib → HTTP → synthetic (explicitly marked)`
 
-### 🧮 Econometric Methods (49, JF/JFE/RFS standard)
+### 🧮 Econometric Methods (~30 independent algorithms, JF/JFE/RFS standard)
 
-- **DID family** (12): Callaway-Sant'Anna (QJE 2021), Sun-Abraham (REStud 2021), Borusyak (REStud 2024), Goodman-Bacon (QJE 2021), dCdH, synthetic DID, triple-diff
-- **Synthetic Control** (2): Abadie (JASA 2016), Arkhangelsky (Science 2021)
-- **RDD** (3): sharp/fuzzy/local linear
-- **IV/2SLS** (4): panel IV, Jackknife IV, Fama-MacBeth
-- **Panel GMM** (3): Arellano-Bond, Blundell-Bond
-- **Other** (26): spatial regression, panel quantile, interactive fixed effects, local projections, event study, mediation, Causal Forest, DoubleML, TVP-VAR, DCC-GARCH, …
+> **Note**: Numbers below count independent estimators. Some methods depend on `linearmodels` or `diff-in-diff2` (marked 🔗); ⭐ denotes self-contained Python implementations.
 
-### 📄 Paper Writing (34 journal templates)
+- **⭐ Standard DID + Event Study** (2): 2x2 OLS, cluster-robust SE (HC0/HC1/CR0/CR1/CGM)
+- **⭐ Bacon Decomposition** (1): Goodman-Bacon (2021) weight diagnostic
+- **🔗 Staggered DID** (4): Callaway-Sant'Anna (QJE 2021), Sun-Abraham (REStud 2021), Borusyak (REStud 2024), dCdH — requires `pip install diff-in-diff2`
+- **🔗 Synthetic Control** (2): Abadie (JASA 2016), Arkhangelsky (Science 2021)
+- **🔗 IV / 2SLS** (2): panel IV, Jackknife IV — requires `linearmodels`
+- **🔗 Panel GMM** (2): Arellano-Bond, Blundell-Bord — requires `linearmodels`
+- **⭐ Other** (~20): RDD, triple-diff, panel quantile, interactive fixed effects, local projections, spatial regression, Causal Forest, TVP-VAR, sensitivity analysis (Wild Bootstrap, Leamer bounds)
 
-- **English top**: JF · JFE · RFS · JAE · JFQA · RSTUD · QJE · Econometrica
+
+### 📄 Paper Writing (52 journal templates, English/Chinese/Japanese/German)
+
+- **English top**: JF · JFE · RFS · JAE · JFQA · JPE · Econometrica
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
@@ -151,18 +155,18 @@ Each step is **independently callable** and **has its own output file** as a sta
 
 ## 🏆 Highlights
 
-| Metric | Value |
-|---|---|
-| MCP data servers | **49** |
-| Tools exposed | **222** |
-| Econometric methods | **49** |
-| AI skills | **18** |
-| Journal templates | **34** |
-| Test files | **86** |
-| Documentation | **149 markdown files** |
-| Python lines | **~205K** |
-| CI jobs | **7** (3 OS matrix) |
-| Coverage | enforced **60%+** in CI |
+| Metric | Value | Note |
+|---|-------|------|
+| MCP data servers | **43** | 43 real servers; see MCP docs for coverage |
+| Econometric methods | **~30** | ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
+| Journal templates | **52** | 49 EN/ZH + 3 JP/DE |
+| AI skills | **17** | .cursor/skills/ (operational source) |
+| Test files | **86** | pytest collect: 2,136 tests |
+| Python lines | **~200K** | |
+| CI jobs | **7** | 3 batches + lint + 2 smoke + docs + coverage |
+| Coverage | **~7%** | gate commented pending improvement |
+
+> ⚠️ Coverage gate (60%) is commented out in pyproject.toml — current total coverage is ~7%.
 
 ---
 

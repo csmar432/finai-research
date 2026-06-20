@@ -282,7 +282,7 @@ class IVPanel:
         try:
             f_stat = float(self._result.f_statistic.stat)
             f_pval = float(self._result.f_statistic.p_value)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         self._diagnostics.append(PanelDiagnostic(
