@@ -123,6 +123,7 @@ pytest tests/ -v
 - ⭐ **局部投影 DID**: Jordà (2005) 局部投影
 - ⭐ **空间回归**: SAR/SEM/SDM/SLX — 部分依赖 `libpysal`
 - ⭐ **敏感性分析**: Wild Cluster Bootstrap、Leamer 边界、异质性分析
+  - Honest DiD (Rambachan-Roth 2023)：需 `pip install honestdid`；Rambachan & Roth (2023) REStud 的 Python 实现，提供 DeltaSD 和 DeltaRM 两种敏感性框架；旧版 homebrew 近似公式已移除（不正确）
 - 🔗 **其他**: 面板门槛回归（Hansen 2000）、TVP-VAR、离散选择、因果森林 — 依赖 `linearmodels`/`sklearn`
 
 ### 论文写作
