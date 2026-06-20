@@ -18,7 +18,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 <!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。 -->
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
+[![DOI: PENDING](https://img.shields.io/badge/DOI-PENDING-orange.svg)](https://github.com/csmar432/finai-research-workflow#cite-this-work)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 
 ---
@@ -606,7 +606,10 @@ If you use FinAI Research Workflow in published research, please cite it as:
   year   = {2026},
   month  = jun,
   url    = {https://github.com/csmar432/finai-research-workflow},
-  doi    = {10.5281/zenodo.PENDING}
+  doi    = {10.5281/zenodo.PENDING}  # NOTE: Zenodo DOI not yet activated.
+                                       # To obtain a permanent DOI, release the
+                                       # repository on Zenodo (https://zenodo.org)
+                                       # and update this field.
 }
 ```
 

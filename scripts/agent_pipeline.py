@@ -42,6 +42,7 @@ Canvas可视化：
 """
 
 import json
+import logging
 import subprocess
 import sys
 import time
@@ -53,6 +54,8 @@ from typing import Any
 # Bootstrap sys.path so `python scripts/agent_pipeline.py` works without `pip install -e .`
 from scripts.core import _bootstrap  # noqa: F401
 _bootstrap.bootstrap()
+
+logger = logging.getLogger(__name__)
 
 from scripts.core.platform import (
     PROJECT_ROOT,
@@ -1153,15 +1156,45 @@ class AgentPipeline:
         try:
             from scripts.core.quality_gates import PaperQualityGates
             self._quality_gates = PaperQualityGates(strict=False)
-        except ImportError:
+            logger.debug("[AgentPipeline] PaperQualityGates loaded successfully")
+        except ImportError as exc:
             self._quality_gates = None
+            logger.warning(
+                "[AgentPipeline] PaperQualityGates failed to import (%s) — "
+                "automatic quality gates will be NO-OP. To restore them: "
+                "pip install -e . and ensure scripts/core/quality_gates.py exists.",
+                exc,
+            )
+        except Exception as exc:  # noqa: BLE001 — must not break pipeline init
+            self._quality_gates = None
+            logger.error(
+                "[AgentPipeline] PaperQualityGates initialization error (%s) — "
+                "automatic quality gates will be NO-OP.",
+                exc,
+                exc_info=True,
+            )
 
         # ── Initialize AutoReviewRules ──────────────────────────────────────────
         try:
             from scripts.core.auto_review_rules import AutoReviewRules
             self._auto_reviewer = AutoReviewRules(domain="empirical_paper")
-        except ImportError:
+            logger.debug("[AgentPipeline] AutoReviewRules loaded successfully")
+        except ImportError as exc:
             self._auto_reviewer = None
+            logger.warning(
+                "[AgentPipeline] AutoReviewRules failed to import (%s) — "
+                "automatic peer-review simulation will be NO-OP. To restore it: "
+                "pip install -e . and ensure scripts/core/auto_review_rules.py exists.",
+                exc,
+            )
+        except Exception as exc:  # noqa: BLE001 — must not break pipeline init
+            self._auto_reviewer = None
+            logger.error(
+                "[AgentPipeline] AutoReviewRules initialization error (%s) — "
+                "automatic peer-review simulation will be NO-OP.",
+                exc,
+                exc_info=True,
+            )
 
         self._initialized = True
         # 可视化服务器延迟启动：在首个 HITL gate 触发后才启动
