@@ -195,7 +195,7 @@ class RegressionEngine:
                     )
         except ValueError:
             raise
-        except Exception:
+        except Exception:  # noqa: S110  # intentional: catch non-ValueError after raise; catch meta-check failures
             # Never block regression on meta-check failure
             pass
 
@@ -220,7 +220,7 @@ class RegressionEngine:
                 )
                 _log.warning(msg)
                 self._warnings.append(msg)
-        except Exception:
+        except Exception:  # noqa: S110  # intentional: catch non-ValueError after raise; catch meta-check failures
             # Never block regression on meta-check failure
             pass
 
@@ -1140,7 +1140,7 @@ class RegressionEngine:
         try:
             from scripts.research_framework.modern_did import get_random_seeds
             seeds = get_random_seeds()
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         lines = [

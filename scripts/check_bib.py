@@ -221,7 +221,7 @@ def main() -> int:
         print("\n".join(report_lines))
         try:
             Path("bib_check_report.md").write_text("\n".join(report_lines), encoding="utf-8")
-        except Exception:
+        except Exception:  # noqa: S110
             pass
         print()
         print("✅ All \\cite{} references resolved successfully!")
@@ -242,7 +242,7 @@ def main() -> int:
     report_md = "\n".join(report_lines)
     try:
         Path("bib_check_report.md").write_text(report_md, encoding="utf-8")
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     print(report_md)

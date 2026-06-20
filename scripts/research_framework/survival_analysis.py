@@ -809,7 +809,7 @@ class CoxPHModel:
             bh.columns = ["time", "cum_hazard"]
             bh["survival"] = np.exp(-bh["cum_hazard"])
             bh = bh[["time", "cum_hazard", "survival"]]
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         _log.info(
@@ -860,7 +860,7 @@ class CoxPHModel:
         if self._fitted_model is not None:
             try:
                 return self._fitted_model.predict_hazard(df[self._X_names]).values
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
         X_mat = df[self._X_names].values.astype(float)
@@ -901,7 +901,7 @@ class CoxPHModel:
                 if hasattr(surv, "values"):
                     return pd.DataFrame(surv.values, index=times)
                 return surv.T
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
         # 手动：S(t) = S0(t)^exp(X*beta)

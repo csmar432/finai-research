@@ -309,7 +309,7 @@ class AStockFinancialFetcher(DataFetcher):
             if df is not None and not df.empty:
                 df["stock_code"] = stock
                 return True, df, ""
-        except Exception as e:
+        except Exception as e:  # noqa: S110  # intentional: data fetcher must not crash on optional feature
             pass
 
         # 尝试全市场财务摘要
@@ -378,13 +378,13 @@ class AStockFinancialFetcher(DataFetcher):
                 info = t.info
                 if info and isinstance(info, dict) and info.get("symbol"):
                     return True, info, ""
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
             try:
                 financials = t.financials
                 if financials is not None and hasattr(financials, "empty") and not financials.empty:
                     return True, financials, ""
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
             return False, None, f"yfinance returned no data for {mapped}"
         except Exception as e:
@@ -485,7 +485,7 @@ class MacroDataFetcher(DataFetcher):
                     records = data[1]
                     df = pd.DataFrame([{"year": rec["date"], "value": rec["value"]} for rec in records])
                     return True, df, ""
-        except Exception as e:
+        except Exception as e:  # noqa: S110  # intentional: data fetcher must not crash on optional feature
             pass
 
         return False, None, f"World Bank API failed for indicator={indicator}"
@@ -507,7 +507,7 @@ class EntityListFetcher(DataFetcher):
                 from io import StringIO
                 df = pd.read_csv(StringIO(resp.text))
                 return True, df, ""
-        except Exception as e:
+        except Exception as e:  # noqa: S110  # intentional: fallback data fetch must not crash pipeline
             pass
 
         # 备用：Federal Register RSS
@@ -516,7 +516,7 @@ class EntityListFetcher(DataFetcher):
             resp = requests.get(url, timeout=10)
             if resp.status_code == 200:
                 return True, {"source": "federal_register_rss", "content": resp.text[:5000]}, ""
-        except Exception:
+        except Exception:  # noqa: S110
             pass
         return False, None, "BIS Entity List download failed"
 
@@ -549,7 +549,7 @@ class PatentDataFetcher(DataFetcher):
             resp = requests.post(search_url, data=params, timeout=15)
             if resp.status_code == 200:
                 return True, {"source": "cnipa", "content": resp.text[:5000]}, ""
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         # USPTO公开专利检索
@@ -569,7 +569,7 @@ class PatentDataFetcher(DataFetcher):
                 data = json.loads(resp.read())
             if data.get("patents"):
                 return True, data, ""
-        except Exception:
+        except Exception:  # noqa: S110
             pass
         return False, None, "CNIPA and USPTO patent APIs failed"
 

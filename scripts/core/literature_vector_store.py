@@ -401,7 +401,7 @@ class LiteratureVectorStore:
             api_key = os.getenv("OPENAI_API_KEY", os.getenv("DEEPSEEK_API_KEY", ""))
             if api_key:
                 return self._openai_embed(texts, api_key)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         # 随机向量 fallback（仅测试用）

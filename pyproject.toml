@@ -289,11 +289,6 @@ ignore = [
     "W291",  # trailing whitespace
     "W292",  # no newline at end of file
     "W293",  # whitespace on blank line
-    # S110 (try-except-pass) 在以下合法场景允许: docs/TASKS_RUNBOOK.md §P1-5
-    # agent_pipeline.py: LLM orchestrator 捕获所有 agent 异常，意图明确
-    # event_monitor.py: 网络监控脚本需捕获 KeyboardInterrupt/SIGTERM
-    # interactive_paper_pipeline.py: 用户交互管道捕获配置缺失
-    "S110",
 ]
 
 [tool.pytest.ini_options]

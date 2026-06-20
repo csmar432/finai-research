@@ -93,16 +93,37 @@ pytest tests/ -v
 | 文件系统操作 | `user-filesystem-mcp` |
 
 > 大部分 MCP 无需 API Key，直接调用即可。详情见 [MCP工具配置指南](.cursor/rules/mcp_tools.mdc)。
+>
+> **注意**：以下 MCP 需要付费账号或 API Key 才能获取真实数据：
+> - `user-tushare` — Tushare Pro Token（年费约 600-2000 元）
+> - `user-wind` — Wind 账号（机构付费）
+> - `user-csmar` — CSMAR 机构账号
+> - `user-wanfang` / `user-cnki` — 需要机构网络权限
+> - `user-eodhd` — EODHD API Key（免费注册有额度限制）
+> 免费替代方案：`user-financial`（akshare）、`user-yfinance`（Yahoo Finance）
 
-### 计量方法（49种，JF/JFE/RFS 标准）
+### 计量方法（约30种独立算法，JF/JFE/RFS 标准）
 
-- **DID**: Callaway-SantAnna (QJE 2021), Sun-Abraham (REStud 2021), Borusyak (REStud 2024), Goodman-Bacon (QJE 2021), dCdH
-- **合成控制**: Abel (JASA 2016), Arkhangelsky (Science 2021)
-- **RDD**: 精确/模糊/局部线性
-- **IV/2SLS**: 面板 IV、Jackknife IV
-- **Panel GMM**: Arellano-Bond、Blundell-Bond
-- **其他**: 空间回归（SAR/SEM/SDM/SDM）、三重差分、面板分位数、交互固定效应、局部投影、Event Study
-- **敏感性分析**: Leamer、Heterogeneity、Wild Bootstrap
+> **重要说明**：以下方法中，标注 🔗 的依赖 `linearmodels`、`diff-in-diff2` 等第三方包；标注 ⭐ 的为独立 Python 实现。
+> 数量为近似值，因部分估计器（如 TWFE × 3 种 SE × bootstrap 变体）存在重复计数。
+>
+> **独立验证状态**：标准 DID、Bacon 分解、CS(2021)、事件研究、空间回归（部分）有独立测试文件；其他方法的正确性依赖 statsmodels/linearmodels 间接保证。
+
+- ⭐ **标准 DID**: 2x2 OLS + cluster-robust SE（HC0/HC1/CR0/CR1/CGM）
+- ⭐ **事件研究**: pre/post 可视化 + 平行趋势检验
+- ⭐ **Bacon 分解**: Goodman-Bacon (2021) 权重分解
+- 🔗 **交错 DID**: Callaway-SantAnna (QJE 2021) — 需要 `pip install diff-in-diff2`；Sun-Abraham (REStud 2021)；Borusyak-Jaravel-Spinks (REStud 2024)；dCdH
+- 🔗 **合成控制**: Abel (JASA 2016)；Arkhangelsky (Science 2021)
+- ⭐ **RDD**: 精确/模糊/局部线性（三角核/均匀核）
+- 🔗 **IV/2SLS**: 面板 IV、Jackknife IV — 依赖 `linearmodels`
+- 🔗 **Panel GMM**: Arellano-Bond、Blundell-Bond — 依赖 `linearmodels`
+- ⭐ **三重差分**: Triple-DiD（处理效应异质性稳健）
+- ⭐ **面板分位数**: 固定效应分位数回归
+- ⭐ **交互固定效应**: Bai (2009) 交互固定效应
+- ⭐ **局部投影 DID**: Jordà (2005) 局部投影
+- ⭐ **空间回归**: SAR/SEM/SDM/SLX — 部分依赖 `libpysal`
+- ⭐ **敏感性分析**: Wild Cluster Bootstrap、Leamer 边界、异质性分析
+- 🔗 **其他**: 面板门槛回归（Hansen 2000）、TVP-VAR、离散选择、因果森林 — 依赖 `linearmodels`/`sklearn`
 
 ### 论文写作
 
@@ -125,7 +146,7 @@ pytest tests/ -v
 ```
 scripts/
 ├── agent_pipeline.py              # 主入口：端到端流水线
-├── research_framework/           # 研究执行层（42个模块）
+├── research_framework/           # 研究执行层（48个模块）
 │   ├── pipeline.py            # 标准流水线
 │   ├── modern_did.py          # 现代 DID（CS/SunAb/Borusyak/GB/dCdH）
 │   ├── synthetic_control.py  # 合成控制法（Abadie et al. 2010）

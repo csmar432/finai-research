@@ -305,7 +305,7 @@ def _call_mcp_tool(server: str, tool: str, params: dict, retries: int = 2) -> An
             if result2.returncode == 0 and result2.stdout.strip():
                 return result2.stdout.strip()
 
-        except Exception:
+        except Exception:  # noqa: S110
             pass
     return None
 
@@ -321,7 +321,7 @@ def _call_mcp_tool_via_http(server: str, tool: str, params: dict, base_url: str 
         )
         if resp.status_code == 200:
             return resp.json()
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     return None
 
@@ -636,7 +636,7 @@ class AShareVariableFetcher:
                         for exchange_df in [ak.stock_margin_detail_sse(td), ak.stock_margin_detail_szse(td)]:
                             if exchange_df is not None and not exchange_df.empty:
                                 rows.append(exchange_df)
-                    except Exception:
+                    except Exception:  # noqa: S110
                         pass
                     m += 1
                     if m > 12:

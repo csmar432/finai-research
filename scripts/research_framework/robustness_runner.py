@@ -266,7 +266,7 @@ class RobustnessRunner:
                     "Robustness checks on synthetic data are demonstration only."
                 )
                 _log.warning(msg)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
     def add_test(
@@ -544,7 +544,7 @@ class RobustnessRunner:
                     float(model.bse[did_idx]),
                     float(model.pvalues[did_idx]),
                 )
-        except Exception:
+        except Exception:  # noqa: S110
             pass
         return (np.nan, np.nan, 1.0)
 
@@ -682,7 +682,7 @@ class RobustnessRunner:
                     (df_s[year_col] >= year_range[0]) &
                     (df_s[year_col] <= year_range[1])
                 ]
-            except Exception:
+            except Exception:  # noqa: S110  # intentional: optional robustness check must not block pipeline
                 pass  # 无法过滤年份，继续用全量数据
         if industry and "industry" in df_s.columns:
             df_s = df_s[df_s["industry"] == industry]
@@ -758,7 +758,7 @@ class RobustnessRunner:
                     float(model.bse[did_idx]),
                     float(model.pvalues[did_idx]),
                 )
-        except Exception:
+        except Exception:  # noqa: S110
             pass
         return (np.nan, np.nan, 1.0)
 
@@ -1265,7 +1265,7 @@ class RobustnessRunner:
                         if hasattr(iv_result, "bse"):
                             se_dict = dict(zip([str(n) for n in iv_result.bse.index], iv_result.bse.values))
                             did_se = float(se_dict.get(name, np.nan))
-                    except Exception:
+                    except Exception:  # noqa: S110
                         pass
                     break
 

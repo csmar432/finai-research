@@ -51,13 +51,13 @@ $ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 
 ![Quickstart](docs/assets/quickstart.svg)
 
-**From a one-line research question to a submission-ready LaTeX draft — in 6 minutes, for ~$0.20 in API costs.** All eight stages (idea generation → literature review → novelty check → empirical design → data acquisition → analysis → writing → adversarial review) run automatically with human-in-the-loop checkpoints.
+**From a one-line research question to a structured research plan — time and API costs vary by topic complexity, data availability, and LLM model used.** All eight stages (idea generation → literature review → novelty check → empirical design → data acquisition → analysis → writing → adversarial review) include human-in-the-loop checkpoints.
 
 ## Why FinAI Research Workflow?
 
 - **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 18 robustness checks, parallel-trend plots).
-- **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/CSMAR/Wind), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent.
-- **42 econometric methods, not just OLS** — modern staggered DiD (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH), synthetic control, instrumental variables, panel GMM, RDD, event studies, mediation, and more.
+- **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/akshare), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent. Note: Tushare Pro (paid), Wind (institutional), and CSMAR (institutional) require paid accounts; free alternatives are available via `user-financial` (akshare) and `user-yfinance`.
+- **~30 econometric methods, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon, requires `pip install diff-in-diff2`), synthetic control, instrumental variables (requires `linearmodels`), panel GMM, RDD, event studies, mediation, and more. See CLAUDE.md for the full list with dependency notes.
 - **44 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
 - **18 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
 - **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
