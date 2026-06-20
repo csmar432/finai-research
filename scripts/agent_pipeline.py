@@ -542,7 +542,7 @@ def _wait_for_viz_server(max_wait_s: float = 10.0) -> bool:
             with urllib.request.urlopen(req, timeout=1) as resp:
                 resp.read()
             return True
-        except Exception:
+        except Exception:  # noqa: S110
             time.sleep(0.5)
     return False
 
@@ -557,7 +557,7 @@ def _save_wf_json_fallback(payload: dict) -> None:
         try:
             tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
             tmp.rename(fpath)  # atomic on POSIX
-        except Exception:
+        except Exception:  # noqa: S110
             if tmp.exists():
                 tmp.unlink()
             raise  # Propagate so caller knows the save failed
@@ -576,7 +576,7 @@ def _save_wf_json_fallback(payload: dict) -> None:
         )
         with urllib.request.urlopen(req, timeout=5) as resp:
             resp.read()
-    except Exception:
+    except Exception:  # noqa: S110
         import logging as _viz_log
         _viz_log.getLogger("agent_pipeline.viz").debug(
             "Canvas POST failed (server likely not running) — this is non-fatal"
@@ -718,7 +718,7 @@ class DashboardLauncher:
             import urllib.request
             urllib.request.urlopen(cls.DASHBOARD_URL, timeout=1)
             return True
-        except Exception:
+        except Exception:  # noqa: S110
             return False
 
     @classmethod
@@ -940,7 +940,7 @@ class AgentPipeline:
                     self._resume_checkpoint = latest_cp
                 else:
                     self._resume_checkpoint = None
-            except Exception:
+            except Exception:  # noqa: S110
                 self._resume_checkpoint = None
         else:
             self.checkpoint_manager = None
@@ -2121,7 +2121,7 @@ class AgentPipeline:
                 opened = True
                 print(f"  已用 {editor} 打开 {env_file}")
                 break
-            except Exception:
+            except Exception:  # noqa: S110
                 continue
 
         if not opened:

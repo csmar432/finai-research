@@ -352,7 +352,7 @@ def _estimate_factors_iterative(
                 try:
                     beta_exog = np.linalg.lstsq(X_dm_flat, resid_y_flat, rcond=None)[0]
                     beta = np.concatenate([[0.0], beta_exog])
-                except Exception:
+                except Exception:  # noqa: S110
                     beta = beta_old.copy()
             else:
                 beta = np.zeros(k)
@@ -374,7 +374,7 @@ def _estimate_factors_iterative(
             Q, R = np.linalg.qr(F_new.T)  # Q is (t, r)
             F = Q.T  # (r, t)
             Lambda = Lambda @ R.T
-        except Exception:
+        except Exception:  # noqa: S110
             F = F_new / (np.linalg.norm(F_new, axis=1, keepdims=True) + 1e-8)
 
         # Check convergence on beta
@@ -512,7 +512,7 @@ class InteractiveFixedEffects:
 
                 try:
                     beta_ols = np.linalg.lstsq(X_demeaned_flat, residuals, rcond=None)[0]
-                except Exception:
+                except Exception:  # noqa: S110
                     beta_ols = np.zeros(k_exog)
             else:
                 y_demeaned = y_mat - np.mean(y_mat, axis=1, keepdims=True) - np.mean(y_mat, axis=0, keepdims=True) + np.mean(y_mat)
@@ -592,7 +592,7 @@ class InteractiveFixedEffects:
             try:
                 beta_ols = np.linalg.lstsq(X_demean_flat, y_adj, rcond=None)[0]
                 beta = np.concatenate([[0.0], beta_ols])
-            except Exception:
+            except Exception:  # noqa: S110
                 beta = np.zeros(k)
         else:
             y_demeaned = y_mat - np.mean(y_mat, axis=1, keepdims=True) - np.mean(y_mat, axis=0, keepdims=True) + np.mean(y_mat)
@@ -963,7 +963,7 @@ class CCEPanelEstimator:
             y_flat = y_demeaned.reshape(-1)  # (n*t,)
             try:
                 beta_aug, resid, rank, s = np.linalg.lstsq(X_aug_flat, y_flat, rcond=None)
-            except Exception:
+            except Exception:  # noqa: S110
                 beta_aug = np.zeros(2 * k_exog)
                 resid = y_flat
 
@@ -998,7 +998,7 @@ class CCEPanelEstimator:
             try:
                 var_beta = sigma2 * np.linalg.inv(X_dm.T @ X_dm / n_obs + 1e-8 * np.eye(k_exog)) @ (X_dm.T @ X_dm / n_obs) @ np.linalg.inv(X_dm.T @ X_dm / n_obs + 1e-8 * np.eye(k_exog))
                 se = np.sqrt(np.diag(var_beta))
-            except Exception:
+            except Exception:  # noqa: S110
                 se = np.sqrt(sigma2 * np.diag(np.linalg.inv(X_dm.T @ X_dm / n_obs + 1e-8 * np.eye(k_exog))))
 
             # t-stats and p-values

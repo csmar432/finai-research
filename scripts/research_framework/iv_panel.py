@@ -727,7 +727,7 @@ class FamaMacBeth:
                 for var in self.x_vars:
                     if var in model.params.index:
                         coef_by_period[var].append(float(model.params[var]))
-            except Exception:
+            except Exception:  # noqa: S110
                 for var in self.x_vars:
                     coef_by_period[var].append(np.nan)
 
