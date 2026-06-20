@@ -83,6 +83,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 __all__ = [
+    "EstimatorUnavailableError",
     "ModernDiDEngine",
     "DiDEstimationResult",
     "record_random_seed",
@@ -801,6 +802,24 @@ def _wild_cluster_bootstrap(
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+class EstimatorUnavailableError(ImportError):
+    """Raised when a DID estimator requires an optional dependency that is not installed.
+
+    Inherits from ImportError so existing `except ImportError` callers still work,
+    but the specific subclass enables precise exception handling and clear messaging.
+    """
+
+    def __init__(self, estimator: str, package: str, install_hint: str | None = None):
+        self.estimator = estimator
+        self.package = package
+        self.install_hint = install_hint or f"pip install {package}"
+        msg = (
+            f"Estimator '{estimator}' requires '{package}' which is not installed. "
+            f"Install with: {self.install_hint}"
+        )
+        super().__init__(msg)
+
+
 class ModernDiDEngine:
     """
     现代 DID 引擎 — sklearn-like API，封装 13+ 估计器。
@@ -1043,6 +1062,13 @@ class ModernDiDEngine:
         # 检查 diff_in_diff2 是否可用
         try:
             import diff_in_diff2 as did2
+        except ImportError:
+            raise EstimatorUnavailableError(
+                estimator="cs",
+                package="diff-in-diff2",
+                install_hint="pip install diff-in-diff2",
+            )
+        try:
             df_sub = self.df.dropna(subset=[self.y_var, self.treat_var, self.time_var] + self.x_vars)
             # diff_in_diff2 API
             result_obj = did2.cs(
@@ -1067,12 +1093,14 @@ class ModernDiDEngine:
             )
             self._results["cs"] = result
             return result
-        except ImportError:
-            _log.warning(
-                "[ModernDiD] diff_in_diff2 not installed — staggered DiD (cs) unavailable, "
-                "using did_2x2 fallback. Run: pip install diff-in-diff2"
-            )
-            return self.did_2x2()
+        except Exception as exc:
+            if isinstance(exc, ImportError):
+                raise EstimatorUnavailableError(
+                    estimator="cs",
+                    package="diff-in-diff2",
+                    install_hint="pip install diff-in-diff2",
+                ) from exc
+            raise
 
     def bjs(self, anticipation: int = 0) -> DiDEstimationResult:
         """
@@ -1082,6 +1110,13 @@ class ModernDiDEngine:
         """
         try:
             import diff_in_diff2 as did2
+        except ImportError:
+            raise EstimatorUnavailableError(
+                estimator="bjs",
+                package="diff-in-diff2",
+                install_hint="pip install diff-in-diff2",
+            )
+        try:
             df_sub = self.df.dropna(subset=[self.y_var, self.treat_var, self.time_var] + self.x_vars)
             result_obj = did2.bjs(
                 data=df_sub,
@@ -1103,9 +1138,14 @@ class ModernDiDEngine:
             )
             self._results["bjs"] = result
             return result
-        except ImportError:
-            _log.warning("[ModernDiD] diff_in_diff2 not installed — staggered DiD (bjs) unavailable, using did_2x2 fallback")
-            return self.did_2x2()
+        except Exception as exc:
+            if isinstance(exc, ImportError):
+                raise EstimatorUnavailableError(
+                    estimator="bjs",
+                    package="diff-in-diff2",
+                    install_hint="pip install diff-in-diff2",
+                ) from exc
+            raise
 
     def gardner(self, n_placebos: int = 100) -> DiDEstimationResult:
         """
@@ -1115,6 +1155,13 @@ class ModernDiDEngine:
         """
         try:
             import diff_in_diff2 as did2
+        except ImportError:
+            raise EstimatorUnavailableError(
+                estimator="gardner",
+                package="diff-in-diff2",
+                install_hint="pip install diff-in-diff2",
+            )
+        try:
             df_sub = self.df.dropna(subset=[self.y_var, self.treat_var, self.time_var] + self.x_vars)
             result_obj = did2.gardner(
                 data=df_sub,
@@ -1134,9 +1181,14 @@ class ModernDiDEngine:
             )
             self._results["gardner"] = result
             return result
-        except ImportError:
-            _log.warning("[ModernDiD] diff_in_diff2 not installed — staggered DiD (gardner) unavailable, using did_2x2 fallback")
-            return self.did_2x2()
+        except Exception as exc:
+            if isinstance(exc, ImportError):
+                raise EstimatorUnavailableError(
+                    estimator="gardner",
+                    package="diff-in-diff2",
+                    install_hint="pip install diff-in-diff2",
+                ) from exc
+            raise
 
     def bacon(self) -> pd.DataFrame:
         """

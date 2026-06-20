@@ -416,9 +416,9 @@ class TestModernDiDEventStudy:
 class TestModernDiDFallbacks:
     """Estimator fallback tests (when external packages unavailable)."""
 
-    def test_cs_fallback_no_package(self, mock_did_df):
-        """cs() falls back to did_2x2 when diff_in_diff2 not installed."""
-        from scripts.research_framework.modern_did import ModernDiDEngine
+    def test_cs_raises_estimator_unavailable(self, mock_did_df):
+        """cs() raises EstimatorUnavailableError when diff_in_diff2 not installed."""
+        from scripts.research_framework.modern_did import ModernDiDEngine, EstimatorUnavailableError
 
         # Simulate package unavailability by patching
         import scripts.research_framework.modern_did as md
@@ -439,15 +439,18 @@ class TestModernDiDFallbacks:
                 time_var="post",
                 unit_var="firm_id",
             )
-            result = engine.cs()
-            # Should fall back to did_2x2
-            assert result.estimator == "did_2x2"
+            try:
+                engine.cs()
+                assert False, "Expected EstimatorUnavailableError"
+            except EstimatorUnavailableError as e:
+                assert e.estimator == "cs"
+                assert "diff-in-diff2" in e.package
         finally:
             md.__dict__["import"] = orig_import
 
-    def test_bjs_fallback_no_package(self, mock_did_df):
-        """bjs() falls back to did_2x2 when diff_in_diff2 not installed."""
-        from scripts.research_framework.modern_did import ModernDiDEngine
+    def test_bjs_raises_estimator_unavailable(self, mock_did_df):
+        """bjs() raises EstimatorUnavailableError when diff_in_diff2 not installed."""
+        from scripts.research_framework.modern_did import ModernDiDEngine, EstimatorUnavailableError
 
         import scripts.research_framework.modern_did as md
         orig_import = md.__dict__.get("import")
@@ -467,8 +470,12 @@ class TestModernDiDFallbacks:
                 time_var="post",
                 unit_var="firm_id",
             )
-            result = engine.bjs()
-            assert result.estimator == "did_2x2"
+            try:
+                engine.bjs()
+                assert False, "Expected EstimatorUnavailableError"
+            except EstimatorUnavailableError as e:
+                assert e.estimator == "bjs"
+                assert "diff-in-diff2" in e.package
         finally:
             md.__dict__["import"] = orig_import
 

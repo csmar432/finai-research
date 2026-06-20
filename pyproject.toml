@@ -110,7 +110,7 @@ jupyter = [
 ]
 
 deep-learning = [
-    # torch>=2.2.0 and accelerate>=0.30.0 are listed here as
+    # torch>=2.12.0 and accelerate>=1.14.0 are listed here as
     # heavyweight optional dependencies for future deep learning modules.
     # They are NOT currently imported by any scripts/ or tests/ file.
     # Uncomment when needed: "torch>=2.2.0", "accelerate>=0.30.0",
@@ -363,6 +363,9 @@ omit = [
 ]
 
 [tool.coverage.report]
+# NOTE: fail_under = 60 added in v18 but current total coverage is ~7%.
+# Uncomment when the project has reached 60% test coverage.
+# fail_under = 60
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",
