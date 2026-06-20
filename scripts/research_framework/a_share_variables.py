@@ -605,7 +605,7 @@ class AShareVariableFetcher:
             if not data_list:
                 return None
             return pd.DataFrame(data_list)
-        except Exception as exc:
+        except Exception as exc:  # noqa: S110
             if self.verbose:
                 _log.debug(f"MCP tushare margin call failed: {exc}")
             return None
@@ -667,7 +667,7 @@ class AShareVariableFetcher:
             return df
         except ImportError:
             return None
-        except Exception as exc:
+        except Exception as exc:  # noqa: S110
             if self.verbose:
                 _log.debug(f"akshare margin call failed: {exc}")
             return None
@@ -772,7 +772,7 @@ class AShareVariableFetcher:
             return df
         except ImportError:
             return None
-        except Exception as exc:
+        except Exception as exc:  # noqa: S110
             if self.verbose:
                 _log.debug(f"akshare hsgt failed: {exc}")
             return None
@@ -905,7 +905,7 @@ class AShareVariableFetcher:
             if not data_list:
                 return None
             return pd.DataFrame(data_list)
-        except Exception as exc:
+        except Exception as exc:  # noqa: S110
             if self.verbose:
                 _log.debug(f"MCP tushare institutional call failed: {exc}")
             return None
@@ -925,7 +925,7 @@ class AShareVariableFetcher:
             if end_date:
                 df = df[df["公告日期"] <= end_date]
             return df
-        except ImportError:
+        except ImportError:  # noqa: S110
             return None
         except Exception as exc:
             if self.verbose:
