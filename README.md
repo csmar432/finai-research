@@ -184,7 +184,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
 *Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → 49 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
-> **Note:** Screenshots and demo videos coming soon. The project is actively maintained.
+> **Note:** Demo assets are in `.github/demo/` and `docs/assets/`. The project is actively maintained — see [`ROADMAP.md`](ROADMAP.md) for the 30/60/90-day plan.
 
 ---
 

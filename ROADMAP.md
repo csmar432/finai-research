@@ -29,10 +29,10 @@
 
 - [x] **Generate architecture banner** — `docs/assets/banner.svg` (done)
 - [x] **Generate 60-second demo screenshot** — `docs/assets/quickstart.svg` (done)
+- [x] **Generate 3 social-preview images** (1280×640, 1280×320, 800×800) with the project tagline — `docs/assets/social-preview-*.{png,svg}` (done)
 - [ ] **Record real 6-minute terminal demo GIF** — use `asciinema` on a real run
   - Command: `asciinema rec -c "python scripts/agent_pipeline.py --topic '绿色金融与企业创新'" demo.cast`
   - Convert: `asciinema upload demo.cast` → embed GIF in README
-- [ ] **Generate 3 social-preview images** (1280×640, 1280×320, 800×800) with the project tagline
 
 ### Week 2 — README Conversion Optimisation
 
@@ -40,7 +40,7 @@
 - [x] **"Why FinAI" section** with 6 differentiators (done)
 - [x] **"Star History" + "Cite" sections** at bottom (done)
 - [x] **"Related Projects" section** — cross-link competitors (done)
-- [ ] **Add 3 code-architecture Mermaid diagrams**:
+- [x] **Add 3 code-architecture Mermaid diagrams**:
   - Pipeline DAG (8 stages + checkpoints)
   - MCP tool selection flow (43 sources with fallback)
   - Modern DID estimation comparison (CS / SunAb / Borusyak)
@@ -90,8 +90,8 @@
 
 ### Economic-Finance-Specific Features (the moat)
 
-- [ ] **Carbon trading policy data pack** — pre-built CSV of China ETS rollout (2013, 2017, 2021) + EU ETS phase boundaries; pre-registered event-study template
-- [ ] **Common Chinese policy shocks** (7 events, ready to DID):
+- [x] **Carbon trading policy data pack** — pre-built CSV of China ETS rollout (2013, 2017, 2021) + EU ETS phase boundaries; pre-registered event-study template — `scripts/research_framework/china_carbon_events.py` (done)
+- [x] **Common Chinese policy shocks** (7 events, ready to DID) — `scripts/research_framework/china_policy_events.py`:
   - 营改增 (2012, 2016)
   - 大气十条 (2013)
   - 河长制 (2016)
@@ -99,11 +99,11 @@
   - 科创板设立 (2019)
   - 碳达峰碳中和 (2020)
   - 数据二十条 (2022)
-- [ ] **A股常用控制变量模板** (FirmControls class) — pre-defined Sa-index, leverage, ROA, growth, size, age, SOE, with sane defaults
-- [ ] **PSM-DID 一键脚手架** (current → `scripts/research_framework/`, missing in current direction docs)
-- [ ] **Mediation analysis** (Baron-Kenny + bootstrap + modern Sobel)
-- [ ] **调节效应模板** (Heckman两步法、交互项、门槛回归)
-- [ ] **空间计量 (SDM/SAR/SEM)** — 已有 9 个 MCP 地理数据源，缺特化模板
+- [x] **A股常用控制变量模板** (FirmControls class) — pre-defined Sa-index, leverage, ROA, growth, size, age, SOE, with sane defaults — `scripts/research_framework/a_share_firm_controls.py` (done)
+- [x] **PSM-DID 一键脚手架** — `scripts/research_framework/psm_did.py` (done)
+- [x] **Mediation analysis** (Baron-Kenny + bootstrap + modern Sobel) — `scripts/research_framework/mediation.py` (done)
+- [x] **调节效应模板** (Heckman两步法、交互项、门槛回归) — `scripts/research_framework/moderation.py` + `panel_threshold_regression.py` (done)
+- [x] **空间计量 (SDM/SAR/SEM)** — `scripts/research_framework/spatial_regression.py` (done; 7 估计器, 2033 lines)
 
 ### Content Marketing (2nd wave)
 
@@ -259,4 +259,5 @@
 
 ---
 
-*Last updated: 2026-06-17 · Maintained by [@csmar432](https://github.com/csmar432)*
+*Last updated: 2026-06-20 · Maintained by [@csmar432](https://github.com/csmar432)*
+*Recent maintenance: v8-v16 (PRs #40-#49). CI green. All Issues #42/#22 closed.*

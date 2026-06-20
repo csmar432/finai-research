@@ -47,7 +47,7 @@ finai test --cov
 |------|------|
 | `scripts/core/` | 核心智能体模块（Memory/Planner/ToolSelector/Reflection） |
 | `scripts/` | 工具脚本（数据处理/文献管理/论文写作） |
-| `scripts/research_framework/` | 研究执行层（41个计量/可视化模块） |
+| `scripts/research_framework/` | 研究执行层（48 个计量/可视化模块） |
 | `config/` | 配置文件模板 |
 | `knowledge/skills/` | 17 个 AI 技能文档（文献综述/想法生成/实证设计/论文写作等） |
 | `templates/` | LaTeX/Word 输出模板 |
