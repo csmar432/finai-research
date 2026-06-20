@@ -52,7 +52,9 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (43 MCP Servers, mostly no API key required)
+### 📊 Data Acquisition (43 MCP Servers, free by default)
+
+> **Note**: Most MCP servers are free. Paid/required accounts: Tushare Pro (A-share data, ~$10-30/year), Wind (institutional), CSMAR (institutional), EODHD (free tier limited). See [MCP Tools Guide](.cursor/rules/mcp_tools.mdc) for details.
 
 | What you need | MCP server |
 |---|---|
@@ -82,6 +84,7 @@
 - **🔗 IV / 2SLS** (2): panel IV, Jackknife IV — requires `linearmodels`
 - **🔗 Panel GMM** (2): Arellano-Bond, Blundell-Bord — requires `linearmodels`
 - **⭐ Other** (~20): RDD, triple-diff, panel quantile, interactive fixed effects, local projections, spatial regression, Causal Forest, TVP-VAR, sensitivity analysis (Wild Bootstrap, Leamer bounds)
+  - Honest DiD (Rambachan-Roth 2023): requires `pip install honestdid` (the official Python port of the original R HonestDiD package)
 
 
 ### 📄 Paper Writing (52 journal templates, English/Chinese/Japanese/German)
@@ -116,11 +119,11 @@
 # 1. Install
 git clone https://github.com/csmar432/finai-research-workflow.git
 cd finai-research-workflow
-pip install -e ".[dev]"
+pip install -e ".[dev, econometrics]"  # econometrics adds linearmodels + diff-in-diff2
 
 # 2. Configure API keys
 cp .env.example .env
-# At minimum, fill DEEPSEEK_API_KEY
+# At minimum, fill DEEPSEEK_API_KEY (free tier available at console.deepseek.com)
 
 # 3. Health check
 python scripts/health_check.py
@@ -166,7 +169,7 @@ Each step is **independently callable** and **has its own output file** as a sta
 | CI jobs | **7** | 3 batches + lint + 2 smoke + docs + coverage |
 | Coverage | **~7%** | gate commented pending improvement |
 
-> ⚠️ Coverage gate (60%) is commented out in pyproject.toml — current total coverage is ~7%.
+> ⚠️ Coverage gate set to **6%** in CI (`--cov-fail-under=6` in ci.yml). Project is at ~7% coverage. Coverage is reported to Codecov; progressive increase toward 30% is planned.
 
 ---
 

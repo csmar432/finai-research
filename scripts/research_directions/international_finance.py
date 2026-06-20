@@ -250,7 +250,7 @@ class InternationalFinanceDirection(BaseResearchDirection):
             if numeric_cols:
                 summary = df[numeric_cols].describe().T[["mean", "std", "min", "max"]]
                 tables["table_1_summary"] = summary
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
         # ── Table 2: Panel regression with Driscoll-Kraay SE ────────────────

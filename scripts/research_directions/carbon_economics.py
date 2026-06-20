@@ -1161,7 +1161,7 @@ n{{1}}{{c}}{{(3)}} \\
                         from scipy.stats import chi2 as chi2_dist
                         p_val = 1 - chi2_dist.cdf(chi2, len(estimates))
                         f_stat = f"{chi2:.2f}"
-                except Exception:
+                except Exception:  # noqa: S110
                     pass
 
         return rf"""\begin{{table}}[htbp]

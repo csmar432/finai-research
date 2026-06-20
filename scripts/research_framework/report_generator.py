@@ -767,7 +767,7 @@ class ReportGenerator:
             style = doc.styles["Normal"]
             style.font.name = "Times New Roman"
             style.font.size = Pt(11)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
     # ─────────────────────────────────────

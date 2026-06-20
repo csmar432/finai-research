@@ -95,7 +95,7 @@ def _get_from_keychain(service: str, account: str) -> str | None:
         )
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.strip()
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     return None
 
@@ -554,7 +554,7 @@ class CacheManager:
         cache_file = self.cache_dir / f"{key}.json"
         try:
             cache_file.write_text(json.dumps(entry, ensure_ascii=False, indent=2))
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
 

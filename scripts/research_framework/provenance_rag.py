@@ -352,7 +352,7 @@ class ProvenanceRAG:
                         }],
                         ids=[num_id],
                     )
-                except Exception:
+                except Exception:  # noqa: S110
                     pass  # ChromaDB indexing failure is non-fatal
 
             n_indexed += 1

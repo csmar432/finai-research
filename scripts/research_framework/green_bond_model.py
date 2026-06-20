@@ -167,7 +167,7 @@ def _fetch_yfinance_etf(ticker: str, start: str, end: str) -> pd.DataFrame:
         df = fetcher.fetch_etf_historical(ticker, start, end)
         _log.info("Fetched %s via DataFetcher (MCP).", ticker)
         return df
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     try:

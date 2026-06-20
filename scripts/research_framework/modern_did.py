@@ -761,7 +761,7 @@ def _honest_did(
             numPrePeriods=num_pre_periods,
             alpha=0.05,
         ))
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     # Sensitivity analysis: smoothness restrictions

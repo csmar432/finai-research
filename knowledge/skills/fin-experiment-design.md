@@ -21,7 +21,7 @@
         └── Double/Debiased ML
 ```
 
-### 计量方法覆盖（49种）
+### 计量方法覆盖（~30种主要算法）
 
 **A. DID 家族（12种）**：Callaway-SantAnna (QJE 2021)、Sun-Abraham (REStud 2021)、Borusyak-Jaravel-Sposto (REStud 2024)、Goodman-Bacon (QJE 2021)、dCdH (JASA 2020)、Gardner Two-Stage (2022)、Honest DiD (Rambachan 2023)、合成控制 (Abel JASA 2016)、合成 DID (Arkhangelsky Science 2021)、三重差分 DDD、局部投影 DID、事件研究法
 

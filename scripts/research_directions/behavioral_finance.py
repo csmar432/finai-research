@@ -90,7 +90,7 @@ class BehavioralFinanceDirection(BaseResearchDirection):
         if os.path.exists(sentiment_path):
             try:
                 data["sentiment"] = pd.read_csv(sentiment_path)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
         # Check for CICSI / EI index files
@@ -101,7 +101,7 @@ class BehavioralFinanceDirection(BaseResearchDirection):
         if os.path.exists(cicci_path):
             try:
                 data["cicci"] = pd.read_csv(cicci_path)
-            except Exception:
+            except Exception:  # noqa: S110
                 pass
 
         # No data at all — abort

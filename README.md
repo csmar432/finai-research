@@ -182,7 +182,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 **Architecture overview:**
 
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
-*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → 49 Econometric Methods → 20 Chart Types → LaTeX Paper*
+*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → ~30 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
 > **Note:** Demo assets are in `.github/demo/` and `docs/assets/`. The project is actively maintained — see [`ROADMAP.md`](ROADMAP.md) for the 30/60/90-day plan.
 
@@ -207,7 +207,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 |---------|-------------|
 | **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
 | **43 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
-| **49+ Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
+| **~30 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
 | **6 Financial Analysts** | Parallel analysis: fundamental, valuation, risk, earnings, competitive, macro |

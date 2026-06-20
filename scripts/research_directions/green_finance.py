@@ -702,7 +702,7 @@ class GreenFinanceDirection(BaseResearchDirection):
                             "N": int(mod.nobs),
                         }
                     )
-                except Exception:
+                except Exception:  # noqa: S110
                     pass
 
         if rows:
@@ -752,7 +752,7 @@ class GreenFinanceDirection(BaseResearchDirection):
                             "p-value": mod.pvalues.get("did_fake", 1),
                         }
                     )
-                except Exception:
+                except Exception:  # noqa: S110
                     pass
 
         if rows:

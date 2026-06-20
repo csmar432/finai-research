@@ -92,15 +92,15 @@ pytest tests/ -v
 | LaTeX排版检查 | `user-latex-mcp` |
 | 文件系统操作 | `user-filesystem-mcp` |
 
-> 大部分 MCP 无需 API Key，直接调用即可。详情见 [MCP工具配置指南](.cursor/rules/mcp_tools.mdc)。
->
 > **注意**：以下 MCP 需要付费账号或 API Key 才能获取真实数据：
-> - `user-tushare` — Tushare Pro Token（年费约 600-2000 元）
-> - `user-wind` — Wind 账号（机构付费）
-> - `user-csmar` — CSMAR 机构账号
-> - `user-wanfang` / `user-cnki` — 需要机构网络权限
-> - `user-eodhd` — EODHD API Key（免费注册有额度限制）
-> 免费替代方案：`user-financial`（akshare）、`user-yfinance`（Yahoo Finance）
+> - `user-tushare` — Tushare Pro Token（年费约 600-2000 元人民币）
+> - `user-wind` — Wind 账号（机构付费，个人研究者通常无法获取）
+> - `user-csmar` — CSMAR 国泰安（机构账号，通常需高校/机构购买）
+> - `user-wanfang` / `user-cnki` — 需要机构网络权限或账号
+> - `user-eodhd` — EODHD API Key（免费注册有每日额度限制）
+> - `user-brave-search` — Brave Search API Key（免费注册每月有限额）
+> - `user-newsapi` — NewsAPI Key（免费注册有限额）
+> - `user-yfinance` / `user-sec-edgar` — 免费，无需 Key
 
 ### 计量方法（约30种独立算法，JF/JFE/RFS 标准）
 
