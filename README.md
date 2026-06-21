@@ -572,7 +572,7 @@ flowchart TD
 |---|---|---|---|---|---|
 | **Focus** | Economic & financial research papers | Causal inference toolkit | Multi-agent paper writing | End-to-end empirical papers | Industrial causal inference |
 | **Data sources** | 43 MCP servers | None (data import only) | None | 3 (yfinance/FRED/Allium) | None |
-| **Econometric methods** | 42 (modern DiD focus) | 550+ (general) | 0 | Limited | 0 (general framework) |
+| **Econometric methods** | ~20 (modern DiD focus) | 550+ (general) | 0 | Limited | 0 (general framework) |
 | **Journal templates** | 44 (incl. 6 Chinese top) | 0 | 1 (NeurIPS-style) | 1 (LaTeX generic) | 0 |
 | **Chinese data integration** | ✅ (Tushare/CSMAR/Wind/CNRDS) | ❌ | ❌ | ❌ | ❌ |
 | **Human-in-the-loop** | ✅ (4 checkpoints) | ❌ | Partial | ❌ | ❌ |

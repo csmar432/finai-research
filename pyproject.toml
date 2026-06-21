@@ -300,6 +300,9 @@ ignore = [
 #   because try-except-pass is intentional for optional feature degradation.
 #   These are infrastructure concerns (MCP fallback, sandbox, dashboard),
 #   not academic logic. Risk: LOW.
+# - Standalone entry-point scripts: also per-file-ignored for graceful
+#   degradation when optional dependencies/credentials are absent.
+#   research_framework/ modules: NO per-file-ignores (academic logic).
 [tool.ruff.lint.per-file-ignores]
 "scripts/core/*.py" = ["S110"]
 "scripts/agents/*.py" = ["S110"]
@@ -311,6 +314,17 @@ ignore = [
 "scripts/on_enter.py" = ["S110"]
 "scripts/data_version.py" = ["S110"]
 "scripts/universal_data_fetcher.py" = ["S110"]
+"scripts/data_pipeline.py" = ["S110"]
+"scripts/dependency_upgrader.py" = ["S110"]
+"scripts/experiment_tracker.py" = ["S110"]
+"scripts/fetch_provincial_stats.py" = ["S110"]
+"scripts/health_check.py" = ["S110"]
+"scripts/keychain_setup.py" = ["S110"]
+"scripts/knowledge_graph.py" = ["S110"]
+"scripts/mcp_diagnostic.py" = ["S110"]
+"scripts/paper_full_pipeline.py" = ["S110"]
+"scripts/paper_reader.py" = ["S110"]
+"scripts/paper_write.py" = ["S110"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
