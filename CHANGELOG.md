@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **QualityGates / AutoReviewRules load diagnostics** (PR #47): Distinguish `ImportError` (module missing) from other exceptions when initializing `PaperQualityGates` and `AutoReviewRules` in `agent_pipeline.py`. Logged warnings/errors now make it visible whether quality gates are NO-OP due to missing module or runtime error.
 - **Journal template count correction** (PR #46): Updated `README.md`/`CLAUDE.md`/`CITATION.cff` to reflect the actual count of 44 journal templates (was 45) and 44 MCP servers (was 43 in some places).
 - **DOI badge and citation** (PR #47): Replaced dead `zenodo.org/PENDING` link with shields.io `PENDING` badge. Added explicit notes in `README.md`/`docs/CITATION_GUIDE.md` explaining how to obtain a real DOI via Zenodo.
+- **Module count accuracy** (PR #66 follow-up): Corrected stale module counts — `research_framework/` has **47** modules (not 41 as recorded in v0.1.0 CHANGELOG; 41 was accurate at time of that PR but directory has grown since); `TEMPLATES` dict has **45** entries (not 44 as recorded in v0.1.0 CHANGELOG).
 
 ### Changed
 - **Project metadata** (PR #48): `config/project_config.json` author changed from placeholder `Your Name <your.email@example.com>` to `csmar432 <https://github.com/csmar432>`.
@@ -41,10 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`scripts/register_mcp_servers.py`**: Deprecated scripts registry documenting 11 duplicate/abandoned scripts with replacement versions
 
 ### Changed
-- **`mcp_servers/*/Dockerfile` (41 servers)**: All Dockerfiles upgraded to best-practice standard — non-root `mcpuser` user, `HEALTHCHECK`, version-pinned dependencies (`mcp>=1.1.0`, `requests>=2.31.0`, etc.), OCI Labels, `PYTHONUNBUFFERED=1`, `EXPOSE 8000`; previously only 7 servers had this standard
+- **`mcp_servers/*/Dockerfile` (43 servers)**: All Dockerfiles upgraded to best-practice standard — non-root `mcpuser` user, `HEALTHCHECK`, version-pinned dependencies (`mcp>=1.1.0`, `requests>=2.31.0`, etc.), OCI Labels, `PYTHONUNBUFFERED=1`, `EXPOSE 8000`; previously only 7 servers had this standard
 - **`scripts/research_framework/leamer_sensitivity.py`**: `LevinsohnPetrinEstimator.fit()` signature unified with `finance_sensitivity.py` — renamed `intermediate` → `intermediate_input`, added `min_obs` parameter, added comprehensive docstring
-- **`CLAUDE.md`**: Corrected multiple stale numbers — research_framework count (27→41), core modules (80+→92), research_directions (11→12), journal templates (44→70), skill count confirmed at 17
-- **`README.md`**: Updated key numbers — research_framework modules (27→41), research directions (11→12), journal templates (41→70)
+- **`CLAUDE.md`**: Corrected multiple stale numbers — research_framework count (27→47), core modules (80+→92), research_directions (11→12), journal templates (44→45), skill count confirmed at 17
+- **`README.md`**: Updated key numbers — research_framework modules (27→47), research directions (11→12), journal templates (41→45)
 - **`pyproject.toml`**: Removed unused `torch` and `accelerate` from `deep-learning` optional group (no imports found in codebase); marked as commented placeholders for future use
 
 ### Deprecated

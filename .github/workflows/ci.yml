@@ -106,7 +106,7 @@ else:
             tests/test_checkpoint.py tests/test_event_monitor.py \
             tests/test_llm_gateway.py tests/test_session.py \
             tests/test_tool_selector.py \
-            --cov=scripts --cov-branch --cov-fail-under=6 --tb=long --timeout=60 --maxfail=10 -rfE \
+            --cov=scripts --cov-branch --cov-fail-under=10 --tb=long --timeout=60 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch1.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -252,7 +252,7 @@ else:
             tests/test_halt_rules_registry.py tests/test_citation_verifier.py \
             tests/test_agent_loader.py tests/test_data_cache.py \
             tests/test_agent_pipeline_core.py \
-            --cov=scripts --cov-branch --cov-append --cov-fail-under=6 -x --tb=long --timeout=60 \
+            --cov=scripts --cov-branch --cov-append --cov-fail-under=10 -x --tb=long --timeout=60 \
             -v 2>&1 | tee pytest-batch2.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -382,7 +382,7 @@ else:
             tests/test_triple_diff_did.py tests/test_latex_lint.py \
             tests/test_ollama_provider.py tests/test_project_config.py \
             tests/test_diagnostic_advanced.py tests/test_demo_research_report.py \
-            --cov=scripts --cov-branch --cov-append --cov-fail-under=6 --tb=long --timeout=60 --maxfail=10 -rfE \
+            --cov=scripts --cov-branch --cov-append --cov-fail-under=10 --tb=long --timeout=60 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch3.log
         env:
           DEEPSEEK_API_KEY: dummy_key
