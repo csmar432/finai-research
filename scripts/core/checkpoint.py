@@ -367,8 +367,8 @@ class CheckpointManager:
             try:
                 import numpy as _np
                 seeds["numpy_random_state"] = str(_np.random.get_state())
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("[CheckpointManager] NumPy seed not captured: %s", exc)
 
         checkpoint = PipelineCheckpoint(
             pipeline_id=pipeline_id,

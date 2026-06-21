@@ -81,6 +81,8 @@ import pandas as pd
 import statsmodels.api as sm
 from scipy import stats
 
+_log = logging.getLogger(__name__)
+
 # ─────────────────────────────────────────
 # LOGGING
 # ─────────────────────────────────────────
@@ -195,9 +197,8 @@ class RegressionEngine:
                     )
         except ValueError:
             raise
-        except Exception:  # noqa: S110  # intentional: catch non-ValueError after raise; catch meta-check failures
-            # Never block regression on meta-check failure
-            pass
+        except Exception as exc:
+            _log.debug("[OLSWrapper] meta-check failed for %s (non-fatal): %s", self._depvar, exc)
 
         # ── P2-QUAL-2: Simulated data integrity check ──────────────────────
         # Scan df.attrs or columns metadata for is_simulated=True flags.
@@ -220,9 +221,8 @@ class RegressionEngine:
                 )
                 _log.warning(msg)
                 self._warnings.append(msg)
-        except Exception:  # noqa: S110  # intentional: catch non-ValueError after raise; catch meta-check failures
-            # Never block regression on meta-check failure
-            pass
+        except Exception as exc:
+            _log.debug("[OLSWrapper] _validate_df meta-check failed (non-fatal): %s", exc)
 
     # ─────────────────────────────────────
     # DEGREES OF FREEDOM CHECK
@@ -304,8 +304,8 @@ class RegressionEngine:
                 mask = g == gv
                 xi = X_mat[mask]  # (n_g x k)
                 ei = eps[mask]    # (n_g,)
-                mi = (xi.T * ei)  # (k x n_g)
-                M += mi @ mi.T
+                mi = xi.T @ ei  # (k,) — inner product: sum over observations in cluster g
+                M += np.outer(mi, mi)  # (k, k) — outer product
             n_groups = len(unique_g)
             if n_groups > 1:
                 M *= n_groups / (n_groups - 1)  # BCH correction
@@ -1140,8 +1140,8 @@ class RegressionEngine:
         try:
             from scripts.research_framework.modern_did import get_random_seeds
             seeds = get_random_seeds()
-        except Exception:  # noqa: S110
-            pass
+        except Exception as exc:
+            _log.debug("[OLSWrapper] get_random_seeds() failed (non-fatal): %s", exc)
 
         lines = [
             "#!/usr/bin/env python3",

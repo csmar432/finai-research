@@ -159,8 +159,8 @@ def _two_way_clustered_se(
             mask = cl == gv
             xi = x_mat[mask]
             ei = eps[mask]
-            mi = xi.T * ei
-            M += mi @ mi.T
+            mi = xi.T @ ei  # (k,) — inner product: sum over observations in cluster g
+            M += np.outer(mi, mi)  # (k, k) — outer product
         n_groups = len(unique_g)
         if n_groups > 1:
             M *= n_groups / (n_groups - 1)
@@ -761,8 +761,8 @@ def _honest_did(
             numPrePeriods=num_pre_periods,
             alpha=0.05,
         ))
-    except Exception:  # noqa: S110
-        pass
+    except Exception as exc:
+        _log.debug("[ModernDiD] _honest_did: m_pre upper bound computation failed: %s", exc)
 
     # Sensitivity analysis: smoothness restrictions
     m_vec = [0, 0.5 * m, m, 2 * m] if m > 0 else [0]

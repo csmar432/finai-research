@@ -17,9 +17,12 @@ __all__ = [
 ]
 
 import json
+import logging
 import sqlite3
 import threading
 import time
+
+logger = logging.getLogger(__name__)
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -134,8 +137,8 @@ class HITLGate:
             _hm = HITLManager()
             if _hm not in self._listeners:
                 self.register_listener(_hm._on_gate_event)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[HITLGate] HITLManager auto-registration skipped: %s", exc)
 
     # ── Database ───────────────────────────────────────────────────────────────
 

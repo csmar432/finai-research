@@ -133,8 +133,8 @@ class SelfEvolutionEngine:
             if hasattr(agent, "on_evolution_activated"):
                 try:
                     agent.on_evolution_activated(self)
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.debug("[SelfEvolutionEngine] on_evolution_activated failed for agent %s: %s", name, exc)
 
         logger.info(
             f"Evolution activated: quality_baseline={self._quality_baseline}, "
@@ -624,9 +624,10 @@ Agent: {agent_name}
             response = self.gateway.generate(prompt, format_json=True)
             return json.loads(response.response)
         except json.JSONDecodeError as e:
-            logger.warning(f"_generate_proposals_heavy: JSON decode error: {e}")
+            logger.warning("[SelfEvolutionEngine] _propose: JSON decode error: %s", e)
             return {"proposals": []}
-        except Exception:
+        except Exception as exc:
+            logger.warning("[SelfEvolutionEngine] _propose: unexpected error (returning empty proposals): %s", exc)
             return {"proposals": []}
 
     def _assess_lightweight(self, proposal: dict, quality_score: float) -> dict:
