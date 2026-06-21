@@ -735,8 +735,8 @@ class AgentOrchestrator:
             if (hasattr(self, "_parliament") and self._parliament is not None):
                 _has_parliament = True
                 _parliament = self._parliament
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("[AgentOrchestrator] Parliament check failed (skipping parliament review): %s", exc)
 
         start_time = time.time()
         if _resume_context is not None:
@@ -926,8 +926,8 @@ class AgentOrchestrator:
                             "event": evolution_event,
                             "timestamp": time.time(),
                         })
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("[AgentOrchestrator] Evolution hook failed for %s (proceeding without evolution record): %s", step.agent_name, exc)
 
             self._trace.append({
                 "type": "agent_end",

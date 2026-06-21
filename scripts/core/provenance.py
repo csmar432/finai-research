@@ -32,8 +32,11 @@ __all__ = [
 
 import hashlib
 import json
+import logging
 import re
 import uuid
+
+logger = logging.getLogger(__name__)
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -547,8 +550,8 @@ class ProvenanceChain:
                 )
                 for l in data.get("links", [])
             ]
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("[ProvenanceChain] Failed to load checkpoint from %s, starting fresh: %s", self._chain_path, exc)
 
     def _dict_to_node(self, d: dict) -> ProvenanceNode:
         sources = [

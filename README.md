@@ -1,8 +1,10 @@
 # 论文-研报工作流 · FinAI Research Workflow
 
-> **Tell me your research topic. Get a submittable paper.**
+> **Tell me your research topic. Get a structured draft for review.**
 >
-> An end-to-end AI agent pipeline for economic and financial research — from raw idea to submission-ready manuscript. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 52 journals, and adversarial review loops.
+> An end-to-end AI agent pipeline for economic and financial research — from raw idea to manuscript draft. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 52 journals, and AI-assisted review loops.
+>
+> ⚠️ **Important**: This tool generates manuscript drafts that require human review before submission. All causal identification strategies, statistical results, and citations must be verified by a researcher.
 
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
@@ -177,7 +179,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
 | Empirical Analysis | ~30 econometric methods, automated robustness tests (18 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
-| Review Loop | Adversarial review until submission-ready |
+| Review Loop | AI-assisted adversarial review with researcher verification required |
 
 **Architecture overview:**
 
@@ -212,7 +214,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
 | **6 Financial Analysts** | Parallel analysis: fundamental, valuation, risk, earnings, competitive, macro |
 | **Self-Evolution** | Continuous improvement based on task outcomes |
-| **70 Journal Templates** | JFE/JF/RFS/JBF/JIMF/MF + 50+ Chinese/Asian/European journals (经济研究/金融研究/管理世界/会计研究 etc.) |
+| **44 Journal Templates** | JF, JFE, RFS, JAE, Econometrica + 经济研究/金融研究/管理世界/会计研究/中国工业经济 etc. |
 
 ---
 
@@ -282,7 +284,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 └─────────────────┘  └─────────────────┘  └──────────────────────────┘
 ```
 
-**Key numbers:** 43 MCP servers · ~30 econometric methods · 17 skills · 52 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
+**Key numbers:** 43 MCP servers · ~30 econometric methods · 17 skills · 44 journal templates · 20 chart types · 19 robustness checks (17 real + 2 stubs documented) · 12 research directions
 
 ---
 
@@ -571,7 +573,7 @@ flowchart TD
 | **Focus** | Economic & financial research papers | Causal inference toolkit | Multi-agent paper writing | End-to-end empirical papers | Industrial causal inference |
 | **Data sources** | 43 MCP servers | None (data import only) | None | 3 (yfinance/FRED/Allium) | None |
 | **Econometric methods** | 42 (modern DiD focus) | 550+ (general) | 0 | Limited | 0 (general framework) |
-| **Journal templates** | 45 (incl. 6 Chinese top) | 0 | 1 (NeurIPS-style) | 1 (LaTeX generic) | 0 |
+| **Journal templates** | 44 (incl. 6 Chinese top) | 0 | 1 (NeurIPS-style) | 1 (LaTeX generic) | 0 |
 | **Chinese data integration** | ✅ (Tushare/CSMAR/Wind/CNRDS) | ❌ | ❌ | ❌ | ❌ |
 | **Human-in-the-loop** | ✅ (4 checkpoints) | ❌ | Partial | ❌ | ❌ |
 | **Adversarial review** | ✅ (4 rounds) | ❌ | ✅ (single pass) | ✅ (1 round) | ❌ |

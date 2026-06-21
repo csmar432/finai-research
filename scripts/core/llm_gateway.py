@@ -139,6 +139,7 @@ _MCP_TIMEOUT: float = float(os.environ.get("RESEARCH_MCP_TIMEOUT", "30.0"))
 
 
 _mcp_log = logging.getLogger("llm_gateway.mcp")
+_lg_log = logging.getLogger("llm_gateway")
 
 
 def _get_mcp_server_cmd(server_name: str) -> list[str] | None:
@@ -801,7 +802,8 @@ class LLMGateway:
                 if self.router.bridge.supports_streaming(key):
                     return True
             return False
-        except Exception:
+        except Exception as exc:
+            _lg_log.warning("[LLMGateway] supports_streaming check failed (returning False): %s", exc)
             return False
 
     def generate_stream(
