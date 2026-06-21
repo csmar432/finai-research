@@ -40,20 +40,23 @@ from scripts.research_framework.base import DataSource
 # LaTeX escaping helper (prevents injection in \includegraphics paths)
 # ─────────────────────────────────────────
 
+_LATEX_ESCAPE_TABLE = str.maketrans({
+    "\\": r"\textbackslash{}",
+    "{": r"\{",
+    "}": r"\}",
+    "$": r"\$",
+    "#": r"\#",
+    "%": r"\%",
+    "&": r"\&",
+    "_": r"\_",
+    "^": r"\textasciicircum{}",
+    "~": r"\textasciitilde{}",
+})
+
+
 def _latex_escape(s: str) -> str:
     """Escape LaTeX special characters to prevent injection."""
-    return (
-        s.replace("\\", "\\textbackslash{}")
-         .replace("{", "\\{")
-         .replace("}", "\\}")
-         .replace("$", "\\$")
-         .replace("#", "\\#")
-         .replace("%", "\\%")
-         .replace("&", "\\&")
-         .replace("_", "\\_")
-         .replace("^", "\\textasciicircum{}")
-         .replace("~", "\\textasciitilde{}")
-    )
+    return s.translate(_LATEX_ESCAPE_TABLE)
 # TRANSLATION DICTIONARIES
 # ─────────────────────────────────────────
 ZH_EN = {
