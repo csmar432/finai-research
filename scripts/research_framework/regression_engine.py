@@ -317,7 +317,8 @@ class RegressionEngine:
 
         # Union clustering (pooled)
         combined = np.array([cluster1, cluster2])
-        combined_hash = combined[0].astype(str) + "_" + combined[1].astype(str)
+        # np.char.add handles string dtype safely across numpy 1.x
+        combined_hash = np.char.add(np.char.add(combined[0].astype(str), "_"), combined[1].astype(str))
         _, uniq_idx = np.unique(combined_hash, return_index=True)
         # Pooled: compute using union group IDs
         pooled_labels, inv_pooled = np.unique(combined_hash, return_inverse=True)

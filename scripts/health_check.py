@@ -189,7 +189,8 @@ def _detect_platform() -> str:
             if "claude" in name:
                 return "claude_code"
     except Exception:
-        pass
+        import logging
+        logging.getLogger("health_check").debug("Platform detection via psutil failed, falling back to unknown")
     return "unknown"
 
 

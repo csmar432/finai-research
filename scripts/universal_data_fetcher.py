@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 import logging
+_log = logging.getLogger("universal_data_fetcher")
 import sys
 import time
 import warnings
@@ -310,7 +311,7 @@ class AStockFinancialFetcher(DataFetcher):
                 df["stock_code"] = stock
                 return True, df, ""
         except Exception as e:  # noqa: S110  # intentional: data fetcher must not crash on optional feature
-            pass
+            _log.debug("akshare stock_financial_analysis_indicator failed for %s: %s", code, e)
 
         # 尝试全市场财务摘要
         try:
@@ -379,13 +380,13 @@ class AStockFinancialFetcher(DataFetcher):
                 if info and isinstance(info, dict) and info.get("symbol"):
                     return True, info, ""
             except Exception:  # noqa: S110
-                pass
+                _log.debug("yfinance .info failed, trying financials fallback")
             try:
                 financials = t.financials
                 if financials is not None and hasattr(financials, "empty") and not financials.empty:
                     return True, financials, ""
             except Exception:  # noqa: S110
-                pass
+                _log.debug("yfinance .financials also failed for %s", mapped)
             return False, None, f"yfinance returned no data for {mapped}"
         except Exception as e:
             return False, None, str(e)
@@ -486,7 +487,7 @@ class MacroDataFetcher(DataFetcher):
                     df = pd.DataFrame([{"year": rec["date"], "value": rec["value"]} for rec in records])
                     return True, df, ""
         except Exception as e:  # noqa: S110  # intentional: data fetcher must not crash on optional feature
-            pass
+            _log.debug("World Bank API failed for indicator=%s: %s", indicator, e)
 
         return False, None, f"World Bank API failed for indicator={indicator}"
 
@@ -508,7 +509,7 @@ class EntityListFetcher(DataFetcher):
                 df = pd.read_csv(StringIO(resp.text))
                 return True, df, ""
         except Exception as e:  # noqa: S110  # intentional: fallback data fetch must not crash pipeline
-            pass
+            _log.debug("Entity list CSV download failed: %s", e)
 
         # 备用：Federal Register RSS
         try:
@@ -517,7 +518,7 @@ class EntityListFetcher(DataFetcher):
             if resp.status_code == 200:
                 return True, {"source": "federal_register_rss", "content": resp.text[:5000]}, ""
         except Exception:  # noqa: S110
-            pass
+            _log.debug("Federal Register RSS fallback also failed for entity list")
         return False, None, "BIS Entity List download failed"
 
     def synthetic(self, **kwargs) -> pd.DataFrame:
@@ -550,7 +551,7 @@ class PatentDataFetcher(DataFetcher):
             if resp.status_code == 200:
                 return True, {"source": "cnipa", "content": resp.text[:5000]}, ""
         except Exception:  # noqa: S110
-            pass
+            _log.debug("CNIPA patent search failed for company=%s, trying USPTO", company_name)
 
         # USPTO公开专利检索
         try:
@@ -570,7 +571,7 @@ class PatentDataFetcher(DataFetcher):
             if data.get("patents"):
                 return True, data, ""
         except Exception:  # noqa: S110
-            pass
+            _log.debug("USPTO patent search also failed for company=%s", company_name)
         return False, None, "CNIPA and USPTO patent APIs failed"
 
     def synthetic(self, stock: str = "", **kwargs) -> pd.DataFrame:

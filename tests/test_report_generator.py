@@ -284,10 +284,10 @@ class TestGenerateDocx:
 
     def test_generate_docx_graceful_fallback(self, tmp_path, monkeypatch):
         """When python-docx is unavailable, generate_docx returns None and logs."""
-        import sys
-        saved = sys.modules.pop("docx", None)
-        saved_pkg = sys.modules.pop("python_docx", None)
-        try:
+        from unittest.mock import patch
+
+        # Simulate docx not being installed by patching importlib.util.find_spec
+        with patch("importlib.util.find_spec", return_value=None):
             import importlib
             import scripts.research_framework.report_generator as rg_mod
             importlib.reload(rg_mod)
@@ -295,14 +295,6 @@ class TestGenerateDocx:
             gen.set_title("T", "Title")
             result = gen.generate_docx()
             assert result is None
-        finally:
-            if saved:
-                sys.modules["docx"] = saved
-            if saved_pkg:
-                sys.modules["python_docx"] = saved_pkg
-            import importlib
-            import scripts.research_framework.report_generator as rg_mod
-            importlib.reload(rg_mod)
 
 
 # ── TableFormatter ─────────────────────────────────────────────────────────────
