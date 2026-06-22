@@ -171,7 +171,7 @@ def _two_way_clustered_se(
 
     # Pooled (union) one-way
     combined = np.array([cluster1, cluster2])
-    combined_hash = combined[0].astype(str) + "_" + combined[1].astype(str)
+    combined_hash = np.char.add(np.char.add(combined[0].astype(str), "_"), combined[1].astype(str))
     pooled_labels, inv_pooled = np.unique(combined_hash, return_inverse=True)
     m_pooled = _one_way_meat(X, residuals, inv_pooled)
 
