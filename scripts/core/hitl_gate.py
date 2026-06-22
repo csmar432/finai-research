@@ -176,7 +176,7 @@ class HITLGate:
                 try:
                     content_val = json.loads(row[3]) if row[3] else {}
                 except (json.JSONDecodeError, ValueError, TypeError):
-                    _log.warning(
+                    logger.warning(
                         "HITLGate[%s]: corrupted content in approval_records at row %d: %s ...",
                         gate_id, row[0], repr(row[3][:100]) if row[3] else "empty"
                     )

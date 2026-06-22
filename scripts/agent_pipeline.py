@@ -609,7 +609,7 @@ def _print_canvas_hint(stage: str, detail: str = "") -> None:
 
 
 from scripts.core.citation_verifier import CitationVerifier
-from scripts.core.hitl_gate import HITLGate
+from scripts.core.hitl_gate import ApprovalRecord, HITLGate
 from scripts.core.llm_gateway import LLMGateway
 from scripts.core.orchestrator import (
     AgentOrchestrator,
@@ -828,7 +828,7 @@ class AgentPipelineResult:
     refinement: dict | None = None
     orchestrator_result: PipelineResult | None = None
     evolution_events: list = field(default_factory=list)
-    hitl_approvals: list = field(default_factory=list)
+    hitl_approvals: list[ApprovalRecord] = field(default_factory=list)
     visualization_path: Path | None = None
     total_latency_ms: float = 0.0
     success: bool = False
@@ -935,7 +935,7 @@ class AgentPipeline:
                     _cp_log.getLogger("agent_pipeline").info(
                         "Found checkpoint to resume: %s, stage=%s",
                         latest_cp.checkpoint_id[:8],
-                        latest_cp.stage,
+                        latest_cp.completed_stages[-1] if latest_cp.completed_stages else "none",
                     )
                     self._resume_checkpoint = latest_cp
                 else:
@@ -1228,15 +1228,7 @@ class AgentPipeline:
         if not _CHECKPOINT_AVAILABLE or self.checkpoint_manager is None:
             return ""
         try:
-            PipelineCheckpoint(
-                pipeline_id=self.pipeline_id,
-                pipeline_name="paper_pipeline",
-                timestamp=time.time(),
-                context=context,
-                completed_stage_index=-1,
-                completed_stages=[],
-                metadata={"last_stage": stage_name},
-            )
+            # CheckpointManager.save() creates and persists a PipelineCheckpoint internally
             cp_id = self.checkpoint_manager.save(
                 pipeline_id=self.pipeline_id,
                 pipeline_name="paper_pipeline",
@@ -1598,7 +1590,6 @@ class AgentPipeline:
                 "Orchestrator crashed: %s", exc, exc_info=True
             )
             # Build a minimal failure result so callers always get a valid AgentPipelineResult
-            from scripts.core.autonomy_loop import PipelineResult
             _fake_stage = type("FakeStageResult", (), {"output": None, "status": "failed", "error": str(exc)})()
             orchestrator_result = type("FakeResult", (), {
                 "success": False,
@@ -1735,99 +1726,15 @@ class AgentPipeline:
                     result.auto_review_reports["refinement"] = arr
 
         # ── DID Chart Auto-generation ─────────────────────────────────────────────
-        return result
-
-    def _auto_generate_did_charts(
-        self,
-        regressions: dict | None = None,
-        output_dir: Path | None = None,
-    ) -> list[Path]:
-        """
-        Detect DID design and auto-generate standard DID diagnostic charts.
-
-        Looks for DID regressions in the orchestrator results and generates:
-          - Parallel trend chart
-          - Placebo test chart
-          - Dynamic effects / event study chart
-
-        This is best-effort: wrapped in try/except so it never blocks the pipeline.
-        """
-        chart_paths: list[Path] = []
-        did_methods = {
-            "did_2x2", "cs_did", "sun_abraham", "borusyak",
-            "gardner", "synth_did", "did", "twfe",
-        }
-
-        regressions = regressions or {}
-        has_did = any(
-            isinstance(v, dict) and
-            str(v.get("method", "")).lower() in did_methods
-            for v in regressions.values()
+        # Auto-generate DID diagnostic charts after plotting stage
+        did_charts_dir = Path(str(self.config.output_dir or "output")) / "charts"
+        did_charts_dir.mkdir(parents=True, exist_ok=True)
+        result.did_chart_paths = self._auto_generate_did_charts(
+            regressions=getattr(result, "_regressions", {}),
+            output_dir=did_charts_dir,
         )
 
-        if not has_did:
-            _log_debug = __import__("logging").getLogger("agent_pipeline")
-            _log_debug.debug("[_auto_generate_did_charts] No DID design detected, skipping")
-            return chart_paths
-
-        try:
-            from scripts.research_framework.fin_charts import FinancialChartFactory
-        except ImportError:
-            return chart_paths
-
-        try:
-            factory = FinancialChartFactory.__new__(FinancialChartFactory)
-            factory._data = None
-            factory._regressions = regressions
-
-            if output_dir is None:
-                out_dir = Path("output/charts")
-            else:
-                out_dir = Path(output_dir) / "charts"
-            out_dir.mkdir(parents=True, exist_ok=True)
-
-            # Parallel trend chart
-            try:
-                p1 = factory.create("parallel_trend", title="平行趋势检验")
-                if p1 and isinstance(p1, Path):
-                    chart_paths.append(p1)
-            except Exception as e:
-                _log_w = __import__("logging").getLogger("agent_pipeline")
-                _log_w.debug("[_auto_generate_did_charts] parallel_trend failed: %s", e)
-
-            # Placebo test chart
-            try:
-                p2 = factory.create("placebo_test", title="安慰剂检验")
-                if p2 and isinstance(p2, Path):
-                    chart_paths.append(p2)
-            except Exception as e:
-                _log_w = __import__("logging").getLogger("agent_pipeline")
-                _log_w.debug("[_auto_generate_did_charts] placebo_test failed: %s", e)
-
-            # Dynamic effects / event study chart
-            try:
-                p3 = factory.create("event_study", title="动态效应图")
-                if p3 and isinstance(p3, Path):
-                    chart_paths.append(p3)
-            except Exception as e:
-                _log_w = __import__("logging").getLogger("agent_pipeline")
-                _log_w.debug("[_auto_generate_did_charts] event_study failed: %s", e)
-
-            if chart_paths:
-                _log_i = __import__("logging").getLogger("agent_pipeline")
-                _log_i.info(
-                    "[_auto_generate_did_charts] Auto-generated %d DID charts: %s",
-                    len(chart_paths),
-                    [str(p) for p in chart_paths],
-                )
-
-        except Exception as e:
-            _log_w = __import__("logging").getLogger("agent_pipeline")
-            _log_w.warning("[_auto_generate_did_charts] Chart auto-generation failed: %s", e)
-
-        return chart_paths
-
-    # ── P0-1: End-to-end PDF generation ────────────────────────────────────
+        # ── P0-1: End-to-end PDF generation ────────────────────────────────────
         # Collect writing content for paper generation
         paper_content: dict = {}
         if result.outline:
@@ -2125,7 +2032,7 @@ class AgentPipeline:
                 continue
 
         if not opened:
-            print(f"  {dim('请手动打开: ' + env_hint)}")
+            print(f"  {dim('请手动打开: ' + str(env_file))}")
 
         print()
         print(f"  {dim('配置完成并重启后，下次运行会自动识别')}")
@@ -2296,11 +2203,13 @@ class AgentPipeline:
         results = self._verifier.verify_batch(citations)
         return [
             {
-                "title": r.matched_title,
+                "title": r.title,
                 "verified": r.verified,
                 "source": r.source,
-                "score": r.levenshtein_score,
-                "confidence": r.confidence,
+                "score": r.score,
+                "message": r.message,
+                "authors": r.authors,
+                "year": r.year,
             }
             for r in results
         ]

@@ -302,7 +302,7 @@ class SelfEvolutionEngine:
 ```"""
 
         try:
-            response = self.gateway.generate(prompt, format_json=True)
+            response = self.gateway.generate(prompt)
             try:
                 data = json.loads(response.response)
             except json.JSONDecodeError as e:
@@ -540,7 +540,7 @@ class SelfEvolutionEngine:
         from pathlib import Path
 
         if path is None:
-            path = Path(f".cache/evolution_proposals_{self._agent_name}.jsonl")
+            path = Path(f".cache/evolution_proposals_{self.memory.session_id}.jsonl")
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as f:
@@ -621,7 +621,7 @@ Agent: {agent_name}
 {{"proposals": [{{"agent_name": "{agent_name}", "target": "...", "issue": "...", "suggestion": "...", "expected_impact": "medium"}}]}}"""
 
         try:
-            response = self.gateway.generate(prompt, format_json=True)
+            response = self.gateway.generate(prompt)
             return json.loads(response.response)
         except json.JSONDecodeError as e:
             logger.warning("[SelfEvolutionEngine] _propose: JSON decode error: %s", e)

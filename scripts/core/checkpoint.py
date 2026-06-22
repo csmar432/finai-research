@@ -67,7 +67,7 @@ Usage
 
 from __future__ import annotations
 
-import fcntl
+import fcntl as _fcntl
 import hashlib
 import json
 import logging
@@ -296,11 +296,16 @@ class CheckpointManager:
         poll_interval = 0.1
         while time.time() < deadline:
             try:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _fcntl.flock(lock_file.fileno(), _fcntl.LOCK_EX | _fcntl.LOCK_NB)
                 return lock_file
-            except BlockingIOError:
-                time.sleep(poll_interval)
-                poll_interval = min(poll_interval * 1.5, 1.0)   # cap at 1s backoff
+            except (AttributeError, OSError) as _exc:
+                if _exc.errno == 45:  # OSError: [Errno 45] Operation not supported (e.g. NFS without flock)
+                    return lock_file
+                if _exc.errno == 11:   # EAGAIN
+                    time.sleep(poll_interval)
+                    poll_interval = min(poll_interval * 1.5, 1.0)
+                else:
+                    raise
         lock_file.close()
         raise TimeoutError(
             f"Failed to acquire lock for pipeline '{pipeline_id}' "
@@ -311,7 +316,10 @@ class CheckpointManager:
 
     @staticmethod
     def _unlock_index(lock_file) -> None:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        try:
+            _fcntl.flock(lock_file.fileno(), _fcntl.LOCK_UN)
+        except (AttributeError, OSError):
+            pass
         lock_file.close()
 
     # ── Core CRUD ────────────────────────────────────────────────────────────
@@ -913,26 +921,27 @@ class CheckpointableOrchestrator:
 
         gate = HITLGate()
 
-        for pending_entry in state.get("pending", []):
-            gate._pending[pending_entry["gate_id"]] = ApprovalRecord(
-                gate_id=pending_entry["gate_id"],
-                stage=pending_entry["stage"],
-                state=GateState[pending_entry["state"]],
-                content=pending_entry.get("content", {}),
-                question=pending_entry.get("question", ""),
-                held_at=time.time(),
-            )
+        with gate._write_lock:
+            for pending_entry in state.get("pending", []):
+                gate._pending[pending_entry["gate_id"]] = ApprovalRecord(
+                    gate_id=pending_entry["gate_id"],
+                    stage=pending_entry["stage"],
+                    state=GateState[pending_entry["state"]],
+                    content=pending_entry.get("content", {}),
+                    question=pending_entry.get("question", ""),
+                    held_at=time.time(),
+                )
 
-        for hist_entry in state.get("history", []):
-            record = ApprovalRecord(
-                gate_id=hist_entry["gate_id"],
-                stage=hist_entry["stage"],
-                state=GateState[hist_entry["state"]],
-                feedback=hist_entry.get("feedback", ""),
-                held_at=hist_entry.get("held_at", time.time()),
-                decided_at=hist_entry.get("decided_at"),
-            )
-            gate._history.append(record)
+            for hist_entry in state.get("history", []):
+                record = ApprovalRecord(
+                    gate_id=hist_entry["gate_id"],
+                    stage=hist_entry["stage"],
+                    state=GateState[hist_entry["state"]],
+                    feedback=hist_entry.get("feedback", ""),
+                    held_at=hist_entry.get("held_at", time.time()),
+                    decided_at=hist_entry.get("decided_at"),
+                )
+                gate._history.append(record)
 
         return gate
 

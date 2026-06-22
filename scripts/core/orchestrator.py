@@ -808,11 +808,13 @@ class AgentOrchestrator:
 
             # ── HITL Gate ─────────────────────────────────────────────────
             if step.hitl_gate:
-                # Build enriched gate content with parliament verdict
+                # Build enriched gate content with parliament verdict.
+                # NOTE: result is not yet defined at this point (it is created
+                # after the agent execution loop). Use None to avoid NameError.
                 gate_content = {
                     "context": agent_context,
                     "result_preview": str(context)[:500],
-                    "stage_result": result.output,
+                    "stage_result": None,  # result not yet available during HITL pause
                 }
                 if hasattr(self, "_pending_parliament_verdict"):
                     gate_content["parliament_verdict"] = self._pending_parliament_verdict

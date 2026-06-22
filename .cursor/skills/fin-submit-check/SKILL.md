@@ -116,6 +116,31 @@ python scripts/journal_template.py --validate-refs --journal JF
 ❌ Author, A. (ed.). Title. -> 作者格式不一致
 ```
 
+### 5. 引用真实性核查 (CitationVerifier)
+
+```
+检查项:
+□ 核心引用（≥5篇）已在 Semantic Scholar / CrossRef 中验证
+□ 验证率 ≥ 90%（≥90% 的引用能被外部数据库确认）
+□ 引用可信度得分 ≥ 0.8
+□ 无无法验证的虚构引用
+
+阈值标准:
+✅ PASS: 验证率 ≥ 90%，且核心引用均已验证
+⚠️  WARN: 验证率 70-89%，需人工逐条核对
+❌ FAIL: 验证率 < 70%，或发现虚构引用
+
+验证命令:
+python scripts/core/citation_verifier.py "Author (2020). Title. Journal."
+
+CitationVerifier 在流水线中的调用路径:
+  AgentPipeline._ensure_initialized()
+    → AgentOrchestrator.register_default_agents(citation_verifier=self._verifier)
+      → LiteratureReviewAgent.__init__(gateway, citation_verifier=citation_verifier)
+        → self._citation_verifier.verify_batch(candidates)
+          → Semantic Scholar / CrossRef API
+```
+
 ### 6. 公式编号检查
 
 ```
@@ -203,6 +228,34 @@ grep -i "warning" paper.log
 grep "Overfull\|Underfull" paper.log
 ```
 
+### 11. AI 内容披露核查 (必检)
+
+```
+检查项:
+□ LaTeX 文档包含 AI 辅助写作声明脚注
+□ 声明中包含"需要独立验证"或类似免责表述
+□ 若使用模拟数据，该数据已被明确标注（SIMULATED 标签或红色警示）
+
+# 自动检测命令
+grep -i "AI assistance\|AI-assisted\|AI draft\|generated with AI" paper.tex
+grep -i "independent verification\|需要独立验证\|empirical results require" paper.tex
+
+# 若使用模拟数据，还需检查
+grep -i "SIMULATED\|demonstration\|演示" paper.tex
+
+声明模板 (英文期刊):
+\textit{[This manuscript was drafted with AI assistance.
+All empirical results require independent verification before submission.]}
+
+声明模板 (中文期刊):
+\textit{[本文由 AI 辅助生成。所有实证结果在投稿前需经独立验证。]}
+
+严重问题判定:
+❌ FAIL: 文档无任何 AI 披露声明
+❌ FAIL: 使用模拟数据但未标注
+⚠️  WARN: AI 披露存在但不规范（缺失免责表述）
+```
+
 ## 期刊特定检查清单
 
 ### Journal of Finance (JF)
@@ -270,6 +323,8 @@ grep "Overfull\|Underfull" paper.log
 | 附录 | ✅ PASS | 0 |
 | 语法检查 | ⚠️ WARN | 3 |
 | LaTeX编译 | ✅ PASS | 0 |
+| AI内容披露 | ⚠️ WARN | 1 |
+| 引用真实性 | ⚠️ WARN | 2 |
 
 ## 总体状态: ⚠️ 需要修复后投稿
 ```
@@ -318,7 +373,7 @@ grep "Overfull\|Underfull" paper.log
 
 ## 约束
 
-1. 必须完整执行所有10类检查
+1. 必须完整执行全部12类检查
 2. 每类检查必须给出明确的 PASS/WARN/FAIL 状态
 3. 问题清单必须具体到行号或位置
 4. 修复建议必须可操作
