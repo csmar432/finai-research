@@ -393,9 +393,6 @@ omit = [
 ]
 
 [tool.coverage.report]
-# NOTE: fail_under = 60 added in v18 but current total coverage is ~7%.
-# Uncomment when the project has reached 60% test coverage.
-# fail_under = 60
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",

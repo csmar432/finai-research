@@ -34,6 +34,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore")
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
@@ -380,6 +381,11 @@ class FinancialChartFactory:
         import matplotlib.pyplot as plt
         fig_size = figsize or self.config.figsize
         return plt.subplots(figsize=fig_size)
+
+    def _palette(self, idx: int) -> tuple[float, float, float]:
+        """Return a color from the configured palette by index."""
+        import seaborn as sns
+        return sns.color_palette(self.config.color_palette, idx + 1)[idx]
 
     def _save(self, fig: "plt.Figure", name: str, formats: list[str] | None = None):
         """Save figure to disk."""

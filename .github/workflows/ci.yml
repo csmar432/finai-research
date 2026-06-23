@@ -100,6 +100,7 @@ jobs:
             tests/test_llm_gateway.py tests/test_session.py \
             tests/test_tool_selector.py \
             tests/test_regression_engine.py tests/test_planner.py tests/test_type_audit.py \
+            tests/test_fin_charts.py tests/test_health_check.py \
             --cov=scripts --cov-branch --tb=long --timeout=120 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch1.log
         env:
@@ -379,6 +380,7 @@ jobs:
             tests/test_diagnostic_advanced.py tests/test_demo_research_report.py \
             tests/test_two_way_clustered.py tests/test_presence_server.py \
             tests/test_provenance.py tests/test_provenance_integration.py \
+            tests/test_iv_panel.py tests/test_psm_did.py \
             --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch3.log
         env:
@@ -675,7 +677,7 @@ jobs:
             coverage combine --keep $COV_FILES
             # Aggregate coverage: scripts/ is 60K+ lines, tests cover targeted modules.
             # Set fail-under=3 as a minimum quality bar.
-            coverage report -m --fail-under=3
+            coverage report -m --fail-under=10
           else
             echo "No coverage data available — skipping combine"
           fi
