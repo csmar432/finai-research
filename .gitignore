@@ -211,7 +211,6 @@ tests/test_panel_threshold_regression.py
 tests/test_paper_deep_parser.py
 tests/test_placebo_permutations.py
 tests/test_prisma_compliance.py
-tests/test_two_way_clustered.py
 
 # ── Local data & telemetry ───────────────────────────────────────────────────
 data/alternative_data/
