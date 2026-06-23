@@ -204,7 +204,7 @@ def test_balance_test_pass(np_rng):
         threshold=0.1,
     )
 
-    assert result["passed"] is True
+    assert result["passed"]
     assert result["max_abs_bias"] < 0.1
     assert result["imbalance_vars"] == []
 
