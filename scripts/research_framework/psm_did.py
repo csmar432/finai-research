@@ -236,6 +236,17 @@ class PSMDID:
         # "bad control" bias (Abadie 2005). Post-matching OLS uses only the treatment
         # indicator and post-period dummy. Use IPW or covariate-adjusted matching if
         # residual covariate adjustment is needed.
+        if covariates:
+            import warnings
+            warnings.warn(
+                f"[PSM-DID] covariates={covariates} were used for propensity score "
+                f"estimation but are NOT included in the post-matching DID regression "
+                f"to avoid bad-control bias (Abadie 2005). The DID coefficient "
+                f"reflects the average treatment effect on the treated (ATT). "
+                f"If residual covariate adjustment is needed, use IPW regression instead.",
+                UserWarning,
+                stacklevel=2,
+            )
         y = matched_df[self.outcome]
         X = matched_df[["did"]]
         X = sm.add_constant(X)

@@ -67,14 +67,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install pip-audit bandit
 
-      - name: pip-audit (dependency vulnerabilities)
-        run: pip-audit --disable-file-found --fail requirements-ci.txt 2>&1 || true
-        continue-on-error: true
-
-      - name: bandit (code security patterns)
-        run: |
-          bandit -r scripts/ -x scripts/core/agents/,scripts/on_enter.py -f json 2>&1 | python3 -c 'import sys,json;d=json.load(sys.stdin);iss=d.get("results",[]);print(f"Bandit: {len(iss)} issue(s) found" if iss else "Bandit: No issues found");[(print(f"  [{i[\"severity\"]}] {i[\"filename\"]}:{i[\"line\"]} {i[\"test_name\"]}")) for i in iss[:10]]' 2>&1 || true
-        continue-on-error: true
+      - name: Security gate (HIGH/CRITICAL blocking)
+        run: python3 scripts/ci_security_gate.py
+        continue-on-error: false
 
   # ── 测试分组 ─────────────────────────────────────────────────────────
   test-batch-1:

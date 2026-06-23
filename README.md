@@ -56,7 +56,7 @@ $ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 ## Why FinAI Research Workflow?
 
 - **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 19 robustness checks, parallel-trend plots).
-- **43 MCP data sources, zero manual data wrangling** — pull A-share financials (Tushare/akshare), US equities (yfinance), macro series (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv) directly from the agent. Note: Tushare Pro (paid), Wind (institutional), and CSMAR (institutional) require paid accounts; free alternatives are available via `user-financial` (akshare) and `user-yfinance`.
+- **43 MCP data sources** — pull A-share financials, US equities, global macro (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers directly from the agent. Note: A-share data (Tushare Pro, Wind, CSMAR) requires institutional/paid accounts; free alternatives exist via `user-financial` (akshare) and `user-yfinance`.
 - **~30 econometric methods, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon, requires `pip install diff-in-diff2`), synthetic control, instrumental variables (requires `linearmodels`), panel GMM, RDD, event studies, mediation, and more. See CLAUDE.md for the full list with dependency notes.
 - **44 journal templates, both English and Chinese** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
 - **17 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
@@ -279,31 +279,40 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 
 ## MCP Tools Overview
 
-> 43 servers total. Most require no API key. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete tool catalog.
+> 43 servers total. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
+>
+> | Badge | Meaning |
+> |-------|---------|
+> | 💰 Paid | Requires institutional/paid account (Tushare Pro / Wind / CSMAR / CEIC) |
+> | ⚠️ Limited | Free tier available but rate-limited or requires registration |
+> | ✅ Free | No account required — works out of the box |
 
-| MCP Server | Function | API Key Required |
-|------------|----------|-----------------|
-| **user-tushare** | A-share data (quotes, financials, margin) | Yes |
-| **user-yfinance** | US stock, ETF, options, financials | No |
-| **user-sec-edgar** | SEC 10-K/10-Q/8-K filings | No |
-| **user-financial** | China macro (GDP/CPI/M2 via akshare + World Bank) | No |
-| **user-eodhd** | US yield curve, economic calendar | Yes |
-| **user-fed-data** | Federal Reserve, FOMC, Beige Book | No |
-| **user-wb-data** | World Bank Data API | No |
-| **user-imf-data** | IMF World Economic Outlook | No |
-| **user-oecd-data** | OECD Economic Data | No |
-| **user-bea-data** | Bureau of Economic Analysis (US GDP) | No |
-| **user-eastmoney-reports** | Research reports, news, analyst rankings | No |
-| **user-enhanced-finance** | Forex, shipping indices, commodities | No |
-| **user-openalex** | 250M+ academic papers + citation graph | No |
-| **user-arxiv** | Academic paper search and download | No |
-| **user-context7** | Full-text retrieval for papers (ArXiv/DOI) | No |
-| **user-semantic-scholar** | AI-enhanced paper search | Optional |
-| **user-nber-wp** | NBER Working Papers | No |
-| **user-brave-search** | Web search (Chinese/English news and research) | Yes |
-| **user-chinese-literature** | CSSCI, CNKI-style Chinese paper search | No |
+| MCP Server | Function | Cost | Free Tier |
+|-----------|----------|------|---------|
+| **user-tushare** | A-share data (quotes, financials, margin) | 💰 Paid | akshare alternative |
+| **user-yfinance** | US stock, ETF, options, financials | ✅ Free | Full |
+| **user-sec-edgar** | SEC 10-K/10-Q/8-K filings | ✅ Free | Full |
+| **user-financial** | China macro (GDP/CPI/M2) | ✅ Free | Full |
+| **user-eodhd** | US yield curve, economic calendar | ⚠️ Limited | Registration required |
+| **user-fed-data** | Federal Reserve, FOMC, Beige Book | ✅ Free | Full |
+| **user-wb-data** | World Bank Data API | ✅ Free | Full |
+| **user-imf-data** | IMF World Economic Outlook | ✅ Free | Full |
+| **user-oecd-data** | OECD Economic Data | ✅ Free | Full |
+| **user-bea-data** | Bureau of Economic Analysis (US GDP) | ✅ Free | Full |
+| **user-eastmoney-reports** | Research reports, news, analyst rankings | ✅ Free | Full |
+| **user-enhanced-finance** | Forex, shipping indices, commodities | ✅ Free | Full |
+| **user-openalex** | 250M+ academic papers + citation graph | ✅ Free | Full |
+| **user-arxiv** | Academic paper search and download | ✅ Free | Full |
+| **user-context7** | Full-text retrieval for papers (ArXiv/DOI) | ✅ Free | Full |
+| **user-semantic-scholar** | AI-enhanced paper search | ⚠️ Limited | Optional API key |
+| **user-nber-wp** | NBER Working Papers | ✅ Free | Full |
+| **user-brave-search** | Web search (Chinese/English) | ⚠️ Limited | Registration required |
+| **user-chinese-literature** | CSSCI, CNKI-style search | ⚠️ Limited | See legal notice in SECURITY.md |
 
-See [MCP Tool Marketplace Tutorial](docs/tutorials/04-mcp-marketplace.md) for details.
+> **A-share users without institutional accounts**: `user-yfinance` (US/ADR) and `user-financial` (akshare free tier) cover basic equity/macro needs. Paid A-share data (CSMAR/Wind/Tushare Pro) requires institutional accounts.
+
+See [MCP Tool Marketplace Tutorial](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
+
 
 ---
 
