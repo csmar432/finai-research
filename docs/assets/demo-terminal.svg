@@ -1,0 +1,95 @@
+<svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace, Menlo, Monaco, 'Cascadia Code', 'Roboto Mono', 'Consolas', 'Courier New', monospace" font-size="13">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1e2e"/>
+      <stop offset="100%" stop-color="#11111b"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Window chrome -->
+  <rect width="900" height="420" rx="10" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Title bar -->
+  <rect width="900" height="32" rx="10" fill="#181825"/>
+  <rect y="22" width="900" height="10" fill="#181825"/>
+  <circle cx="22" cy="16" r="6" fill="#f38ba8"/>
+  <circle cx="42" cy="16" r="6" fill="#f9e2af"/>
+  <circle cx="62" cy="16" r="6" fill="#a6e3a1"/>
+  <text x="450" y="20" text-anchor="middle" fill="#cdd6f4" font-size="12">zsh  finai-research-workflow</text>
+
+  <!-- Terminal content area -->
+  <g transform="translate(0, 36)">
+    <!-- Prompt lines -->
+    <text x="16" y="22" fill="#89b4fa">$</text>
+    <text x="32" y="22" fill="#cdd6f4">python scripts/agent_pipeline.py --topic "≥í>C§˘ˇr∞ÑqÕ"</text>
+
+    <text x="16" y="52" fill="#6c7086"># c(/® 8 6µvA4ø...</text>
+
+    <!-- Stage 1 -->
+    <rect x="12" y="65" width="4" height="16" rx="2" fill="#a6e3a1"/>
+    <text x="24" y="78" fill="#a6e3a1"></text>
+    <text x="38" y="78" fill="#cdd6f4">6µ 1/8 ∑ Û’</text>
+    <text x="220" y="78" fill="#6c7086"> 10 *vÛ’...</text>
+
+    <!-- Stage 2 -->
+    <rect x="12" y="90" width="4" height="16" rx="2" fill="#a6e3a1"/>
+    <text x="24" y="103" fill="#a6e3a1"></text>
+    <text x="38" y="103" fill="#cdd6f4">6µ 2/8 ∑ á.¸</text>
+    <text x="220" y="103" fill="#6c7086">OpenAlex + ArXiv + NBER ∑ ¿" 2,847 «∫á</text>
+
+    <!-- Stage 3 -->
+    <rect x="12" y="115" width="4" height="16" rx="2" fill="#a6e3a1"/>
+    <text x="24" y="128" fill="#a6e3a1"></text>
+    <text x="38" y="128" fill="#cdd6f4">6µ 3/8 ∑ ∞ñ'å¡</text>
+    <text x="220" y="128" fill="#6c7086">JFE/RFS/arXiv — 3 t ∑ ‡Õv </text>
+
+    <!-- Stage 4 -->
+    <rect x="12" y="140" width="4" height="16" rx="2" fill="#89b4fa"/>
+    <text x="24" y="153" fill="#89b4fa">∂</text>
+    <text x="38" y="153" fill="#cdd6f4">6µ 4/8 ∑ û¡æ°</text>
+    <text x="220" y="153" fill="#89b4fa">	È DID (Callaway-Sant'Anna) ∑ 3e' 18 Õ</text>
+
+    <!-- Stage 5 -->
+    <rect x="12" y="165" width="4" height="16" rx="2" fill="#6c7086"/>
+    <text x="24" y="178" fill="#6c7086">À</text>
+    <text x="38" y="178" fill="#45475a">6µ 5/8 ∑ pn∑÷</text>
+    <text x="220" y="178" fill="#45475a">IÖ6µ 4 å...</text>
+
+    <!-- Stage 6 -->
+    <rect x="12" y="190" width="4" height="16" rx="2" fill="#6c7086"/>
+    <text x="24" y="203" fill="#6c7086">À</text>
+    <text x="38" y="203" fill="#45475a">6µ 6/8 ∑ û¡ê</text>
+
+    <!-- Stage 7 -->
+    <rect x="12" y="215" width="4" height="16" rx="2" fill="#6c7086"/>
+    <text x="24" y="228" fill="#6c7086">À</text>
+    <text x="38" y="228" fill="#45475a">6µ 7/8 ∑ ∫áô\</text>
+
+    <!-- Stage 8 -->
+    <rect x="12" y="240" width="4" height="16" rx="2" fill="#6c7086"/>
+    <text x="24" y="253" fill="#6c7086">À</text>
+    <text x="38" y="253" fill="#45475a">6µ 8/8 ∑ ˘ó' Review</text>
+
+    <!-- Separator -->
+    <line x1="12" y1="272" x2="888" y2="272" stroke="#313244" stroke-width="1"/>
+
+    <!-- HITL checkpoint banner -->
+    <rect x="12" y="282" width="876" height="28" rx="4" fill="#f9e2af" fill-opacity="0.12"/>
+    <text x="24" y="300" fill="#f9e2af">° [CHECKPOINT] û¡æ°πHÚ ∑ ˜n§ÁÌ (y/n)</text>
+
+    <!-- Result preview -->
+    <text x="16" y="328" fill="#cdd6f4">®PπH: DID (Callaway-Sant'Anna 2021)</text>
+    <text x="16" y="348" fill="#cdd6f4">Âwÿœ: ≥í>C’π˝ ◊ t˝§í</text>
+    <text x="16" y="368" fill="#cdd6f4">pneê: CSMAR (A°) + ˝∂)@ (ˇr))</text>
+    <text x="16" y="388" fill="#cdd6f4">7,: 3,200 ∂ A °
+l¯ ∑ 2010-2022 t</text>
+  </g>
+
+  <!-- Key metrics overlay (bottom right) -->
+  <rect x="680" y="360" width="208" height="52" rx="6" fill="#181825" fill-opacity="0.85"/>
+  <text x="784" y="378" text-anchor="middle" fill="#6c7086" font-size="10">HITL checkpoints ∑ 3e'¿å ∑ LaTeX</text>
+  <text x="784" y="402" text-anchor="middle" fill="#a6e3a1" font-size="14" font-weight="bold">43 MCP ∑ 17 Skills ∑ 44 templates</text>
+</svg>
