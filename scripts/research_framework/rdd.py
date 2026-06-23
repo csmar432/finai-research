@@ -436,13 +436,17 @@ def _bandwidth_ik(
     #   triangular:     c_T = 2/3 ≈ 0.667
     #   uniform:       c_U = 1/2   = 0.500
     #   epanechnikov:  c_E = 3/5   = 0.600
-    #   gaussian:      c_G = 1/√π ≈ 0.564 (compact-kernel extension)
+    #   gaussian:      c_G = 1.06  (IK 2012 standardized units, replaces ad-hoc 1/√π)
     kern_const = {
         "triangular": 2.0 / 3.0,
         "uniform": 0.5,
         "epanechnikov": 3.0 / 5.0,
-        "gaussian": 1.0 / (2.0 * np.pi) ** 0.5,
+        "gaussian": 1.06,
     }.get(kernel, 2.0 / 3.0)
+
+    # Bias constant c from IK 2012 (curvature of conditional expectation at cutoff).
+    # In standardized units (h_c = 1.0), c = 1.0.
+    c = 1.0
 
     # r2 的惩罚项（曲率越大，带宽越小）
     penalty = 1.0 / (1.0 + abs(r2))

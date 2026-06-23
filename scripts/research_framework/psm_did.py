@@ -197,14 +197,16 @@ class PSMDID:
 
         if self.method == "caliper":
             caliper_value = self.caliper * pre_df["ps"].std()
+            t_ps = treated["ps"].values
+            c_ps = control["ps"].values
+            c_idx = control.index.values
             matched_control_idx = []
-            for _, t_row in treated.iterrows():
-                ps_diff = (control["ps"] - t_row["ps"]).abs()
-                close = control[ps_diff <= caliper_value]
-                if len(close) > 0:
-                    # take 1 nearest
-                    nearest = close.iloc[[(close["ps"] - t_row["ps"]).abs().argmin()]]
-                    matched_control_idx.append(nearest.index[0])
+            for j, tps in enumerate(t_ps):
+                diffs = np.abs(c_ps - tps)
+                in_caliper = diffs <= caliper_value
+                if np.any(in_caliper):
+                    nearest = np.argmin(np.where(in_caliper, diffs, np.inf))
+                    matched_control_idx.append(c_idx[nearest])
             matched_control = control.loc[matched_control_idx] if matched_control_idx else control.iloc[0:0]
         else:
             # nearest neighbour (with or without replacement)
@@ -229,8 +231,13 @@ class PSMDID:
         matched_df["did"] = matched_df[self.treatment] * matched_df["post"]
 
         # ── Stage 4: Regression ──
+        # NOTE: Only "did" variable is included post-matching.
+        # Covariates were used in PS estimation and should NOT be added back to avoid
+        # "bad control" bias (Abadie 2005). Post-matching OLS uses only the treatment
+        # indicator and post-period dummy. Use IPW or covariate-adjusted matching if
+        # residual covariate adjustment is needed.
         y = matched_df[self.outcome]
-        X = matched_df[["did"] + covariates]
+        X = matched_df[["did"]]
         X = sm.add_constant(X)
         reg = sm.OLS(y, X, missing="drop").fit(
             cov_type="cluster", cov_kwds={"groups": matched_df[self.unit]}

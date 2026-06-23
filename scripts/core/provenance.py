@@ -490,10 +490,16 @@ class ProvenanceChain:
         for i, node in enumerate(nodes):
             lines.append(f"## Step {i + 1}: {node.node_type.value}")
             lines.append(f"- **ID**: `{node.node_id}`")
-            lines.append(f"- **Source**: {node.source}")
-            lines.append(f"- **Timestamp**: {datetime.fromtimestamp(node.timestamp).isoformat()}")
-            if node.code_ref:
-                lines.append(f"- **Code**: `{node.code_ref}`")
+            # Sources: node.sources is a list[SourceRef]
+            if node.sources:
+                for src in node.sources:
+                    src_label = src.path if hasattr(src, 'path') else str(src)
+                    lines.append(f"- **Source**: {src_label}")
+            else:
+                lines.append(f"- **Source**: (none recorded)")
+            lines.append(f"- **Created**: {node.created_at}")
+            if node.content:
+                lines.append(f"- **Code** (first 100 chars): `{node.content[:100]}`")
             if node.metadata:
                 for k, v in node.metadata.items():
                     lines.append(f"- **{k}**: {v}")
