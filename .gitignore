@@ -250,8 +250,8 @@ tests/test_idea_data_checker.py
 tests/test_multi_agent.py
 tests/test_orchestrator.py
 tests/test_orchestrator_comprehensive.py
-tests/test_presence_server.py
-tests/test_provenance_integration.py
+# test_presence_server.py - REMOVED from gitignore (v28b fix)
+# test_provenance_integration.py - REMOVED from gitignore (v28b fix)
 tests/test_provenance_rag.py
 tests/test_quality_gates.py
 tests/test_reviewer_calibrator.py
