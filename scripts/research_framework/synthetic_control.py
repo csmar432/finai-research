@@ -697,6 +697,59 @@ class SyntheticControlEngine:
 
     # ── Core fit ───────────────────────────────────────────────────────────
 
+    def _warn_if_nonstationary(
+        self,
+        Y_treated_pre: np.ndarray,
+        Y_donors_pre: np.ndarray,
+        donor_units: list,
+    ) -> None:
+        """Warn if treated or any donor series is I(1) (non-stationary).
+
+        Synthetic control assumes the outcome series is stationary (or
+        cointegrated with the donor pool). Without stationarity, the
+        pre-treatment fit is spurious and post-treatment effects are biased.
+
+        Uses Augmented Dickey-Fuller (statsmodels). Skips if statsmodels
+        unavailable or series too short (<8 obs).
+        """
+        try:
+            from statsmodels.tsa.stattools import adfuller
+        except ImportError:
+            return  # statsmodels missing — silently skip
+        import warnings as _w
+
+        def _is_stationary(series: np.ndarray) -> bool:
+            arr = np.asarray(series, dtype=float).ravel()
+            arr = arr[~np.isnan(arr)]
+            if len(arr) < 8:
+                return True  # too short to test
+            try:
+                pval = adfuller(arr, autolag="AIC")[1]
+                return pval < 0.05  # reject unit root ⇒ stationary
+            except Exception:
+                return True  # test failed — don't block user
+
+        flagged = []
+        if not _is_stationary(Y_treated_pre):
+            flagged.append(f"treated({self.treat_unit})")
+        # Check donors but cap at first 10 to keep warnings short
+        for i, unit in enumerate(donor_units[:10]):
+            if i >= Y_donors_pre.shape[1]:
+                break
+            if not _is_stationary(Y_donors_pre[:, i]):
+                flagged.append(f"donor({unit})")
+        if flagged:
+            _w.warn(
+                f"[SyntheticControl] ADF test (α=0.05) suggests non-stationarity "
+                f"in: {', '.join(flagged[:5])}"
+                f"{' ...' if len(flagged) > 5 else ''}. "
+                f"SC weights are biased when treated/donor series are I(1) but "
+                f"not cointegrated. Consider differencing, taking logs, or using "
+                f"a cointegration-based estimator (e.g., Pesaran 2015).",
+                UserWarning,
+                stacklevel=2,
+            )
+
     def fit(self) -> SCEstimationResult:
         """
         Estimate synthetic control weights.
@@ -711,6 +764,12 @@ class SyntheticControlEngine:
         Y_treated_post = mats["Y_treated_post"]
         Y_donors_post = mats["Y_donors_post"]
         donor_units = mats["donor_units"]
+
+        # ── Stationarity pre-check (advisory) ──
+        # SC weights assume the outcome series is stationary (or cointegrated with
+        # the donor pool). ADF test on treated pre-period + donor series; emit a
+        # warning if any series is I(1) at 5% (i.e., likely non-stationary).
+        self._warn_if_nonstationary(Y_treated_pre, Y_donors_pre, donor_units)
 
         if self.augment:
             weights, intercept = _augmented_sc(
