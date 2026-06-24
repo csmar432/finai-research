@@ -142,7 +142,9 @@ def _two_way_clustered_se(
         (params, se)
     """
     n, k = X.shape
-    residuals = y - X @ np.linalg.lstsq(X, y, rcond=None)[0]
+    # OLS estimate (also used for residuals) — single lstsq call
+    params = np.linalg.lstsq(X, y, rcond=None)[0]
+    residuals = y - X @ params
 
     XtX = X.T @ X
     try:
@@ -179,7 +181,6 @@ def _two_way_clustered_se(
     vcov = bread @ meat @ bread / n
     se = np.sqrt(np.diag(vcov))
 
-    params = np.linalg.lstsq(X, y, rcond=None)[0]
     return params, se
 
 
