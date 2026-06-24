@@ -685,6 +685,7 @@ def _run_pipeline_sync(
 ) -> dict:
     """Run pipeline synchronously and return result."""
     started_at = datetime.now()
+    finished_at = None  # Initialized so the success-return path always has a defined value.
 
     # ── 可视化回调：审批通过后推送结果到 Canvas ────────────────────────
     # 可视化仅在用户审批后推送，防止在审批前展示结果
@@ -722,6 +723,7 @@ def _run_pipeline_sync(
                 on_gate_approved=_on_gate_approved,
             )
             result = pl.run()
+            finished_at = datetime.now()
             return {
                 "status": "completed",
                 "run_id": run_id,

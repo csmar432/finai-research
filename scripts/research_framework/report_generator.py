@@ -1042,7 +1042,7 @@ if __name__ == "__main__":
     gen.set_language(args.language)
 
     try:
-        tex_path = gen.generate(
+        tex_path = gen.generate_paper(
             topic=args.topic,
             outline=outline,
             regressions={},

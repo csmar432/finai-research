@@ -203,13 +203,15 @@ if _TENACITY_AVAILABLE:
         retry=retry_if_exception_type((ConnectionError, TimeoutError, OSError)),
         reraise=True,
     )
-    def _call_mcp_with_retry(tool_name: str, params: dict) -> dict:
-        return _call_mcp(tool_name, params)
+    def _call_mcp_with_retry(server: str, tool: str, args: dict, timeout: float = 30.0) -> Any:
+        """Retry-wrapped MCP call. Signature mirrors _call_mcp so tenacity can pass through."""
+        return _call_mcp(server, tool, args, timeout=timeout)
 
 else:
 
-    def _call_mcp_with_retry(tool_name: str, params: dict) -> dict:
-        return _call_mcp(tool_name, params)
+    def _call_mcp_with_retry(server: str, tool: str, args: dict, timeout: float = 30.0) -> Any:
+        """No-tenacity fallback: signature mirrors _call_mcp."""
+        return _call_mcp(server, tool, args, timeout=timeout)
 
 
 def call_mcp_tool(
@@ -232,7 +234,7 @@ def call_mcp_tool(
         try:
             # Use tenacity-backed retry wrapper if available
             if _TENACITY_AVAILABLE:
-                result = _call_mcp_with_retry(service_id, {"server": server, "tool": tool, "args": args})
+                result = _call_mcp_with_retry(server, tool, args, timeout=timeout)
             else:
                 result = _call_mcp(server, tool, args, timeout=timeout)
             _circuit_breaker.record_success(service_id)
