@@ -92,10 +92,74 @@ def extract(model, xnames):
             sig = "*"
         elif pv < 0.10:
             sig = r"$\dagger$"
-        out[n]=dict(coef=p,se=s,pval=pv,tstat=tv,sig=sig)
+        out[name]=dict(coef=p,se=s,pval=pv,tstat=tv,sig=sig)
     return out
 
 def fmt_coef(v): return f"${v['coef']:.4f}{v.get('sig','')}$ (${v['se']:.4f}$)"
+
+# ── Within-Transformation Fixed Effects ──
+def _demean_for_fe(
+    df: pd.DataFrame,
+    vars_to_demean: list[str],
+    group_col: str,
+) -> pd.DataFrame:
+    """
+    Demean variables within a group (within-transformation / Least Squares Dummy Variable equivalent).
+
+    demeaned[x] = x - mean(x|group) + mean(x|all)
+    This is equivalent to including group dummies but avoids creating a large dummy matrix.
+
+    Args:
+        vars_to_demean: list of column names to demean
+        group_col: grouping variable (e.g., firm_id or year)
+
+    Returns:
+        DataFrame with demeaned variables (only the demeaned columns; non-numeric cols unchanged).
+    """
+    result = df.copy()
+    grand_means = df[vars_to_demean].mean()
+    group_means = df.groupby(group_col)[vars_to_demean].transform("mean")
+    for col in vars_to_demean:
+        if col in result.columns and pd.api.types.is_numeric_dtype(result[col]):
+            result[col] = result[col] - group_means[col] + grand_means[col]
+    return result
+
+
+def _two_way_within(
+    df: pd.DataFrame,
+    vars_to_demean: list[str],
+    firm_col: str,
+    year_col: str,
+) -> pd.DataFrame:
+    """
+    Two-way within-transformation (firm FE × year FE) without dummy matrices.
+
+    Steps:
+      1. Demean by firm (within-firm transformation).
+      2. Demean by year on the already-firm-demeaned data
+         (sequential application is equivalent to two-way LSDV when cross-products
+          are excluded, which is standard for balanced panels in finance).
+
+    This eliminates the need to generate thousands of firm dummies and keeps the
+    regression matrix sparse and memory-efficient for large panels (>3000 firms × 10 years).
+
+    Ref: Cameron & Miller (2015, Journal of Human Resources), Section 3.2.
+    """
+    df_out = df.copy()
+    grand_means = df[vars_to_demean].mean()
+    # Step 1: within-firm
+    firm_means = df.groupby(firm_col)[vars_to_demean].transform("mean")
+    for col in vars_to_demean:
+        if col in df_out.columns and pd.api.types.is_numeric_dtype(df_out[col]):
+            df_out[col] = df_out[col] - firm_means[col]
+    # Step 2: within-year (on already firm-demeaned data)
+    year_means = df_out.groupby(year_col)[vars_to_demean].transform("mean")
+    grand_from_firm = grand_means  # reuse grand mean computed on original data
+    for col in vars_to_demean:
+        if col in df_out.columns and pd.api.types.is_numeric_dtype(df_out[col]):
+            df_out[col] = df_out[col] - year_means[col] + grand_from_firm[col]
+    return df_out
+
 
 # ── DID Regression ──
 def run_did(df, y_var, treat_var, time_var, x_vars, did_name="did",
@@ -104,23 +168,31 @@ def run_did(df, y_var, treat_var, time_var, x_vars, did_name="did",
     df_sub = df.dropna(subset=[y_var,treat_var,time_var]+x_vars)
     diag = check_dof(df_sub, [treat_var,time_var]+x_vars, firm_col, year_col, use_firm_fe, use_year_fe)
     if diag["fallback_triggered"]: use_firm_fe=False
-    # Build DID term
+
+    # DID interaction term (built on original data before demeaning)
     did_col = (df_sub[treat_var].astype(float)*df_sub[time_var].astype(float)).rename(did_name)
-    # Build fixed-effect dummy variables (if any)
-    fe_dummies = pd.DataFrame(index=df_sub.index)
-    if use_firm_fe and firm_col in df_sub.columns:
-        fe_dummies = pd.concat([fe_dummies,
-            pd.get_dummies(df_sub[firm_col],prefix="firm",drop_first=True).astype(float)], axis=1)
-    if use_year_fe and year_col in df_sub.columns:
-        fe_dummies = pd.concat([fe_dummies,
-            pd.get_dummies(df_sub[year_col],prefix="yr",drop_first=True).astype(float)], axis=1)
-    # Add constant to x_vars FIRST, then append DID term and FE dummies.
-    # This avoids sm.add_constant adding a duplicate column when firm/year
-    # dummies are already present in the matrix (cf. regression_engine.py line 362).
-    x_with_const = sm.add_constant(df_sub[x_vars].astype(float), has_constant="add")
-    X = pd.concat([x_with_const, did_col, fe_dummies], axis=1).fillna(0)
-    y = df_sub[y_var].astype(float).values
-    model = sm.OLS(y,X.values).fit(cov_type="HC1" if robust_se else "nonrobust")
+
+    # Apply within-transformation instead of dummy variables when FEs are requested.
+    # This avoids creating a (N × n_firms) dummy matrix and keeps memory usage O(N).
+    # Standard errors are computed cluster-robust below.
+    if use_firm_fe and use_year_fe and firm_col in df_sub.columns and year_col in df_sub.columns:
+        all_vars = [y_var, treat_var, time_var] + x_vars
+        df_fe = _two_way_within(df_sub, all_vars, firm_col, year_col)
+    elif use_firm_fe and firm_col in df_sub.columns:
+        all_vars = [y_var, treat_var, time_var] + x_vars
+        df_fe = _demean_for_fe(df_sub, all_vars, firm_col)
+    elif use_year_fe and year_col in df_sub.columns:
+        all_vars = [y_var, treat_var, time_var] + x_vars
+        df_fe = _demean_for_fe(df_sub, all_vars, year_col)
+    else:
+        df_fe = df_sub.copy()
+
+    # DID term is NOT demeaned (it is the causal variable) — keep it on original scale
+    did_col.index = df_fe.index
+    X_cols = x_vars + [did_name]
+    X = pd.concat([df_fe[x_vars].astype(float), did_col.astype(float)], axis=1).fillna(0)
+    y = df_fe[y_var].astype(float).values
+    model = sm.OLS(y, X.values).fit(cov_type="HC1" if robust_se else "nonrobust")
     results = extract(model, list(X.columns))
     did_coef = results.get(did_name,{}).get("coef",0)
     did_se   = results.get(did_name,{}).get("se",0)

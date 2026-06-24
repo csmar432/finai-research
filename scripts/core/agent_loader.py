@@ -41,7 +41,7 @@ from typing import Any
 import yaml
 
 from scripts.core.agents.base import AgentConfig
-from scripts.core.analyst_agents import (
+from scripts.core.analyst import (
     AnalystConfig,
     AnalystType,
     BaseAnalystAgent,

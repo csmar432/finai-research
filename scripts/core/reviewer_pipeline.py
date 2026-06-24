@@ -177,7 +177,7 @@ class ReviewerPipeline:
         """Run LLMReviewer to score the paper."""
         start = time.perf_counter()
         try:
-            from scripts.core.llm_reviewer import LLMReviewer
+            from scripts.core.reviewer import LLMReviewer
             reviewer = LLMReviewer(
                 default_venue=venue,
                 enable_cache=False,
@@ -238,7 +238,7 @@ class ReviewerPipeline:
 
         start = time.perf_counter()
         try:
-            from scripts.core.auto_review_rules import AutoReviewRules
+            from scripts.core.reviewer import AutoReviewRules
             arr = AutoReviewRules(domain="empirical_paper")
 
             # Split paper into chapters for rule-based scoring

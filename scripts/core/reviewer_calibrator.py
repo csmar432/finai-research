@@ -1006,7 +1006,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.bias_demo:
-        from scripts.core.dual_reviewer import DualReviewer
+        from scripts.core.reviewer import DualReviewer
 
         reviewer = DualReviewer()
         calibrator = ReviewerCalibrator(reviewer=reviewer)

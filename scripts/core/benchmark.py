@@ -786,7 +786,7 @@ class PaperWritingBench:
             score_diff, agreement.
         """
         try:
-            from scripts.core.llm_reviewer import LLMReviewer
+            from scripts.core.reviewer import LLMReviewer
         except ImportError:
             print("  [LLM Judge] llm_reviewer not available, using fallback scoring.")
             return self._llm_judge_fallback(papers)

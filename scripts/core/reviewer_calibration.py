@@ -9,7 +9,7 @@ Usage:
     from scripts.core.reviewer_calibration import (
         CalibrationDataset, CalibrationAnalyzer
     )
-    from scripts.core.llm_reviewer import LLMReviewer
+    from scripts.core.reviewer import LLMReviewer
 
     dataset = CalibrationDataset.load_builtin_dataset()
     analyzer = CalibrationAnalyzer(dataset)

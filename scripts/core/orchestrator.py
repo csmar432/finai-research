@@ -384,7 +384,7 @@ class AgentOrchestrator:
             - ParallelAnalystOrchestrator (handles all 6 analyst agents internally)
             - ResearchReportAgent (writes the final financial report)
         """
-        from scripts.core.analyst_agents import (
+        from scripts.core.analyst import (
             ParallelAnalystOrchestrator,
         )
         self._analyst_orchestrator = ParallelAnalystOrchestrator(gateway=self.gateway)

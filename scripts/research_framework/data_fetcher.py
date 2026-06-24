@@ -287,6 +287,14 @@ class DataFetcher:
 
     def fetch_panel(self, tickers=None, years=None,
                     statements=None, include_sustainability=True) -> pd.DataFrame:
+        """
+        Fetch a wide-format panel by iterating tickers and statements.
+
+        yfinance MCP returns CSV text per call (see mcp_servers/user_yfinance/server.py).
+        We parse the CSV to extract per-year columns — NOT dict key lookups.
+        This fixes the previous bug where `row.get(str(year))` always returned None
+        because the MCP response was a string, not a dict keyed by year.
+        """
         tickers = tickers or self.DEFAULT_TICKERS
         years = years or list(range(2018, 2025))
         statements = statements or ["balance", "income", "cashflow"]
@@ -294,20 +302,82 @@ class DataFetcher:
         for ticker in tickers:
             for stmt in statements:
                 data = self.fetch_financials(ticker, stmt)
-                if data:
-                    for year in years:
-                        for row in data.get("data", []):
-                            idx = row.get("index", "")
-                            val = row.get(str(year)) or row.get(f"{year}-12-31")
-                            if val is not None:
-                                rows.append(dict(ticker=ticker, year=year,
-                                               statement=stmt, field=idx, value=val))
+                if not data:
+                    continue
+
+                # data may be:
+                #   - a CSV string  (from yfinance MCP — the common case)
+                #   - a dict with a "data" list (if wrapped by engine elsewhere)
+                #   - a DataFrame dict (from akshare fallback)
+                # Normalise to DataFrame first.
+                df_stmt = self._normalise_to_df(data)
+                if df_stmt.empty:
+                    continue
+
+                # yfinance DataFrames have dates as index or as a column.
+                # Extract year from the index/date column.
+                if "Date" in df_stmt.columns:
+                    date_col = "Date"
+                elif df_stmt.index.name == "Date" or "Date" in str(df_stmt.index.name):
+                    df_stmt = df_stmt.reset_index()
+                    date_col = "Date"
+                else:
+                    date_col = None
+
+                for year in years:
+                    if date_col and date_col in df_stmt.columns:
+                        # Filter rows matching this year, then unpivot
+                        year_rows = df_stmt[df_stmt[date_col].astype(str).str.startswith(str(year))]
+                        for _, row in year_rows.iterrows():
+                            for col in df_stmt.columns:
+                                if col == date_col:
+                                    continue
+                                val = row[col]
+                                if val is not None and not (isinstance(val, float) and np.isnan(val)):
+                                    rows.append(dict(ticker=ticker, year=year,
+                                                   statement=stmt, field=str(col), value=val))
+                    else:
+                        # Fallback: treat each column as a separate year field
+                        # (handles DataFrames where column names are years, e.g. "2019", "2020")
+                        for col in df_stmt.columns:
+                            if str(year) in col or f"{year}-" in col:
+                                val = df_stmt[col].iloc[0] if len(df_stmt) > 0 else None
+                                if val is not None and not (isinstance(val, float) and np.isnan(val)):
+                                    rows.append(dict(ticker=ticker, year=year,
+                                                   statement=stmt, field=str(col), value=val))
             time.sleep(self.probe_delay_ms / 1000)
         df = pd.DataFrame(rows) if rows else pd.DataFrame()
         if not df.empty:
             save_df(df, self.output_dir / "panel_raw.csv")
             _log.info(f"Panel: {len(df)} records, {df['ticker'].nunique()} tickers")
         return df
+
+    def _normalise_to_df(self, data: Any) -> pd.DataFrame:
+        """
+        Convert MCP response to DataFrame regardless of source format.
+
+        Handles:
+          - str (CSV from yfinance MCP) → parse with pandas
+          - dict with "data" key → wrap in DataFrame
+          - dict with list-valued columns → DataFrame
+          - pd.DataFrame → pass through
+        """
+        if isinstance(data, pd.DataFrame):
+            return data
+        if isinstance(data, str):
+            try:
+                return pd.read_csv(pd.io.common.StringIO(data))
+            except Exception as e:
+                _log.warning(f"CSV parse failed: {e}"); return pd.DataFrame()
+        if isinstance(data, dict):
+            if "data" in data and isinstance(data["data"], list):
+                return pd.DataFrame(data["data"])
+            # dict-of-arrays format (yfinance FinancialsDataFrames serialised)
+            try:
+                return pd.DataFrame(data)
+            except Exception:
+                return pd.DataFrame()
+        return pd.DataFrame()
 
     def fetch_financials(self, ticker: str, statement: str = "balance",
                          *, use_cache: bool = True) -> dict | None:

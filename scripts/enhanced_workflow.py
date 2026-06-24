@@ -43,12 +43,12 @@ load_dotenv(PROJECT_ROOT / ".env.local", override=False)
 
 # ── 导入增强模块 ────────────────────────────────────────────────────────────
 try:
-    from scripts.core.ai_parliament import (
+    from scripts.core.analyst import (
         AIParliament,
         AIParliamentHITLIntegration,
         MemberType,
     )
-    from scripts.core.analyst_agents import (
+    from scripts.core.analyst import (
         AnalystType,
         EnhancedEarningsQualityAnalyst,
         EnhancedFinancialAnalyst,

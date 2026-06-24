@@ -549,7 +549,7 @@ class AgentOrchestratorPipeline:
         """执行 AutoReviewRules 评分。"""
         if self._arr_engine is None:
             try:
-                from scripts.core.auto_review_rules import AutoReviewRules
+                from scripts.core.reviewer import AutoReviewRules
                 self._arr_engine = AutoReviewRules(domain="empirical_paper")
             except ImportError:
                 return AutoReviewResult(

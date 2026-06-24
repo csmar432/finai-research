@@ -643,7 +643,7 @@ except ImportError:
     ProvenanceChain = get_chain = None
 
 try:
-    from scripts.core.ai_parliament import (
+    from scripts.core.analyst import (
         AIParliament,
         AIParliamentHITLIntegration,
     )
@@ -1176,7 +1176,7 @@ class AgentPipeline:
 
         # ── Initialize AutoReviewRules ──────────────────────────────────────────
         try:
-            from scripts.core.auto_review_rules import AutoReviewRules
+            from scripts.core.reviewer import AutoReviewRules
             self._auto_reviewer = AutoReviewRules(domain="empirical_paper")
             logger.debug("[AgentPipeline] AutoReviewRules loaded successfully")
         except ImportError as exc:
@@ -1473,12 +1473,42 @@ class AgentPipeline:
         **kwargs
             Any AgentPipelineConfig fields to override.
 
+        Raises
+        ------
+        PipelineConfigurationError
+            When a critical dependency is unavailable and the pipeline cannot proceed.
+            This replaces silent print-and-continue patterns that were identified by the
+            2026-06-24 code audit (the class was defined but never raised).
+
         Returns
         -------
         AgentPipelineResult
             Full pipeline result with all stage outputs.
         """
         start_time = time.time()
+
+        # ── Pre-flight configuration check ─────────────────────────────────────────
+        # Raise PipelineConfigurationError instead of silently degrading so callers
+        # can catch it programmatically (the class existed since 2024 but was never used).
+        from scripts.health_check import run_diagnostic
+        try:
+            diag = run_diagnostic()
+        except Exception:
+            diag = None
+
+        if diag is not None and not diag.llm_available:
+            raise PipelineConfigurationError(
+                "LLM 不可用，无法进行论文写作和分析。",
+                details={
+                    "problem": "LLM configuration error",
+                    "fix_steps": [
+                        "检查 DEEPSEEK_API_KEY / OPENAI_API_KEY 环境变量",
+                        "确认网络可以访问 LLM API 端点",
+                        "参考 .env.example 配置 API Key",
+                    ],
+                },
+            )
+
         self._ensure_initialized()
 
         # ── LangGraph Bridge ─────────────────────────────────────────────────────

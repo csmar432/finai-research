@@ -2,7 +2,7 @@
 
 > **Describe your research topic → receive a submission-ready LaTeX draft.**
 >
-> An end-to-end AI agent pipeline for economic and financial research — from raw idea to manuscript draft. Integrates 43 MCP data sources, modern causal inference (DID/IV/RDD/PSM/GMM), LaTeX formatting for 44 journals, and AI-assisted review loops.
+> An AI-assisted research workflow for economic and financial research — from idea to LaTeX manuscript draft. Integrates 43 MCP data sources (note: some require institutional/paid accounts), modern causal inference (DID/IV/RDD/PSM/GMM, see dependency notes), LaTeX formatting for 45 journals, and AI-assisted review loops.
 >
 > ⚠️ **Important**: This tool generates manuscript drafts that require human review before submission. All causal identification strategies, statistical results, and citations must be verified by a researcher.
 
@@ -198,16 +198,17 @@ Describe your research in plain Chinese — the agent handles the rest:
 
 | Stage | Output |
 |-------|--------|
-| Literature Review | Citation graph + gap analysis (arXiv / NBER / OpenAlex / JF / JFE / RFS) |
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
 | Empirical Analysis | ~30 econometric methods, automated robustness tests (18 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
 | Review Loop | AI-assisted adversarial review with researcher verification required |
 
+> **Footnote on numbers:** The table above describes the core pipeline output stages. Idea generation, novelty verification, and literature review are separate stages that run before or in parallel. MCP server counts include 43 registered servers; some require institutional/paid accounts (Tushare Pro, Wind, CSMAR, CEIC) while others work without API keys (yfinance, akshare, World Bank, IMF, OECD, FRED, ArXiv, NBER, OpenAlex). See dependency notes in CLAUDE.md.
+
 **Architecture overview:**
 
 ![Architecture Diagram](.github/demo/architecture-diagram.svg)
-*Multi-agent pipeline: User Input → AI Agent → 8-Stage Research Pipeline → 43 MCP Servers → ~30 Econometric Methods → 20 Chart Types → LaTeX Paper*
+*Multi-agent pipeline: User Input → AI Agent → 5-Stage Research Pipeline (outline → literature → plotting → writing → refinement, with optional HITL gates at each stage) → 43 MCP Servers → ~30 Econometric Methods → 20 Chart Types → LaTeX Paper*
 
 > **Note:** Demo assets are in `.github/demo/` and `docs/assets/`. The project is actively maintained — see [`ROADMAP.md`](ROADMAP.md) for the 30/60/90-day plan.
 
@@ -217,14 +218,14 @@ Describe your research in plain Chinese — the agent handles the rest:
 
 | Feature | Description |
 |---------|-------------|
-| **Multi-Agent Pipeline** | Orchestrates 5-paper agents (outline → literature → plotting → writing → refinement) |
-| **43 MCP Data Servers** | A-share (Tushare), macro (World Bank, IMF, OECD), US stocks (yfinance), academic (ArXiv, NBER, OpenAlex), SEC filings, ESG, options, forex, shipping, commodities, crypto, Chinese patents, customs data, fund/bond/option data, provincial statistics — most require no API key |
-| **~30 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard |
+| **Multi-Agent Pipeline** | Orchestrates 5 pipeline agents (outline → literature → plotting → writing → refinement) with optional HITL gates |
+| **43 MCP Data Servers** | 43 registered MCP servers; ~15 work without API keys (yfinance, akshare, World Bank, IMF, OECD, FRED, ArXiv, NBER, OpenAlex, SEC EDGAR, eastmoney); others need institutional/paid accounts (Tushare Pro, Wind, CSMAR, CEIC, EODHD) |
+| **~30 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard. Modern staggered DID (Callaway-Sant'Anna, Borusyak, Sun-Abraham) requires `pip install diff-in-diff2` |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
-| **6 Financial Analysts** | Parallel analysis: fundamental, valuation, risk, earnings, competitive, macro |
+| **Analyst Agents** | Financial analysis agents for fundamental, valuation, risk, earnings, competitive, and macro research |
 | **Self-Evolution** | Continuous improvement based on task outcomes |
-| **44 Journal Templates** | JF, JFE, RFS, JAE, Econometrica + 经济研究/金融研究/管理世界/会计研究/中国工业经济 etc. |
+| **45 Journal Templates** | JF, JFE, RFS, JAE, Econometrica + 经济研究/金融研究/管理世界/会计研究/中国工业经济 etc. |
 
 ---
 
@@ -273,13 +274,13 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 
 ![Architecture Diagram](docs/assets/demo-terminal.svg)
 
-**Key numbers:** 43 MCP servers · ~30 econometric methods · 17 skills · 44 journal templates · 20 chart types · 19 robustness checks · 12 research directions
+**Key numbers:** 43 MCP servers (~15 free) · ~30 econometric methods · 17 skills · 45 journal templates · 20 chart types · 19 robustness checks · 12 research directions
 
 ---
 
 ## MCP Tools Overview
 
-> 43 servers total. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
+> 43 servers total; ~15 work without API keys. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
 >
 > | Badge | Meaning |
 > |-------|---------|
@@ -494,23 +495,31 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ```mermaid
 flowchart TD
-    Start([User inputs research topic]) --> S1[1. Idea Generation<br/>LLM + Lit Survey]
-    S1 -->|checkpoint 1| S2[2. Literature Review<br/>OpenAlex + ArXiv + Context7]
-    S2 -->|checkpoint 2| S3[3. Novelty Check<br/>2M+ papers search]
-    S3 -->|checkpoint 3| S4[4. Empirical Design<br/>DID/IV/RDD/PSM selector]
-    S4 --> S5[5. Data Acquisition<br/>43 MCP data sources]
-    S5 --> S6[6. Empirical Analysis<br/>Staggered DID, IV, GMM]
-    S6 --> S7[7. Paper Writing<br/>44 journal templates]
-    S7 --> S8[8. Adversarial Review<br/>4 rounds, score-based]
-    S8 -->|checkpoint 4| Done([Submission-ready PDF])
+    Start([User inputs research topic]) --> P1[1. Outline<br/>Research framework + venue template]
+    P1 -->|HITL gate| P2[2. Literature Review<br/>OpenAlex + ArXiv + Context7 + NBER]
+    P2 -->|HITL gate| P3[3. Plotting<br/>Parallel chart generation]
+    P3 --> P4[4. Paper Writing<br/>Full manuscript draft]
+    P4 -->|HITL gate| P5[5. Refinement<br/>Multi-round adversarial review]
+    P5 --> Done([LaTeX manuscript draft])
 
-    style S1 fill:#e94560,color:#fff
-    style S2 fill:#0f3460,color:#fff
-    style S3 fill:#16213e,color:#fff
-    style S4 fill:#533483,color:#fff
-    style S5 fill:#0f3460,color:#fff
-    style S6 fill:#16213e,color:#fff
-    style S7 fill:#e94560,color:#fff
+    IdeaStage[Idea Generation<br/>Stage 1 of 3] -.->|optional| P1
+    DataStage[Data Acquisition<br/>Stage 2 of 3] -.->|feeds into| P3
+    NoveltyStage[Novelty Check<br/>Stage 3 of 3] -.->|feeds into| P1
+
+    style P1 fill:#e94560,color:#fff
+    style P2 fill:#0f3460,color:#fff
+    style P3 fill:#533483,color:#fff
+    style P4 fill:#16213e,color:#fff
+    style P5 fill:#0f3460,color:#fff
+    style IdeaStage fill:#444,color:#fff,stroke-dasharray:3
+    style DataStage fill:#444,color:#fff,stroke-dasharray:3
+    style NoveltyStage fill:#444,color:#fff,stroke-dasharray:3
+
+    classDef hitl_gate stroke:#f0ad4e,stroke-width:3px
+    class P1,P2,P4,P5 hitl_gate
+```
+
+> **Pipeline stages note:** The core pipeline has **5 stages** (outline → literature → plotting → writing → refinement) with optional HITL gates. Idea generation, novelty verification, and data acquisition run as parallel/prior stages. The research framework CLI (`scripts/research_framework/pipeline.py`) provides a focused DID/IV/RDD analysis mode.
     style S8 fill:#533483,color:#fff
     style Start fill:#1a1a2e,color:#fff
     style Done fill:#1a1a2e,color:#fff
@@ -569,12 +578,12 @@ flowchart TD
 | Feature | **FinAI Research Workflow** | [dowhy](https://github.com/py-why/dowhy) | [StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
 |---------|--------------------------|------------------------------------------|--------------------------------------|
 | **Domain** | Economic & financial research | Industrial causal inference | Causal inference toolkit |
-| **Data sources** | 43 MCP servers (A股/US/FRED/OECD) | None (import only) | None (import only) |
+| **Data sources** | 43 MCP servers (A股/US/FRED/OECD; ~15 free) | None (import only) | None (import only) |
 | **Econometric methods** | ~30 (DID/IV/RDD/GMM focus) | 0 (general framework) | 550+ (general) |
-| **Journal templates** | 44 (JF/JFE/RFS + 中文顶刊) | 0 | 0 |
+| **Journal templates** | 45 (JF/JFE/RFS + 中文顶刊) | 0 | 0 |
 | **Chinese market** | ✅ Tushare/CSMAR/Wind | ❌ | ❌ |
-| **Human-in-the-loop** | ✅ 4 checkpoints | ❌ | ❌ |
-| **Adversarial review** | ✅ 4-round scoring | ❌ | ❌ |
+| **Human-in-the-loop** | ✅ HITL gates at pipeline stages | ❌ | ❌ |
+| **Adversarial review** | ✅ Multi-round AI review | ❌ | ❌ |
 | **Best for** | Economists: JF/JFE/RFS/经济研究 | Production causal ML | Causal inference devs |
 
 ---
