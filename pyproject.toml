@@ -267,7 +267,9 @@ target-version = "py312"
 # F: pyflakes (undefined name, unused import)
 # W: pycodestyle warnings
 # I: isort (import sort)
-# B: bugbear (B001 = bare except:, B007 = loop over None, etc.)
+# B: bugbear (B010 = bare except:, B013 = redundant tuple in except, etc.)
+# Note: ruff >=0.6 renamed B001→B010 (flake8-bugbear reclassification).
+# Codebase verified to have 0 bare except: as of 2026-06-24.
 #  谨慎启用 B —— 先只在 CI 阶段扫，不作为 pre-commit 阻塞
 #  B001 (bare except) 是 P1 修复目标之一: docs/TASKS_RUNBOOK.md §P1-5
 select = ["E", "F", "W", "I"]

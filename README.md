@@ -5,13 +5,16 @@
 > An AI-assisted research workflow for economic and financial research — from idea to LaTeX manuscript draft. Integrates 43 MCP data sources (note: some require institutional/paid accounts), modern causal inference (DID/IV/RDD/PSM/GMM, see dependency notes), LaTeX formatting for 45 journals, and AI-assisted review loops.
 >
 > ⚠️ **Important**: This tool generates manuscript drafts that require human review before submission. All causal identification strategies, statistical results, and citations must be verified by a researcher.
+>
+> ⚠️ **Legal Warning (CNKI / 万方 Wanfang)**: The bundled `user-cnki` and `user-wanfang` MCP servers perform web scraping against cnki.net and wanfangdata.com.cn, both of which prohibit automated access in their Terms of Service. These servers are provided **for research and educational purposes only**; users are solely responsible for legal compliance. In production deployments, we recommend leaving them **disabled** (do not build/run via `docker-compose` unless you have a written agreement with the data provider). See [SECURITY.md §CNKI/Wanfang](SECURITY.md#cnki-mcp_serversuser_cnki-and-万方-wanfang-mcp_serversuser_wanfang) for full details.
 
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/FinAI-Research-Workflow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/pypi/v/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypi.org/project/finai-research-workflow/)
+[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/FinAI-Research-Workflow#installation)
+[![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research-workflow?color=blue)](https://github.com/csmar432/FinAI-Research-Workflow/releases)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow)](https://github.com/csmar432/FinAI-Research-Workflow/stargazers)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
 [![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
 [![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
