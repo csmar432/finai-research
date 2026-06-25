@@ -33,7 +33,8 @@
       "需要免费学术数据",
       "无机构账号"
     ],
-    "expected_servers": 18,
+    "note": "⚠️ CNKI/Wanfang are excluded from this profile (legal risk — they scrape cnki.net/wanfangdata.com.cn which prohibit automated access). Use OpenAlex/ArXiv/Semantic Scholar/NBER instead (all free, legal).",
+    "expected_servers": 16,
     "startup_seconds": 4,
     "memory_mb": 100,
     "servers": [
@@ -42,9 +43,6 @@
       "semantic-scholar",
       "context7",
       "nber-wp",
-      "cnki",
-      "wanfang",
-      "chinese-literature",
       "fed-data",
       "wb-data",
       "imf-data",
@@ -54,7 +52,8 @@
       "filesystem-mcp",
       "latex-mcp",
       "pandas-mcp",
-      "nber-wp"
+      "eastmoney-reports",
+      "financial"
     ]
   },
 
@@ -105,15 +104,16 @@
   },
 
   "full": {
-    "name_zh": "完整（当前默认，44 个）",
-    "name_en": "Full (Current Default, 44 servers)",
+    "name_zh": "完整（当前默认，50 个目录）",
+    "name_en": "Full (Current Default, 50 directories)",
     "target_users": [
       "重度用户（不挑数据源）",
       "项目作者/维护者",
       "高配电脑 (RAM >= 16GB)",
       "想解锁所有能力"
     ],
-    "expected_servers": 44,
+    "note": "⚠️ This profile includes cnki/wanfang/chinese-literature servers which scrape sites that prohibit automated access. Use only for research/educational purposes. Consider academic profile for legal safety.",
+    "expected_servers": 50,
     "startup_seconds": 12,
     "memory_mb": 220,
     "servers": "ALL"

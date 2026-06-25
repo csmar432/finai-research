@@ -58,7 +58,9 @@ pytest tests/ -v
 
 ## 核心能力
 
-### 数据获取（MCP，43个服务器）
+### 数据获取（MCP，50个服务器目录）
+
+> **重要说明**：50个MCP目录中，约15个完全免费（无需API Key），其余需要付费/机构账号，部分为空存根。详见 `docs/MCP_STATUS.md`。
 
 | 你要什么 | 用这个 MCP |
 |---------|-----------|
@@ -104,7 +106,7 @@ pytest tests/ -v
 > - `user-newsapi` — NewsAPI Key（免费注册有限额）
 > - `user-yfinance` / `user-sec-edgar` — 免费，无需 Key
 
-### 计量方法（约30种独立算法，JF/JFE/RFS 标准）
+### 计量方法（约20种独立实现，JF/JFE/RFS 标准）
 
 > **重要说明**：以下方法中，标注 🔗 的依赖 `linearmodels`、`diff-in-diff2` 等第三方包；标注 ⭐ 的为独立 Python 实现。
 > 数量为近似值，因部分估计器（如 TWFE × 3 种 SE × bootstrap 变体）存在重复计数。
@@ -186,7 +188,7 @@ scripts/
     ├── international_finance.py    # 国际金融
     └── political_economy_finance.py # 政治经济学
 
-mcp_servers/                      # 43个MCP数据服务器
+mcp_servers/                      # 50个MCP服务器目录（含存根）
 output/                           # 输出目录
 ├── fin-literature/              # 文献综述
 ├── fin-ideas/                   # 研究想法
@@ -209,7 +211,7 @@ output/                           # 输出目录
 | `scripts/data_source_checker.py` | 数据源预检查（**新**）|
 | `scripts/pipeline_checkpoint.py` | 强制交互 checkpoint（**新**）|
 | `scripts/setup_wizard.py --guided` | 交互式配置向导 |
-| `scripts/register_mcp_servers.py --list` | 列出 43 个 MCP 自动注册状态（首次必须跑）|
+| `scripts/register_mcp_servers.py --list` | 列出 50 个 MCP 服务器注册状态（首次必须跑）|
 | `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
 | `scripts/research_framework/pipeline.py` | 研究执行层 |
 | `scripts/research_framework/modern_did.py` | 现代 DID 回归 |
@@ -267,7 +269,7 @@ output/                           # 输出目录
 第2步  文献综述     → literature_download.py + arxiv/openalex/semantic_scholar MCP → 引文网络 → 识别研究缺口
 第3步  新颖性验证   → agent_pipeline.py --topic "..." (内部触发 NoveltyGate + llm_reviewer) → JF/JFE/RFS/arXiv/NBER 检索 → 输出新颖性评分 → 确认
 第4步  实证设计     → research_framework/pipeline.py → DID/IV/RDD → REFINED_DESIGN.md → data_source_checker.py → 确认
-第5步  数据获取     → universal_data_fetcher.py → 43个MCP → Python/Stata脚本 → 确认
+第5步  数据获取     → universal_data_fetcher.py → 50个MCP → Python/Stata脚本 → 确认
 第6步  论文写作     → research_framework/report_generator.py → 大纲 → 正文 → 图表 → LaTeX草稿
 第7步  对抗性Review → core/llm_reviewer.py → 多轮严格评审 → 达到发表标准
 ```

@@ -167,13 +167,13 @@ finai-data = "scripts.cli:data_cmd"
 finai-lit-review = "scripts.cli:lit_review_cmd"
 
 [project.urls]
-Homepage = "https://github.com/csmar432/论文-研报工作流"
-Documentation = "https://github.com/csmar432/论文-研报工作流#readme"
-Repository = "https://github.com/csmar432/论文-研报工作流"
-Issues = "https://github.com/csmar432/论文-研报工作流/issues"
-Changelog = "https://github.com/csmar432/论文-研报工作流/blob/main/CHANGELOG.md"
-Citation = "https://github.com/csmar432/论文-研报工作流/blob/main/CITATION.cff"
-Releases = "https://github.com/csmar432/论文-研报工作流/releases"
+Homepage = "https://github.com/csmar432/FinAI-Research-Workflow"
+Documentation = "https://github.com/csmar432/FinAI-Research-Workflow#readme"
+Repository = "https://github.com/csmar432/FinAI-Research-Workflow"
+Issues = "https://github.com/csmar432/FinAI-Research-Workflow/issues"
+Changelog = "https://github.com/csmar432/FinAI-Research-Workflow/blob/main/CHANGELOG.md"
+Citation = "https://github.com/csmar432/FinAI-Research-Workflow/blob/main/CITATION.cff"
+Releases = "https://github.com/csmar432/FinAI-Research-Workflow/releases"
 
 # ── Hatch 构建配置 ───────────────────────────────────────────────
 [tool.hatch.build.targets.wheel]
