@@ -55,9 +55,9 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (43 MCP Servers, free by default)
+### 📊 Data Acquisition (50 MCP server directories, mixed free/stub)
 
-> **Note**: Most MCP servers are free. Paid/required accounts: Tushare Pro (A-share data, ~$10-30/year), Wind (institutional), CSMAR (institutional), EODHD (free tier limited). See [MCP Tools Guide](.cursor/rules/mcp_tools.mdc) for details.
+> **Note**: ~15 servers are fully free (no API key). Others require institutional/paid accounts (Tushare Pro, Wind, CSMAR, CEIC, EODHD). Stub servers (SIPO, ESG, Chinese Customs, CNRD) have no tools/ implementation yet. See `docs/MCP_STATUS.md` for per-server availability.
 
 | What you need | MCP server |
 |---|---|
@@ -76,7 +76,7 @@
 
 > **4-layer fallback** for every data request: `MCP → Python lib → HTTP → synthetic (explicitly marked)`
 
-### 🧮 Econometric Methods (~30 independent algorithms, JF/JFE/RFS standard)
+### 🧮 Econometric Methods (~33 individual estimators / ~13 method families, JF/JFE/RFS standard)
 
 > **Note**: Numbers below count independent estimators. Some methods depend on `linearmodels` or `diff-in-diff2` (marked 🔗); ⭐ denotes self-contained Python implementations.
 
@@ -96,7 +96,7 @@
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
-### 🤖 17 AI Skills (Claude Code / Cursor / Copilot)
+### 🤖 18 AI Skills (Claude Code / Cursor / Copilot)
 
 - **Discovery**: `fin-idea-discovery` · `fin-generate-idea` · `fin-novelty-check` · `fin-lit-review`
 - **Design**: `fin-experiment-design` · `fin-data-acquisition`
@@ -105,7 +105,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 86 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
+- ✅ 89 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
@@ -163,16 +163,16 @@ Each step is **independently callable** and **has its own output file** as a sta
 
 | Metric | Value | Note |
 |---|-------|------|
-| MCP data servers | **43** | 43 real servers; see MCP docs for coverage |
+| MCP data servers | **50** | 50 directories; ~15 fully free, rest require paid/institutional accounts; stubs exist. See `docs/MCP_STATUS.md` |
 | Econometric methods | **~30** | ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
 | Journal templates | **44** | 44 EN/ZH |
 | AI skills | **17** | .cursor/skills/ (operational source) |
 | Test files | **86** | pytest collect: 2,136 tests |
 | Python lines | **~200K** | |
 | CI jobs | **7** | 3 batches + lint + 2 smoke + docs + coverage |
-| Coverage | **~7%** | gate commented pending improvement |
+| Coverage | **~7%** | gate: fail-under=15 (raised from 6 in 2026-06-25 audit fix) |
 
-> ⚠️ Coverage gate set to **6%** in CI (`--cov-fail-under=6` in ci.yml). Project is at ~7% coverage. Coverage is reported to Codecov; progressive increase toward 30% is planned.
+> Coverage is reported to Codecov; progressive increase toward 30% is planned.
 
 ---
 

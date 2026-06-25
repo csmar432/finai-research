@@ -918,7 +918,7 @@ class LLMReviewer:
 
     def __init__(
         self,
-        judge_model: str = "gpt5",
+        judge_model: str = "gpt-4o",
         default_venue: str = "ML",
         enable_cache: bool = True,
         cache_dir: str = "data/review_cache",
@@ -931,7 +931,7 @@ class LLMReviewer:
         Parameters
         ----------
         judge_model : str
-            Model alias to use for judging. Default "gpt5" routes to GPT-5.4-Mini via B.AI.
+            Model alias to use for judging. Default "gpt-4o" (stable, production-ready).
         default_venue : str
             Default venue for review format. Can be overridden per-review.
         enable_cache : bool
@@ -1572,7 +1572,7 @@ def _cli() -> int:
         )
     else:
         reviewer = LLMReviewer(
-            judge_model="gpt5",
+            judge_model="gpt-4o",
             default_venue=args.venue,
             enable_cache=True,
         )
