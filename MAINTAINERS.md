@@ -2,27 +2,42 @@
 
 ## Current Maintainer
 
-| | |
-|---|---|
-| **Name** | [@csmar432](https://github.com/csmar432) |
-| **Role** | Sole maintainer — all decisions, reviews, and releases |
-| **Contact** | [Open an issue](https://github.com/csmar432/FinAI-Research-Workflow/issues/new) |
+| Field | Value |
+|-------|-------|
+| **Name** | 徐哲熠 (xuzheyi) |
+| **GitHub** | [@csmar432](https://github.com/csmar432) |
+| **Email** | 1353374051@qq.com |
+| **Role** | Solo maintainer — all decisions, reviews, and releases |
+| **Since** | 2024 |
 
-## Responsibilities
+## Succession Plan
 
-- Review and merge pull requests
-- Manage API key and credential configurations
-- Approve and release new versions to Zenodo
-- Maintain backward compatibility for breaking changes
-- Respond to security issues
+This project has a **single point of failure risk**: only one active maintainer.
 
-## Contribution Policy
+If the current maintainer becomes unavailable (long-term illness, career change, etc.), the following process applies:
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details on how to contribute.
-All PRs require maintainer approval before merge.
+1. **Archive, don't delete.** GitHub → Settings → "Archive this repository." No one should fork a dead repo.
+2. **Transfer ownership.** If a trusted contributor volunteers, transfer ownership to them via GitHub Settings → "Transfer ownership."
+3. **Forks continue.** All forks (`git clone`) continue working indefinitely — no lock-in, no sunset.
 
-## Becoming a Maintainer
+## Roadmap
 
-This is a single-maintainer project at an early stage (Alpha). If you are interested
-in becoming a co-maintainer, please open a discussion in the repository. Prior
-contributions and familiarity with the codebase will be considered.
+See [ROADMAP.md](./ROADMAP.md) for the current project roadmap and milestone timeline.
+
+## Release Policy
+
+- Releases are **irregular** and tied to meaningful feature milestones.
+- No fixed schedule (unlike most active projects).
+- Version scheme: [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to contribute. All contributors are credited in the commit log.
+
+## Acknowledgments
+
+This project began as a personal research tool and grew into a collaborative workflow system. Every feature, bug fix, and documentation update has been made by its users.
+
+---
+
+*Last reviewed: 2026-06-25*

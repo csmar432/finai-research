@@ -2,91 +2,70 @@
 
 ## Supported Versions
 
-| Version | Supported          | Notes |
-| ------- | ------------------ | ----- |
-| 0.1.x   | :white_check_mark: | Current stable release |
+Only the latest minor version receives security updates.
 
-## Reporting a Vulnerability
+| Version | Supported          |
+|---------|-------------------|
+| 0.1.x   | :white_check_mark: Latest |
 
-If you discover a security vulnerability, please report it responsibly:
+## Report a Vulnerability
 
-1. **Do NOT** open a public GitHub Issue.
-2. Send a private disclosure to the maintainers via:
-   - GitHub Security Advisories (preferred): [Report a vulnerability](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
-   - Or email the maintainers directly.
+**Do not open a public GitHub Issue for security vulnerabilities.**
 
-3. Please include as much of the following as possible:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Any suggested fixes (optional)
+Instead, send a private report:
 
-4. We aim to acknowledge within **48 hours** and provide a timeline for the fix. Response times may vary depending on complexity.
+1. Go to [Report a vulnerability](https://github.com/csmar432/FinAI-Research-Workflow/security/advisories/new)
+2. Or email the maintainer directly at the address in [MAINTAINERS.md](./MAINTAINERS.md)
 
-## Security Best Practices for Users
+Expected response time: within 7 days.
 
-When using this project, be aware of the following:
+## Security Disclosures
 
-### API Keys
+### API Key Handling
 
-- **Never commit API keys** to the repository. Use environment variables (`.env` files are in `.gitignore`).
-- Do not share your `TUSHARE_TOKEN`, `EODHD_API_KEY`, `FRED_API_KEY`, `BRAVE_SEARCH_API_KEY`, or any other credentials.
-- Consider using a secrets manager (e.g., macOS Keychain, 1Password CLI) for local development.
+This project accesses financial data APIs. **API keys are sensitive credentials.**
 
-### Data Privacy
+- **Never commit real API keys.** All key-related files (`.env`, `*.key`, `token`) are in `.gitignore`.
+- **Use environment variables or a secrets manager.** Never hardcode keys in scripts.
+- **Rotate keys regularly.** If a key is leaked, revoke it immediately via the provider's dashboard and rotate.
+- **Scope minimally.** Use read-only keys where the API provider supports it (e.g., Tushare read-only tokens).
 
-- User-uploaded data in `data/user_uploaded/` is ignored by git and never committed.
-- Research outputs in `papers/` are ignored by git.
-- Pipeline telemetry (`data/pipeline_telemetry.jsonl`) is ignored by git.
+See `.env.example` for the full list of supported environment variables. Copy it to `.env.local` and fill in only the keys you use.
 
-### Third-Party MCP Servers
+### Data Security
 
-- MCP servers communicate with external APIs. Review each server's `server.py` before deploying.
-- When using `user-tushare` (requires Tushare Pro token) or `user-brave-search` (requires Brave API key), ensure your credentials are stored securely.
-- Docker-based MCP servers run as non-root users (`mcpuser`) inside containers for isolation.
+- **Financial data is sensitive.** Do not commit cache databases (`*.db`, `*.sqlite`, `data/*.parquet`) that contain real stock or company data.
+- **Provenance tracking** (`scripts/core/provenance.py`) logs data source and timestamp for every fetch. This audit trail is for reproducibility, not for storing credentials.
+- **SQLite caching** uses a 7-day TTL. The cache is stored in `~/.cache/finresearch/` by default.
 
-### LLM API Calls
+### Third-Party Data Sources
 
-- All LLM calls go through user-provided API keys (DeepSeek, OpenAI, Anthropic, etc.).
-- No data is transmitted to third parties beyond the explicitly configured API providers.
-- Review `scripts/core/llm_reviewer.py` and `scripts/core/agent_state.py` for data handling.
+This project aggregates data from ~43 external MCP servers. Each has its own terms of service and data licensing:
 
-### Container Security
+| Source | Risk Level | Notes |
+|--------|-----------|-------|
+| CNKI / Wanfang | :red_circle: **High** | Web scraping. Legal/consent issues. See `LEGAL_CONSENT.md`. **Opt-in required.** |
+| Tushare Pro | :yellow_circle: Medium | Requires paid account. Terms prohibit redistribution of scraped data. |
+| Wind | :yellow_circle: Medium | Institutional license required. |
+| CSMAR | :yellow_circle: Medium | Academic license required. Redistribution restricted. |
+| OpenAlex / ArXiv | :green_circle: Low | CC-BY license. Free for research use. |
+| SEC EDGAR | :green_circle: Low | US government data. Public domain. |
+| World Bank / IMF / FRED | :green_circle: Low | Public data. Open license. |
 
-- All 43 MCP Docker containers run as non-root users.
-- Use `docker-compose.yml` with read-only filesystem where possible:
-  ```yaml
-  services:
-    mcp_arxiv:
-      read_only: true
-      tmpfs:
-        - /tmp
-  ```
+**Before using any data source, read its terms of service.** The presence of an MCP server in this project does not imply it is legal to use in your jurisdiction or for your intended purpose.
 
-## Dependency Security
+### Dependency Security
 
-- Dependencies are pinned with minimum version constraints in `pyproject.toml`.
-- Run `pip audit` periodically to check for known vulnerabilities:
-  ```bash
-  pip install pip-audit
-  pip-audit
-  ```
-- Use Dependabot (enabled in `.github/dependabot.yml`) to keep dependencies updated.
+- **Dependabot** is enabled. It opens PRs for outdated dependencies weekly. Review and merge security patches promptly.
+- **CI security gate** (`scripts/ci_security_gate.py`) runs `pip-audit` and `safety` checks in the CI pipeline. Do not ignore security advisories without justification.
 
-## Legal Disclaimer for Web Scraping MCP Servers
+### Known Limitations
 
-### CNKI (`mcp_servers/user_cnki/`) and 万方 Wanfang (`mcp_servers/user_wanfang/`)
+- **No authentication on local SQLite cache.** Anyone with filesystem access to `~/.cache/finresearch/` can read cached data.
+- **No encryption at rest.** Data fetched from APIs is stored in plain SQLite.
+- **No audit log access control.** Provenance logs are world-readable by default.
+- **Docker**: If you run this project in Docker, review `docker-compose.yml` before deploying. Some services (CNKI, Wanfang) should be disabled for corporate environments.
 
-> **WARNING — LEGAL DISCLAIMER**
->
-> The CNKI and Wanfang web scraping servers are provided for **research and educational purposes only**. By using these servers you acknowledge and agree to the following:
->
-> 1. **No warranty**: This software is provided "as is", without warranty of any kind.
-> 2. **Compliance required**: You are solely responsible for ensuring your use complies with all applicable laws, regulations, and the terms of service of CNKI (cnki.net) and 万方数据 (wanfangdata.com.cn).
-> 3. **robots.txt**: CNKI's robots.txt explicitly prohibits automated access. This server implements `robots.txt`-compliant behavior but this does not constitute legal permission to scrape. Users must obtain proper authorization before use.
-> 4. **Rate limiting**: These servers implement rate limiting and request delays. Exceeding reasonable access frequencies may violate local laws or platform terms and may result in IP blocking.
-> 5. **Licensed access preferred**: For production use, obtain proper institutional licenses from CNKI and 万方数据 directly. Many universities have campus licenses that provide API access.
-> 6. **No liability**: The authors and maintainers of this project accept no liability for any legal consequences arising from the use of these scraping servers.
-> 7. **Copyright**: Downloaded academic papers remain copyrighted by their respective authors and publishers. Users are responsible for complying with copyright law when using downloaded materials.
->
-> If you do not agree to these terms, do not use these MCP servers.
+---
+
+*Last reviewed: 2026-06-25*

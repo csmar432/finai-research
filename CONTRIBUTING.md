@@ -1,310 +1,134 @@
-# 贡献指南
+# Contributing to FinAI-Research-Workflow
 
-感谢您对 经济类科研智能体工作流 的兴趣！
+Thank you for your interest in contributing. This project is in active development — all contributions are welcome, from fixing typos to adding new econometric methods.
 
-## 如何贡献
+## Ways to Contribute
 
-### 报告问题
+| Type | Description |
+|------|-------------|
+| :bug: Bug reports | Something doesn't work? Open an issue with minimal reproduction steps. |
+| :sparkles: Feature requests | Missing a data source? A new estimator? Open an issue with the use case. |
+| :wrench: Code contributions | Fix bugs, add tests, improve documentation. |
+| :books: Documentation | Fix unclear docs, add examples, translate to other languages. |
+| :chart_with_upwards_trend: New research methods | Add econometric implementations with tests and usage examples. |
 
-- 使用 GitHub Issues 报告 Bug 或功能请求
-- 描述问题时包含：Python 版本、环境信息、复现步骤
-- 安全问题请私下联系，不要在 Issue 中公开
-
-### 提交代码
-
-1. Fork 本仓库
-2. 创建功能分支：`git checkout -b feature/your-feature-name`
-3. 编写代码并确保测试通过：`pytest tests/` 或 `finai test`
-4. 提交：`git commit -m "feat: add something useful"`
-5. 推送到您的 Fork：`git push origin feature/your-feature-name`
-6. 发起 Pull Request
-
-### 代码规范
-
-- 遵循 PEP 8，使用 `ruff check scripts/` 检查
-- 所有新增功能必须有对应的测试
-- 提交前运行完整测试：`pytest tests/` 或 `finai test`
-
-### 测试要求
+## Quick Start
 
 ```bash
-# 运行所有测试
-pytest tests/
+# 1. Fork the repo on GitHub, then clone your fork
+git clone https://github.com/YOUR_USERNAME/FinAI-Research-Workflow.git
+cd FinAI-Research-Workflow
 
-# 或通过 CLI（支持 --cov, --exitfirst, -k 过滤）
-finai test --cov
+# 2. Set up a virtual environment
+python -m venv .venv && source .venv/bin/activate  # macOS/Linux
+python -m venv .venv && .venv\Scripts\activate     # Windows
 
-# 运行单个模块测试
-.venv/bin/python -m pytest tests/test_llm_reviewer.py -v
-.venv/bin/python -m pytest tests/test_modern_did.py -v
-.venv/bin/python -m pytest tests/test_checkpoint.py -v
-.venv/bin/python -m pytest tests/test_event_monitor.py -v
+# 3. Install in editable mode with all dependencies
+pip install -e ".[dev]"
+
+# 4. Run the test suite
+pytest tests/ -v
+
+# 5. Run the linter
+ruff check scripts/ tests/
+
+# 6. Create a branch for your changes
+git checkout -b fix/my-bug-fix
 ```
 
-### 测试标准
+## Development Standards
 
-**覆盖目标**：核心模块（`core/`、`research_framework/`）→ 优先达到 60% 覆盖率。
+### Code Style
 
-**测试质量原则**：
+- **Python**: Follow [PEP 8](https://pep8.org/). Run `ruff check` before committing.
+- **Docstrings**: All public functions and classes must have docstrings. Use Google style for research framework modules.
+- **Type hints**: All new functions should have type hints for parameters and return values.
+- **No `print()` for debugging**: Use `logging` module with appropriate log levels.
 
-| 要求 | 说明 |
-|---|---|
-| 真实断言 | 每个测试必须有 `assert` 语句；禁止 `assert True` 或空测试 |
-| 有意义的数据 | 使用合成数据（`numpy`/`pandas` 生成）时注明参数和随机种子 |
-| 独立性 | 测试之间无顺序依赖；使用 fixture 或 `setup`/`teardown` 管理状态 |
-| 命名 | `test_<method>_<scenario>` 格式，例如 `test_cs_two_way_clustered_se` |
+### Testing
 
-**异常处理规范**：
-
-| 模式 | 是否允许 | 说明 |
-|---|---|---|
-| `except: pass`（静默吞异常） | **禁止** | 改为 `except: logger.warning(...)` |
-| `except: return False/None` | **禁止** | 改为 `except: logger.debug(...)` + 有意义返回值 |
-| `except` + 记录 + 继续 | ✅ 允许 | 对可选组件的优雅降级 |
-| `except` + re-raise | ✅ 允许 | 传播真实错误 |
-
-**新增 S110（try-except-pass）规则**：
-- 在 `pyproject.toml` 的 `per-file-ignores` 中添加文件时，必须同时在代码行注释中写明原因：
-  ```python
-  try:
-      ...
-  except Exception:  # noqa: S110 — intentional: optional feature degrade gracefully
-      pass
-  ```
-
-**新增计量方法**（`research_framework/`）：
-- 必须附上参考文献（APA 格式）
-- 在模块 docstring 中注明假设和已知限制
-- 在 `README.md` 或对应计量方法文档中注册
-
-**CI 门禁**：
-- `ruff check` 必须通过（无新增规则忽略）
-- 所有测试批次必须通过（`--maxfail=10`）
-- 覆盖率阈值当前为 6%，目标为 60%（参见 `pyproject.toml`）
-
-## 模块说明
-
-| 目录 | 说明 |
-|------|------|
-| `scripts/core/` | 核心智能体模块（Memory/Planner/ToolSelector/Reflection） |
-| `scripts/` | 工具脚本（数据处理/文献管理/论文写作） |
-| `scripts/research_framework/` | 研究执行层（48 个计量/可视化模块） |
-| `config/` | 配置文件模板 |
-| `knowledge/skills/` | 17 个 AI 技能文档（文献综述/想法生成/实证设计/论文写作等） |
-| `templates/` | LaTeX/Word 输出模板 |
-| `docs/` | 架构文档和实施计划 |
-
-## 决策流程
-
-重大变更（改变核心架构、新增主要模块）请先开 Discussion 讨论。
-
----
-
-## 添加新的 MCP Server（详细指南）
-
-我们欢迎社区贡献新的 MCP 数据源。流程如下：
-
-### 1. 创建服务器目录
-
-```bash
-mkdir mcp_servers/user_your_server
-cd mcp_servers/user_your_server
-```
-
-所有 MCP server 目录都以 `user_` 前缀命名，与上游官方 MCP server 区分。
-
-### 2. 实现 server.py
-
-最小可工作示例（参考 `mcp_servers/user_tushare/server.py`）：
+- **Minimum coverage**: New code should have tests. No PR should intentionally decrease coverage.
+- **Test location**: Tests live in `tests/`, mirroring the `scripts/` structure.
+- **No placeholder tests**: Do not commit `assert True` or empty `pass` as tests.
+- **Data fixtures**: Use synthetic/random data for tests. Do not commit real financial data.
 
 ```python
-"""Your Data Source MCP Server.
-
-短描述: 1 行
-来源: 官方 API 或 数据集
-"""
-from mcp.server import Server
-from mcp.types import TextContent, Tool
-import os
-
-app = Server("user_your_server")
-
-@app.tool()
-async def get_your_data(symbol: str) -> list[TextContent]:
-    """获取 your_data 数据.
-
-    Args:
-        symbol: 数据标识符
-    """
-    api_key = os.environ.get("YOUR_API_KEY")
-    # 调用 API 并返回结果
-    return [TextContent(type="text", text=f"Data for {symbol}")]
-
-if __name__ == "__main__":
-    import asyncio
-    from mcp.server.stdio import stdio_server
-    asyncio.run(stdio_server(app))
-```
-
-### 3. 创建 Dockerfile
-
-参考 `mcp_servers/user_tushare/Dockerfile`：
-
-```dockerfile
-FROM python:3.12-slim
-
-WORKDIR /app
-
-# Security: non-root user
-RUN groupadd --gid 1000 mcpuser \
-    && useradd --uid 1000 --gid 1000 --shell /bin/bash --create-home mcpuser
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates && rm -rf /var/lib/apt/lists/*
-
-COPY --chown=mcpuser:mcpuser requirements.txt server.py ./
-RUN pip install --no-cache-dir -r requirements.txt
-
-USER mcpuser
-EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-LABEL org.opencontainers.image.source="https://github.com/csmar432/finai-research-workflow"
-LABEL org.opencontainers.image.description="Your Data Source MCP Server"
-LABEL org.opencontainers.image.licenses="MIT"
-
-CMD ["python", "server.py"]
-```
-
-### 4. 创建 requirements.txt
-
-```
-mcp>=1.1.0
-requests>=2.31.0
-# your-data-source-sdk
-```
-
-### 5. 添加测试
-
-创建 `tests/test_your_server.py`：
-
-```python
+# Example test structure
 import pytest
-from mcp_servers.user_your_server.server import get_your_data
+import numpy as np
 
-@pytest.mark.asyncio
-async def test_get_your_data():
-    result = await get_your_data("TEST")
-    assert len(result) > 0
-    assert "TEST" in result[0].text
+def test_my_function():
+    # Arrange: synthetic data
+    X = np.random.randn(100, 2)
+    y = X @ np.array([1.0, -0.5]) + np.random.randn(100) * 0.1
+
+    # Act
+    result = my_function(X, y)
+
+    # Assert
+    assert result.shape == (2,)
 ```
 
-### 6. 更新文档
+### Commit Messages
 
-在 `README.md` 顶部 Quick Navigation 的 "MCP data sources" 章节
-加一行（43 → 44），并在 `docs/external_data_sources.md` 添加服务器说明。
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-### 7. 提交 PR
-
-```bash
-git checkout -b feature/user-your-server
-git add mcp_servers/user_your_server/ tests/test_your_server.py
-git commit -m "feat(mcp): add user_your_server for [data domain]"
-git push origin feature/user-your-server
-# 在 GitHub 上发 PR
+```
+fix(module): resolve null pointer in data fetcher
+feat(research_framework): add Callaway-SantAnna estimator
+docs(readme): fix typo in installation instructions
+test(modern_did): add regression test for event study
 ```
 
-### MCP 设计原则
+### File Organization
 
-- ✅ **数据源独立** — 每个 MCP server 是独立的 Python 进程
-- ✅ **4 层 fallback** — `data_fetcher.py` 会按 Tier 1 (CSMAR/Wind) → Tier 2 (Tushare) → Tier 3 (akshare) → Tier 4 (yfinance/synthetic) 降级
-- ✅ **Graceful degradation** — 无 API key 时返回 `None` 而非崩溃
-- ✅ **Cache** — 本地 SQLite 缓存 7 天
-- ✅ **Provenance** — 记录 source + timestamp + commit hash
+| Directory | Contents |
+|-----------|---------|
+| `scripts/` | Core business logic. All Python files must be runnable. |
+| `scripts/research_framework/` | Econometric methods. No breaking changes to public APIs. |
+| `tests/` | Test files, mirroring `scripts/` structure. |
+| `docs/` | Documentation. Markdown files in `mkdocs.yml` nav. |
+| `mcp_servers/` | MCP server implementations. |
 
----
+## Opening a Pull Request
 
-## 添加新的 Econometric Method
+1. **Fork first.** Do not push directly to `main`.
+2. **One focus per PR.** A PR fixing a bug and also refactoring unrelated code will be asked to be split.
+3. **Fill out the PR template.** Describe what changed, why, and how to test it.
+4. **Link the issue.** If your PR fixes an issue, reference it with "Fixes #123".
+5. **CI must pass.** All three test batches, lint, and coverage checks must pass before merging.
+6. **Minimum reviewers**: 1. Since this is a solo-maintained project, the maintainer (csmar432) will review all PRs.
 
-参考 `scripts/research_framework/` 下的现有模块（如 `modern_did.py`）：
+## Data Source Contributions
 
-1. 创建一个 `xxx_method.py`，**类设计**清晰（输入 → 输出 dataclass）
-2. 添加 `tests/test_xxx_method.py`，**至少 20 个单元测试** + 1 个集成测试
-3. 在 `scripts/research_framework/__init__.py` 导出
-4. 更新 `README.md` "42 econometric methods" 计数
-5. 添加一个 `docs/methods/xxx_method.md` 用户文档
+Adding a new data source? Follow this checklist:
 
-### 方法质量标准
+- [ ] Add MCP server directory under `mcp_servers/user_<name>/`
+- [ ] Implement `server.py` with tool definitions
+- [ ] Add `SERVER_METADATA.json` with description, auth requirements, rate limits
+- [ ] Add `Dockerfile` if the server has runtime dependencies
+- [ ] Update `config/mcp_profiles.json` with the new server in the appropriate profile
+- [ ] Update `scripts/PROJECT_NUMBERS.json` (run `python scripts/sync_numbers.py --apply` after)
+- [ ] Add tests in `tests/test_data_fetcher.py` or `tests/test_mcp_*.py`
+- [ ] Update `README.md` and `CLAUDE.md` with the new data source
 
-- [ ] 接受 `pandas.DataFrame` 输入（与现有生态兼容）
-- [ ] 返回 dataclass（不是 tuple/dict）
-- [ ] 支持 `cluster-robust SE` 至少 1 种
-- [ ] 支持 bootstrap inference 至少 1 种
-- [ ] 引用至少 1 篇学术论文（论文必须真实存在）
-- [ ] 至少 1 个端到端 example
+## Econometric Method Contributions
 
----
+Adding a new estimator? Follow this checklist:
 
-## 添加新的 AI Skill
+- [ ] Implement in `scripts/research_framework/<method>.py`
+- [ ] Add docstring with mathematical formulation, references, and usage example
+- [ ] Return a typed `dataclass` result (not raw dict)
+- [ ] Add tests with synthetic data
+- [ ] Update `scripts/PROJECT_NUMBERS.json`
+- [ ] Add to `scripts/research_framework/regression_engine.py` if applicable
+- [ ] Update `docs/` or `CLAUDE.md` if the method changes the documented count
 
-参考 `knowledge/skills/fin-paper-draft/SKILL.md` 的结构：
+## Questions?
 
-1. 创建 `knowledge/skills/fin-your-skill/SKILL.md`
-2. 顶部必须有 YAML frontmatter (name + description)
-3. 中间是 "When to use" 段落（具体触发场景）
-4. 然后是 "Inputs" / "Outputs" 段
-5. 最后是 "Example" 段（真实使用场景）
-6. 在 `CLAUDE.md` "Available Skills" 表格中加一行
-
----
-
-## 添加新的 Journal Template
-
-参考 `scripts/research_framework/journal_template.py`：
-
-1. 在 `_TEMPLATES` 字典加新条目
-2. 提供 4 个函数：`get_template()`, `compile_to_pdf()`, `validate_submission()`, `cover_letter()`
-3. 在 `scripts/journal_template.py --list` 输出中验证出现
-4. 在 `README.md` "45 journal templates" 段落加一行
-5. 添加测试到 `tests/test_journal_template.py`
+- Open a [GitHub Discussion](https://github.com/csmar432/FinAI-Research-Workflow/discussions) for questions not suitable for an Issue.
+- For security issues, see [SECURITY.md](./SECURITY.md) — do **not** open a public Issue.
 
 ---
 
-## 添加新的 Knowledge Skill（Cursor 专用）
-
-Cursor 的 skills 在 `.cursor/skills/`:
-
-1. 创建 `.cursor/skills/fin-your-skill/SKILL.md`
-2. 同 `knowledge/skills/` 的规范
-3. **加同步脚本**：`scripts/sync_cursor_skills.py` 把 `knowledge/skills/` 复制到 `.cursor/skills/`
-
----
-
-## 维护者审查清单
-
-Maintainer 在合并前会检查：
-
-- [ ] 代码通过 `ruff check scripts/ tests/`
-- [ ] 测试通过 `pytest tests/ -v`
-- [ ] 文档已更新（README / 使用指南 / docs/）
-- [ ] CHANGELOG.md 加 Unreleased 段
-- [ ] 没有真实身份信息泄露（邮箱、姓名、本地路径）
-- [ ] 没有 git 元数据泄露（PAT、私人 repo URL）
-
----
-
-## 行为准则
-
-- 尊重他人，提供建设性反馈
-- 聚焦技术讨论，避免人身攻击
-- 帮助新人 — 这是开源社区的核心
-
----
-
-## 联系方式
-
-- 🐛 **Bug / Feature**: GitHub Issues
-- 💬 **讨论 / 问题**: GitHub Discussions
-- 🔒 **安全问题**: GitHub Security Advisories
-- 📧 **核心维护者**: 见 `MAINTAINERS.md`（如有）
+*By contributing, you agree that your contributions will be licensed under the project's MIT License.*
