@@ -4,6 +4,9 @@
   "is_mock": false,
   "requires_api_key": false,
   "serverIdentifier": "user-cnki",
+  "legal_risk": true,
+  "requires_user_consent": true,
+  "consent_type": "CLI_ACCEPT_RISK=cnki",
   "description": "CNKI 中国知网学术论文检索 MCP 服务器。通过网页爬虫方式搜索 CNKI 学术论文，返回论文标题、作者、期刊、年份、摘要、被引次数等元数据。支持主题词、作者、期刊等多维度检索。",
   "tools": [
     "search_cnki_papers",
@@ -15,10 +18,10 @@
   },
   "notes": [
     "CNKI 无免费公开 API，本服务通过网页爬虫实现",
-    "请遵守 CNKI 的 robots.txt 和服务条款",
+    "CNKI 服务条款 (https://kns.cnki.net/kns8/DefaultResult/Index?dbcode=SCDB) 禁止自动化抓取",
+    "如需使用，必须设置环境变量 CLI_ACCEPT_RISK=cnki 明确同意承担法律风险",
     "高频访问可能被临时封禁，建议请求间隔 ≥3 秒",
-    "建议申请 CNKI 机构账号以获得更稳定的数据访问",
-    "生产环境可考虑使用 CNKI 官方 API 或机构数据库"
+    "建议申请 CNKI 机构账号以获得更稳定的数据访问"
   ],
-  "disclaimer": "本服务仅供学术研究使用，请遵守数据来源的使用条款。"
+  "disclaimer": "⚠️ 本服务存在法律风险。使用前请阅读 LEGAL_CONSENT.md 并设置环境变量 CLI_ACCEPT_RISK=cnki 表示同意。"
 }

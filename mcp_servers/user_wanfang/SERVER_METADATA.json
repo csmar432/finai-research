@@ -4,6 +4,9 @@
   "is_mock": false,
   "requires_api_key": false,
   "serverIdentifier": "user-wanfang",
+  "legal_risk": true,
+  "requires_user_consent": true,
+  "consent_type": "CLI_ACCEPT_RISK=wanfang",
   "description": "万方数据（Wanfang Data）学术论文检索 MCP 服务器。通过网页爬虫方式搜索万方数据学术论文，覆盖期刊、学位论文、会议论文、专利等，返回论文标题、作者、期刊、年份、摘要、被引次数等元数据。",
   "tools": [
     "search_wanfang_papers",
@@ -13,10 +16,9 @@
     "Wanfang": "https://www.wanfangdata.com.cn（网页爬虫，无免费 API）"
   },
   "notes": [
-    "万方数据无免费公开 API，本服务通过网页爬虫实现",
-    "请遵守万方数据的服务条款",
-    "高频访问可能被临时封禁，建议请求间隔 ≥3 秒",
-    "建议申请万方数据机构账号以获得更稳定的数据访问"
+    "万方数据服务条款 (https://www.wanfangdata.com.cn/index.do) 禁止自动化抓取",
+    "如需使用，必须设置环境变量 CLI_ACCEPT_RISK=wanfang 明确同意承担法律风险",
+    "高频访问可能被临时封禁，建议请求间隔 ≥3 秒"
   ],
-  "disclaimer": "本服务仅供学术研究使用，请遵守数据来源的使用条款。"
+  "disclaimer": "⚠️ 本服务存在法律风险。使用前请阅读 LEGAL_CONSENT.md 并设置环境变量 CLI_ACCEPT_RISK=wanfang 表示同意。"
 }

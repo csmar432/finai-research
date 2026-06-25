@@ -104,18 +104,18 @@
   },
 
   "full": {
-    "name_zh": "完整（当前默认，43 个目录）",
-    "name_en": "Full (Current Default, 43 directories)",
+    "name_zh": "完整（需同意，43 个目录）",
+    "name_en": "Full (requires consent, 43 directories)",
     "target_users": [
       "重度用户（不挑数据源）",
       "项目作者/维护者",
       "高配电脑 (RAM >= 16GB)",
       "想解锁所有能力"
     ],
-    "note": "⚠️ This profile includes cnki/wanfang/chinese-literature servers which scrape sites that prohibit automated access. Use only for research/educational purposes. Consider academic profile for legal safety.",
+    "note": "⚠️ 默认排除 cnki/wanfang/chinese-literature（法律风险）。如需启用，查阅 LEGAL_CONSENT.md 并设置 CLI_ACCEPT_RISK 环境变量。",
     "expected_servers": 43,
     "startup_seconds": 12,
     "memory_mb": 220,
-    "servers": "ALL"
+    "servers": "ALL_EXCEPT_LEGAL_RISK"
   }
 }

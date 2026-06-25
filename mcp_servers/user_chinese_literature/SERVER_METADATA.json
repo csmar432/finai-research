@@ -4,7 +4,10 @@
   "is_mock": false,
   "requires_api_key": false,
   "serverIdentifier": "user-chinese-literature",
-  "description": "中文文献检索 MCP 服务器。整合百度学术（免费/API）、OpenAlex 和 Crossref，覆盖中国知网(CNKI)、万方数据cssci.cssn.cn的核心学术论文。提供论文元数据、引用关系、期刊分类等信息。",
+  "legal_risk": true,
+  "requires_user_consent": true,
+  "consent_type": "CLI_ACCEPT_RISK=chinese-literature",
+  "description": "中文文献检索 MCP 服务器。整合 OpenAlex、Crossref、百度学术，覆盖中国 CSSCI 核心期刊论文。提供论文元数据、引用关系、期刊分类等信息。",
   "tools": [
     "search_chinese_papers",
     "get_paper_citations",
@@ -12,13 +15,14 @@
     "search_cssci_papers"
   ],
   "data_source": {
-    "百度学术": "https://xueshu.baidu.com（免费，无API Key）",
-    "OpenAlex": "https://openalex.org（免费，HTTP API，需网络）",
-    "Crossref": "https://api.crossref.org（免费，DOI查询）"
+    "OpenAlex": "https://openalex.org（免费，HTTP API）",
+    "Crossref": "https://api.crossref.org（免费，DOI查询）",
+    "百度学术": "https://xueshu.baidu.com（免费，但无官方API）"
   },
   "notes": [
-    "CNKI 万方需要机构账号/IP，本服务器通过百度学术+OpenAlex 提供免费替代",
-    "百度学术搜索无官方API，本服务器通过 HTTP 请求模拟搜索结果页解析",
-    "生产环境建议申请百度学术合作API或使用 CNKI 机构账号"
-  ]
+    "百度学术搜索无官方API，通过 HTTP 请求解析搜索结果",
+    "如需使用爬虫方式（更高覆盖率），必须设置环境变量 CLI_ACCEPT_RISK=chinese-literature",
+    "OpenAlex + Crossref 完全免费无法律风险，是推荐的默认方案"
+  ],
+  "disclaimer": "⚠️ 本服务存在法律风险（爬取百度学术）。使用前请阅读 LEGAL_CONSENT.md 并设置环境变量 CLI_ACCEPT_RISK=chinese-literature 表示同意。"
 }

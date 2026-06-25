@@ -66,9 +66,18 @@ def load_existing_mcp_json() -> dict:
 
 
 def discover_servers() -> list[dict]:
-    # Servers that require explicit opt-in due to legal/TOS concerns.
-    # These are still present in mcp_servers/ but NOT auto-registered.
-    OPTIN_ONLY = {"user_cnki", "user_wanfang"}
+    """Discover and register MCP servers.
+
+    Servers in OPTIN_ONLY are always skipped from auto-registration,
+    regardless of profile. See LEGAL_CONSENT.md for how to enable them
+    after reading and accepting the legal risk.
+    """
+    import os as _os
+
+    # Legal-risk servers: ALWAYS excluded from auto-registration.
+    # They exist in mcp_servers/ but require CLI_ACCEPT_RISK to load.
+    # See scripts/check_legal_consent.py for the enforcement mechanism.
+    OPTIN_ONLY = {"user_cnki", "user_wanfang", "user_chinese_literature"}
 
     servers = []
     for d in sorted((ROOT / "mcp_servers").glob("user_*/")):

@@ -6,7 +6,7 @@
 >
 > ⚠️ **Important**: This tool generates manuscript drafts that require human review before submission. All causal identification strategies, statistical results, and citations must be verified by a researcher.
 >
-> ⚠️ **Legal Warning (CNKI / 万方 Wanfang)**: The bundled `user-cnki` and `user-wanfang` MCP servers perform web scraping against cnki.net and wanfangdata.com.cn, both of which prohibit automated access in their Terms of Service. These servers are provided **for research and educational purposes only**; users are solely responsible for legal compliance. In production deployments, we recommend leaving them **disabled** (do not build/run via `docker-compose` unless you have a written agreement with the data provider). See [SECURITY.md §CNKI/Wanfang](SECURITY.md#cnki-mcp_serversuser_cnki-and-万方-wanfang-mcp_serversuser_wanfang) for full details.
+> ⚠️ **Legal Risk Servers (CNKI / Wanfang / Chinese Literature)**: These 3 MCP servers scrape websites that prohibit automated access. **They are disabled by default for ALL users** — including the `full` profile. To use them, you must: (1) read [LEGAL_CONSENT.md](LEGAL_CONSENT.md) carefully, (2) set `CLI_ACCEPT_RISK=cnki,wanfang,chinese-literature` in your environment. Without this variable, these servers are never loaded. Users take full legal responsibility.
 
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
