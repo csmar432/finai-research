@@ -1,7 +1,7 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file, not individual docs.",
-  "last_verified": "2026-06-25",
+  "last_verified": "2026-06-26",
   "verified_by": "audit_guard.py",
 
   "mcp": {
@@ -60,11 +60,12 @@
   },
 
   "testing": {
-    "test_files": 89,
+    "test_files": 91,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 15,
     "ci_coverage_target": 30,
-    "ci_jobs": 7
+    "ci_jobs": 7,
+    "lock_files": ["requirements-lock.txt", "requirements-ci-lock.txt"]
   },
 
   "documentation": {

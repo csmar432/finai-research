@@ -582,14 +582,20 @@ class TestAutoDebuggerMethods:
         result = db._fix_import(code, "ModuleNotFoundError")
         assert isinstance(result, str)
 
-    def test_add_error_handling_raises_on_empty_body(self):
-        """_add_error_handling raises when code is trivial."""
+    def test_add_error_handling_on_empty_code(self):
+        """_add_error_handling returns empty string for empty code (graceful degradation)."""
         db = AutoDebugger()
-        code = ""
-        try:
-            db._add_error_handling(code)
-        except (ValueError, RuntimeError):
-            pass  # Expected for empty code
+        result = db._add_error_handling("")
+        assert result == ""  # Returns as-is, does not raise
+
+    def test_add_error_handling_adds_try_except(self):
+        """_add_error_handling inserts try/except around dangerous operations."""
+        db = AutoDebugger()
+        code = "y = fit(data)\nz = predict(x)"
+        result = db._add_error_handling(code)
+        assert "except Exception" in result
+        assert "fit(data)" in result
+        assert "predict(x)" in result
 
     def test_fix_undefined_returns_original_code(self):
         """_fix_undefined returns the original code (stub implementation)."""
@@ -609,20 +615,18 @@ class TestFigureGeneratorMethods:
         assert gen.output_dir == tempfile.gettempdir()
 
     def test_generate_did_plot_accepts_valid_data(self):
+        """generate_did_plot should produce a valid file path for valid data."""
         import tempfile
+        import os
         gen = FigureGenerator(output_dir=tempfile.gettempdir())
-        # Should not raise with valid data
-        data = {
-            "pre_treated": [0.1, 0.2],
-            "post_treated": [1.1, 1.2],
-            "pre_control": [0.0, 0.1],
-            "post_control": [0.9, 1.0],
-        }
-        # May fail on matplotlib but should not crash the Python process
-        try:
-            fig = gen.generate_did_plot(data, title="Test DID", output_dir=tempfile.gettempdir())
-        except Exception:
-            pass  # matplotlib may fail in test env; we just verify no crash
+        pre_treatment = {"treated": [0.1, 0.2], "control": [0.0, 0.1]}
+        post_treatment = {"treated": [1.1, 1.2], "control": [0.9, 1.0]}
+        path = gen.generate_did_plot(
+            pre_treatment, post_treatment,
+            title="Test DID", filename="test_did.png"
+        )
+        assert isinstance(path, str)
+        assert "test_did.png" in path
 
 
 if __name__ == "__main__":

@@ -215,9 +215,11 @@ class TestSelfEvolutionEngine:
         mock_gateway = MagicMock()
         engine = SelfEvolutionEngine(mock_memory, mock_gateway)
 
-        engine.on_feedback_received("test_agent", "Improve clarity")
-        engine.on_checkpoint_restored("test_agent", "cp_001")
-        assert True  # No exceptions
+        r1 = engine.on_feedback_received("test_agent", "Improve clarity")
+        r2 = engine.on_checkpoint_restored("test_agent", "cp_001")
+        assert r1 is None, "Hook should return None"
+        assert r2 is None, "Hook should return None"
+        assert len(engine._history) == 0, "Hooks must not mutate history"
 
     def test_stream_events(self):
         mock_memory = MagicMock()
