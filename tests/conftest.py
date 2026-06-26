@@ -14,6 +14,31 @@ import pandas as pd
 from unittest.mock import MagicMock, AsyncMock
 
 
+# ─── NumPy _NoValue singleton unification (pytest-cov workaround) ────────────
+# pytest-cov's tracer can inject its own _NoValueType sentinel into numpy
+# internals; the compiled C code in numpy.core._methods does an identity
+# check `initial is _NoValue` and raises:
+#   TypeError: float() argument must be a string or a real number,
+#              not '_NoValueType'
+# We unify the sentinel at import time so that any module referencing
+# numpy's _NoValue gets numpy's own canonical object.
+try:
+    _NUMPY_NO_VALUE = np._NoValue  # canonical singleton
+    for _mod_name in list(sys.modules):
+        _mod = sys.modules.get(_mod_name)
+        if _mod is None:
+            continue
+        try:
+            _cur = getattr(_mod, "_NoValue", None)
+            if _cur is not None and _cur is not _NUMPY_NO_VALUE:
+                _mod._NoValue = _NUMPY_NO_VALUE  # type: ignore[attr-defined]
+        except (AttributeError, TypeError):
+            continue
+    del _mod_name, _mod, _cur
+except Exception:
+    pass
+
+
 # ─── Shared mock fixtures ──────────────────────────────────────────────────────
 
 

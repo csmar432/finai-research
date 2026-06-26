@@ -1128,38 +1128,45 @@ def _bandwidth_sensitivity(
     rows = []
     bws_to_try = manual_bws or []
 
-    for method in bw_methods:
-        if method == "manual":
-            for bw in bws_to_try:
-                df_sub = _apply_donut(df, x_var, cutoff, bw, donut)
-                reg = _local_linear_regression(df_sub, y_var, x_var, cutoff, bw, kernel, order)
-                rows.append(
-                    {
-                        "method": f"manual_{bw:.4f}",
-                        "bandwidth": bw,
-                        "coef": reg["coef"],
-                        "se": reg["se"],
-                        "pval": reg["pval"],
-                        "n_obs": len(df_sub),
-                    }
-                )
-        else:
-            bw_res = _select_bandwidth(
-                df[x_var].values, df[y_var].values, cutoff, method=method, kernel=kernel, order=order
-            )
-            bw = bw_res.bandwidth
-            df_sub = _apply_donut(df, x_var, cutoff, bw, donut)
-            reg = _local_linear_regression(df_sub, y_var, x_var, cutoff, bw, kernel, order)
-            rows.append(
-                {
-                    "method": method,
-                    "bandwidth": bw,
-                    "coef": reg["coef"],
-                    "se": reg["se"],
-                    "pval": reg["pval"],
-                    "n_obs": len(df_sub),
-                }
-            )
+    # 单独的 "manual" 方法 — 仅使用 manual_bws
+    auto_methods = [m for m in bw_methods if m != "manual"]
+    if "manual" in bw_methods and not bws_to_try:
+        raise ValueError(
+            "_bandwidth_sensitivity: method='manual' requires non-empty manual_bws"
+        )
+
+    for method in auto_methods:
+        bw_res = _select_bandwidth(
+            df[x_var].values, df[y_var].values, cutoff, method=method, kernel=kernel, order=order
+        )
+        bw = bw_res.bandwidth
+        df_sub = _apply_donut(df, x_var, cutoff, bw, donut)
+        reg = _local_linear_regression(df_sub, y_var, x_var, cutoff, bw, kernel, order)
+        rows.append(
+            {
+                "method": method,
+                "bandwidth": bw,
+                "coef": reg["coef"],
+                "se": reg["se"],
+                "pval": reg["pval"],
+                "n_obs": len(df_sub),
+            }
+        )
+
+    # manual 带宽额外添加（即使 bw_methods 中无 "manual"）
+    for bw in bws_to_try:
+        df_sub = _apply_donut(df, x_var, cutoff, bw, donut)
+        reg = _local_linear_regression(df_sub, y_var, x_var, cutoff, bw, kernel, order)
+        rows.append(
+            {
+                "method": f"manual_{bw:.4f}",
+                "bandwidth": bw,
+                "coef": reg["coef"],
+                "se": reg["se"],
+                "pval": reg["pval"],
+                "n_obs": len(df_sub),
+            }
+        )
 
     return pd.DataFrame(rows)
 
@@ -1450,7 +1457,7 @@ class RDDEngine:
                 n_obs=len(df_sub),
             )
 
-        result = _fuzzy_rd(
+        result = _fuzzy_rdd(
             df_sub, self.y_var, self.x_var,
             treat, self.cutoff, bandwidth, kernel, order,
         )
@@ -1606,8 +1613,8 @@ class RDDEngine:
                 bandwidth = bw_res.bandwidth
 
         rows = []
+        x_c = np.abs(self.df[self.x_var] - self.cutoff)
         for o in orders:
-            x_c = np.abs(self.df[self.x_var] - self.cutoff)
             df_sub = self.df[(x_c <= bandwidth) & (x_c > donut)].copy()
             reg = _local_linear_regression(
                 df_sub, self.y_var, self.x_var,
@@ -1649,8 +1656,8 @@ class RDDEngine:
                 bandwidth = bw_res.bandwidth
 
         rows = []
+        x_c = np.abs(self.df[self.x_var] - self.cutoff)
         for k in kernels:
-            x_c = np.abs(self.df[self.x_var] - self.cutoff)
             df_sub = self.df[(x_c <= bandwidth) & (x_c > donut)].copy()
             reg = _local_linear_regression(
                 df_sub, self.y_var, self.x_var,
@@ -1815,10 +1822,10 @@ class RDDEngine:
         # 左：带宽敏感性
         ax = axes[0]
         sens = self._sensitivity_df.copy()
-        for _, row in sens.iterrows():
+        for row in sens.itertuples(index=False):
             ax.errorbar(
-                row["bandwidth"], row["coef"],
-                yerr=1.96 * row["se"],
+                row.bandwidth, row.coef,
+                yerr=1.96 * row.se,
                 fmt="o", capsize=4,
                 linewidth=1.5, markersize=6,
             )
@@ -2029,14 +2036,15 @@ class RDDEngine:
         lines.append(header)
         lines.append("    \\midrule")
 
-        for _, row in df.iterrows():
+        for row in df.itertuples(index=False):
+            row_dict = row._asdict()
             vals = []
             for c in df.columns:
-                v = row[c]
-                if pd.isna(v):
+                v = row_dict.get(c)
+                if v is None or (isinstance(v, float) and pd.isna(v)):
                     vals.append("")
                 elif c == "Coef":
-                    vals.append(f"{v:.4f}{row.get('Sig', '')}")
+                    vals.append(f"{v:.4f}{row_dict.get('Sig', '')}")
                 elif c in ("SE", "p-val", "CI (lower)", "CI (upper)", "Bandwidth", "R2", "FS F-stat"):
                     vals.append(f"({v:.4f})" if c == "SE" else f"{v:.4f}")
                 else:
@@ -2094,11 +2102,11 @@ class RDDEngine:
             "    \\midrule",
         ]
 
-        for _, row in df.iterrows():
+        for row in df.itertuples(index=False):
             lines.append(
-                f"    {row['method']} & {row['bandwidth']:.4f} & "
-                f"{row['coef']:.4f} & ({row['se']:.4f}) & {row['pval']:.4f} & "
-                f"{int(row['n_obs'])} \\\\"
+                f"    {row.method} & {row.bandwidth:.4f} & "
+                f"{row.coef:.4f} & ({row.se:.4f}) & {row.pval:.4f} & "
+                f"{int(row.n_obs)} \\\\"
             )
 
         lines.extend([

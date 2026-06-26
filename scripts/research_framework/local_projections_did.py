@@ -629,6 +629,10 @@ class LocalProjectionsDIDEngine:
         -------
         LPDIDResult
         """
+        # Return cached result if already computed
+        if h in self._results:
+            return self._results[h]
+
         _log.info(f"[LP-DID] Fitting horizon h={h}")
 
         df_lp = _build_lp_data(
