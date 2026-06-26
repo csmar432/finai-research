@@ -65,7 +65,14 @@
     "ci_coverage_gate": 15,
     "ci_coverage_target": 30,
     "ci_jobs": 7,
-    "lock_files": ["requirements-lock.txt", "requirements-ci-lock.txt"]
+    "lock_files": ["requirements-lock.txt", "requirements-ci-lock.txt"],
+    "module_coverage": {
+      "scripts/core/hitl_gate.py": 94.7,
+      "scripts/core/agent_state.py": 92.7,
+      "scripts/core/macro_event_bus.py": 85.3,
+      "scripts/core/provenance.py": 84.6
+    },
+    "module_coverage_weighted_avg": 88.7
   },
 
   "documentation": {
