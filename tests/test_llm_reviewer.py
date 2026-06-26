@@ -191,7 +191,7 @@ class TestLLMReviewer:
                 use_cache=False,
             )
         except RuntimeError:
-            pass  # Expected when no LLM is available
+            pytest.skip("LLM unavailable — skipping test")
 
         # Either count incremented (LLM available) or stayed same (LLM unavailable)
         assert reviewer._review_count >= initial

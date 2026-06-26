@@ -106,16 +106,14 @@ class TestSyntheticControlEdgeCases:
         sc = SC(df=mock_sc_df, y_var="gdp_per_capita", unit_var="unit",
                 time_var="year", treat_unit="treated_california", treat_period=2010)
         sc.fit()
-        # inference() should not raise
-        try:
-            inf_result = sc.inference()
-            assert inf_result is not None
-        except Exception:
-            pass  # Some edge cases may not support inference
+        inf_result = sc.inference()
+        assert inf_result is not None
+        assert isinstance(inf_result, dict)
 
 
 class TestSyntheticControlDataValidation:
-    def test_sc_single_donor(self):
+    def test_sc_single_donor_returns_valid_result(self):
+        """SC with only 1 donor unit should return a valid result (graceful degradation)."""
         from scripts.research_framework.synthetic_control import SyntheticControlEngine as SC
         np.random.seed(42)
         df = pd.DataFrame({
@@ -125,13 +123,12 @@ class TestSyntheticControlDataValidation:
         })
         sc = SC(df=df, y_var="y", unit_var="unit", time_var="year",
                 treat_unit="treated", treat_period=5)
-        try:
-            result = sc.fit()
-            assert hasattr(result, "pre_mspe")
-        except (ValueError, RuntimeError, np.linalg.LinAlgError):
-            pass  # May fail with too few donors
+        result = sc.fit()
+        assert result is not None
+        assert hasattr(result, "pre_mspe")
 
-    def test_sc_missing_values(self):
+    def test_sc_missing_values_returns_valid_result(self):
+        """SC with NaN in outcome variable should return a valid result."""
         from scripts.research_framework.synthetic_control import SyntheticControlEngine as SC
         np.random.seed(42)
         y = np.random.randn(20)
@@ -143,8 +140,5 @@ class TestSyntheticControlDataValidation:
         })
         sc = SC(df=df, y_var="y", unit_var="unit", time_var="year",
                 treat_unit="treated", treat_period=5)
-        try:
-            result = sc.fit()
-            assert hasattr(result, "pre_mspe")
-        except (ValueError, KeyError, RuntimeError, np.linalg.LinAlgError):
-            pass  # Expected with NaN
+        result = sc.fit()
+        assert result is not None

@@ -887,8 +887,9 @@ def get_tracker(project_dir: str | Path | None = None) -> ProvenanceTracker:
 
 def reset_tracker() -> None:
     """重置全局 tracker（清空所有节点）。"""
-    global _global_tracker
+    global _global_tracker, _global_chain
     _global_tracker = None
+    _global_chain = None
 
 
 def register_chart(

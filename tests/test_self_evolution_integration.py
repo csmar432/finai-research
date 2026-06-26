@@ -103,9 +103,11 @@ class TestSelfEvolutionHotPath:
     def test_hook_methods_no_errors(self):
         """Hook methods should not raise on valid input."""
         engine = self._make_engine()
-        engine.on_feedback_received("agent1", "Good job, improve efficiency")
-        engine.on_checkpoint_restored("agent1", "cp_abc123")
-        assert True
+        r1 = engine.on_feedback_received("agent1", "Good job, improve efficiency")
+        r2 = engine.on_checkpoint_restored("agent1", "cp_abc123")
+        assert r1 is None
+        assert r2 is None
+        assert len(engine._history) == 0
 
     def test_register_agent_stores_agent(self):
         """register_agent should store the agent in _agents dict."""
