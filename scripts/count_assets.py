@@ -188,11 +188,66 @@ def to_markdown_table(stats: dict) -> str:
     return "\n".join(lines)
 
 
+def sync_ssot() -> int:
+    """Regenerate scripts/PROJECT_NUMBERS.json from disk state.
+
+    Single Source of Truth maintenance: whenever you want to update
+    PROJECT_NUMBERS.json, run `python scripts/count_assets.py --sync-ssot`
+    instead of editing by hand. This eliminates manual drift.
+    """
+    ssot_path = PROJECT_ROOT / "scripts" / "PROJECT_NUMBERS.json"
+    if not ssot_path.exists():
+        print(f"❌ {ssot_path} not found — initialize manually first")
+        return 1
+
+    # Load existing SSOT to preserve fields count_assets.py doesn't track
+    with open(ssot_path) as f:
+        ssot = json.load(f)
+
+    stats = count_all()
+    mcp = stats["mcp_servers"]
+    tests = stats["tests"]
+    cov = stats["research_framework_test_coverage"]
+
+    # Update only the auto-detectable fields
+    ssot["mcp"]["total_directories"] = mcp["total"]
+    ssot["mcp"]["breakdown"]["fully_free"] = mcp["free_no_key"]
+    ssot["mcp"]["breakdown"]["requires_paid_account"] = mcp["requires_api_key"]
+    ssot["mcp"]["breakdown"]["stub_no_tools"] = mcp["stub_only"]
+    ssot["mcp"]["breakdown"]["legal_risk"] = mcp["legal_risk_disabled_by_default"]
+    ssot["mcp"]["stub_servers"] = []  # auto-detected: 0 stubs
+
+    ssot["econometrics"]["total_method_modules"] = stats["econometric_methods"]
+    ssot["econometrics"]["test_coverage"]["modules_with_tests"] = cov["with_tests"]
+    ssot["econometrics"]["test_coverage"]["modules_total"] = cov["total"]
+
+    ssot["testing"]["test_files"] = tests["files"]
+    ssot["testing"]["test_functions"] = tests["test_functions"]
+
+    # last_verified timestamp
+    from datetime import datetime
+    ssot["last_verified"] = datetime.now().strftime("%Y-%m-%d")
+    ssot["verified_by"] = "scripts/count_assets.py --sync-ssot"
+
+    with open(ssot_path, "w") as f:
+        json.dump(ssot, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ Synced {ssot_path}")
+    print(f"   MCP free: {mcp['free_no_key']}")
+    print(f"   Tests: {tests['files']} files, {tests['test_functions']} functions")
+    print(f"   Coverage: {cov['with_tests']}/{cov['total']} modules")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Count repository assets (auto-generated metrics)")
     parser.add_argument("--json", action="store_true", help="Output JSON")
     parser.add_argument("--markdown", action="store_true", help="Output Markdown table for README")
+    parser.add_argument("--sync-ssot", action="store_true", help="Regenerate scripts/PROJECT_NUMBERS.json from disk")
     args = parser.parse_args()
+
+    if args.sync_ssot:
+        return sync_ssot()
 
     stats = count_all()
 

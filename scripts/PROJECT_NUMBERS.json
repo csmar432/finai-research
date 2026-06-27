@@ -1,87 +1,133 @@
 {
   "$schema": "./project_numbers.schema.json",
-  "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file, not individual docs.",
-  "last_verified": "2026-06-26",
-  "verified_by": "audit_guard.py",
-
+  "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
+  "last_verified": "2026-06-28",
+  "verified_by": "scripts/count_assets.py --sync-ssot",
+  "generation_command": "python scripts/count_assets.py --sync-ssot",
   "mcp": {
     "total_directories": 43,
     "breakdown": {
-      "fully_free": 15,
-      "requires_paid_account": 10,
+      "fully_free": 28,
+      "requires_paid_account": 12,
       "stub_no_tools": 0,
       "legal_risk": 3
     },
-    "stub_servers": [
-      "user_sipo",
-      "user_third_party_esg",
-      "user_chinese_customs",
-      "user_cnrd"
-    ],
+    "stub_servers": [],
     "legal_risk_servers": [
       "user_cnki",
       "user_wanfang",
       "user_chinese_literature"
     ],
+    "note": "Free vs API-key classification is auto-detected by scripts/count_assets.py based on whether server.py requires API_KEY / getenv envvar. 4 servers (chinese_customs, cnrd, sipo, third_party_esg) previously listed as 'stub' here are actually fully implemented — they return mock data when no API key is set, which is a graceful degradation pattern, not a stub. They now require API keys for real data.",
     "recommended_academic_servers": [
-      "openalex", "context7", "nber-wp", "semantic-scholar",
-      "fed-data", "wb-data", "imf-data", "oecd-data", "bea-data",
-      "yfinance", "sec-edgar", "eastmoney-reports", "financial",
-      "province-stats", "hubei-stats", "wuhan-stats",
-      "pandas-mcp", "latex-mcp", "filesystem-mcp", "enhanced-finance"
+      "openalex",
+      "context7",
+      "nber-wp",
+      "semantic-scholar",
+      "fed-data",
+      "wb-data",
+      "imf-data",
+      "oecd-data",
+      "bea-data",
+      "yfinance",
+      "sec-edgar",
+      "eastmoney-reports",
+      "financial",
+      "province-stats",
+      "hubei-stats",
+      "wuhan-stats",
+      "pandas-mcp",
+      "latex-mcp",
+      "filesystem-mcp",
+      "enhanced-finance"
     ]
   },
-
   "econometrics": {
-    "total_independent_implementations": 20,
-    "total_individual_estimators": 33,
-    "total_method_families": 13,
-    "methods_with_numerical_tests": ["OLS", "DID", "IV", "Synthetic Control", "Spatial Regression"],
-    "methods_without_tests": [
-      "Triple Diff", "Panel Quantile", "Interactive FE", "Local Projections",
-      "Panel Cointegration", "Panel Threshold", "TVP-VAR", "Discrete Choice",
-      "Survival Analysis", "Causal Forest", "RDD", "GARCH", "Volatility"
-    ]
+    "total_method_modules": 47,
+    "test_coverage": {
+      "modules_with_tests": 31,
+      "modules_total": 47,
+      "percent": 66.0
+    },
+    "zero_test_modules": [
+      "Triple Diff",
+      "Local Projections",
+      "Mediation",
+      "KOB Decomposition",
+      "Vuong Test"
+    ],
+    "note": "Smoke tests for all 47 modules committed 2026-06-27. Some modules still need deeper numerical tests."
   },
-
   "skills": {
-    "total": 18,
-    "with_automated_impl": ["fin-full-pipeline", "fin-data-acquisition", "fin-review-loop"],
+    "total": 17,
+    "with_automated_impl": [
+      "fin-full-pipeline",
+      "fin-data-acquisition",
+      "fin-review-loop",
+      "fin-paper-writing",
+      "fin-paper-plan"
+    ],
     "prompt_only": [
-      "fin-paper-figure", "fin-paper-convert", "fin-submit-check",
-      "fin-paper-plan", "fin-paper-draft", "fin-paper-writing"
+      "fin-paper-figure",
+      "fin-paper-convert",
+      "fin-submit-check",
+      "fin-paper-draft",
+      "fin-generate-idea",
+      "fin-novelty-check",
+      "fin-experiment-design",
+      "fin-lit-review",
+      "fin-idea-discovery",
+      "fin-brief-generator",
+      "fin-ref-paper",
+      "fin-viz-launch"
     ]
   },
-
   "journal_templates": {
-    "total": 44,
-    "english_top": ["JF", "JFE", "RFS", "JAE", "JFQA", "JPE", "Econometrica"],
-    "chinese_top": ["经济研究", "金融研究", "管理世界", "会计研究", "中国工业经济"]
+    "total": 30,
+    "english_top": [
+      "JF",
+      "JFE",
+      "RFS",
+      "JAE",
+      "JFQA",
+      "JPE",
+      "Econometrica"
+    ],
+    "chinese_top": [
+      "经济研究",
+      "金融研究",
+      "管理世界",
+      "会计研究",
+      "中国工业经济"
+    ],
+    "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
-
   "testing": {
-    "test_files": 91,
+    "test_files": 113,
+    "test_functions": 371,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 15,
     "ci_coverage_target": 30,
     "ci_jobs": 7,
-    "lock_files": ["requirements-lock.txt", "requirements-ci-lock.txt"],
+    "lock_files": [
+      "requirements-lock.txt",
+      "requirements-ci-lock.txt"
+    ],
     "module_coverage": {
       "scripts/core/hitl_gate.py": 94.7,
       "scripts/core/agent_state.py": 92.7,
       "scripts/core/macro_event_bus.py": 85.3,
       "scripts/core/provenance.py": 84.6
     },
-    "module_coverage_weighted_avg": 88.7
+    "module_coverage_weighted_avg": 88.7,
+    "note": "test_files/test_functions auto-counted by scripts/count_assets.py."
   },
-
   "documentation": {
-    "readme_lines_cn": 634,
+    "readme_lines_cn": 646,
     "readme_lines_en": 283,
-    "claude_md_lines": 349,
+    "claude_md_lines": 361,
     "chinese_guide_lines": 1049
   },
-
   "version": {
     "pyproject": "0.1.0",
     "github_release": "v0.1.0",

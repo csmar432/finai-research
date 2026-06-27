@@ -39,17 +39,19 @@ REPLACEMENTS = {
     # README.md
     "README.md": [
         (r"Integrates \d+ MCP", "Integrates {mcp_total} MCP"),
-        (r"\*(\d+) MCP server directories", "*{mcp_total} MCP server directories"),
-        (r"\*\*(\d+) MCP server directories", "*{mcp_total} MCP server directories"),
+        # 匹配行内的 "**N MCP server directories"（markdown 加粗），
+        # 模板不重复加 **，避免与已有 markdown 语法叠加
+        (r"\*\*(\d+) MCP server directories", "**{mcp_total} MCP server directories"),
         (r"~30 econometric method implementations", "~{econ_total} econometric method implementations"),
-        (r"\*\*(\d+) AI Skills", "*{skills_total} AI Skills"),
+        (r"\*\*(\d+) AI Skills", "**{skills_total} AI Skills"),
     ],
     # README_EN.md
+    # 注意：template 不要再加 ** 前后缀，避免与原文 markdown 加粗叠加
     "README_EN.md": [
         (r"MCP data servers.*?\*\*(\d+)\*\*", "MCP data servers | **{mcp_total}**"),
         (r"Econometric methods.*?~\((\d+)", "Econometric Methods (~({econ_estimators}"),
         (r"(\d+) AI Skills \(", "{skills_total} AI Skills ("),
-        (r"Coverage.*?\*\*~?(\d+)%", "Coverage | **{cov_gate}%**"),
+        (r"Coverage.*?\*\*~?(\d+)%\*\*?", "Coverage | **{cov_gate}%**"),
         (r"(\d+) test files", "{test_files} test files"),
     ],
     # CLAUDE.md
@@ -74,6 +76,10 @@ def check_docs_current(ssot: dict) -> list[str]:
     skills = ssot["skills"]
     testing = ssot["testing"]
 
+    # Backward compat
+    ecom_total = str(econ.get("total_method_modules") or econ.get("total_independent_implementations", 0))
+    ecom_estimators = str(econ.get("total_individual_estimators") or 0)
+
     for filepath, patterns in REPLACEMENTS.items():
         path = ROOT / filepath
         if not path.exists():
@@ -84,9 +90,9 @@ def check_docs_current(ssot: dict) -> list[str]:
             if "{mcp_total}" in pattern:
                 expected = str(mcp["total_directories"])
             elif "{econ_total}" in pattern:
-                expected = str(econ["total_independent_implementations"])
+                expected = ecom_total
             elif "{econ_estimators}" in pattern:
-                expected = str(econ["total_individual_estimators"])
+                expected = ecom_estimators
             elif "{skills_total}" in pattern:
                 expected = str(skills["total"])
             elif "{cov_gate}" in pattern:
@@ -111,10 +117,14 @@ def apply_replacements(ssot: dict, dry_run: bool = True) -> dict[str, str]:
     skills = ssot["skills"]
     testing = ssot["testing"]
 
+    # Backward compat: support old/new key names
+    ecom_total = str(econ.get("total_method_modules") or econ.get("total_independent_implementations", 0))
+    ecom_estimators = str(econ.get("total_individual_estimators") or 0)
+
     subs = {
         "{mcp_total}": str(mcp["total_directories"]),
-        "{econ_total}": str(econ["total_independent_implementations"]),
-        "{econ_estimators}": str(econ["total_individual_estimators"]),
+        "{econ_total}": ecom_total,
+        "{econ_estimators}": ecom_estimators,
         "{skills_total}": str(skills["total"]),
         "{cov_gate}": str(testing["ci_coverage_gate"]),
         "{test_files}": str(testing["test_files"]),
@@ -148,7 +158,10 @@ def main() -> int:
     ssot = load_ssot()
     print(f"SSOT loaded from {SSOT_PATH}")
     print(f"  MCP directories: {ssot['mcp']['total_directories']}")
-    print(f"  Econometric methods: {ssot['econometrics']['total_independent_implementations']}")
+    # Backward compatibility: support both old/new key names
+    ecom = ssot['econometrics']
+    ecom_total = ecom.get('total_method_modules') or ecom.get('total_independent_implementations', 0)
+    print(f"  Econometric methods: {ecom_total}")
     print(f"  Skills: {ssot['skills']['total']}")
     print(f"  Coverage gate: {ssot['testing']['ci_coverage_gate']}%")
     print()
