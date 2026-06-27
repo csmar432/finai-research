@@ -39,6 +39,9 @@ from scripts.core.nora_orchestrator import (
     ResearchProfile,
 )
 from scripts.core.platform import PROJECT_ROOT
+from scripts.core.variable_redundancy import VariableRedundancyResolver
+from scripts.core.data_gate import DataGate, DataGateLevel
+from scripts.core.did_audit_guard import install_all_audit_guards
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +101,49 @@ def cmd_new_research(args) -> int:
     print(f"  🧪 策略: {profile.identification}")
     print(f"  📅 窗口: {profile.sample_window or '(待定)'}")
     print(f"  🎯 期刊: {profile.venue}")
+
+    # 2.5 变量冗余解析（PR2 集成：从画像自动补充候选变量）
+    _print_banner("📊 变量冗余解析 · 自动化备选变量补充", "36")
+    try:
+        resolver = VariableRedundancyResolver(output_dir=output_dir)
+        redundancy_report = resolver.resolve(profile)
+        print(redundancy_report.summary())
+        if redundancy_report.has_minimum_redundancy:
+            print("\n  ✅ 变量冗余充足（因变量/自变量/控制变量/政策变量满足最小阈值）")
+        else:
+            print("\n  ⚠️  变量冗余不足，可能影响后续实证的备选方案")
+            print("     建议：在文献综述后由 resolver 补充，或在 REFINED_DESIGN.md 中扩展")
+    except Exception as exc:
+        print(f"  ⚠️  变量冗余解析失败: {exc}")
+
+    # 2.6 安装 DID 审计守卫（PR5 集成：拦截 mock 数据进入 DID）
+    _print_banner("🛡️  DID 审计守卫 · 安装中", "36")
+    guard_status = install_all_audit_guards()
+    for engine_name, installed in guard_status.items():
+        icon = "✅" if installed else "⚠️ "
+        print(f"  {icon} {engine_name}")
+
+    # 2.7 DataGate 状态报告（PR2 集成：验证数据是否就绪）
+    _print_banner("🔍 DataGate 状态检查 · 写作前数据验证", "36")
+    try:
+        gate = DataGate(session_dir=output_dir, level=DataGateLevel.PROVENANCE)
+        gate_result = gate.check()
+        if gate_result.is_ready:
+            print("  ✅ 数据验证通过，可以进入写作阶段")
+        else:
+            print("  🔴 数据未就绪 — 禁止进入写作阶段")
+            print(f"     缺失项: {len(gate_result.missing)}")
+            for m in gate_result.missing:
+                print(f"       • {m}")
+            if gate_result.warnings:
+                print(f"     警告: {len(gate_result.warnings)}")
+                for w in gate_result.warnings:
+                    print(f"       ⚠️  {w}")
+            print("\n     💡 解决方案:")
+            print("       ① 补充数据后重新检查: python scripts/start_research.py --resume")
+            print("       ② 或授权模拟数据: CLI_ACCEPT_RISK=1 python scripts/...")
+    except Exception as exc:
+        print(f"  ⚠️  DataGate 检查失败: {exc}")
 
     # 3. 下一步指引（不自动进入流水线，避免悄悄生成 mock）
     print("\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")

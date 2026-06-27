@@ -306,63 +306,174 @@ def audit_did_call(func):
 # ─── Integration: DID methods ──────────────────────────────────────────────────
 
 
-def install_audit_guard_into_modern_did() -> None:
-    """将审计守卫织入 ModernDiD 类的入口方法。
+def install_audit_guard_into_modern_did() -> bool:
+    """将审计守卫织入 ModernDiDEngine 类的入口方法。
 
     使用方法（在脚本启动时调用一次）：
         from scripts.core.did_audit_guard import install_audit_guard_into_modern_did
         install_audit_guard_into_modern_did()
 
-    效果：所有 .fit() / .did_2x2() / .cs() 等方法在执行前
-          自动执行 assert_real_data(df)。
+    效果：所有 ModernDiDEngine 实例在创建时
+          自动执行 assert_real_data(self.df)。
+
+    Returns:
+        True: 织入成功
+        False: 织入失败（modern_did.py 未找到或 ModernDiDEngine 不存在）
     """
     try:
-        from scripts.research_framework.modern_did import ModernDiD
-    except ImportError:
-        print("⚠️  modern_did.py 未找到，跳过 DID 审计织入")
-        return
+        from scripts.research_framework.modern_did import ModernDiDEngine
+    except ImportError as exc:
+        _log = __import__("logging").getLogger("did_audit")
+        _log.warning(
+            "modern_did.py 未找到，ModernDiDEngine DID 审计未织入: %s", exc
+        )
+        return False
 
-    _original_fit = ModernDiD.fit
+    if not hasattr(ModernDiDEngine, "__init__"):
+        return False
 
-    def audited_fit(self, df=None, **kwargs):
+    _original_init = ModernDiDEngine.__init__
+
+    def audited_init(self, df: pd.DataFrame, *args, **kwargs):
+        # 在 __init__ 时拦截 mock 数据（df 必传）
         if df is not None and DID_AUDIT_ENABLED:
-            result = assert_real_data(df, context="ModernDiD.fit")
+            result = assert_real_data(df, context="ModernDiDEngine.__init__")
             if not result.is_real:
                 raise MockDataError(
-                    f"ModernDiD.fit 拒绝使用 mock 数据：{result.reason}\n"
+                    f"ModernDiDEngine.__init__ 拒绝使用 mock 数据：{result.reason}\n"
                     f"sentinel 列: {result.sentinel_columns}\n"
                     f"recommendations: {result.recommendations}"
                 )
-        return _original_fit(self, df, **kwargs)
+        return _original_init(self, df, *args, **kwargs)
 
-    ModernDiD.fit = audited_fit
+    ModernDiDEngine.__init__ = audited_init
     __import__("logging").getLogger("did_audit").info(
-        "✅ DID 审计守卫已织入 ModernDiD.fit()"
+        "✅ DID 审计守卫已织入 ModernDiDEngine.__init__()"
     )
+    return True
 
 
-def install_audit_guard_into_rdd() -> None:
-    """将审计守卫织入 RDDesign.run()。"""
+def install_audit_guard_into_rdd() -> bool:
+    """将审计守卫织入 RDDEngine.__init__()（RDD 主类）。"""
     try:
-        from scripts.research_framework.rdd import RDDesign
-    except ImportError:
-        return
+        from scripts.research_framework.rdd import RDDEngine
+    except ImportError as exc:
+        __import__("logging").getLogger("did_audit").warning(
+            "rdd.py 未找到，RDDEngine 审计未织入: %s", exc
+        )
+        return False
 
-    _original_run = RDDesign.run
+    if not hasattr(RDDEngine, "__init__"):
+        return False
 
-    def audited_run(self, df=None, **kwargs):
+    _original_init = RDDEngine.__init__
+
+    def audited_init(self, *args, **kwargs):
+        # RDDEngine 的 __init__ 通常接收 df 作为第一个参数
+        df = None
+        if args and isinstance(args[0], pd.DataFrame):
+            df = args[0]
+        df = df or kwargs.get("df")
         if df is not None and DID_AUDIT_ENABLED:
-            result = assert_real_data(df, context="RDDesign.run")
+            result = assert_real_data(df, context="RDDEngine.__init__")
             if not result.is_real:
                 raise MockDataError(
-                    f"RDDesign.run 拒绝使用 mock 数据：{result.reason}"
+                    f"RDDEngine.__init__ 拒绝使用 mock 数据：{result.reason}\n"
+                    f"recommendations: {result.recommendations}"
                 )
-        return _original_run(self, df, **kwargs)
+        return _original_init(self, *args, **kwargs)
 
-    RDDesign.run = audited_run
+    RDDEngine.__init__ = audited_init
     __import__("logging").getLogger("did_audit").info(
-        "✅ DID 审计守卫已织入 RDDesign.run()"
+        "✅ DID 审计守卫已织入 RDDEngine.__init__()"
     )
+    return True
+
+
+def install_audit_guard_into_iv_panel() -> bool:
+    """将审计守卫织入 IVPanel 类（如果存在）。"""
+    try:
+        from scripts.research_framework.iv_panel import IVPanel
+    except ImportError as exc:
+        __import__("logging").getLogger("did_audit").warning(
+            "iv_panel.py 未找到，IVPanel DID 审计未织入: %s", exc
+        )
+        return False
+
+    if not hasattr(IVPanel, "__init__"):
+        return False
+
+    _original_init = IVPanel.__init__
+
+    def audited_init(self, *args, **kwargs):
+        # IVPanel 通常接收 df 作为第一个参数
+        df = None
+        if args and isinstance(args[0], pd.DataFrame):
+            df = args[0]
+        df = df or kwargs.get("df")
+        if df is not None and DID_AUDIT_ENABLED:
+            result = assert_real_data(df, context="IVPanel.__init__")
+            if not result.is_real:
+                raise MockDataError(
+                    f"IVPanel.__init__ 拒绝使用 mock 数据：{result.reason}"
+                )
+        return _original_init(self, *args, **kwargs)
+
+    IVPanel.__init__ = audited_init
+    __import__("logging").getLogger("did_audit").info(
+        "✅ DID 审计守卫已织入 IVPanel.__init__()"
+    )
+    return True
+
+
+def install_all_audit_guards() -> dict[str, bool]:
+    """一键安装所有 DID 审计守卫。
+
+    Returns:
+        每个守卫的安装状态: {"modern_did": True, "rdd": True, "iv_panel": False}
+    """
+    return {
+        "modern_did": install_audit_guard_into_modern_did(),
+        "rdd": install_audit_guard_into_rdd(),
+        "iv_panel": install_audit_guard_into_iv_panel(),
+    }
+
+
+def install_audit_guard_into_rdd() -> bool:
+    """将审计守卫织入 RDDEngine.__init__()（RDD 主类）。"""
+    try:
+        from scripts.research_framework.rdd import RDDEngine
+    except ImportError as exc:
+        __import__("logging").getLogger("did_audit").warning(
+            "rdd.py 未找到，RDDEngine 审计未织入: %s", exc
+        )
+        return False
+
+    if not hasattr(RDDEngine, "__init__"):
+        return False
+
+    _original_init = RDDEngine.__init__
+
+    def audited_init(self, *args, **kwargs):
+        # RDDEngine 的 __init__ 通常接收 df 作为第一个参数
+        df = None
+        if args and isinstance(args[0], pd.DataFrame):
+            df = args[0]
+        df = df or kwargs.get("df")
+        if df is not None and DID_AUDIT_ENABLED:
+            result = assert_real_data(df, context="RDDEngine.__init__")
+            if not result.is_real:
+                raise MockDataError(
+                    f"RDDEngine.__init__ 拒绝使用 mock 数据：{result.reason}\n"
+                    f"recommendations: {result.recommendations}"
+                )
+        return _original_init(self, *args, **kwargs)
+
+    RDDEngine.__init__ = audited_init
+    __import__("logging").getLogger("did_audit").info(
+        "✅ DID 审计守卫已织入 RDDEngine.__init__()"
+    )
+    return True
 
 
 # ─── CLI ─────────────────────────────────────────────────────────────────────
