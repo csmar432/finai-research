@@ -939,15 +939,19 @@ class ReportGenerator:
             _rg_log.warning("Unknown journal %r, using xelatex directly", journal)
             template = get_template("JFE")  # fallback to JFE
 
-        engine = "xelatex" if is_chinese else "pdflatex"
-        _rg_log.info("Compiling %s with engine=%s", tex_path, engine)
+        # Auto-detect best backend (tectonic优先 → xelatex → pdflatex)
+        # 不再硬编码 xelatex（tectonic 已安装且中文支持更好）
+        _rg_log.info("Compiling %s with auto-detected backend", tex_path)
 
         try:
-            success = template.compile(str(tex_path), engine=engine, passes=2)
+            success = template.compile(str(tex_path), engine=None, passes=2)
             if success:
                 _rg_log.info("PDF compiled successfully: %s", tex_path.with_suffix(".pdf"))
             else:
-                _rg_log.warning("PDF compilation returned False (check TeX installation)")
+                _rg_log.warning(
+                    "PDF compilation failed. "
+                    "LaTeX编译器诊断：python scripts/journal_template.py --check-compiler"
+                )
         except Exception as e:
             _rg_log.warning("PDF compilation failed: %s", e)
 
