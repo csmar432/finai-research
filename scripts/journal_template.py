@@ -83,20 +83,36 @@ class JournalTemplate:
     def compile(
         self,
         tex_path: str | Path,
-        engine: str = "pdflatex",
+        engine: str | None = None,
         passes: int = 2,
     ) -> bool:
-        """Compile a .tex file to PDF using the specified engine.
+        """Compile a .tex file to PDF with multi-backend fallback.
+
+        Backend priority (auto-detected if engine=None):
+            1. tectonic   — 推荐：单文件、自动下载包、中文友好（ctex）
+            2. xelatex   — 标准中文 XeLaTeX（需 MacTeX/TeXLive）
+            3. pdflatex  — 标准英文（需 MacTeX/TeXLive）
+            4. lualatex  — LuaTeX（字体替换）
+            5. pandoc    — 最后兜底：tex → docx（无 PDF 时）
 
         Args:
             tex_path: Path to .tex file (with or without .tex extension)
-            engine: Compiler to use ('xelatex', 'pdflatex', 'lualatex')
-            passes: Number of compilation passes (default 2 for cross-refs/ToC)
+            engine: Compiler to use ('tectonic'/'xelatex'/'pdflatex'/'lualatex'/'pandoc').
+                     None = auto-detect available backend.
+            passes: Number of compilation passes (default 2 for cross-refs/ToC).
+                     tectonic ignores this (single-pass).
 
         Returns:
             True if PDF was generated, False otherwise.
             Never raises — all errors are handled gracefully.
+
+        Multi-backend strategy:
+            - If engine is specified: use it directly (may fail if not installed)
+            - If engine is None: auto-detect in priority order
+            - Each backend failure logs a clear message with fix instructions
         """
+        import shutil as _sh
+
         tex_path = Path(tex_path)
         if not str(tex_path).endswith(".tex"):
             tex_path = tex_path.with_suffix(".tex")
@@ -105,29 +121,161 @@ class JournalTemplate:
             print(f"文件不存在: {tex_path}，跳过编译。")
             return False
 
+        # ── Auto-detect backend ──────────────────────────────────────────────────
+        if engine is None:
+            engine = self._detect_best_backend()
+            if engine is None:
+                print("❌ 未检测到任何 LaTeX 编译器。")
+                print("   解决方案（任选一种）：")
+                print("   ① 推荐：安装 tectonic（单文件，无需完整 TeX Live）")
+                print("      macOS: brew install tectonic")
+                print("      Linux: curl -LsSf https://get.tectonic.se | sh")
+                print("   ② 安装 MacTeX：brew install --cask mactex")
+                print("   ③ 使用 pandoc 导出 Word：pandoc paper.tex -o paper.docx")
+                return False
+            print(f"   自动检测到编译器: {engine}")
+
+        # ── Backend-specific compilation ──────────────────────────────────────────
+        if engine == "tectonic":
+            return self._compile_tectonic(tex_path)
+        elif engine in ("xelatex", "pdflatex", "lualatex"):
+            return self._compile_standard(tex_path, engine, passes)
+        elif engine == "pandoc":
+            return self._compile_pandoc_fallback(tex_path)
+        else:
+            # 未知引擎，回退到 auto-detect
+            print(f"未知引擎 {engine!r}，尝试自动检测...")
+            fallback = self._detect_best_backend()
+            if fallback:
+                return self.compile(tex_path, engine=fallback, passes=passes)
+            return False
+
+    def _detect_best_backend(self) -> str | None:
+        """按优先级检测可用的 LaTeX 编译器。"""
+        import shutil as _sh
+
+        # 优先级：tectonic > xelatex > pdflatex > lualatex
+        backends = ["tectonic", "xelatex", "pdflatex", "lualatex"]
+        for be in backends:
+            if _sh.which(be):
+                return be
+        return None
+
+    def _compile_tectonic(self, tex_path: Path) -> bool:
+        """使用 tectonic 编译（推荐：单文件、自动下载包）。"""
+        import shutil as _sh
+
+        if not _sh.which("tectonic"):
+            print("❌ tectonic 未安装。")
+            print("   安装方法：brew install tectonic")
+            return False
+
+        try:
+            # tectonic 是单文件编译器，不需要 -interaction 参数
+            # 使用 --outdir 确保 PDF 输出到正确位置
+            out_dir = tex_path.parent
+            result = subprocess.run(
+                ["tectonic", str(tex_path), "--outdir", str(out_dir)],
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            # tectonic 返回码 0 通常意味着成功
+            if result.returncode == 0:
+                pdf_path = tex_path.with_suffix(".pdf")
+                if pdf_path.exists():
+                    print(f"✅ PDF 生成成功: {pdf_path}")
+                    return True
+            # 检查错误
+            if result.stderr:
+                err_lower = result.stderr.lower()
+                if "ctex" in err_lower or "font" in err_lower:
+                    print(f"⚠️  tectonic 编译有字体/CJK 警告：\n{result.stderr[:300]}")
+                elif "error" in err_lower or "fatal" in err_lower:
+                    print(f"❌ tectonic 编译错误：\n{result.stderr[:500]}")
+            # tectonic 成功但没找到 PDF（罕见）
+            pdf_path = tex_path.with_suffix(".pdf")
+            if pdf_path.exists():
+                return True
+            print(f"❌ tectonic 编译失败（returncode={result.returncode}）")
+            return False
+        except subprocess.TimeoutExpired:
+            print("❌ tectonic 编译超时（120秒）")
+            return False
+        except Exception as e:
+            print(f"❌ tectonic 编译异常：{e}")
+            return False
+
+    def _compile_standard(
+        self, tex_path: Path, engine: str, passes: int
+    ) -> bool:
+        """使用 xelatex/pdflatex/lualatex 编译。"""
+        import shutil as _sh
+
+        if not _sh.which(engine):
+            print(f"❌ {engine} 未安装。")
+            print(f"   安装方法：brew install --cask mactex  # macOS")
+            print(f"   或：sudo apt install texlive-latex-base  # Ubuntu/Debian")
+            return False
+
         try:
             for i in range(passes):
                 result = subprocess.run(
                     [engine, "-interaction=nonstopmode", str(tex_path)],
                     capture_output=True,
                     text=True,
-                    timeout=60,
+                    timeout=90,
                 )
                 if result.returncode != 0:
-                    # 检查是否有致命错误
-                    if "Fatal" in result.stderr:
-                        print(f"编译错误: {result.stderr[:500]}")
+                    err_lower = result.stderr.lower()
+                    if "fatal" in err_lower or "error" in err_lower:
+                        print(f"❌ {engine} 编译第 {i+1}/{passes} 轮次错误：\n{result.stderr[:400]}")
+                        if "font" in err_lower or "cjk" in err_lower or "xe" in err_lower:
+                            print("   💡 提示：CJK/字体错误。请使用 tectonic 编译器或安装 xeCJK 宏包。")
                         return False
-
-            # 检查 PDF 是否生成
+                    # 非致命错误，继续下一轮
             pdf_path = tex_path.with_suffix(".pdf")
-            return pdf_path.exists()
-
-        except FileNotFoundError:
-            print(f"未找到 {engine}，请安装 TeX Live（https://tug.org/texlive/）。")
-            return False
+            if pdf_path.exists():
+                print(f"✅ PDF 生成成功: {pdf_path}")
+                return True
+            else:
+                print(f"⚠️ {engine} 编译完成但未找到 PDF 文件")
+                return False
         except subprocess.TimeoutExpired:
-            print("编译超时（60秒），请检查 LaTeX 安装。")
+            print(f"❌ {engine} 编译超时（90秒）")
+            return False
+        except FileNotFoundError:
+            print(f"❌ {engine} 未找到")
+            return False
+        except Exception as e:
+            print(f"❌ {engine} 编译异常：{e}")
+            return False
+
+    def _compile_pandoc_fallback(self, tex_path: Path) -> bool:
+        """最后兜底：使用 pandoc 将 tex 转为 docx（无 PDF 时）。"""
+        import shutil as _sh
+
+        if not _sh.which("pandoc"):
+            print("❌ pandoc 未安装，无法导出 Word。")
+            print("   安装：brew install pandoc")
+            return False
+
+        docx_path = tex_path.with_suffix(".docx")
+        try:
+            result = subprocess.run(
+                ["pandoc", str(tex_path), "-o", str(docx_path)],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if result.returncode == 0 and docx_path.exists():
+                print(f"✅ Word 文档生成成功（PDF 不可用）: {docx_path}")
+                return True
+            else:
+                print(f"❌ pandoc 转换失败：{result.stderr[:200]}")
+                return False
+        except Exception as e:
+            print(f"❌ pandoc 转换异常：{e}")
             return False
 
 
@@ -5596,6 +5744,7 @@ def generate_paper(
 
 def main():
     import argparse
+    import shutil
 
     parser = argparse.ArgumentParser(description="期刊模板管理器")
     parser.add_argument("--list", "-l", action="store_true", help="列出所有模板")
@@ -5603,8 +5752,46 @@ def main():
     parser.add_argument("--generate", "-g", nargs=2, metavar=("TEMPLATE", "OUTPUT"),
                        help="生成示例文件")
     parser.add_argument("--info", "-i", help="查看模板信息")
+    parser.add_argument("--check-compiler", action="store_true",
+                       help="检测 LaTeX 编译器可用性")
 
     args = parser.parse_args()
+
+    if args.check_compiler:
+        print("\n" + "═" * 60)
+        print("  LaTeX 编译器检测")
+        print("═" * 60)
+        backends = ["tectonic", "xelatex", "pdflatex", "lualatex", "pandoc"]
+        found = []
+        for be in backends:
+            path = shutil.which(be)
+            if path:
+                print(f"  ✅ {be:<12} → {path}")
+                found.append(be)
+            else:
+                print(f"  ❌ {be:<12} 未安装")
+        print()
+        if found:
+            best = found[0]  # tectonic 排第一
+            print(f"  最佳编译器: {best}")
+            print(f"  推荐命令: python scripts/journal_template.py --generate 经济研究 output/test.tex")
+            print(f"             python scripts/journal_template.py --generate JF output/paper.tex")
+        else:
+            print("  ⚠️  未检测到任何编译器！")
+            print()
+            print("  解决方案（任选一种）：")
+            print("  ① 推荐 — 安装 tectonic（单文件，无需完整 TeX Live）:")
+            print("     macOS: brew install tectonic")
+            print("     Linux: curl -LsSf https://get.tectonic.se | sh")
+            print("     Windows: 下载 https://github.com/tectonic-typesetting/tectonic/releases")
+            print()
+            print("  ② 安装 MacTeX（完整 TeX Live）:")
+            print("     brew install --cask mactex  # ~5GB")
+            print()
+            print("  ③ 使用 pandoc 导出 Word（无 PDF）：")
+            print("     brew install pandoc")
+        print()
+        return
 
     if args.list:
         templates = list_templates(args.category)

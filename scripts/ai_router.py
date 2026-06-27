@@ -1107,6 +1107,7 @@ class AIRouter:
         self._cache: CacheManager | None = None
         self._classifier: TaskClassifier | None = None
         self._ollama: OllamaProvider | None = None
+        self._mock_fallback: "MockTemplateEngine | None" = None
         self._initialized = False
         self._available: dict[str, str] = {}
 
@@ -1122,6 +1123,14 @@ class AIRouter:
         if os.getenv("OLLAMA_ENABLED", "false").lower() == "true":
             self._ollama = OllamaProvider()
 
+        # MockTemplateEngine（所有后端挂掉时的最终 fallback）
+        try:
+            from scripts.core.mock_template_engine import MockTemplateEngine
+            self._mock_fallback = MockTemplateEngine()
+        except ImportError:
+            self._mock_fallback = None
+            _log.warning("MockTemplateEngine not available, no fallback when all LLMs fail")
+
         # 检查各模型可用状态
         for key in ModelKey:
             cfg = self._pool.get(key)
@@ -1132,6 +1141,12 @@ class AIRouter:
                 )
             else:
                 self._available[key.value] = "❌ 未安装"
+
+        # MockTemplateEngine 始终可用（作为最终 fallback）
+        self._available["mock_template"] = (
+            f"✅ mock_template (无 API Key 时兜底)"
+            if self._mock_fallback else "❌ 未安装"
+        )
 
         self._initialized = True
 
@@ -1291,8 +1306,27 @@ class AIRouter:
                     fallback_tried=fallback_tried + ["ollama"],
                 )
 
-        # 全部失败
+        # 全部失败 → MockTemplateEngine 最终 fallback
         tried_str = " → ".join(fallback_tried)
+        if self._mock_fallback is not None:
+            _log.warning(
+                "All LLM backends failed (tried: %s). Falling back to MockTemplateEngine.",
+                tried_str
+            )
+            mock_result = self._mock_fallback.generate(
+                task=actual_task.value,
+                topic=user_input[:100],
+            )
+            return AIResult(
+                response=mock_result.content,
+                model_used="mock_template",
+                model_key="mock_template",
+                task_type=actual_task.value,
+                latency_ms=(time.time() - start) * 1000,
+                cached=False,
+                fallback_tried=fallback_tried + ["mock_template"],
+            )
+
         raise RuntimeError(
             f"所有模型均调用失败（尝试顺序：{tried_str}）。"
             f"最后错误：{last_error}"

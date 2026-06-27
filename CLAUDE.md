@@ -41,15 +41,20 @@ pytest tests/ -v
         ↓
 ① 问候 + 能力介绍（固定文案，不跳过）
         ↓
-② 后台运行 python scripts/health_check.py --json
+② 快速诊断：python scripts/startup_check.py（轻量，<3秒）
         ↓
-③ 检查 MCP 注册状态：python scripts/register_mcp_servers.py --list（轻量）
+③ 详细诊断（可选）：python scripts/health_check.py --verify
+        ↓
+④ MCP 注册检查：python scripts/register_mcp_servers.py --list
         ↓
   ┌─ API Key 缺失 → 简短提示（不阻塞）
   ├─ LLM 不可用 → 询问是否继续
-  └─ MCP 未注册 → 提示用户运行 `python scripts/register_mcp_servers.py`（不阻塞）
+  ├─ MCP 未注册 → 提示运行 `python scripts/register_mcp_servers.py`
+  └─ LaTeX 缺失 → 提示安装 tectonic / MacTeX
         ↓
-④ 等待研究方向 → 用户描述 → 开始研究
+⑤ 等待研究方向 → 用户描述 → 开始研究
+        ↓
+⑥ 推荐入口：python scripts/start_research.py --topic "..."（5轮NORA澄清）
 ```
 
 **第一步问候是强制要求**，不要跳过。直接开始工作会显得突兀。
