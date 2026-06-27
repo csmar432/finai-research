@@ -22,7 +22,7 @@ If the current maintainer becomes unavailable (long-term illness, career change,
 
 ## Roadmap
 
-See [ROADMAP.md](./ROADMAP.md) for the current project roadmap and milestone timeline.
+The project roadmap is maintained privately (see `.gitignore` for `ROADMAP.md`). Major version milestones are documented in `CHANGELOG.md`.
 
 ## Release Policy
 

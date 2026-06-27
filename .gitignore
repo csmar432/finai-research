@@ -167,6 +167,9 @@ ROADMAP.md
 STAR_GROWTH_PLAN.md
 *.local.md
 
+# examples/ — 案例脚本依赖 DEEPSEEK_API_KEY 且质量参差，不上传
+examples/
+
 # MCP servers — 保留代码和元数据，忽略运行时生成文件
 mcp_servers/*/server.log
 mcp_servers/*/.cache/

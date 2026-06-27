@@ -42,7 +42,7 @@
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
 | **~20 econometric method implementations** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
 | **43 MCP server directories** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源)；28 个完全免费（其余 12 需 API Key，3 个 opt-in 法律风险）|
-| **18 AI Skills** | [knowledge/skills/](knowledge/skills/) |
+| **17 AI Skills** | [knowledge/skills/](knowledge/skills/) |
 | **API reference** | [scripts/](scripts/) 目录下的每个模块都含 docstring 和类型注解 |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
 

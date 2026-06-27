@@ -111,7 +111,7 @@ pytest tests/ -v
 > - `user-newsapi` — NewsAPI Key（免费注册有限额）
 > - `user-yfinance` / `user-sec-edgar` — 免费，无需 Key
 
-### 计量方法（约20种独立实现，JF/JFE/RFS 标准）
+### 计量方法（约47种独立实现，JF/JFE/RFS 标准）
 
 > **重要说明**：以下方法中，标注 🔗 的依赖 `linearmodels`、`diff-in-diff2` 等第三方包；标注 ⭐ 的为独立 Python 实现。
 > 数量为近似值，因部分估计器（如 TWFE × 3 种 SE × bootstrap 变体）存在重复计数。
