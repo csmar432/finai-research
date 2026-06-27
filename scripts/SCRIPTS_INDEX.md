@@ -1,24 +1,23 @@
 # Scripts Index · 脚本索引
 
 > 本文件是 `scripts/` 目录的权威索引。每个脚本都有分类标签和使用说明。
-> 最后更新: 2026-06-13
+> 最后更新: 2026-06-28（自动对账）
 
 ---
 
 ## 分类总览
 
-|| 分类 | 数量 | 说明 |
-||------|------|------|
-|| [🚀 Entry Points](#一-entry-points-用户入口) | 27 | 用户直接调用的命令行工具 |
-|| [📦 Core Modules](#二-core-modules-核心库) | 19 | 被其他模块导入的库，不独立使用 |
-|| [🔧 Tool Scripts](#三-tool-scripts-工具脚本) | 25 | 专项工具，非主流研究流程 |
-|| [🗑️ Obsolete](#四-obsolete-废弃) | 1 | 已废弃，不应使用 |
-|| **合计** | **72** | |
-| **v0.1.0 新增** | **10 个计量模块** | Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR-DCC-GARCH / 生存分析 / 因果森林 / 面板协整 |
+| 分类 | 数量 | 说明 |
+|------|------|------|
+| 🚀 Entry Points (`scripts/*.py`) | 100 | 顶级入口脚本（含 CLI） |
+| 📦 Core Modules (`scripts/core/`) | 94 | 核心库（被其他模块导入）|
+| 📊 Research Framework (`scripts/research_framework/`) | 47 | 计量方法模块 |
+| 🧭 Research Directions (`scripts/research_directions/`) | 12 | 研究方向领域 |
+| 🧪 Tests (`tests/`) | 113 | 测试文件 |
+| 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
+| **合计（仅 Python 文件）** | **366** | 不含 MCP / docs / tests fixtures |
 
-> **快速导航**: 如果不确定一个脚本的用途，先查这里。
-> 如果脚本不在 Entry Points 列表中，它通常是被其他脚本导入使用的。
-
+> 自动生成于 2026-06-28
 ---
 
 ## 一、Entry Points · 用户入口
@@ -217,4 +216,4 @@ report_*.py           # 报告生成（小写下划线）
 
 ---
 
-*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-06-13（v0.1.0 新增7个计量模块：Panel VAR / 离散选择 / GARCH波动率 / TVP-VAR/DCC-GARCH / 生存分析 / 因果森林 / 面板协整）*
+*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-06-28（自动对账）

@@ -65,7 +65,7 @@ pytest tests/ -v
 
 ### 数据获取（MCP，43个服务器目录）
 
-> **重要说明**：43个MCP目录中，约15个完全免费（无需API Key），其余需要付费/机构账号。详见 `python scripts/count_assets.py`。
+> **重要说明**：43个MCP目录中，28个完全免费（无需API Key），12个需要API Key，3个为 opt-in 法律风险。详见 `python scripts/count_assets.py`。
 
 | 你要什么 | 用这个 MCP |
 |---------|-----------|

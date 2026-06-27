@@ -2,7 +2,7 @@
 
 > **Describe your research topic → receive a submission-ready LaTeX draft.**
 >
-> An AI-assisted research workflow for economic and financial research — from idea to LaTeX manuscript draft. Integrates 43 MCP data source directories (note: ~15 are fully free, others require institutional/paid accounts; some have stub implementations), modern causal inference (DID/IV/RDD/PSM/GMM, see dependency notes), LaTeX formatting for 30 journal templates (English/Chinese/Japanese/German), and AI-assisted review loops.
+> An AI-assisted research workflow for economic and financial research — from idea to LaTeX manuscript draft. Integrates 43 MCP data source directories (note: ~28 are fully free, 12 require API keys, 3 are opt-in legal-risk; see `python scripts/count_assets.py`), modern causal inference (DID/IV/RDD/PSM/GMM, see dependency notes), LaTeX formatting for 30 journal templates (English/Chinese/Japanese/German), and AI-assisted review loops.
 >
 > ⚠️ **Important**: This tool generates manuscript drafts that require human review before submission. All causal identification strategies, statistical results, and citations must be verified by a researcher.
 >
@@ -41,7 +41,7 @@
 | **🩺 系统自检** | `python scripts/health_check.py --json` · 验证环境就绪 |
 | **Complete Chinese guide** | [使用指南.md](使用指南.md) · 完整的 13 章中文手册 |
 | **~20 econometric method implementations** | [使用指南.md - 实证分析方法](使用指南.md#8-实证分析方法) |
-| **43 MCP server directories** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源)；~15个完全免费 |
+| **43 MCP server directories** | [使用指南.md - MCP 数据源](使用指南.md#6-mcp-数据源)；28 个完全免费（其余 12 需 API Key，3 个 opt-in 法律风险）|
 | **18 AI Skills** | [knowledge/skills/](knowledge/skills/) |
 | **API reference** | [scripts/](scripts/) 目录下的每个模块都含 docstring 和类型注解 |
 | **Troubleshooting** | [使用指南.md - 常见问题](使用指南.md#13-常见问题) |
@@ -222,7 +222,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Feature | Description |
 |---------|-------------|
 | **Multi-Agent Pipeline** | Orchestrates 5 pipeline agents (outline → literature → plotting → writing → refinement) with optional HITL gates |
-| **43 MCP Data Servers** | 43 registered MCP servers; ~15 work without API keys (yfinance, akshare, World Bank, IMF, OECD, FRED, ArXiv, NBER, OpenAlex, SEC EDGAR, eastmoney); others need institutional/paid accounts (Tushare Pro, Wind, CSMAR, CEIC, EODHD) |
+| **43 MCP Data Servers** | 43 registered MCP servers; 28 work without API keys (yfinance, akshare, World Bank, IMF, OECD, FRED, ArXiv, NBER, OpenAlex, SEC EDGAR, eastmoney, etc.); 12 require API keys (Tushare Pro, Wind, CSMAR, CEIC, EODHD, etc.); 3 are opt-in legal-risk (CNKI, Wanfang, Chinese Literature). Run `python scripts/count_assets.py` for the latest breakdown. |
 | **~30 Econometric Methods** | DID (5 variants), RDD, synthetic control, panel GMM, spatial regression, IV/2SLS, causal ML, GARCH, survival analysis, panel cointegration — JF/JFE/RFS standard. Modern staggered DID (Callaway-Sant'Anna, Borusyak, Sun-Abraham) requires `pip install diff-in-diff2` |
 | **Provenance Tracking** | Full data lineage from raw API to final chart/table |
 | **HITL Gates** | Human-in-the-loop approval at critical pipeline stages |
@@ -295,7 +295,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 
 ## MCP Tools Overview
 
-> 43 servers total; ~15 work without API keys. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
+> 43 servers total: 28 work without API keys, 12 require API keys, 3 are opt-in legal-risk. See [MCP Tool Marketplace](docs/tutorials/04-mcp-marketplace.md) for the complete catalog.
 >
 > | Badge | Meaning |
 > |-------|---------|
@@ -593,7 +593,7 @@ flowchart TD
 | Feature | **FinAI Research Workflow** | [dowhy](https://github.com/py-why/dowhy) | [StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
 |---------|--------------------------|------------------------------------------|--------------------------------------|
 | **Domain** | Economic & financial research | Industrial causal inference | Causal inference toolkit |
-| **Data sources** | 43 MCP servers (A股/US/FRED/OECD; ~15 free) | None (import only) | None (import only) |
+| **Data sources** | 43 MCP servers (A股/US/FRED/OECD; 28 free + 12 API-key + 3 opt-in) | None (import only) | None (import only) |
 | **Econometric methods** | ~30 (DID/IV/RDD/GMM focus) | 0 (general framework) | 550+ (general) |
 | **Journal templates** | 45 (JF/JFE/RFS + 中文顶刊) | 0 | 0 |
 | **Chinese market** | ✅ Tushare/CSMAR/Wind | ❌ | ❌ |
