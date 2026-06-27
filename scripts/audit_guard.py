@@ -290,19 +290,21 @@ def check_6_numerical_tests_pass() -> CheckResult:
     )
 
 
-def check_7_demo_output_exists() -> CheckResult:
+def check_7_demo_output_exists() -> CheckResult:  # pragma: no cover
     """Audit claim: 'No demo PDFs in papers/'.
 
-    We check for tex/pdf files in papers/demo_outputs/.
+    Disabled 2026-06-28 by user decision:
+    - User removed papers/demo_outputs/ in commit 0872901
+      (用户观点："当前留存只有负面影响")
+    - Check 7 conflicted with that decision
+    - Kept function as no-op stub so other code that imports it doesn't break
     """
-    demo_dir = PROJECT_ROOT / "papers" / "demo_outputs"
-    if not demo_dir.exists():
-        return CheckResult(
-            passed=False,
-            actual="demo_outputs/ missing",
-            expected="directory exists",
-            evidence=[],
-        )
+    return CheckResult(
+        passed=True,
+        actual="disabled (user decision 2026-06-28)",
+        expected="N/A",
+        evidence=[],
+    )
     tex_files = list(demo_dir.glob("*.tex"))
     pdf_files = list(demo_dir.glob("*.pdf"))
     evidence = [f"  .tex files: {len(tex_files)}", f"  .pdf files: {len(pdf_files)}"]
@@ -491,8 +493,8 @@ CHECKS: list[AuditCheck] = [
     ),
     AuditCheck(
         7,
-        "Demo outputs present",
-        "Verify papers/demo_outputs/ has end-to-end demo artifacts",
+        "Demo outputs present (DISABLED — see check_7_demo_output_exists docstring)",
+        "Disabled by user decision 2026-06-28 (audit_2026-06-28, Commit 0872901 删除了 demo_outputs/)",
         check_7_demo_output_exists,
     ),
     AuditCheck(

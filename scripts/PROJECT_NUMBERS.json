@@ -50,11 +50,22 @@
       "percent": 66.0
     },
     "zero_test_modules": [
-      "Triple Diff",
-      "Local Projections",
-      "Mediation",
-      "KOB Decomposition",
-      "Vuong Test"
+      "a_share_firm_controls",
+      "a_share_variables",
+      "base",
+      "causal_ml",
+      "china_carbon_events",
+      "china_policy_events",
+      "data_validator",
+      "diagnostic_reporter",
+      "enhanced_pipeline",
+      "green_bond_model",
+      "mediation",
+      "moderation",
+      "options_iv_surface",
+      "pipeline",
+      "policy_database",
+      "vuong_kob"
     ],
     "note": "Smoke tests for all 47 modules committed 2026-06-27. Some modules still need deeper numerical tests."
   },
@@ -103,8 +114,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 117,
-    "test_functions": 386,
+    "test_files": 118,
+    "test_functions": 393,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 15,
     "ci_coverage_target": 30,

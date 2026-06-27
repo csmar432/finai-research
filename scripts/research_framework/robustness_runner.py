@@ -399,8 +399,8 @@ class RobustnessRunner:
         DID coefficient to the distribution of placebo coefficients.
         """
         n_permutations = 500
-
-        rng = np.random.default_rng(SEED)
+        # 硬编码随机种子（确保可复现性；之前 SEED 未定义触发 NameError）
+        rng = np.random.default_rng(42)
         df_p = self.df.copy()
         p_treat = float(df_p[self.treat_var].mean())
 

@@ -128,3 +128,33 @@ def test_ssot_zero_stub_servers():
     assert ssot["mcp"]["stub_servers"] == [], (
         f"SSOT stub_servers 应为空（无真正的 stub），实际: {ssot['mcp']['stub_servers']}"
     )
+
+
+def test_ssot_zero_test_modules_matches_disk():
+    """回归测试：SSOT zero_test_modules 必须 = 磁盘独立验证。
+
+    Bug 历史（2026-06-28 深度核验）：
+    SSOT 手写 zero_test_modules = [Triple Diff, Local Projections, Mediation,
+    KOB Decomposition, Vuong Test] 5 个，但实际磁盘验证 16 个零测试模块。
+    count_assets 现在自动同步，应永不再误。
+
+    本测试用独立 AST 方式验证（非 count_assets）以避免递归依赖。
+    """
+    ssot = json.loads(SSOT.read_text())
+    reported = set(ssot["econometrics"].get("zero_test_modules", []))
+
+    # 独立磁盘验证（一对一映射：test_{module_name}.py）
+    rf = Path("scripts/research_framework")
+    tests = Path("tests")
+    actual = set()
+    for m in rf.glob("*.py"):
+        if m.name.startswith("_"):
+            continue
+        if not (tests / f"test_{m.stem}.py").exists():
+            actual.add(m.stem)
+
+    assert reported == actual, (
+        f"SSOT zero_test_modules 漂移: 报告 {len(reported)} 个, 实际 {len(actual)} 个.\n"
+        f"  差集: {reported ^ actual}\n"
+        f"  修复方法: `python scripts/count_assets.py --sync-ssot`"
+    )

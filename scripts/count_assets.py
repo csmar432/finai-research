@@ -131,11 +131,16 @@ def count_test_files() -> dict[str, int]:
 
 
 def count_modules_with_tests(rf_count: int) -> dict[str, int]:
-    """统计 research_framework 中有/无独立测试的模块数。"""
+    """统计 research_framework 中有/无独立测试的模块数。
+
+    Returns: {"with_tests": int, "without_tests": int, "total": int,
+              "modules_without_tests": list[str]}  # 新增：模块名列表
+    """
     rf = PROJECT_ROOT / "scripts" / "research_framework"
     tests = PROJECT_ROOT / "tests"
     with_test = 0
     without_test = 0
+    modules_without_tests: list[str] = []
     for m in rf.glob("*.py"):
         if m.name.startswith("_"):
             continue
@@ -145,7 +150,13 @@ def count_modules_with_tests(rf_count: int) -> dict[str, int]:
             with_test += 1
         else:
             without_test += 1
-    return {"with_tests": with_test, "without_tests": without_test, "total": rf_count}
+            modules_without_tests.append(module_name)
+    return {
+        "with_tests": with_test,
+        "without_tests": without_test,
+        "total": rf_count,
+        "modules_without_tests": sorted(modules_without_tests),
+    }
 
 
 def count_all() -> dict:
@@ -220,6 +231,9 @@ def sync_ssot() -> int:
     ssot["econometrics"]["total_method_modules"] = stats["econometric_methods"]
     ssot["econometrics"]["test_coverage"]["modules_with_tests"] = cov["with_tests"]
     ssot["econometrics"]["test_coverage"]["modules_total"] = cov["total"]
+    # 自动维护 zero_test_modules（之前是手写列表，经常过时）
+    if "modules_without_tests" in cov:
+        ssot["econometrics"]["zero_test_modules"] = cov["modules_without_tests"]
 
     ssot["testing"]["test_files"] = tests["files"]
     ssot["testing"]["test_functions"] = tests["test_functions"]
