@@ -54,7 +54,7 @@ pytest tests/ -v
         ↓
 ⑤ 等待研究方向 → 用户描述 → 开始研究
         ↓
-⑥ 推荐入口：python scripts/start_research.py --topic "..."（5轮NORA澄清）
+⑥ 推荐入口：python scripts/start_research.py --topic "..."（5 轮渐进式澄清）
 ```
 
 **第一步问候是强制要求**，不要跳过。直接开始工作会显得突兀。
@@ -355,7 +355,7 @@ Skill: fin-full-pipeline
 
 ## 参考架构
 
-- [Night Owl Research Agent (NORA)](https://github.com/GRIND-Lab-Core/night_owl_research_agent)
+- [Night Owl Research Agent (NORA)](https://github.com/GRIND-Lab-Core/night_owl_research_agent) — 5 轮交互式澄清模式的设计参考（2026-06-27 命名重命名后已无 NORA 标识符）
 - [PaperOrchestra (Google)](https://github.com/google-research/paper-orchestra)
 - [ARK (KAUST)](https://github.com/kaust-ark/ARK)
 - [Qiongli (穷理)](https://github.com/jxpeng98/qiongli)

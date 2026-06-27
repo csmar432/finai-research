@@ -465,7 +465,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Acknowledgments
 
-- Built on [Night Owl Research Agent (NORA)](https://github.com/GRIND-Lab-Core/night_owl_research_agent) design patterns
+- 5 轮交互式澄清模式参考 [Night Owl Research Agent](https://github.com/GRIND-Lab-Core/night_owl_research_agent) 设计（2026-06-27 命名已重命名）
 - Inspired by [PaperOrchestra](https://github.com/google-research/paper-orchestra) multi-agent architecture
 - Data powered by akshare, yfinance, World Bank API, and Tushare Pro
 

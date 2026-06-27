@@ -9,11 +9,11 @@
   - 每个因变量/自变量至少 3 个候选测度
   - 每个控制变量至少 2 个候选测度
   - 调用文献 API 自动补充（不依赖用户手动定义）
-  - 产物：候选变量清单写入 output/.nora_session/redundant_variables.json
+  - 产物：候选变量清单写入 output/.clarify_session/redundant_variables.json
 
 使用：
   from scripts.core.variable_redundancy import VariableRedundancyResolver
-  resolver = VariableRedundancyResolver(output_dir="output/.nora_session")
+  resolver = VariableRedundancyResolver(output_dir="output/.clarify_session")
   candidates = resolver.resolve(profile)   # ResearchProfile
   candidates = resolver.resolve_by_topic("碳排放权交易 绿色创新 DID")
 """
@@ -33,7 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from scripts.core.nora_orchestrator import (
+from scripts.core.progressive_clarifier import (
     ResearchProfile,
     VariableCandidate,
     VariableSet,
@@ -191,7 +191,7 @@ class VariableRedundancyResolver:
     MIN_POLICY = 1
 
     def __init__(self, output_dir: Path | str | None = None):
-        self.output_dir = Path(output_dir) if output_dir else Path("output/.nora_session")
+        self.output_dir = Path(output_dir) if output_dir else Path("output/.clarify_session")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self._templates = _VARIABLE_TEMPLATES
 
@@ -337,7 +337,7 @@ class VariableRedundancyResolver:
 
         if not report.has_minimum_redundancy:
             print("\n  ⚠️  警告：部分变量类别未达到最小冗余阈值。")
-            print("  💡 建议：请在 NORA 澄清的 VARIABLES 阶段补充更多变量，")
+            print("  💡 建议：请在 5 轮澄清的 VARIABLES 阶段补充更多变量，")
             print("     或在文献综述后由 VariableRedundancyResolver 补充。")
 
         return report

@@ -10,7 +10,7 @@
 使用：
   from scripts.core.data_gate import DataGate, DataGateResult
 
-  gate = DataGate(session_dir="output/.nora_session")
+  gate = DataGate(session_dir="output/.clarify_session")
   result = gate.check()          # 检查数据是否完成
   if not result.is_ready:
       print(result.block_message)  # 打印阻止原因
@@ -100,7 +100,7 @@ class DataGate:
     在论文写作阶段前强制验证真实数据已完成。
 
     工作流程：
-      1. 检查 session_dir/.nora_session/session_state.json 存在（NORA 完成标志）
+      1. 检查 session_dir/.clarify_session/session_state.json 存在（澄清流程完成标志）
       2. 检查 session_dir/redundant_variables.json 存在（变量清单）
       3. 检查 session_dir/data_manifest.json 存在（数据获取清单）
       4. 检查 session_dir/data/ 目录有真实数据文件（非 mock）
@@ -113,7 +113,7 @@ class DataGate:
 
     # 数据就绪必须满足的最小文件
     REQUIRED_GATE_FILES = [
-        "session_state.json",         # NORA 会话完成
+        "session_state.json",         # 澄清会话完成
         "redundant_variables.json",   # 变量冗余清单
     ]
 
@@ -129,7 +129,7 @@ class DataGate:
         session_dir: Path | str | None = None,
         level: DataGateLevel = DataGateLevel.PROVENANCE,
     ):
-        self.session_dir = Path(session_dir) if session_dir else Path("output/.nora_session")
+        self.session_dir = Path(session_dir) if session_dir else Path("output/.clarify_session")
         self.level = level
         self.gate_file = self.session_dir / "gate.json"
         self.blocked_file = self.session_dir / "blocked.json"
@@ -142,9 +142,9 @@ class DataGate:
         provenance_ids: list[str] = []
         mock_ratio = 0.0
 
-        # 1. NORA 会话完成
+        # 1. 澄清会话完成
         if not (self.session_dir / "session_state.json").exists():
-            missing.append("NORA 会话未完成（session_state.json 不存在）")
+            missing.append("澄清会话未完成（session_state.json 不存在）")
 
         # 2. 变量冗余清单
         var_file = self.session_dir / "redundant_variables.json"
@@ -303,7 +303,7 @@ class DataGate:
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="数据验证门控")
-    parser.add_argument("--session-dir", default="output/.nora_session", help="会话目录")
+    parser.add_argument("--session-dir", default="output/.clarify_session", help="会话目录")
     parser.add_argument("--level", default="provenance",
                        choices=["none", "checkpoint", "provenance", "full"],
                        help="验证严格程度")

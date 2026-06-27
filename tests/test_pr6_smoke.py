@@ -11,18 +11,18 @@ from pathlib import Path
 import pytest
 
 
-# ─── PR1: NORA ────────────────────────────────────────────────────────────────
+# ─── PR1: 5 轮 ────────────────────────────────────────────────────────────────
 
 
-def test_pr1_nora_orchestrator_import():
-    from scripts.core.nora_orchestrator import (
-        NoraOrchestrator,
-        NoraStage,
+def test_pr1_progressive_clarifier_import():
+    from scripts.core.progressive_clarifier import (
+        ProgressiveClarifier,
+        ClarificationStage,
         ResearchProfile,
         VariableCandidate,
     )
-    assert NoraOrchestrator is not None
-    assert NoraStage.QUESTION_TYPE.value == "question_type"
+    assert ProgressiveClarifier is not None
+    assert ClarificationStage.QUESTION_TYPE.value == "question_type"
     profile = ResearchProfile(topic="test")
     assert hasattr(profile, "locked_at")
 
@@ -32,7 +32,7 @@ def test_pr1_nora_orchestrator_import():
 
 def test_pr2_variable_redundancy_resolver():
     from scripts.core.variable_redundancy import VariableRedundancyResolver
-    from scripts.core.nora_orchestrator import ResearchProfile
+    from scripts.core.progressive_clarifier import ResearchProfile
 
     profile = ResearchProfile(topic="碳排放权交易对绿色创新的影响", identification="DID")
     resolver = VariableRedundancyResolver(output_dir=Path("/tmp/pr6_test"))
@@ -148,7 +148,7 @@ def test_pr6_startup_check_script_exists():
 
 
 def test_full_flow_nora_to_datagate():
-    """端到端：NORA 完成 → 变量冗余 → DataGate 通过。"""
+    """端到端：5 轮 完成 → 变量冗余 → DataGate 通过。"""
     import json
     from pathlib import Path
     import tempfile
@@ -156,7 +156,7 @@ def test_full_flow_nora_to_datagate():
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
 
-        # 1. NORA 完成
+        # 1. 5 轮 完成
         (tmp_path / "session_state.json").write_text(json.dumps({
             "topic": "数字金融对创新的影响",
             "current_stage": "venue",

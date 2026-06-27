@@ -84,7 +84,7 @@ def test_start_research_imports_pr1_pr2_pr5():
     """PR1/PR2/PR5 集成测试：start_research.py 正确导入所有 PR 模块。"""
     import scripts.start_research as sr
 
-    assert hasattr(sr, "NoraOrchestrator")
+    assert hasattr(sr, "ProgressiveClarifier")
     assert hasattr(sr, "VariableRedundancyResolver")
     assert hasattr(sr, "DataGate")
     assert hasattr(sr, "DataGateLevel")
@@ -101,7 +101,7 @@ def test_start_research_cli_help_works():
         cwd=str(PROJECT_ROOT),
     )
     assert result.returncode == 0, f"--help 失败: {result.stderr}"
-    assert "NORA" in result.stdout or "research" in result.stdout.lower()
+    assert "主题澄清" in result.stdout or "research" in result.stdout.lower()
 
 
 def test_startup_check_cli_works():
@@ -116,4 +116,93 @@ def test_startup_check_cli_works():
     assert "Traceback" not in result.stderr or result.returncode == 0, (
         f"startup_check.py 崩溃: {result.stderr[:500]}"
     )
+
+
+# ─── Naming consistency (rename audit 2026-06-27) ───────────────────────────
+
+
+def test_no_nora_identifiers_in_core_modules():
+    """回归测试：核心模块的代码标识符中不应残留 NORA 协议名。
+
+    Renamed to ProgressiveClarifier on 2026-06-27 to avoid confusion with
+    the Night Owl Research Agent (NORA) protocol.
+
+    方法：使用 AST 解析 Python 文件，提取所有 Name 节点 + 字符串字面量，
+    检查是否含 NORA 标识符。docstring 是 string 节点，单独放过（允许
+    在模块 docstring 中说明重命名历史）。
+    """
+    import ast
+    import re
+
+    forbidden_identifiers = {
+        "NoraOrchestrator", "NoraState", "NoraStage",
+        "nora_session", "nora_orchestrator",
+    }
+
+    files_to_check = [
+        PROJECT_ROOT / "scripts" / "core" / "progressive_clarifier.py",
+        PROJECT_ROOT / "scripts" / "core" / "data_gate.py",
+        PROJECT_ROOT / "scripts" / "core" / "variable_redundancy.py",
+        PROJECT_ROOT / "scripts" / "core" / "did_audit_guard.py",
+        PROJECT_ROOT / "scripts" / "start_research.py",
+    ]
+
+    violations = []
+    for f in files_to_check:
+        if not f.exists():
+            continue
+        content = f.read_text()
+        try:
+            tree = ast.parse(content)
+        except SyntaxError as e:
+            violations.append(f"{f.name}: SYNTAX ERROR: {e}")
+            continue
+
+        # 提取所有 Name 节点（标识符）
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name) and node.id in forbidden_identifiers:
+                violations.append(
+                    f"{f.name}:L{node.lineno}: Name '{node.id}'"
+                )
+            elif isinstance(node, ast.Attribute) and node.attr in forbidden_identifiers:
+                violations.append(
+                    f"{f.name}:L{node.lineno}: Attribute '{node.attr}'"
+                )
+            elif isinstance(node, ast.arg) and node.arg in forbidden_identifiers:
+                violations.append(
+                    f"{f.name}:L{node.lineno}: Arg '{node.arg}'"
+                )
+
+        # 检查字符串字面量（除 docstring）是否含 nora_session / NORA
+        # docstring 是 module/body 第一个 Expr(Constant(str))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                # 检查是否含 .nora_session 路径
+                if ".nora_session" in node.value or "output/.nora_session" in node.value:
+                    violations.append(
+                        f"{f.name}:L{node.lineno}: path '.nora_session'"
+                    )
+
+    assert len(violations) == 0, (
+        f"NORA 标识符残留（应改为 ProgressiveClarifier 等）:\n"
+        + "\n".join(violations[:10])
+    )
+
+
+def test_progressive_clarifier_is_aliased_correctly():
+    """回归测试：start_research.py 必须使用新名 ProgressiveClarifier。"""
+    import scripts.start_research as sr
+
+    # 必须能导入新类
+    assert hasattr(sr, "ProgressiveClarifier")
+    assert not hasattr(sr, "NoraOrchestrator"), "旧名 NoraOrchestrator 不应再暴露"
+
+
+def test_data_gate_default_dir_is_clarify_session():
+    """回归测试：DataGate 默认目录应为 .clarify_session/，不再 .nora_session/。"""
+    from scripts.core.data_gate import DataGate
+
+    gate = DataGate()  # 使用默认目录
+    assert ".clarify_session" in str(gate.session_dir)
+    assert ".nora_session" not in str(gate.session_dir)
 

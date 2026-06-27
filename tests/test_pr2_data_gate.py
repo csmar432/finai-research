@@ -17,7 +17,7 @@ from scripts.core.data_gate import (
     DataGateResult,
     RealDataError,
 )
-from scripts.core.nora_orchestrator import (
+from scripts.core.progressive_clarifier import (
     ResearchProfile,
     VariableCandidate,
     VariableSet,
@@ -149,9 +149,9 @@ def test_data_gate_missing_session_fails(tmp_path):
     assert any("session_state.json" in m for m in result.missing)
 
 
-def test_data_gate_with_nora_session_ready(tmp_path):
+def test_data_gate_with_clarify_session_ready(tmp_path):
     """session_state.json + redundant_variables.json 存在 → 就绪。"""
-    # 模拟 NORA 完成
+    # 模拟 5 轮 完成
     (tmp_path / "session_state.json").write_text(json.dumps({
         "topic": "test",
         "current_stage": "venue",
@@ -250,12 +250,12 @@ def test_is_pipeline_blocked(tmp_path):
     assert DataGate.is_pipeline_blocked(tmp_path) is True
 
 
-# ─── Integration: NORA + VariableRedundancy + DataGate ────────────────────────
+# ─── Integration: 5 轮 + VariableRedundancy + DataGate ────────────────────────
 
 
 def test_full_pipeline_nora_to_datagate(tmp_path):
-    """端到端：NORA 完成 → 变量冗余解析 → DataGate 通过。"""
-    # 1. NORA 完成
+    """端到端：5 轮 完成 → 变量冗余解析 → DataGate 通过。"""
+    # 1. 5 轮 完成
     (tmp_path / "session_state.json").write_text(json.dumps({
         "topic": "数字金融对中小企业创新的影响",
         "current_stage": "venue",

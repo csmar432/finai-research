@@ -1,36 +1,40 @@
-"""NORA-style Interactive Theme Clarifier (PR1, Audit 2026-06-27).
+"""Progressive Theme Clarifier (audit-fix-2026-06-27, rename from NORA-style).
 
-参考 night_owl_research_agent (NORA) 的逐步引导设计：
-  https://github.com/GRIND-Lab-Core/night_owl_research_agent
-
-把"输入主题 → 直接跑"改造为"主题 → 5 轮澄清 → 锁定研究画像 → 进入流水线"。
+5 轮渐进式主题澄清器：把"输入主题 → 直接跑"改造为
+"主题 → 5 轮逐步澄清 → 锁定研究画像 → 进入流水线"。
 
 解决问题：
-  #1 主题确认不够细致，没有 NORA 那种逐步机制
+  #1 主题确认不够细致，没有逐步机制
   #2 出大纲后应该及时和用户同步
   #10 生成文章悄悄用合成数据，没征询意见（每轮产物落盘，必须 ack）
 
+历史说明（2026-06-27 命名修正）：
+  本模块最初参考 night_owl_research_agent (NORA) 的 5 轮交互式主题澄清
+  模式，但所有代码均独立实现。为避免与 NORA 项目的命名混淆，已将原
+  `NoraOrchestrator` / `NoraState` / `NoraStage` 等标识符重命名为功能性
+  名称：`ProgressiveClarifier` / `ClarificationState` / `ClarificationStage`。
+
 使用：
   CLI 模式（阻塞 input）：
-    python scripts/core/nora_orchestrator.py --topic "碳排放权交易对绿色创新的影响"
+    python scripts/core/progressive_clarifier.py --topic "碳排放权交易对绿色创新的影响"
   编程模式（AI agent 上下文）：
-    from scripts.core.nora_orchestrator import NoraOrchestrator
-    orch = NoraOrchestrator(auto_ack=False)
-    state = orch.start(topic="...")
+    from scripts.core.progressive_clarifier import ProgressiveClarifier
+    clarifier = ProgressiveClarifier(auto_ack=False)
+    state = clarifier.start(topic="...")
     while not state.is_complete:
-        question, options = orch.next_question(state)
+        question, options = clarifier.next_question(state)
         # 把 question 展示给用户；收到回复后：
-        orch.submit_answer(state, answer)
-        state = orch.advance(state)
+        clarifier.submit_answer(state, answer)
+        state = clarifier.advance(state)
 """
 
 from __future__ import annotations
 
 __all__ = [
-    "NoraState",
-    "NoraStage",
+    "ClarificationState",
+    "ClarificationStage",
     "ResearchProfile",
-    "NoraOrchestrator",
+    "ProgressiveClarifier",
     "VariableCandidate",
 ]
 
@@ -48,8 +52,8 @@ logger = logging.getLogger(__name__)
 # ─── Stage Definitions ────────────────────────────────────────────────────────
 
 
-class NoraStage(Enum):
-    """NORA 5 轮澄清的固定阶段。"""
+class ClarificationStage(Enum):
+    """5 轮澄清的固定阶段。"""
     INTAKE = "intake"                  # 接收原始主题
     QUESTION_TYPE = "question_type"    # 实证 / 综述 / 理论
     IDENTIFICATION = "identification"  # 识别策略（DID/IV/RDD/PSM/其他）
@@ -58,21 +62,22 @@ class NoraStage(Enum):
     VENUE = "venue"                    # 目标期刊
 
 
-# 5 轮问题的固定 prompt 模板（NORA 风格：每轮只问一件事）
-_STAGE_QUESTIONS: dict[NoraStage, str] = {
-    NoraStage.QUESTION_TYPE: "这份研究主要是哪一种？\n  1) 实证研究（用数据检验因果/相关）\n  2) 文献综述（系统性梳理文献）\n  3) 理论研究（理论模型/数学推导）",
-    NoraStage.IDENTIFICATION: "你倾向用什么识别策略？\n  1) 双重差分 DID（含 PSM-DID / 现代 DID）\n  2) 工具变量 IV / 2SLS\n  3) 断点回归 RDD\n  4) 倾向得分匹配 PSM\n  5) 面板 GMM / 固定效应\n  6) 局部投影 LP / 事件研究\n  7) 综合运用多种方法（推荐：DID 为主 + 多种稳健性）",
-    NoraStage.SAMPLE: "样本窗口和范围是什么？\n  例如：\n   - 2010-2022 中国 A 股上市公司\n   - 2015-2020 美国 S&P 500\n   - 2008-2019 中国省级面板\n  （请给出起止年份 + 国家/地区 + 数据粒度：公司/省级/国家级/家庭）",
-    NoraStage.VARIABLES: "你已经定义好的变量是什么？（如未确定，可以只填因变量，其他留空，我会在文献检索后给候选）\n  - 因变量 Y：\n  - 核心解释变量 X：\n  - 政策/事件虚拟变量：\n  - 至少 3 个控制变量：\n  （说明：文献综述阶段会自动补充更多候选变量，确保稳健性检验时可替换）",
-    NoraStage.VENUE: "目标期刊/投稿方向是？\n  1) 中文顶刊：经济研究 / 金融研究 / 管理世界 / 会计研究\n  2) 英� SSCI：JF / JFE / RFS / JAE / JPE\n  3) 一般 SSCI： Emerging Markets Review / China Economic Review\n  4) 暂无偏好（我会按数据可行性推荐）",
+# 5 轮问题的固定 prompt 模板（每轮只问一件事）
+_STAGE_QUESTIONS: dict[ClarificationStage, str] = {
+    ClarificationStage.QUESTION_TYPE: "这份研究主要是哪一种？\n  1) 实证研究（用数据检验因果/相关）\n  2) 文献综述（系统性梳理文献）\n  3) 理论研究（理论模型/数学推导）",
+    ClarificationStage.IDENTIFICATION: "你倾向用什么识别策略？\n  1) 双重差分 DID（含 PSM-DID / 现代 DID）\n  2) 工具变量 IV / 2SLS\n  3) 断点回归 RDD\n  4) 倾向得分匹配 PSM\n  5) 面板 GMM / 固定效应\n  6) 局部投影 LP / 事件研究\n  7) 综合运用多种方法（推荐：DID 为主 + 多种稳健性）",
+    ClarificationStage.SAMPLE: "样本窗口和范围是什么？\n  例如：\n   - 2010-2022 中国 A 股上市公司\n   - 2015-2020 美国 S&P 500\n   - 2008-2019 中国省级面板\n  （请给出起止年份 + 国家/地区 + 数据粒度：公司/省级/国家级/家庭）",
+    ClarificationStage.VARIABLES: "你已经定义好的变量是什么？（如未确定，可以只填因变量，其他留空，我会在文献检索后给候选）\n  - 因变量 Y：\n  - 核心解释变量 X：\n  - 政策/事件虚拟变量：\n  - 至少 3 个控制变量：\n  （说明：文献综述阶段会自动补充更多候选变量，确保稳健性检验时可替换）",
+    ClarificationStage.VENUE: "目标期刊/投稿方向是？\n  1) 中文顶刊：经济研究 / 金融研究 / 管理世界 / 会计研究\n  2) 英文 SSCI：JF / JFE / RFS / JAE / JPE\n  3) 一般 SSCI： Emerging Markets Review / China Economic Review\n  4) 暂无偏好（我会按数据可行性推荐）",
 }
 
+
 _STAGE_TO_ACK_FILE = {
-    NoraStage.QUESTION_TYPE: "01_question_type.json",
-    NoraStage.IDENTIFICATION: "02_identification.json",
-    NoraStage.SAMPLE: "03_sample.json",
-    NoraStage.VARIABLES: "04_variables.json",
-    NoraStage.VENUE: "05_venue.json",
+    ClarificationStage.QUESTION_TYPE: "01_question_type.json",
+    ClarificationStage.IDENTIFICATION: "02_identification.json",
+    ClarificationStage.SAMPLE: "03_sample.json",
+    ClarificationStage.VARIABLES: "04_variables.json",
+    ClarificationStage.VENUE: "05_venue.json",
 }
 
 
@@ -81,7 +86,7 @@ _STAGE_TO_ACK_FILE = {
 
 @dataclass
 class VariableCandidate:
-    """单个变量的多个备选测度，用于 PR2 解决 #3 数据冗余。"""
+    """单个变量的多个备选测度，用于解决数据冗余问题。"""
     name: str                       # 人类可读名，如 "TFP_OP"
     formula: str                    # 公式描述，如 "OP method (Olley-Pakes 1996)"
     data_source_hint: str           # 数据源提示，如 "Tushare income/asset/employee"
@@ -102,7 +107,7 @@ class VariableSet:
 
 @dataclass
 class ResearchProfile:
-    """NORA 5 轮澄清完成后产出的研究画像。"""
+    """5 轮澄清完成后产出的研究画像。"""
     topic: str
     question_type: str = ""             # "empirical" | "review" | "theoretical"
     identification: str = ""            # "DID" | "IV" | "RDD" | "PSM" | "FE" | "LP" | "multi"
@@ -119,10 +124,10 @@ class ResearchProfile:
 
 
 @dataclass
-class NoraState:
+class ClarificationState:
     """澄清流程的当前状态。"""
     topic: str
-    current_stage: NoraStage = NoraStage.QUESTION_TYPE
+    current_stage: ClarificationStage = ClarificationStage.QUESTION_TYPE
     answers: dict[str, str] = field(default_factory=dict)
     history: list[dict[str, Any]] = field(default_factory=list)
     profile: ResearchProfile | None = None
@@ -136,22 +141,22 @@ class NoraState:
 
     @property
     def progress_pct(self) -> float:
-        stages = list(NoraStage)
+        stages = list(ClarificationStage)
         # INTAKE 不是问题阶段，所以从 QUESTION_TYPE 开始计数
-        question_stages = [s for s in stages if s != NoraStage.INTAKE]
+        question_stages = [s for s in stages if s != ClarificationStage.INTAKE]
         answered = sum(1 for s in question_stages if s.value in self.answers)
         return round(100.0 * answered / len(question_stages), 1)
 
 
-# ─── Orchestrator ────────────────────────────────────────────────────────────
+# ─── Clarifier ────────────────────────────────────────────────────────────────
 
 
-class NoraOrchestrator:
-    """NORA 风格主题澄清器。
+class ProgressiveClarifier:
+    """5 轮渐进式主题澄清器。
 
     设计要点：
       1. 5 轮逐步澄清（不一次性接收所有信息）
-      2. 每轮产物落盘到 output_dir/.nora_session/XX_*.json
+      2. 每轮产物落盘到 output_dir/.clarify_session/XX_*.json
       3. 强制 ack：不调用 submit_answer()，禁止 advance()
       4. 同步：每轮问完，CLI 调用 input()；AI agent 模式下返回 InteractionResult
     """
@@ -165,34 +170,34 @@ class NoraOrchestrator:
         """初始化。
 
         Args:
-            output_dir: 产物落盘目录，默认 output/.nora_session/
+            output_dir: 产物落盘目录，默认 output/.clarify_session/
             auto_ack: 仅用于测试；生产必须 False（强制用户确认）
             cli_mode: True 阻塞 input；False 返回 InteractionResult
         """
-        self.output_dir = Path(output_dir) if output_dir else Path("output/.nora_session")
+        self.output_dir = Path(output_dir) if output_dir else Path("output/.clarify_session")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.auto_ack = auto_ack
         self.cli_mode = cli_mode
-        logger.info("NoraOrchestrator initialized: output_dir=%s cli_mode=%s",
+        logger.info("ProgressiveClarifier initialized: output_dir=%s cli_mode=%s",
                     self.output_dir, cli_mode)
 
     # ─── Lifecycle ─────────────────────────────────────────────────────────
 
-    def start(self, topic: str) -> NoraState:
+    def start(self, topic: str) -> ClarificationState:
         """接收主题，启动澄清流程。"""
         if not topic or not topic.strip():
             raise ValueError("Topic must be a non-empty string")
 
-        state = NoraState(
+        state = ClarificationState(
             topic=topic.strip(),
             output_dir=self.output_dir,
-            current_stage=NoraStage.QUESTION_TYPE,
+            current_stage=ClarificationStage.QUESTION_TYPE,
         )
         self._save_state(state)
-        logger.info("NORA session started: topic=%r, session_dir=%s", topic, self.output_dir)
+        logger.info("Clarification session started: topic=%r, session_dir=%s", topic, self.output_dir)
         return state
 
-    def next_question(self, state: NoraState) -> tuple[str, list[str]]:
+    def next_question(self, state: ClarificationState) -> tuple[str, list[str]]:
         """返回当前阶段的问题（CLI/AI agent 共用）。"""
         if state.is_complete:
             return ("研究画像已锁定，进入下一阶段（文献综述）。", [])
@@ -201,7 +206,7 @@ class NoraOrchestrator:
         options = self._extract_options(question)
         return (question, options)
 
-    def submit_answer(self, state: NoraState, answer: str) -> None:
+    def submit_answer(self, state: ClarificationState, answer: str) -> None:
         """提交当前阶段的答案。
 
         Args:
@@ -231,18 +236,18 @@ class NoraOrchestrator:
         self._save_state(state)
         logger.info("Stage %s answered", state.current_stage.value)
 
-    def advance(self, state: NoraState) -> NoraState:
+    def advance(self, state: ClarificationState) -> ClarificationState:
         """推进到下一阶段；若已到最后阶段，锁定研究画像。"""
         if state.is_complete:
             return state
 
         # 顺序：QUESTION_TYPE → IDENTIFICATION → SAMPLE → VARIABLES → VENUE → 锁定
         order = [
-            NoraStage.QUESTION_TYPE,
-            NoraStage.IDENTIFICATION,
-            NoraStage.SAMPLE,
-            NoraStage.VARIABLES,
-            NoraStage.VENUE,
+            ClarificationStage.QUESTION_TYPE,
+            ClarificationStage.IDENTIFICATION,
+            ClarificationStage.SAMPLE,
+            ClarificationStage.VARIABLES,
+            ClarificationStage.VENUE,
         ]
         try:
             idx = order.index(state.current_stage)
@@ -257,7 +262,7 @@ class NoraOrchestrator:
         self._save_state(state)
         return state
 
-    def rollback(self, state: NoraState, target_stage: NoraStage) -> NoraState:
+    def rollback(self, state: ClarificationState, target_stage: ClarificationStage) -> ClarificationState:
         """回退到指定阶段（用户要求修改答案时使用）。"""
         if state.is_complete:
             state.profile = None
@@ -266,11 +271,11 @@ class NoraOrchestrator:
         state.current_stage = target_stage
         # 清除之后阶段的答案
         order = [
-            NoraStage.QUESTION_TYPE,
-            NoraStage.IDENTIFICATION,
-            NoraStage.SAMPLE,
-            NoraStage.VARIABLES,
-            NoraStage.VENUE,
+            ClarificationStage.QUESTION_TYPE,
+            ClarificationStage.IDENTIFICATION,
+            ClarificationStage.SAMPLE,
+            ClarificationStage.VARIABLES,
+            ClarificationStage.VENUE,
         ]
         try:
             idx = order.index(target_stage)
@@ -300,7 +305,7 @@ class NoraOrchestrator:
         state = self.start(topic)
 
         print("\n" + "═" * 70)
-        print("  NORA 主题澄清（5 轮逐步引导）")
+        print("  主题澄清（5 轮逐步引导）")
         print("═" * 70)
         print(f"\n  📌 研究主题: {topic}")
         print(f"  📂 会话目录: {self.output_dir}")
@@ -345,7 +350,7 @@ class NoraOrchestrator:
 
     # ─── Persistence ───────────────────────────────────────────────────────
 
-    def _save_state(self, state: NoraState) -> None:
+    def _save_state(self, state: ClarificationState) -> None:
         """落盘当前状态（含每阶段答案）。"""
         state_file = self.output_dir / "session_state.json"
         state_dict = {
@@ -372,17 +377,17 @@ class NoraOrchestrator:
                     "ts": time.time(),
                 }, ensure_ascii=False, indent=2))
 
-    def resume(self, session_dir: Path) -> NoraState:
+    def resume(self, session_dir: Path) -> ClarificationState:
         """恢复已落盘的会话（支持断点续传）。"""
         state_file = Path(session_dir) / "session_state.json"
         if not state_file.exists():
             raise FileNotFoundError(f"No session at {state_file}")
 
         data = json.loads(state_file.read_text())
-        state = NoraState(
+        state = ClarificationState(
             topic=data["topic"],
             output_dir=Path(session_dir),
-            current_stage=NoraStage(data["current_stage"]),
+            current_stage=ClarificationStage(data["current_stage"]),
             answers=data.get("answers", {}),
             history=data.get("history", []),
             started_at=data.get("started_at", time.time()),
@@ -405,32 +410,32 @@ class NoraOrchestrator:
 
     # ─── Profile Building ──────────────────────────────────────────────────
 
-    def _build_profile(self, state: NoraState) -> ResearchProfile:
+    def _build_profile(self, state: ClarificationState) -> ResearchProfile:
         """从 5 轮答案构建研究画像。"""
         answers = state.answers
 
         # 解析样本窗口和地理范围
-        sample_text = answers.get(NoraStage.SAMPLE.value, "")
+        sample_text = answers.get(ClarificationStage.SAMPLE.value, "")
         sample_window = self._extract_year_range(sample_text)
         geography = self._extract_geography(sample_text)
         unit = self._extract_unit(sample_text)
 
         profile = ResearchProfile(
             topic=state.topic,
-            question_type=self._normalize_choice(answers.get(NoraStage.QUESTION_TYPE.value, ""), {
+            question_type=self._normalize_choice(answers.get(ClarificationStage.QUESTION_TYPE.value, ""), {
                 "1": "empirical", "2": "review", "3": "theoretical",
                 "实证": "empirical", "综述": "review", "理论": "theoretical",
             }, default="empirical"),
-            identification=self._normalize_choice(answers.get(NoraStage.IDENTIFICATION.value, ""), {
+            identification=self._normalize_choice(answers.get(ClarificationStage.IDENTIFICATION.value, ""), {
                 "1": "DID", "2": "IV", "3": "RDD", "4": "PSM", "5": "FE", "6": "LP", "7": "multi",
             }, default="multi"),
             sample_window=sample_window,
             geography=geography,
             unit=unit,
-            venue=self._normalize_choice(answers.get(NoraStage.VENUE.value, ""), {
+            venue=self._normalize_choice(answers.get(ClarificationStage.VENUE.value, ""), {
                 "1": "经济研究", "2": "JF", "3": "SSCI", "4": "auto",
             }, default="auto"),
-            variables=self._parse_variables(answers.get(NoraStage.VARIABLES.value, "")),
+            variables=self._parse_variables(answers.get(ClarificationStage.VARIABLES.value, "")),
             raw_answers=answers,
             locked_at=time.time(),
         )
@@ -440,7 +445,7 @@ class NoraOrchestrator:
         """从用户文本解析变量定义。
 
         简单启发式：按行匹配 "因变量 Y:" / "核心解释变量 X:" 等关键字。
-        若用户没明确给出，会生成空集（PR2 的 VariableRedundancyResolver 会从
+        若用户没明确给出，会生成空集（VariableRedundancyResolver 会从
         文献综述自动补充候选）。
         """
         import re
@@ -590,18 +595,18 @@ class NoraOrchestrator:
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="NORA 主题澄清器（5 轮逐步引导）")
+    parser = argparse.ArgumentParser(description="5 轮渐进式主题澄清器")
     parser.add_argument("--topic", required=True, help="研究主题")
     parser.add_argument("--output-dir", default=None, help="会话产物目录")
     parser.add_argument("--auto-ack", action="store_true", help="仅测试用，跳过用户确认")
     args = parser.parse_args()
 
-    orch = NoraOrchestrator(
+    clarifier = ProgressiveClarifier(
         output_dir=Path(args.output_dir) if args.output_dir else None,
         auto_ack=args.auto_ack,
         cli_mode=True,
     )
-    profile = orch.run_interactive(args.topic)
+    profile = clarifier.run_interactive(args.topic)
 
     # 输出最终画像 JSON
     output = {

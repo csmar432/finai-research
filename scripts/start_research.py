@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""NORA 风格统一研究入口 (PR1, Audit 2026-06-27).
+"""5 轮渐进式主题澄清 · 统一研究入口 (Audit 2026-06-27).
 
 解决问题：
-  #1 主题确认不够细致 → 5 轮 NORA 主题澄清
+  #1 主题确认不够细致 → 5 轮逐步澄清（ProgressiveClarifier）
   #2 出大纲后没同步 → 大纲门控（必须 ack）
   #10 生成文章没征询意见 → 整流为 gate-by-gate
 
@@ -13,11 +13,11 @@
     # 指定输出目录
     python scripts/start_research.py --topic "..." --output-dir ./research_001
 
-    # 跳过 NORA 澄清（不推荐，仅用于批处理）
-    python scripts/start_research.py --topic "..." --skip-nora
+    # 跳过澄清（不推荐，仅用于批处理）
+    python scripts/start_research.py --topic "..." --skip-clarify
 
     # 恢复上次会话（断点续传）
-    python scripts/start_research.py --resume --session-dir ./output/.nora_session/
+    python scripts/start_research.py --resume --session-dir ./output/.clarify_session/
 """
 
 from __future__ import annotations
@@ -34,8 +34,8 @@ _project_root = Path(__file__).parent.parent.resolve()
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from scripts.core.nora_orchestrator import (
-    NoraOrchestrator,
+from scripts.core.progressive_clarifier import (
+    ProgressiveClarifier,
     ResearchProfile,
 )
 from scripts.core.platform import PROJECT_ROOT
@@ -54,24 +54,24 @@ def _print_banner(msg: str, color: str = "36") -> None:
 
 
 def cmd_new_research(args) -> int:
-    """新建研究：NORA 5 轮澄清 → 研究画像 → 下一步。"""
+    """新建研究：5 轮逐步澄清 → 研究画像 → 下一步。"""
     topic = args.topic.strip()
     if not topic:
         print("❌ 主题不能为空")
         return 1
 
-    output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "output" / ".nora_session"
+    output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "output" / ".clarify_session"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    _print_banner("NORA 主题澄清 · 5 轮逐步引导")
+    _print_banner("主题澄清 · 5 轮逐步引导")
     print(f"  📌 主题: {topic}")
     print(f"  📂 会话目录: {output_dir}")
     print(f"  ⏱️  开始: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
-    # 1. NORA 澄清（强制 5 轮）
-    orch = NoraOrchestrator(output_dir=output_dir, auto_ack=False, cli_mode=True)
+    # 1. 5 轮澄清（强制 5 轮）
+    clarifier = ProgressiveClarifier(output_dir=output_dir, auto_ack=False, cli_mode=True)
     try:
-        profile = orch.run_interactive(topic)
+        profile = clarifier.run_interactive(topic)
     except KeyboardInterrupt:
         print("\n  ⚠️  会话中止（已保存部分答案，可恢复）")
         return 130
@@ -163,20 +163,20 @@ def cmd_new_research(args) -> int:
 
 
 def cmd_resume(args) -> int:
-    """恢复 NORA 会话。"""
+    """恢复 澄清会话。"""
     session_dir = Path(args.session_dir)
     if not session_dir.exists():
         print(f"❌ 会话目录不存在: {session_dir}")
         return 1
 
-    orch = NoraOrchestrator(output_dir=session_dir, auto_ack=False, cli_mode=True)
+    clarifier = ProgressiveClarifier(output_dir=session_dir, auto_ack=False, cli_mode=True)
     try:
-        state = orch.resume(session_dir)
+        state = clarifier.resume(session_dir)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return 1
 
-    _print_banner("恢复 NORA 会话")
+    _print_banner("恢复 澄清会话")
     print(f"  📌 主题: {state.topic}")
     print(f"  📈 进度: {state.progress_pct}%")
     print(f"  🎯 当前阶段: {state.current_stage.value}")
@@ -187,16 +187,16 @@ def cmd_resume(args) -> int:
 
     # 继续澄清
     try:
-        profile = orch.run_interactive(state.topic)
+        profile = clarifier.run_interactive(state.topic)
     except KeyboardInterrupt:
         return 130
 
     return 0
 
 
-def cmd_skip_nora(args) -> int:
-    """跳过 NORA 澄清（仅用于批处理，不推荐）。"""
-    print("\033[1;33m⚠️  警告：跳过 NORA 主题澄清，直接使用 --topic 作为研究画像。\033[0m")
+def cmd_skip_clarify(args) -> int:
+    """跳过 5 轮澄清（仅用于批处理，不推荐）。"""
+    print("\033[1;33m⚠️  警告：跳过 主题澄清，直接使用 --topic 作为研究画像。\033[0m")
     print("\033[1;33m   这将导致：\033[0m")
     print("\033[1;33m   - 因变量/自变量/控制变量只能靠文献综述自动挖掘\033[0m")
     print("\033[1;33m   - 识别策略默认为 multi（DID + IV + RDD）\033[0m")
@@ -208,7 +208,7 @@ def cmd_skip_nora(args) -> int:
         return 0
 
     topic = args.topic.strip()
-    output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "output" / ".nora_session"
+    output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "output" / ".clarify_session"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 写出默认 profile
@@ -228,7 +228,7 @@ def cmd_skip_nora(args) -> int:
         "sample_window": profile.sample_window,
         "venue": profile.venue,
         "locked_at": profile.locked_at,
-        "skipped_nora": True,
+        "skipped_clarify": True,
     }, ensure_ascii=False, indent=2))
 
     print(f"\n  ✅ 默认画像已写入: {profile_path}")
@@ -237,14 +237,14 @@ def cmd_skip_nora(args) -> int:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="NORA 风格研究入口（5 轮逐步澄清 → 研究画像 → 手动进入下一步）"
+        description="研究入口（5 轮逐步澄清 → 研究画像 → 手动进入下一步）"
     )
     subparsers = parser.add_subparsers(dest="command", required=False)
 
     # 默认行为：新建研究
     parser.add_argument("--topic", "-t", type=str, help="研究主题")
     parser.add_argument("--output-dir", "-o", type=str, help="会话产物目录")
-    parser.add_argument("--skip-nora", action="store_true", help="跳过 NORA 澄清（仅批处理）")
+    parser.add_argument("--skip-clarify", action="store_true", help="跳过 5 轮澄清（仅批处理）")
 
     # 恢复
     parser.add_argument("--resume", action="store_true", help="恢复上次会话")
@@ -263,11 +263,11 @@ def main():
             return 1
         return cmd_resume(args)
 
-    if args.skip_nora:
+    if args.skip_clarify:
         if not args.topic:
-            print("❌ --skip-nora 必须配合 --topic")
+            print("❌ --skip-clarify 必须配合 --topic")
             return 1
-        return cmd_skip_nora(args)
+        return cmd_skip_clarify(args)
 
     if not args.topic:
         parser.print_help()
