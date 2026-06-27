@@ -205,7 +205,7 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 - **Security**: See [SECURITY.md](SECURITY.md)
 - **Cite this work**: See [CITATION.cff](CITATION.cff)
 - **Full Changelog**: [CHANGELOG.md](CHANGELOG.md)
-- **Releases**: [releases/](releases/)
+- **Releases**: See GitHub Releases tab
 
 ---
 
