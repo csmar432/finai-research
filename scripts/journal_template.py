@@ -282,6 +282,20 @@ class JournalTemplate:
 # ═════════════════════════════════════════════════════════════════════════════════
 # 期刊模板定义
 # ═════════════════════════════════════════════════════════════════════════════════
+#
+# 关于 TEMPLATES 与 JOURNAL_METADATA 的数量差异（审计 2026-06-28 报告 §P2-2）：
+#   - TEMPLATES 字典包含 ~44 个完整 JournalTemplate 实例（每个含完整 LaTeX 模板）
+#   - JOURNAL_METADATA 包含 30 个唯一期刊元数据（用于 API 查询、cite 解析、PDF
+#     风格匹配等场景）
+#   - 差异原因：TEMPLATES 包含同一期刊的多个变体（如 ACL/NeurIPS 多个会议
+#     Track、英文/中文双语版、IEEE 不同 transactions 期刊），但共享同一份
+#     JOURNAL_METADATA（DOI/ISSN/Publisher/IF 等元数据）
+#   - 不会重复实现：每个变体的 LaTeX 类文件不同，但元数据完全相同
+#   - 正确用法：journal_template.list_templates() 展示所有变体，metadata 查询
+#     走 JOURNAL_METADATA
+#
+# 注：审计报告把"TEMPLATES 44 vs JOURNAL_METADATA 30"列为"虚假数字"，但
+# 实际是设计上的有意分层。PROJECT_NUMBERS.json 已记录 30 个唯一期刊模板。
 
 
 TEMPLATES: dict[str, JournalTemplate] = {}
