@@ -29,20 +29,36 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 try:
     import yfinance as yf
+    _YFINANCE_AVAILABLE = True
 except ImportError:
-    log.error("yfinance not installed. Run: pip install yfinance")
-    sys.exit(1)
+    log.warning(
+        "yfinance not installed. Server will run in MOCK mode (returns stub data). "
+        "Install with: pip install yfinance"
+    )
+    _YFINANCE_AVAILABLE = False
+    yf = None  # noqa: F841 — 标记 mock 模式
 
 try:
     from mcp.server import Server
     from mcp.server.stdio import stdio_server
     from mcp.types import Tool, TextContent
+    _MCP_AVAILABLE = True
 except ImportError:
-    log.error("mcp package required. pip install mcp")
-    sys.exit(1)
+    log.warning(
+        "mcp package not installed. Server cannot start. "
+        "Install with: pip install mcp"
+    )
+    _MCP_AVAILABLE = False
+    Server = None
+    stdio_server = None
+    Tool = None
+    TextContent = None
 
 
-server = Server("user-yfinance")
+if _MCP_AVAILABLE:
+    server = Server("user-yfinance")
+else:
+    server = None  # MCP 不可用时禁用 server
 
 TOOLS = [
     Tool(
@@ -126,13 +142,25 @@ TOOLS = [
 ]
 
 
-@server.list_tools()
+@server.list_tools() if _MCP_AVAILABLE else (lambda f: f)
 async def list_tools() -> list[Tool]:
     return TOOLS
 
 
-@server.call_tool()
+@server.call_tool() if _MCP_AVAILABLE else (lambda f: f)
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    # 当 yfinance 不可用时，返回 mock 数据而非崩溃
+    if not _YFINANCE_AVAILABLE:
+        return [TextContent(
+            type="text",
+            text=json.dumps(
+                {"warning": "yfinance not installed; returning mock data",
+                 "tool": name, "arguments": arguments,
+                 "mock_value": None},
+                ensure_ascii=False, indent=2,
+            ),
+        )]
+
     ticker = arguments.get("ticker", "")
     ticker = ticker.strip().upper()
 
@@ -234,6 +262,11 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
+    if not _MCP_AVAILABLE:
+        log.error("Cannot start: mcp package not installed. Run: pip install mcp")
+        return
+    if not _YFINANCE_AVAILABLE:
+        log.warning("Starting in MOCK mode (yfinance not installed; all calls return mock data)")
     async with stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, server.create_initialization_options())
 
