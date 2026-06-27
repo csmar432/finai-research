@@ -336,6 +336,11 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+# pytest-asyncio: treat all async test functions as auto-marked (no need for
+# @pytest.mark.asyncio on every async test). CI 历史：2026-06-26 之前
+# 没有 auto 模式，async 测试需显式 @pytest.mark.asyncio 才能执行；现在
+# auto 模式减少样板代码且防止遗漏。
+asyncio_mode = "auto"
 addopts = [
     "-v",
     "--tb=short",
