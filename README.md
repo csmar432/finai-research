@@ -8,6 +8,15 @@
 >
 > ⚠️ **Legal Risk Servers (CNKI / Wanfang / Chinese Literature)**: These 3 MCP servers scrape websites that prohibit automated access. **They are disabled by default for ALL users** — including the `full` profile. To use them, you must: (1) read [LEGAL_CONSENT.md](LEGAL_CONSENT.md) carefully, (2) set `CLI_ACCEPT_RISK=cnki,wanfang,chinese-literature` in your environment. Without this variable, these servers are never loaded. Users take full legal responsibility.
 
+> 🔴 **科研诚信 — Mock 数据默认关闭 (2026-06-28)**: 以下 5 个 MCP 服务器返回**模拟/硬编码/公开数据快照**，**默认禁用**，防止用户基于伪造数据发表错误结论：
+>
+> - `user_nber_wp` — 返回 3 个编造的 paper_id（w32456/w32098/w31567）+ 硬编码引用计数
+> - `user_bea_data` — 无论 `year` 参数如何，都返回硬编码 GDP（$27.36T）
+> - `user_csmar` — 文件头自承认"提供模拟数据用于演示"
+> - `user_wuhan_stats` / `user_macro_datas` — 公开数据快照（统计局发布，非实时 API）
+>
+> **临时启用**（如演示场景）：`export MCP_MOCK_MODE=allow`。**禁止**用于任何拟发表的研究输出。详见 [docs/MOCK_DATA_POLICY.md](docs/MOCK_DATA_POLICY.md)。
+
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/FinAI-Research-Workflow)

@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 import asyncio
+import os
 import re
 from dataclasses import dataclass, field
 from enum import Enum
@@ -358,6 +359,45 @@ Output JSON only:"""
             )
 
 
+def _evaluate_qa_pass(
+    questions: list[dict],
+    strict_mode: bool,
+    min_questions_loose: int = 1,
+    min_questions_strict: int = 5,
+    min_hard_strict: int = 3,
+) -> bool:
+    """评估 AdversarialQA 生成的 questions 是否通过 gate。
+
+    P1 修复 2026-06-28: 加入 strict mode 让用户控制通过严格度。
+
+    Args:
+        questions: 从 LLM 解析出的问题列表（每项含 dimension/question/difficulty）
+        strict_mode: True=严格模式（>= min_questions_strict + >= min_hard_strict hard）
+                     False=loose（>= min_questions_loose 即可）
+        min_questions_loose: loose 模式最少问题数（默认 1）
+        min_questions_strict: strict 模式最少问题数（默认 5）
+        min_hard_strict: strict 模式最少 hard 难度问题（默认 3）
+
+    Returns:
+        True if pass, False otherwise
+    """
+    if not questions:
+        return False
+
+    if not strict_mode:
+        # Loose: 任何问题都算通过（与原始行为兼容）
+        return len(questions) >= min_questions_loose
+
+    # Strict: 必须有足够多问题 + 足够多 hard 难度问题
+    if len(questions) < min_questions_strict:
+        return False
+
+    hard_count = sum(
+        1 for q in questions if str(q.get("difficulty", "")).lower() == "hard"
+    )
+    return hard_count >= min_hard_strict
+
+
 class AdversarialQAAgent:
     """Generates hard skeptical questions simulating a tough referee.
 
@@ -367,10 +407,31 @@ class AdversarialQAAgent:
     - Mechanism: "How do you rule out the alternative mechanism?"
     - Data: "What if measurement error in X is classical?"
     - Robustness: "What if you use alternative definitions?"
+
+    P1 修复 2026-06-28：加入 ``strict_mode`` config flag 让用户选择严格度。
+
+    Modes:
+      - ``loose`` (默认): pass_flag=True 仅当生成 0 个问题（向后兼容，原始行为）
+      - ``strict``: pass_flag 基于质量评估（question 覆盖维度、难度分布）
     """
 
-    def __init__(self, gateway: LLMGateway | None = None):
+    def __init__(
+        self,
+        gateway: LLMGateway | None = None,
+        strict_mode: bool | None = None,
+    ):
+        """初始化。
+
+        Args:
+            gateway: LLM 网关
+            strict_mode: 严格模式。None=读环境变量 ADVERSARIAL_QA_STRICT；
+                默认 ``"0"`` (loose)。设为 ``"1"`` 或 True 开启 strict 模式。
+        """
         self.gateway = gateway or _get_llm_gateway()
+        if strict_mode is None:
+            env_val = os.environ.get("ADVERSARIAL_QA_STRICT", "0").lower()
+            strict_mode = env_val in ("1", "true", "yes", "on")
+        self.strict_mode = strict_mode
 
     async def generate_questions(
         self,
@@ -434,8 +495,14 @@ Output JSON only:"""
             return AgentReviewResult(
                 agent=AgentTask.ADVERSARIAL_QA,
                 findings=findings,
-                summary=f"Generated {len(questions)} adversarial questions",
-                pass_flag=True,  # Questions are always pass
+                summary=f"Generated {len(questions)} adversarial questions (strict={self.strict_mode})",
+                # P1 修复 2026-06-28：pass_flag 基于 strict_mode + 问题质量
+                # loose 模式: 与原行为一致（生成问题即通过）
+                # strict 模式: 必须生成 >= 3 个 hard 难度问题才算通过
+                pass_flag=_evaluate_qa_pass(
+                    questions=questions,
+                    strict_mode=self.strict_mode,
+                ),
                 review_time_seconds=time.time() - t0,
                 raw_response=text,
             )

@@ -84,16 +84,18 @@ def check_mock_permission(
     """
     from mcp.types import TextContent
 
-    mode = os.environ.get("MCP_MOCK_MODE", "confirm").lower()
+    mode = os.environ.get("MCP_MOCK_MODE", "disabled").lower()
 
     if mode == "disabled":
         return [TextContent(type="text", text=json.dumps({
-            "error": f"[{server_name}] 模拟数据已被禁用（ MCP_MOCK_MODE=disabled）",
+            "error": f"[{server_name}] 模拟数据已被禁用（默认模式; 设置 MCP_MOCK_MODE=allow 临时启用）",
             "tool": tool_name,
             "status": "disabled",
-            "suggestion": "请配置真实 API Key，或切换 MCP_MOCK_MODE=confirm",
+            "default_mode_reason": "P0 科研诚信修复 2026-06-28: 默认禁用所有模拟数据，避免用户基于伪造数据发表错误结论",
+            "to_enable_temporarily": "MCP_MOCK_MODE=allow",
+            "to_enable_per_session": "见 README.md '科研诚信 - Mock 数据' 章节",
             "data_source": "MOCK_DISABLED",
-        }, ensure_ascii=False))]
+        }, ensure_ascii=False))] 
 
     if mode == "allow":
         # 允许模式：直接通过，不做任何提示

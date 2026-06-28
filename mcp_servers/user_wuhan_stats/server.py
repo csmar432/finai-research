@@ -14,8 +14,23 @@ Usage:
 
 from __future__ import annotations
 
-import json, sys, warnings
+import json
+import os
+import sys
+import warnings
 from pathlib import Path
+from typing import Any
+
+# 2026-06-28 P0 修复：标识为 MOCK 数据 + 默认禁用
+# 用户决策：MCP_MOCK_MODE 默认 disabled，避免基于伪造数据发表错误结论
+try:
+    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
+
+_MOCK = True  # 标识为公开数据快照（无实时 API 接入）
+
 warnings.filterwarnings("ignore")
 
 _SERVER_DIR = Path(__file__).resolve().parent
@@ -48,7 +63,15 @@ def _ok_json(data: dict) -> str:
 # ─── 工具处理函数 ───────────────────────────────────────────
 
 async def handle_wuhan_gdp(args: dict) -> list[TextContent]:
-    """武汉GDP数据（已知数据+数据源）。"""
+    """武汉GDP数据（已知数据+数据源）。
+
+    数据来源：武汉市统计局公开年度报告（数据快照，非实时 API）。
+    2026-06-28 P0 修复：调用 check_mock_permission，默认 MCP_MOCK_MODE=disabled
+    时拒绝执行（避免用户基于快照数据发表"实时"结论）。
+    """
+    check = check_mock_permission(args, "handle_wuhan_gdp", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉GDP精确数据需从《武汉统计年鉴》获取",
         "数据来源": [
@@ -70,6 +93,9 @@ async def handle_wuhan_gdp(args: dict) -> list[TextContent]:
 
 async def handle_wuhan_industry(args: dict) -> list[TextContent]:
     """武汉工业数据（已知数据+数据源）。"""
+    check = check_mock_permission(args, "handle_wuhan_industry", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉工业精确数据需从《武汉统计年鉴》获取",
         "数据来源": [
@@ -87,6 +113,9 @@ async def handle_wuhan_industry(args: dict) -> list[TextContent]:
 
 async def handle_wuhan_investment(args: dict) -> list[TextContent]:
     """武汉固定资产投资数据。"""
+    check = check_mock_permission(args, "handle_wuhan_investment", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉固定资产投资数据需从《武汉统计年鉴》获取",
         "数据来源": [
@@ -103,6 +132,9 @@ async def handle_wuhan_investment(args: dict) -> list[TextContent]:
 
 async def handle_wuhan_trade(args: dict) -> list[TextContent]:
     """武汉进出口贸易数据。"""
+    check = check_mock_permission(args, "handle_wuhan_trade", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉进出口数据需从《武汉统计年鉴》或海关总署获取",
         "数据来源": [
@@ -120,6 +152,9 @@ async def handle_wuhan_trade(args: dict) -> list[TextContent]:
 
 async def handle_wuhan_education(args: dict) -> list[TextContent]:
     """武汉高校教育数据。"""
+    check = check_mock_permission(args, "handle_wuhan_education", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉高校精确数据需从《武汉统计年鉴》获取",
         "数据来源": [
@@ -137,6 +172,9 @@ async def handle_wuhan_education(args: dict) -> list[TextContent]:
 
 async def handle_wuhan_tech(args: dict) -> list[TextContent]:
     """武汉科技创新数据。"""
+    check = check_mock_permission(args, "handle_wuhan_tech", "user-wuhan-stats")
+    if check is not None:
+        return check
     data = {
         "note": "武汉科技创新数据需从《武汉统计年鉴》或武汉市科技局获取",
         "数据来源": [
