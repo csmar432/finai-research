@@ -12,15 +12,29 @@ RUN groupadd --gid 1000 mcpuser \
     && useradd --uid 1000 --gid 1000 --shell /bin/bash --create-home mcpuser
 
 # Install system dependencies
+# P0 修复 2026-06-28: 补齐 LaTeX 工具链（之前 Dockerfile 缺 texlive）
+# user_latex_mcp 是 LaTeX 论文写作工具链，server.py 用 subprocess 调用本地 latex/pdflatex/chktex
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-lang-chinese \
+    texlive-bibtex-extra \
+    biber \
+    chktex \
+    latexmk \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy server code
 COPY server.py .
 COPY SERVER_METADATA.json .
 COPY tools/ ./tools/
+# Copy healthcheck (P0 修复 2026-06-28)
+COPY mcp_healthcheck.py /app/mcp_healthcheck.py
 
 # Install Python dependencies (version-pinned)
 RUN pip install --no-cache-dir --break-system-packages \
@@ -32,8 +46,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD kill -0 1
+HEALTHCHECK --interval=30s --timeout=15s --start-period=10s --retries=3 \
+    CMD python mcp_healthcheck.py --server-dir /app --timeout 10
 
 # Labels
 LABEL org.opencontainers.image.title="LaTeX MCP Server" \

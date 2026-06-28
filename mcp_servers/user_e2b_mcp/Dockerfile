@@ -21,12 +21,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY server.py .
 COPY SERVER_METADATA.json .
 COPY tools/ ./tools/
+# Copy healthcheck (P0 修复 2026-06-28)
+COPY mcp_healthcheck.py /app/mcp_healthcheck.py
 
 # Install Python dependencies (version-pinned)
+# P0 修复 2026-06-28: 补齐 e2b-code-interpreter
 RUN pip install --no-cache-dir --break-system-packages \
     mcp>=1.1.0 \
     pandas>=2.0.0 \
-    python-dotenv>=1.0.0
+    python-dotenv>=1.0.0 \
+    e2b-code-interpreter>=1.0.0
 
 # Environment
 ENV PYTHONUNBUFFERED=1 \
@@ -34,8 +38,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD kill -0 1
+HEALTHCHECK --interval=30s --timeout=15s --start-period=10s --retries=3 \
+    CMD python mcp_healthcheck.py --server-dir /app --timeout 10
 
 # Labels
 LABEL org.opencontainers.image.title="E2B MCP Server" \

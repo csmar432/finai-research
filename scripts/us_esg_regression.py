@@ -506,9 +506,12 @@ if __name__ == "__main__":
     # ── Figures ──
     import matplotlib
     matplotlib.use("Agg")
+    # P0 修复 2026-06-28: 配置中文字体（之前 sans-serif 默认无中文支持）
+    from scripts.plot_utils import setup_chinese_font
+    setup_chinese_font(verbose=False)
     import matplotlib.pyplot as plt
     plt.rcParams.update({
-        "font.family": "sans-serif", "font.size": 11,
+        "font.size": 11,
         "axes.spines.top": False, "axes.spines.right": False,
         "figure.dpi": 300, "savefig.dpi": 300,
     })

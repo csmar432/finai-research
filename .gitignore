@@ -35,6 +35,7 @@ profile_default/
 data/*.json
 data/*.xlsx
 data/*.db
+data/*.csv
 data/charts/
 data/finance/
 data/pipeline_drafts/
@@ -160,7 +161,7 @@ tariff_research/
 output/
 results/
 .cache/.last_session
-papers/           # 用户生成的论文输出
+papers/
 
 # Local planning / 路线图（个人用，不入版本控制）
 ROADMAP.md

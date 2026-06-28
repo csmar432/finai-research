@@ -15,9 +15,23 @@ Usage:
 
 from __future__ import annotations
 
-import json, sys, warnings
+import json
+import os
+import sys
+import warnings
 from pathlib import Path
 from typing import Any
+
+# 2026-06-28 P0 修复：标识为 MOCK 数据 + 默认禁用
+# 用户决策：MCP_MOCK_MODE 默认 disabled，避免基于伪造数据发表错误结论
+try:
+    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
+
+_MOCK = True  # 标识为公开数据快照（无实时 API 接入）
+
 warnings.filterwarnings("ignore")
 
 _SERVER_DIR = Path(__file__).resolve().parent
@@ -45,6 +59,9 @@ def _ok_json(data: Any) -> str:
 
 async def handle_rd_panel(args: dict) -> list[TextContent]:
     """中国各省R&D面板数据指引（含已知数据）。"""
+    check = check_mock_permission(args, "handle_rd_panel", "user-macro-datas")
+    if check is not None:
+        return check
     data = {
         "note": "马克数据网（macrodatas.cn）提供2000-2024年各省R&D面板数据，需注册账号",
         "免费访问方式": [
@@ -76,6 +93,9 @@ async def handle_rd_panel(args: dict) -> list[TextContent]:
 
 async def handle_tech_panel(args: dict) -> list[TextContent]:
     """中国科技指标面板数据指引。"""
+    check = check_mock_permission(args, "handle_tech_panel", "user-macro-datas")
+    if check is not None:
+        return check
     data = {
         "note": "马克数据网提供各省科技指标面板数据，含高新技术企业/专利/技术合同等",
         "湖北省高新技术企业（已核实）": [
@@ -105,6 +125,9 @@ async def handle_tech_panel(args: dict) -> list[TextContent]:
 
 async def handle_industry_panel(args: dict) -> list[TextContent]:
     """中国产业指标面板数据指引。"""
+    check = check_mock_permission(args, "handle_industry_panel", "user-macro-datas")
+    if check is not None:
+        return check
     data = {
         "note": "马克数据网提供各省产业指标面板数据，含GDP/工业/服务业等",
         "湖北省GDP（已核实）": [
@@ -134,6 +157,9 @@ async def handle_industry_panel(args: dict) -> list[TextContent]:
 
 async def handle_education_panel(args: dict) -> list[TextContent]:
     """中国教育指标面板数据指引。"""
+    check = check_mock_permission(args, "handle_education_panel", "user-macro-datas")
+    if check is not None:
+        return check
     data = {
         "note": "马克数据网提供各省高校/在校生等教育指标面板数据",
         "湖北省高校数据（已核实）": [
@@ -164,6 +190,9 @@ async def handle_education_panel(args: dict) -> list[TextContent]:
 
 async def handle_nsti_report(args: dict) -> list[TextContent]:
     """科技部《全国科技经费投入统计公报》数据指引。"""
+    check = check_mock_permission(args, "handle_nsti_report", "user-macro-datas")
+    if check is not None:
+        return check
     data = {
         "note": "科技部每年发布《全国科技经费投入统计公报》，包含分省R&D数据",
         "公报网址": "https://www.most.gov.cn/kjtj/",
