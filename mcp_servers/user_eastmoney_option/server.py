@@ -65,9 +65,9 @@ _ak = None
 try:
     import akshare as ak
     _ak = ak
-    print("user-eastmoney-option: akshare available", flush=True)
+    print("user-eastmoney-option: akshare available", file=sys.stderr, flush=True)
 except ImportError:
-    print("user-eastmoney-option: akshare not available, using fallback", flush=True)
+    print("user-eastmoney-option: akshare not available, using fallback", file=sys.stderr, flush=True)
 
 _SESSION = requests.Session()
 _SESSION.headers.update({"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"})
@@ -446,7 +446,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         return [TextContent(type="text", text=json.dumps({"error": str(e)}, ensure_ascii=False))]
 
 async def main():
-    print(f"user-eastmoney-option MCP Server v2.0 starting... akshare: {'available' if _ak else 'not installed'}", flush=True)
+    print(f"user-eastmoney-option MCP Server v2.0 starting... akshare: {'available' if _ak else 'not installed'}", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

@@ -330,7 +330,7 @@ async def main():
     E2B_API_KEY = os.environ.get("E2B_API_KEY", "")
 
     key_status = "configured" if E2B_API_KEY else "NOT CONFIGURED"
-    print(f"user-e2b-mcp starting... E2B: {key_status} (get key at https://e2b.dev/dashboard)", flush=True)
+    print(f"user-e2b-mcp starting... E2B: {key_status} (get key at https://e2b.dev/dashboard)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

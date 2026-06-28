@@ -509,7 +509,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 async def main():
     key_info = f" with API key {_SS_API_KEY[:8]}..." if _SS_API_KEY else " (no API key — free tier, 100 req/5min)"
-    print(f"user-semantic-scholar MCP Server starting...{key_info}", flush=True)
+    print(f"user-semantic-scholar MCP Server starting...{key_info}", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

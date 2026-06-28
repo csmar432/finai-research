@@ -366,7 +366,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
-    print("user-imf-data MCP Server starting... (IMF API, no key required)", flush=True)
+    print("user-imf-data MCP Server starting... (IMF API, no key required)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

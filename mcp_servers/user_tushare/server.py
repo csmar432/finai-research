@@ -1040,7 +1040,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
-    print("user-tushare MCP Server starting...", flush=True)
+    print("user-tushare MCP Server starting...", file=sys.stderr, flush=True)
 
     # Check what data sources are available
     has_token = bool(os.environ.get("TUSHARE_TOKEN") or os.environ.get("TUSHARE_API_KEY", ""))

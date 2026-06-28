@@ -362,7 +362,7 @@ def create_server():
 
 
 async def main():
-    print("user-third-party-esg MCP Server starting... (stub mode without API key)", flush=True)
+    print("user-third-party-esg MCP Server starting... (stub mode without API key)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

@@ -576,7 +576,9 @@ def _verify_mcp_server_stdio(server_path: Path, timeout: int = 8) -> tuple[bool,
                     k, v = line.split("=", 1)
                     env[k.strip()] = v.strip()
 
-    python_path = shutil.which("python3") or shutil.which("python") or "python3"
+    # P0 修复 2026-06-28: 用 sys.executable（健康检查自身 Python），
+    # 而不是 shutil.which("python3")（可能是 homebrew python3，缺 mcp 等依赖）
+    python_path = sys.executable
 
     try:
         proc = subprocess.Popen(

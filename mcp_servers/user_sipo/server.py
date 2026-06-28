@@ -319,7 +319,7 @@ def create_server():
 
 
 async def main():
-    print("user-sipo MCP Server starting... (SIPO, stub mode without API key)", flush=True)
+    print("user-sipo MCP Server starting... (SIPO, stub mode without API key)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

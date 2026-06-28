@@ -265,7 +265,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
-    print(f"user-eastmoney-reports MCP Server starting... (akshare {ak.__version__})", flush=True)
+    print(f"user-eastmoney-reports MCP Server starting... (akshare {ak.__version__})", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

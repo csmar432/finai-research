@@ -160,6 +160,19 @@
 
 ---
 
+## Deferred 项复核（2026-06-28）
+
+### D-1. Orchestrator 重叠 — 误报，不合并
+**复核结果**：
+- `scripts/core/orchestrator.py:115` `AgentOrchestrator` — 论文流水线编排（Tier 1/2）
+- `scripts/core/multi_agent.py:163` `MultiAgentOrchestrator` — 通用多 Agent 协调（Tier 3）
+- **docstring 明确说明**：MultiAgentOrchestrator 在 Tier 3，"not wired into AgentOrchestrator"
+- 两类属于不同抽象层级，**功能不重叠**
+
+**结论**：报告误判，无需合并。
+
+---
+
 ## 总结
 
 | 类别 | 数量 | 处理 |

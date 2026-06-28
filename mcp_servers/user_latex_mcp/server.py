@@ -919,7 +919,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 async def main():
     latexmk_ok = Path(LATEXMK_BIN).exists()
     chktex_ok = Path(CHKTEX_BIN).exists()
-    print(f"user-latex-mcp starting... latexmk={'OK' if latexmk_ok else 'MISSING'}, chktex={'OK' if chktex_ok else 'MISSING'}", flush=True)
+    print(f"user-latex-mcp starting... latexmk={'OK' if latexmk_ok else 'MISSING'}, chktex={'OK' if chktex_ok else 'MISSING'}", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

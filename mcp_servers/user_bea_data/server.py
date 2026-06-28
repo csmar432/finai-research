@@ -250,7 +250,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
-    print("user-bea-data MCP Server starting... (BEA API, free registration required)", flush=True)
+    print("user-bea-data MCP Server starting... (BEA API, free registration required)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

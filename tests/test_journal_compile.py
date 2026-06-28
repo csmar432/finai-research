@@ -91,24 +91,17 @@ class TestCompileMethod:
     def test_compile_multiple_passes(self, tmp_path):
         """compile() must run the engine at least twice (for cross-refs, ToC)."""
         from unittest.mock import patch, MagicMock
+        import shutil
         template = self._make_template()
 
         tex_file = tmp_path / "test.tex"
         tex_file.write_text(r"\documentclass{article}\begin{document}Hi\end{document}", encoding="utf-8")
 
-        call_count = 0
-
-        def count_calls(*args, **kwargs):
-            nonlocal call_count
-            call_count += 1
-            m = MagicMock()
-            m.returncode = 0
-            m.stderr = ""
-            return m
-
-        with patch("subprocess.run", side_effect=count_calls):
+        # P0 修复 2026-06-28: 同时 mock shutil.which 避免环境依赖 + subprocess.run 捕获调用次数
+        with patch("shutil.which", return_value="/usr/bin/pdflatex"), \
+             patch("subprocess.run", return_value=MagicMock(returncode=0, stderr="")) as mock_run:
             template.compile(str(tex_file), engine="pdflatex", passes=2)
-            assert call_count == 2, f"Expected 2 passes, got {call_count}"
+            assert mock_run.call_count == 2, f"Expected 2 passes, got {mock_run.call_count}"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

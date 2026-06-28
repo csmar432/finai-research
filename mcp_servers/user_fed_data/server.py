@@ -515,7 +515,8 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 async def main():
     key_status = "REAL API" if FRED_API_KEY else "PUBLIC API (limited)"
-    print(f"user-fed-data MCP Server v2.0 starting... FRED: {key_status}", flush=True)
+    # P0 修复 2026-06-28: banner 必须走 stderr，stdout 只能有 JSON-RPC 帧
+    print(f"user-fed-data MCP Server v2.0 starting... FRED: {key_status}", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,

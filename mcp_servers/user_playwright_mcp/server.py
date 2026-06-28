@@ -551,7 +551,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def main():
-    print("user-playwright-mcp starting... (use 'npx playwright install chromium' if not installed)", flush=True)
+    print("user-playwright-mcp starting... (use 'npx playwright install chromium' if not installed)", file=sys.stderr, flush=True)
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream, write_stream,
