@@ -75,7 +75,7 @@ class ExecutionTrace:
 class TimeTravelDebugger:
     """
     时间旅行调试器
-    
+
     核心功能：
     1. 快照管理 - 保存和恢复状态
     2. 历史回溯 - 回溯到任意历史点
@@ -495,12 +495,12 @@ class TimeTravelDebugger:
     ) -> dict:
         """
         从快照重放执行
-        
+
         Args:
             snapshot_id: 起始快照ID
             executor: 执行函数，接收当前状态返回新状态
             max_steps: 最大重放步数
-        
+
         Returns:
             最终状态
         """

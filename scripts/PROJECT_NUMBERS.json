@@ -113,8 +113,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 126,
-    "test_functions": 2786,
+    "test_files": 127,
+    "test_functions": 2791,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 15,
     "ci_coverage_target": 30,

@@ -12,7 +12,7 @@ class TestTaskEnum:
     def test_task_classification_examples(self):
         from scripts.ai_router import TaskClassifier
         classifier = TaskClassifier()
-        
+
         examples = [
             # Classifier maps financial analysis to RESEARCH (broad model)
             # "生成一份光伏行业的研究报告框架" -> REPORT_CN (correct)
@@ -20,7 +20,7 @@ class TestTaskEnum:
             ("帮我搜一下强化学习在量化交易中的文献", Task.LITERATURE),
             ("证明傅里叶变换的逆定理", Task.MATH_REASONING),
         ]
-        
+
         for text, expected in examples:
             result = classifier.classify(text)
             assert result == expected, f"'{text}' should be {expected}, got {result}"

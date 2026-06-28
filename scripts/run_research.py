@@ -363,7 +363,7 @@ def run_agent_pipeline(topic: str) -> None:
 
 def _call_agent_safely(pipeline, agent_name: str, topic: str, context: str = "") -> dict | None:
     """安全调用 agent，避免因 API Key 缺失导致整体崩溃。
-    
+
     Args:
         pipeline: AgentPipeline 实例
         agent_name: agent 名称 (outline/literature/plotting/writing/refinement)

@@ -163,7 +163,7 @@ class DefaultAgentExecutor:
 class MultiAgentOrchestrator:
     """
     多Agent协同编排器
-    
+
     支持的工作流模式：
     1. 串行执行 - 任务按顺序执行
     2. 并行执行 - 任务同时执行

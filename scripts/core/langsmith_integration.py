@@ -70,7 +70,7 @@ class LocalSpan:
 class LocalTracer:
     """
     本地追踪器
-    
+
     提供与 LangSmith 类似的追踪功能，但数据存储在本地 SQLite 数据库中。
     当 LangSmith 不可用或未配置时使用此追踪器。
     """
@@ -166,7 +166,7 @@ class LocalTracer:
     def trace(self, name: str, tags: list[str] = None, metadata: dict = None):
         """
         追踪上下文管理器
-        
+
         使用方式：
             with tracer.trace("我的操作"):
                 # 执行操作
@@ -292,7 +292,7 @@ class LocalTracer:
 class LangSmithTracer:
     """
     LangSmith 追踪器
-    
+
     当 LANGSMITH_API_KEY 环境变量设置时使用原生 LangSmith，
     否则使用本地追踪器。
     """
@@ -397,7 +397,7 @@ def get_tracer() -> LangSmithTracer:
 def traceable(name: str = None, tags: list[str] = None):
     """
     追踪装饰器
-    
+
     使用方式：
         @traceable("我的函数")
         def my_function(x):

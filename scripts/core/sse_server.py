@@ -8,7 +8,7 @@ Server-Sent Events (SSE) 实时推送服务
   from scripts.core.sse_server import SSEServer
   sse = SSEServer()
   sse.start()
-  
+
   # 在Dashboard中使用：
   # st.markdown(get_sse_script(), unsafe_allow_html=True)
 """
@@ -264,25 +264,25 @@ class SSEClient {{
         this.handlers = {{}};
         this.connected = false;
     }}
-    
+
     connect() {{
         if (this.eventSource) {{
             this.eventSource.close();
         }}
-        
+
         this.eventSource = new EventSource(this.endpoint);
-        
+
         this.eventSource.onopen = () => {{
             this.connected = true;
             console.log('SSE已连接');
             this._emit('connect', {{}});
         }};
-        
+
         this.eventSource.onerror = (error) => {{
             this.connected = false;
             console.error('SSE错误:', error);
             this._emit('error', {{ error }});
-            
+
             // 自动重连
             setTimeout(() => {{
                 if (!this.connected) {{
@@ -290,14 +290,14 @@ class SSEClient {{
                 }}
             }}, 3000);
         }};
-        
+
         // 监听所有事件
         const events = [
             'agent_start', 'agent_end', 'agent_error', 'agent_retry',
             'task_create', 'task_complete', 'hitl_request', 'hitl_approve', 'hitl_reject',
             'cost_update', 'state_change'
         ];
-        
+
         events.forEach(eventType => {{
             this.eventSource.addEventListener(eventType, (e) => {{
                 try {{
@@ -309,24 +309,24 @@ class SSEClient {{
             }});
         }});
     }}
-    
+
     on(eventType, handler) {{
         if (!this.handlers[eventType]) {{
             this.handlers[eventType] = [];
         }}
         this.handlers[eventType].push(handler);
     }}
-    
+
     off(eventType, handler) {{
         if (this.handlers[eventType]) {{
             this.handlers[eventType] = this.handlers[eventType].filter(h => h !== handler);
         }}
     }}
-    
+
     _emit(eventType, data) {{
         const handlers = this.handlers[eventType] || [];
         const wildcardHandlers = this.handlers['*'] || [];
-        
+
         [...handlers, ...wildcardHandlers].forEach(handler => {{
             try {{
                 handler(data);
@@ -335,7 +335,7 @@ class SSEClient {{
             }}
         }});
     }}
-    
+
     disconnect() {{
         if (this.eventSource) {{
             this.eventSource.close();
@@ -351,7 +351,7 @@ window.sseClient = null;
 function initSSE() {{
     window.sseClient = new SSEClient('{endpoint}');
     window.sseClient.connect();
-    
+
     // 示例：监听Agent状态变化
     window.sseClient.on('agent_start', (data) => {{
         console.log('Agent启动:', data);
@@ -362,7 +362,7 @@ function initSSE() {{
             statusEl.className = 'status-running';
         }}
     }});
-    
+
     window.sseClient.on('agent_end', (data) => {{
         console.log('Agent结束:', data);
         // 更新UI
@@ -372,7 +372,7 @@ function initSSE() {{
             statusEl.className = data.success ? 'status-success' : 'status-failed';
         }}
     }});
-    
+
     window.sseClient.on('cost_update', (data) => {{
         console.log('成本更新:', data);
         // 更新成本显示
@@ -412,12 +412,12 @@ async function pollStatus() {{
     try {{
         const response = await fetch('/api/status');
         const data = await response.json();
-        
+
         // 更新UI
         updateFleetStatus(data.fleet_status);
         updateCostDisplay(data.cost);
         updateHITLQueue(data.hitl_pending);
-        
+
     }} catch (error) {{
         console.error('轮询错误:', error);
     }}
@@ -451,12 +451,12 @@ function updateFleetStatus(status) {{
 
 function updateCostDisplay(cost) {{
     if (!cost) return;
-    
+
     const totalEl = document.getElementById('total-cost');
     if (totalEl) {{
         totalEl.textContent = '$' + (cost.total_cost_usd || 0).toFixed(4);
     }}
-    
+
     const callsEl = document.getElementById('total-calls');
     if (callsEl) {{
         callsEl.textContent = cost.total_calls || 0;

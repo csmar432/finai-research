@@ -231,7 +231,7 @@ class TestBalancedAccuracy:
 
     def test_balanced_accuracy_all_borderline(self, builtin_dataset):
         """All-predicted 'borderline' should give balanced accuracy of 1/3.
-        
+
         The balanced accuracy averages per-class recall.
         With all-predicted-borderline:
           - accept recall = 0 (no accept predicted)
@@ -254,7 +254,7 @@ class TestBalancedAccuracy:
 class TestBalancedAccuracyAllWrong:
     def test_balanced_accuracy_all_wrong(self, builtin_dataset):
         """Inverted predictions should yield balanced accuracy of 1/3.
-        
+
         The builtin dataset has: 8 accept, 6 reject, 6 borderline.
         After swapping accept<->reject and keeping borderline-borderline:
           - accept recall = 0/8 = 0.0  (no accept correctly predicted)
@@ -647,10 +647,10 @@ class TestEvaluateReviewer:
 
     def test_evaluate_reviewer_handles_review_exception(self, builtin_dataset):
         """evaluate_reviewer should handle exceptions from reviewer.review() gracefully.
-        
+
         Expected behavior: when review() raises an exception, the prediction
         should be set to "unknown" and processing should continue.
-        
+
         NOTE: The current implementation has an UnboundLocalError bug at line 770
         where `result` is used in the except block but only assigned in the try
         block. Once that bug is fixed, this test will pass.
@@ -759,7 +759,7 @@ class TestEdgeCases:
 
     def test_single_sample_perfect_three_class(self):
         """Single sample balanced accuracy = 1/3 for any single-class prediction.
-        
+
         Since balanced accuracy averages recall across all 3 classes,
         a single prediction can only give recall=1.0 for its own class
         and recall=0.0 for the other 2, so balanced_acc = 1/3.

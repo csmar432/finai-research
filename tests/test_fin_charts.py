@@ -46,7 +46,7 @@ class TestFinancialChartFactoryInit:
 
 class TestChartPresets:
     def test_charts_preset_keys(self):
-        
+
         required_presets = [
             "parallel_trends", "placebo_distribution", "robustness_summary",
             "psm_distribution", "correlation_heatmap", "descriptive_bar",

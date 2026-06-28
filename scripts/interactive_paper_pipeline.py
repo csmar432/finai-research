@@ -532,10 +532,10 @@ def step4_data_analysis(workflow: PaperWorkflow):
 📋 后续操作指南：
 1. 准备数据文件后，运行：
    python scripts/empirical_agent.py --data <您的数据文件>
-   
+
 2. 或使用计量模块直接分析（推荐）：
    python scripts/econometrics_extended.py --input <数据文件> --dep <被解释变量> --ind <解释变量>
-   
+
 3. 推荐数据来源：
    - 东方财富 Choice金融终端
    - CSMAR 国泰安数据库
@@ -645,7 +645,7 @@ def _run_empirical_analysis_with_config(workflow: PaperWorkflow):
    被解释变量: {dep_var}
    核心解释变量: {indep_vars}
    控制变量: {control_vars or '无'}
-   
+
 ⏳ 正在生成模拟回归结果...
 """)
 

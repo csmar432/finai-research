@@ -309,10 +309,10 @@ class TableFormatter:
 class ReportGenerator:
     """
     Generates publication-ready academic papers in LaTeX and Word formats.
-    
+
     Supports Chinese (zh) and English (en) output with proper UTF-8 encoding.
     Word output uses python-docx Table objects for real embedded tables.
-    
+
     Args:
         output_dir: Directory to save generated files
         language: "zh" for Chinese, "en" for English

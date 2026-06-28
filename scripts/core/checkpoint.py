@@ -67,17 +67,56 @@ Usage
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import logging
 import os
+import sys
 import tempfile
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+# P3 2026-06-29: Cross-platform file locking.
+# fcntl.flock() is Unix-only; Windows uses msvcrt.locking() which has different
+# semantics (only 1 lock per file, no LOCK_NB equivalent). We abstract that here
+# so the rest of the module can call a uniform API.
+if sys.platform == "win32":
+    import msvcrt
+
+    def _file_lock_acquire(fd: int) -> None:
+        """Acquire an exclusive lock on a file descriptor (Windows).
+
+        Raises BlockingIOError if the lock cannot be acquired (since Windows
+        does not have a non-blocking flock equivalent, we do a best-effort
+        attempt — callers wrap in try/except for retry semantics).
+        """
+        try:
+            msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            # msvcrt.locking raises OSError("Resource temporarily unavailable")
+            # when the byte region is already locked by another process.
+            raise BlockingIOError(str(exc)) from exc
+
+    def _file_lock_release(fd: int) -> None:
+        """Release the lock on a file descriptor (Windows)."""
+        try:
+            msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        except OSError:
+            # Lock already released or file closed; safe to ignore.
+            pass
+else:
+    import fcntl
+
+    def _file_lock_acquire(fd: int) -> None:
+        """Acquire an exclusive, non-blocking lock (Unix via fcntl)."""
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def _file_lock_release(fd: int) -> None:
+        """Release the lock (Unix via fcntl)."""
+        fcntl.flock(fd, fcntl.LOCK_UN)
 
 __all__ = [
     "PipelineCheckpoint",
@@ -296,7 +335,7 @@ class CheckpointManager:
         poll_interval = 0.1
         while time.time() < deadline:
             try:
-                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _file_lock_acquire(lock_file.fileno())
                 return lock_file
             except BlockingIOError:
                 time.sleep(poll_interval)
@@ -311,7 +350,7 @@ class CheckpointManager:
 
     @staticmethod
     def _unlock_index(lock_file) -> None:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        _file_lock_release(lock_file.fileno())
         lock_file.close()
 
     # ── Core CRUD ────────────────────────────────────────────────────────────

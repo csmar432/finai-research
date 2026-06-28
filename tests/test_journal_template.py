@@ -276,7 +276,7 @@ class TestChineseTemplates:
 
     def test_chinese_templates_have_jel_classification(self):
         """Verify 经济研究 has JEL classification environment.
-        
+
         Note: 金融研究 does not have JEL classification in its template,
         so we only test 经济研究 here.
         """

@@ -83,7 +83,7 @@ class StreamingConfig:
     enable_sse : bool
         Enable SSE formatting. Default True.
     buffering : str
-        Buffering strategy: "line" (newline-terminated), "segment" (sentence), 
+        Buffering strategy: "line" (newline-terminated), "segment" (sentence),
         "token" (immediate). Default "line".
     """
     chunk_size: int = 20
