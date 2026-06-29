@@ -607,8 +607,25 @@ jobs:
   docker:
     name: Docker Build
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && false  # disabled: requires docker on macOS CI agent
-    # TODO: re-enable once docker/build-push-action v5 + self-hosted runner available
+    # P3 2026-06-29: PERMANENTLY DISABLED.
+    #
+    # Why disabled:
+    #   1. The `docker` job runs on `ubuntu-latest` but the project's
+    #      build context uses macOS-specific paths (e.g. references
+    #      to scripts/* that import macOS-only stdlib on certain code paths).
+    #   2. The current build does not have a Dockerfile pinned to the
+    #      release artifact; building an image would inflate CI minutes
+    #      without producing a deployed artifact.
+    #   3. Dependabot upgrade to docker/build-push-action v5 (PR queue) is
+    #      not required while the job is skipped.
+    #
+    # To re-enable (if ever needed):
+    #   - Add a pinned multi-stage Dockerfile at repo root.
+    #   - Remove the `if: github.event_name == 'pull_request' && false` gate.
+    #   - Self-hosted runner with Docker + macOS SDK is required.
+    #
+    # See: .github/workflows/ci.yml L607-L617 for historical context.
+    if: github.event_name == 'pull_request' && false  # permanent skip (see comment above)
     steps:
       - uses: actions/checkout@v7
       - name: Set up Docker Buildx
