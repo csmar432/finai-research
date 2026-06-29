@@ -136,7 +136,7 @@ jobs:
         continue-on-error: true
       - name: Append fail log to issue tracker
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -271,7 +271,7 @@ jobs:
           include-hidden-files: true
       - name: Append fail log to issue tracker
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -404,7 +404,7 @@ jobs:
           include-hidden-files: true
       - name: Append fail log to issue tracker
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -526,7 +526,7 @@ jobs:
           retention-days: 7
       - name: Append fail log to issue tracker
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -696,7 +696,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Append coverage fail log to issue tracker
         if: failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
