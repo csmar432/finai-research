@@ -15,7 +15,7 @@ jobs:
     if: github.repository == 'csmar432/finai-research-workflow'
     steps:
       - name: Mark and close stale issues
-        uses: actions/stale@v9
+        uses: actions/stale@v10
         with:
           days-before-stale: 60
           days-before-close: 14
