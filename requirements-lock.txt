@@ -124,7 +124,7 @@ python-dotenv==1.2.2
     # via finai-research-workflow (pyproject.toml)
 pyyaml==6.0.3
     # via finai-research-workflow (pyproject.toml)
-regex==2026.5.9
+regex==2026.6.28
     # via tiktoken
 requests==2.34.2
     # via
