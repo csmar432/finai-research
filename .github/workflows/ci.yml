@@ -637,19 +637,19 @@ jobs:
       # This fixes the prior overly-strict condition requiring ALL 3 batches to succeed.
       - name: Download coverage-batch1
         if: needs.test-batch-1.result == 'success'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage-batch1
           path: coverage-data/batch1
       - name: Download coverage-batch2
         if: needs.test-batch-2.result == 'success'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage-batch2
           path: coverage-data/batch2
       - name: Download coverage-batch3
         if: needs.test-batch-3.result == 'success'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage-batch3
           path: coverage-data/batch3
