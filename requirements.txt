@@ -61,7 +61,7 @@ duckdb>=0.9.0,<2.0
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 streamlit>=1.32.0
-pypandoc>=0.8.0
+pypandoc>=1.17
 
 # ── Excel ─────────────────────────────────────────────────────────────────────
 openpyxl>=3.1.0
