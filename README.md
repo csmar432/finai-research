@@ -32,6 +32,8 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
+[![Audit 2026-07-04](https://img.shields.io/badge/audit-2026--07--04%20PASSED-brightgreen)](docs/audit/audit-2026-07-04.md)
+[![Coverage 26.8%→60%](https://img.shields.io/badge/coverage-26.8%25%E2%86%92%E2%9F%A9_60%25-orange)](docs/audit/audit-2026-07-04.md)
 
 ---
 <!--
