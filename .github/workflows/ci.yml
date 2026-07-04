@@ -392,6 +392,10 @@ jobs:
             tests/test_two_way_clustered.py tests/test_presence_server.py \
             tests/test_provenance.py tests/test_provenance_integration.py \
             tests/test_iv_panel.py tests/test_psm_did.py \
+            # P3-audit-2026-07-04: 新增 smoke 测试 (CI coverage 提升)
+            tests/test_knowledge_graph_smoke.py \
+            tests/test_factor_models_smoke.py \
+            tests/test_mcp_servers_import.py \
             --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=10 -rfE \
             -v 2>&1 | tee pytest-batch3.log
         env:
