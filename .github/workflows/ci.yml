@@ -244,7 +244,7 @@ jobs:
             --load \
             .
           echo "OK: ${{ matrix.dockerfile }} builds on amd64"
-      - name: Smoke: import the package on amd64 build
+      - name: "Smoke: import the package on amd64 build"
         run: |
           docker run --rm finai-0-build:test \
             python -c "import scripts; print('Import OK:', scripts.__file__)"
