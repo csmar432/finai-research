@@ -65,6 +65,22 @@ jobs:
       - name: Docker-compose validation
         run: python scripts/ci_verify.py --docker-check
 
+      - name: deptry (dep consistency check)
+        # audit-2026-07-04 PR-4 / P0-5: ensure pyproject.toml dependencies
+        # are actually imported in source (no dead deps) and that all
+        # imports are declared (no missing deps).
+        run: |
+          python -m pip install deptry
+          deptry scripts/ \
+            --requirements-from pyproject.toml \
+            --requirements-from requirements-ci.txt \
+            --ignore-notebooks \
+            --ignore-missing-bindings 2>&1 | tee deptry.log
+          if grep -E "DEP\d|DEP-" deptry.log; then
+            echo "::error::deptry found dep inconsistencies — see deptry.log"
+            exit 1
+          fi
+
   security:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -475,3 +491,72 @@ jobs:
           name: mypy-log
           path: mypy-head.log
           if-no-files-found: ignore
+
+  # ── audit-2026-07-04 PR-4: test-full job (heavy deps) ─────────────────
+  # P0-5: separate test-minimal (requirements-ci.txt, fast) and test-full
+  # (requirements.txt, slow but covers ALL deps declared in pyproject.toml).
+  # test-full verifies that the full dep set still imports cleanly into
+  # scripts/ — currently CI only sees the minimal subset.
+  test-full:
+    name: Tests (full deps, smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install full deps (heavy: chromadb/faiss/torch/etc.)
+        run: |
+          python -m pip install --upgrade pip
+          # Use timeout because requirements.txt has heavy deps.
+          pip install --timeout 600 -r requirements.txt
+          pip install --no-deps -e .
+      - name: Import smoke (all scripts/)
+        # Verify every non-__main__ script can be imported with full deps.
+        # Skips scripts that raise SystemExit on import (CLI tools).
+        run: |
+          python -c "
+          import importlib, pkgutil, sys, traceback
+          from pathlib import Path
+          errors = []
+          ok = 0
+          skip = 0
+          for p in Path('scripts').rglob('*.py'):
+              if p.name.startswith('_') and p.name != '__init__.py':
+                  continue
+              if '__pycache__' in p.parts or '/legacy/' in str(p) or '/deprecated/' in str(p):
+                  skip += 1
+                  continue
+              modname = str(p).replace('/', '.').replace('.py', '')
+              try:
+                  importlib.import_module(modname)
+                  ok += 1
+              except SystemExit:
+                  skip += 1
+              except BaseException as e:
+                  errors.append((modname, type(e).__name__, str(e)[:80]))
+          print(f'OK: {ok}, SKIP: {skip}, ERR: {len(errors)}')
+          if errors:
+              print('Import errors:')
+              for m, t, msg in errors[:30]:
+                  print(f'  {m}: {t}: {msg}')
+              sys.exit(1)
+          "
+      - name: Sanity check: heavy modules
+        # Spot-check the heavy deps actually work (chromadb, faiss, etc.)
+        run: |
+          python -c "
+          import importlib
+          for mod in ['openai', 'anthropic', 'tiktoken', 'pydantic']:
+              importlib.import_module(mod)
+              print(f'OK: {mod}')
+          # Optional heavy deps — skip on ImportError
+          for mod in ['chromadb', 'sentence_transformers', 'pdfplumber']:
+              try:
+                  importlib.import_module(mod)
+                  print(f'OK: {mod}')
+              except ImportError:
+                  print(f'SKIP: {mod} (optional, not installed)')
+          "
+        continue-on-error: true  # optional heavy deps may be missing

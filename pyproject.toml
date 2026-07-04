@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.0"]
+requires = ["hatchling>=1.30.0,<2.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -47,66 +47,66 @@ requires-python = ">=3.10"
 # optional-dependencies, 用户按需 pip install -e ".[extras]"。
 dependencies = [
     # 数据处理
-    "pandas>=2.0.0",
-    "numpy>=1.26.0",
-    "scipy>=1.13.0",
-    "statsmodels>=0.14.0",
-    "scikit-learn>=1.4.0",
-    "networkx>=3.2.0",
+    "pandas>=2.0.0,<3.0",
+    "numpy>=1.26.0,<3.0",
+    "scipy>=1.13.0,<2.0",
+    "statsmodels>=0.14.0,<1.0",
+    "scikit-learn>=1.4.0,<2.0",
+    "networkx>=3.2.0,<4.0",
     # 可视化
-    "matplotlib>=3.8.0",
-    "seaborn>=0.13.0",
+    "matplotlib>=3.8.0,<4.0",
+    "seaborn>=0.13.0,<1.0",
     # 配置 / LLM 客户端
-    "requests>=2.31.0",
-    "python-dotenv>=1.0.0",
-    "pyyaml>=6.0.0",
-    "pydantic>=2.0.0",
-    "httpx>=0.27.0",
-    "openai>=1.0.0",
-    "anthropic>=0.30.0",
-    "tiktoken>=0.7.0",
+    "requests>=2.31.0,<3.0",
+    "python-dotenv>=1.0.0,<2.0",
+    "pyyaml>=6.0.0,<7.0",
+    "pydantic>=2.0.0,<3.0",
+    "httpx>=0.27.0,<1.0",
+    "openai>=1.0.0,<2.0",
+    "anthropic>=0.30.0,<1.0",
+    "tiktoken>=0.7.0,<1.0",
     # ── 测试套件 (核心, 必装) ──────────────────────────────────
     # 项目提供 83 个测试, pip install . 后应能直接跑 pytest tests/。
     # 只有 ruff (linter) 留在 optional [dev]。
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.23.0",
-    "pytest-cov>=4.1.0",
-    "pytest-timeout>=2.2.0",
+    "pytest>=7.4.0,<9.0",
+    "pytest-asyncio>=0.23.0,<2.0",
+    "pytest-cov>=4.1.0,<6.0",
+    "pytest-timeout>=2.2.0,<3.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.1.0",
+    "ruff>=0.1.0,<2.0",
 ]
 # extras: 装 [dev,extras] 一次拿齐所有功能
 extras = [
-    "plotly>=5.21.0",
-    "pdfplumber>=0.11.0",
-    "python-docx>=1.1.0",
-    "Pillow>=10.3.0",
-    "markdown>=3.4.0",
-    "beautifulsoup4>=4.12.0",
-    "akshare>=1.18.63",
-    "yfinance>=0.2.0",
-    "mcp>=1.0.0",
-    "fastmcp>=0.1.0",
-    "duckdb>=0.9.0",
-    "fastapi>=0.115.0",
+    "plotly>=5.21.0,<7.0",
+    "pdfplumber>=0.11.0,<2.0",
+    "python-docx>=1.1.0,<2.0",
+    "Pillow>=10.3.0,<99.0",
+    "markdown>=3.4.0,<4.0",
+    "beautifulsoup4>=4.12.0,<5.0",
+    "akshare>=1.18.63,<99.0",
+    "yfinance>=0.2.0,<99.0",
+    "mcp>=1.0.0,<99.0",
+    "fastmcp>=0.1.0,<99.0",
+    "duckdb>=0.9.0,<2.0",
+    "fastapi>=0.115.0,<2.0",
     "uvicorn[standard]>=0.30.0",
-    "streamlit>=1.32.0",
-    "openpyxl>=3.1.0",
+    "streamlit>=1.32.0,<2.0",
+    "openpyxl>=3.1.0,<4.0",
 ]
 
 rag = [
-    "chromadb>=0.4.22",
-    "faiss-cpu>=1.7.4",
-    "sentence-transformers>=2.3.0",
-    "jieba>=0.42.0",
+    "chromadb>=0.4.22,<2.0",
+    "faiss-cpu>=1.7.4,<2.0",
+    "sentence-transformers>=2.3.0,<3.0",
+    "jieba>=0.42.0,<99.0",
 ]
 
 jupyter = [
-    "jupyter>=1.0.0",
-    "ipykernel>=6.28.0",
+    "jupyter>=1.0.0,<99.0",
+    "ipykernel>=6.28.0,<99.0",
 ]
 
 deep-learning = [
@@ -115,16 +115,16 @@ deep-learning = [
     # the framework with neural-network-based methods (e.g. CausalForest,
     # transformer-based sentiment analysis) can install them via:
     #     pip install finai-research-workflow[deep-learning]
-    "scikit-learn>=1.3",   # baseline ML (always useful, lightweight)
-    "torch>=2.2.0",        # neural networks (large download, opt-in)
+    "scikit-learn>=1.3,<2.0",   # baseline ML (always useful, lightweight)
+    "torch>=2.2.0,<3.0",        # neural networks (large download, opt-in)
 ]
 
 econometrics = [
-    "linearmodels>=4.17",
-    "pandas-datareader>=0.10.0",
-    "pandasql>=0.7.3",
-    "diff-in-diff2>=1.0.0",
-    "honestdid>=0.1.0",  # Rambachan-Roth (2023) Honest DiD sensitivity analysis
+    "linearmodels>=4.17,<99.0",
+    "pandas-datareader>=0.10.0,<99.0",
+    "pandasql>=0.7.3,<99.0",
+    "diff-in-diff2>=1.0.0,<99.0",
+    "honestdid>=0.1.0,<99.0",  # Rambachan-Roth (2023) Honest DiD sensitivity analysis
     # honestdid requires: torch>=1.9, cvxpy>=1.1, scipy>=1.6, numpy>=1.19, pandas>=1.2
     # Install separately: pip install honestdid
 ]
@@ -134,26 +134,26 @@ knowledge = [
 ]
 
 sandbox = [
-    "e2b-code-interpreter>=2.0.0",
+    "e2b-code-interpreter>=2.0.0,<2.0",
 ]
 
 browser = [
-    "playwright>=1.40.0",
+    "playwright>=1.40.0,<2.0",
 ]
 
 monitor = [
-    "apscheduler>=3.10.0",
+    "apscheduler>=3.10.0,<5.0",
 ]
 
 # Legacy: packages declared in dependencies but not currently imported in scripts/tests.
 # Kept here for reference — uncomment individually when needed.
 # Removing from main dependencies reduces install time by ~45s.
 # legacy = [
-#     "lxml>=4.9.0",           # XML/HTML解析
-#     "neo4j>=5.0.0",           # Graph DB (not used, networkx)
-#     "pyvis>=0.3.0",           # Network viz (not used)
-#     "pypandoc>=0.8.0",       # Pandoc wrapper (not used)
-#     "python-pptx>=0.6.23",    # PPT generation (not used)
+#     "lxml>=4.9.0,<6.0",           # XML/HTML解析
+#     "neo4j>=5.0.0,<99.0",           # Graph DB (not used, networkx)
+#     "pyvis>=0.3.0,<99.0",           # Network viz (not used)
+#     "pypandoc>=0.8.0,<99.0",       # Pandoc wrapper (not used)
+#     "python-pptx>=0.6.23,<99.0",    # PPT generation (not used)
 # ]
 
 all = [

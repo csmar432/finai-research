@@ -1,11 +1,54 @@
+# dependabot.yml — audit-2026-07-04 PR-4 / P1-8
+# Daily scan for security updates + weekly for GitHub Actions.
+# PR limit: 5 per month (default) to avoid PR flooding.
 version: 2
 updates:
-  - package-ecosystem: pip
-    directory: /
+  # ── pip (Python dependencies) ──────────────────────────────────────────
+  - package-ecosystem: "pip"
+    directory: "/"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-  - package-ecosystem: github-actions
-    directory: /
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    # Group patch + minor updates together to reduce PR count.
+    groups:
+      patch-and-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    # Auto-rebase to keep PRs in sync with main.
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  # ── GitHub Actions ────────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
+      day: "tuesday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+
+  # ── Docker (only if Dockerfiles use external base images) ─────────────
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+    open-pull-requests-limit: 3
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
