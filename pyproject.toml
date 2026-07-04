@@ -353,6 +353,9 @@ addopts = [
     "--strict-config",
     "--showlocals",
     "--durations=10",
+    # audit-2026-07-04 P0-1: smoke 测试默认跳过（防止"为覆盖率而生"反模式）。
+    # 仅在显式 `pytest -m smoke` 时才运行。
+    "-m", "not smoke",
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -362,6 +365,9 @@ markers = [
     "mcp: tests that call MCP servers",
     "gpu: tests that require GPU",
     "flaky: known flaky tests (use with care)",
+    # audit-2026-07-04 P0-1: smoke marker 语义 — 仅 verify 模块可 import 的轻测试。
+    # 默认被 addopts 过滤掉；显式跑用 `pytest -m smoke`。
+    "smoke: quick smoke tests (skipped by default, run with -m smoke)",
 ]
 filterwarnings = [
     # error 在前作为"基准"规则, ignore 在前作为"覆盖"规则
@@ -425,22 +431,16 @@ omit = [
     "scripts/paper_full_pipeline.py",
     "scripts/paper_submit.py",
     "scripts/paper_visualizer.py",
-    "scripts/paper_full_pipeline.py",
     "scripts/cleanup_paper_index.py",
     "scripts/review_layer.py",  # DEPRECATED 2026-06-09, 保留历史
     "scripts/quantitative_factor_library.py",  # 待拆分到 research_framework/
     "scripts/enhanced_workflow.py",  # 实验性 workflow
-    # P3-audit-2026-07-04: 这 9 个文件本地有但 CI batch1/2/3 都没 import，
-    # 它们是 CI 不覆盖的"长尾"模块。omit 让 fail-under 计算准确反映真实覆盖。
-    "scripts/benchmark_econometrics.py",
-    "scripts/core/agent_pipeline_lg.py",
-    "scripts/core/debate_arena.py",
-    "scripts/core/debate_calibrator_bridge.py",
-    "scripts/core/interactive_explorer.py",
-    "scripts/core/mock_data_governance.py",
-    "scripts/core/orchestrator_lg_bridge.py",
-    "scripts/core/paper_deep_parser.py",
-    "scripts/health_check_mcp.py",
+    # ── audit-2026-07-04 P0-1 ───────────────────────────────────────
+    # 上一版本（55f3dea）追加了 9 个 "CI 不导入" 的文件到 omit 以"凑覆盖率"。
+    # 已删除：让 fail-under 真实反映测试覆盖，而非通过 omit 藏分母。
+    # 若新发现某个模块 CI 无法 import，应改为（a）补测试 或（b）让该模块走
+    # optional-import / sys.exit(0) graceful degrade，而不是 omit。
+    # 见 docs/audit/audit-2026-07-04.md §P0-1 "CI 覆盖率凑数恶性循环"。
 ]
 
 [tool.coverage.report]
