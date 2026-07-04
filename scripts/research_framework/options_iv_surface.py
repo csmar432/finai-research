@@ -580,7 +580,7 @@ class IVSurfaceBuilder:
             return float(iv_valid[-1])
 
         idx = np.searchsorted(s_valid, spot)
-        lo, hi = max(0, idx - 1), min(len(s_valid), idx + 1)
+        lo, hi = max(0, idx - 1), min(len(s_valid), idx + 1)  # type: ignore[call-overload,unused-ignore]
         s_lo, s_hi = s_valid[lo], s_valid[hi]
         iv_lo, iv_hi = iv_valid[lo], iv_valid[hi]
         if s_hi == s_lo:

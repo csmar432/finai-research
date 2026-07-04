@@ -61,10 +61,15 @@ class BaseEconometricModel(ABC):
         """Fit the model - to be implemented by subclasses."""
         raise NotImplementedError
 
-    @abstractmethod
     def predict(self, data: pd.DataFrame, *args, **kwargs) -> pd.Series:
-        """Make predictions - to be implemented by subclasses."""
-        raise NotImplementedError
+        """Make predictions — to be implemented by subclasses.
+
+        This is a concrete default returning an empty Series so that all
+        subclasses can be instantiated (even those that don't naturally
+        produce point predictions, e.g. RDDRegression, SyntheticControl).
+        Subclasses with prediction semantics should override.
+        """
+        return pd.Series(dtype=float)
 
     def summary(self) -> str:
         """Return model summary."""
@@ -2335,7 +2340,7 @@ class MediationAnalysis:
         ci_lower = np.percentile(indirect_effects, 2.5)
         ci_upper = np.percentile(indirect_effects, 97.5)
 
-        pvalue = 2.0 * min(
+        pvalue = 2.0 * min(  # type: ignore[call-overload,unused-ignore]
             np.mean(indirect_effects < 0),
             np.mean(indirect_effects > 0),
         )
