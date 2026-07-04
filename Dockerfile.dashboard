@@ -1,7 +1,7 @@
 # ── Dashboard Service
 # Streamlit-based dashboard for monitoring pipeline runs and agent state.
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 

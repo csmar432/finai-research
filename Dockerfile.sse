@@ -1,7 +1,7 @@
 # ── SSE Streaming API Service
 # Provides Server-Sent Events endpoint for real-time agent progress streaming.
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
