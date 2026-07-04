@@ -110,11 +110,16 @@ jobs:
         id: run_tests
         run: |
           set -o pipefail
-          # Use all available CPU cores; -n auto.
-          # --maxfail=1 from PR-1: any failure stops the run quickly so the
-          # real failure (vs 10 silently-truncated ones) surfaces in CI.
+          # P0-7: --maxfail=1 (audit-2026-07-04). pytest-xdist '-n 2' parallelises
+          # across 2 worker cores (less aggressive than -n auto; ensures
+          # conftest-driven sys.path manipulation is consistent in each
+          # worker subprocess). This replaces the old 3-batch split.
+          # With --maxfail=1 any failure stops the run quickly so the
+          # real failure surfaces in CI rather than being truncated.
+          # We do NOT use --cov-append here because there's only one test
+          # job now; coverage is written directly to .coverage.
           pytest tests/ \
-            -n auto \
+            -n 2 \
             --cov=scripts --cov-branch \
             --tb=long --timeout=120 --maxfail=1 -rfE \
             -v 2>&1 | tee pytest-unified.log
