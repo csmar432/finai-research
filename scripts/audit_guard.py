@@ -495,19 +495,19 @@ def check_12_fail_under_floor() -> CheckResult:
     evidence = [
         f"  fail-under values found: {vals}",
         f"  minimum: {min_v}",
-        f"  audit-2026-07-04 floor: 25 (PR-1); raise to 30 after PR-6",
+        f"  audit-2026-07-04 floor: 25 (PR-1) -> 28 (PR-6 import smoke); 60% deferred to PR-8",
     ]
-    if min_v >= 25:
+    if min_v >= 28:
         return CheckResult(
             passed=True,
             actual=f"min={min_v}",
-            expected=">=25 (audit-2026-07-04 floor at PR-1)",
+            expected=">=28 (audit-2026-07-04 floor at PR-6)",
             evidence=evidence,
         )
     return CheckResult(
         passed=False,
         actual=f"min={min_v}",
-        expected=">=25",
+        expected=">=28",
         evidence=evidence,
     )
 
@@ -804,7 +804,7 @@ CHECKS: list[AuditCheck] = [
     AuditCheck(
         12,
         "CI fail-under floor",
-        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=25 at PR-1; raise after PR-6)",
+        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=28 at PR-6; 60% deferred to PR-8)",
         check_12_fail_under_floor,
     ),
     AuditCheck(

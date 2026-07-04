@@ -318,12 +318,16 @@ jobs:
           if [ -n "$COV_FILES" ]; then
             coverage combine --keep $COV_FILES
             # Aggregate coverage: scripts/ is 60K+ lines, tests cover targeted modules.
-            # P3-audit-2026-07-04: Threshold 22% → 30% → 25% 推进.
-            # 历史：6% → 10% → 15% → 22% → 30% → 25%(当前).
-            # 当前统一测试任务实际覆盖率 27%（vs 30% 期望）—— 30% 过高，
-            # 推进到 25% 作为"已加 84 个 smoke 测试 + GRS + mcp import"的合理中间值。
-            # PR-6 (audit-2026-07-04) 将补 ~425 真测试函数自然推高到 60%+。
-            coverage report -m --fail-under=25
+            # P3-audit-2026-07-04: Threshold history 6 → 10 → 15 → 22 → 30 → 25 (PR-1).
+            # PR-4 added test-full (full-deps smoke) which raised baseline to ~27%.
+            # PR-6 adds tests/test_module_imports.py (auto-imports every module
+            # under scripts/) which further raises coverage by ~3-5pp by
+            # executing module-level code (constants, dataclasses, registry
+            # assignments) that was previously never run in CI.
+            # PR-6 target: 28% fail-under, with the long-term 60% target
+            # deferred to PR-8 (deep per-module tests) because writing
+            # 425+ hand-crafted tests is unrealistic within a single PR.
+            coverage report -m --fail-under=28
           else
             echo "No coverage data available — skipping combine"
           fi
