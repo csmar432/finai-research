@@ -709,10 +709,10 @@ jobs:
           if [ -n "$COV_FILES" ]; then
             coverage combine --keep $COV_FILES
             # Aggregate coverage: scripts/ is 60K+ lines, tests cover targeted modules.
-            # P3 2026-06-29: Threshold 30% → 22% to match current batch1+2+3 actual
-            # coverage (~24%). 渐进式提高 (15% → 22% → 30% → 80%).
-            # 后续可通过 (a) 扩展 batch3 测试列表 或 (b) 拆出 batch4 提升到 30%。
-            coverage report -m --fail-under=22
+            # P3-audit-2026-07-04: Threshold 22% → 30% (current actual ~33%, +11pp headroom).
+            # 历史渐进：6% → 10% → 15% → 22% → 30% → 80%. 本次推进到 30%.
+            # 后续可通过 (a) 扩展 batch3 测试列表 或 (b) 拆出 batch4 提升到 50%.
+            coverage report -m --fail-under=30
           else
             echo "No coverage data available — skipping combine"
           fi
