@@ -10,12 +10,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+# audit-2026-07-04 PR-3: hatchling comes as a transitive dep of pyproject.toml's
+# build-system. Earlier versions of this Dockerfile pinned `hatchling>=1.32`
+# (claiming older releases lacked `prepare_metadata_for_build_editable`),
+# but as of 2026-07 hatchling's latest stable is 1.30.1 — the >=1.32 pin
+# was unreachable and broke all 4 Dockerfile builds. We let pip resolve
+# hatchling from pyproject.toml's requires=[...] instead.
 COPY pyproject.toml ./
+# audit-2026-07-04 PR-3: README.md required by pyproject.toml `readme = "README.md"`.
+COPY README.md ./
+# pyproject.toml [tool.hatch.build.targets.wheel.force-include] requires
+# these dirs to exist at pip install time. See main Dockerfile for context.
+COPY config/ ./config/
+COPY templates/ ./templates/
+COPY knowledge/ ./knowledge/
+COPY mcp_servers/ ./mcp_servers/
 RUN pip install --no-cache-dir -e .
 
 COPY scripts/ ./scripts/
-COPY mcp_servers/ ./mcp_servers/
-COPY config/ ./config/
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app

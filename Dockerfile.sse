@@ -10,12 +10,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+# audit-2026-07-04 PR-3: see Dockerfile.dashboard for why hatchling pin is removed.
 COPY pyproject.toml ./
+# audit-2026-07-04 PR-3: README.md required by pyproject.toml `readme = "README.md"`.
+COPY README.md ./
+# pyproject.toml [tool.hatch.build.targets.wheel.force-include] requires
+# these dirs to exist at pip install time. See main Dockerfile for context.
+COPY config/ ./config/
+COPY templates/ ./templates/
+COPY knowledge/ ./knowledge/
+COPY mcp_servers/ ./mcp_servers/
 RUN pip install --no-cache-dir -e .
 
 COPY scripts/ ./scripts/
-COPY mcp_servers/ ./mcp_servers/
-COPY config/ ./config/
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app

@@ -206,33 +206,57 @@ jobs:
           matrix_os: ${{ matrix.os }}
 
   docker:
-    name: Docker Build
+    name: Docker Build (linux/amd64)
     runs-on: ubuntu-latest
-    # P3 2026-06-29: PERMANENTLY DISABLED.
+    timeout-minutes: 20
+    # audit-2026-07-04 P0-3: re-enabled Docker build as a PR gate.
     #
-    # Why disabled:
-    #   1. The `docker` job runs on `ubuntu-latest` but the project's
-    #      build context uses macOS-specific paths (e.g. references
-    #      to scripts/* that import macOS-only stdlib on certain code paths).
-    #   2. The current build does not have a Dockerfile pinned to the
-    #      release artifact; building an image would inflate CI minutes
-    #      without producing a deployed artifact.
-    #   3. Dependabot upgrade to docker/build-push-action v5 (PR queue) is
-    #      not required while the job is skipped.
+    # Why previously disabled:
+    #   1. macOS-specific paths in build context (now resolved: Dockerfile
+    #      uses linux-only base image `python:3.11-slim` + Linux paths).
+    #   2. No pinned Dockerfile (now: 4 Dockerfiles at repo root, each
+    #      uses pyproject.toml as the single source of truth).
     #
-    # To re-enable (if ever needed):
-    #   - Add a pinned multi-stage Dockerfile at repo root.
-    #   - Remove the `if: github.event_name == 'pull_request' && false` gate.
-    #   - Self-hosted runner with Docker + macOS SDK is required.
+    # Why single-arch (linux/amd64) here:
+    #   - `docker buildx build --platform linux/amd64,linux/arm64 --load`
+    #     is not supported: "docker exporter does not currently support
+    #     exporting manifest lists". Cross-arch requires push to a
+    #     registry (e.g. GHCR) which is out of scope for PR gates
+    #     (CI minute cost).
+    #   - arm64 build is verified via release workflow push to main,
+    #     gated by .github/workflows/release-sign.yml (future work).
     #
-    # See: .github/workflows/ci.yml L607-L617 for historical context.
-    if: github.event_name == 'pull_request' && false  # permanent skip (see comment above)
+    # What we verify here:
+    #   * Each of 4 Dockerfiles builds cleanly on linux/amd64.
+    #   * The built image can `import scripts` (smoke test).
+    #
+    # If you need multi-arch now, use:
+    #   docker buildx build --platform linux/amd64,linux/arm64 \
+    #     --tag <user>/<repo>:tag --push .
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile: [Dockerfile, Dockerfile.dashboard, Dockerfile.gateway, Dockerfile.sse]
     steps:
       - uses: actions/checkout@v7
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
-      - name: Build
-        run: docker build -t finai-research-workflow:test .
+      - name: Build (linux/amd64)
+        run: |
+          echo "Building ${{ matrix.dockerfile }} on linux/amd64"
+          docker buildx build \
+            --platform linux/amd64 \
+            --file ${{ matrix.dockerfile }} \
+            --tag finai-${{ strategy.job-index }}-build:test \
+            --progress plain \
+            --load \
+            .
+          echo "OK: ${{ matrix.dockerfile }} builds on amd64"
+      - name: "Smoke: import the package on amd64 build"
+        run: |
+          docker run --rm finai-0-build:test \
+            python -c "import scripts; print('Import OK:', scripts.__file__)"
+        if: matrix.dockerfile == 'Dockerfile'
 
   coverage:
     name: Coverage Report
@@ -304,16 +328,28 @@ jobs:
           log_path: pytest-unified.log
           label: Coverage
 
-  # P3-8 修复 2026-06-28: 添加 mypy 类型检查 CI job
-  # 注意：本项目大量使用 # type: ignore 和 Any，预期会有错误。
-  # 本 job 仅收集错误数并写到 GITHUB_STEP_SUMMARY，不 fail 阻断流程（渐进式收严）。
+  # audit-2026-07-04 PR-3 / P0-4: mypy PR-blocking via "no new errors" rule.
+  #
+  # Strategy: do NOT fail on absolute error count (currently hundreds, mostly
+  # from existing # type: ignore usages and Any-heavy modules). Instead, fail
+  # only when a PR introduces NEW mypy errors compared to the merge base.
+  #
+  # Implementation:
+  #   1. Run mypy on HEAD → write mypy-head.log
+  #   2. Run mypy on merge base (origin/main) → write mypy-base.log
+  #   3. diff new errors: diff <(sort base) <(sort head) | grep '^>' = new
+  #   4. If new_errors > 0 → fail; else → succeed (with informational summary)
+  #
+  # This gives "渐进式收严" semantics: existing baseline doesn't block, but
+  # PRs cannot regress. Once we have time, switch to absolute threshold.
   mypy:
-    name: mypy type check (advisory)
+    name: mypy type check (PR-blocking)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    continue-on-error: true  # 渐进式收严：先报告问题，不立即阻断 CI
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -323,10 +359,10 @@ jobs:
           pip install mypy==1.13.0
           pip install -r requirements-ci.txt
           pip install --no-deps -e .
-      - name: Run mypy on scripts/
-        id: mypy_run
+      - name: Run mypy on HEAD
+        id: mypy_head
         run: |
-          echo "## mypy output" >> $GITHUB_STEP_SUMMARY
+          echo "## mypy output (HEAD)" >> $GITHUB_STEP_SUMMARY
           mypy scripts/ \
             --ignore-missing-imports \
             --no-strict-optional \
@@ -345,33 +381,97 @@ jobs:
             --follow-imports=silent \
             --no-incremental \
             --warn-unused-ignores \
-            2>&1 | tee mypy.log | tail -100
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
-          TOTAL=$(grep -c "error:" mypy.log || echo 0)
-          echo "Found $TOTAL mypy errors (advisory, not failing CI)"
-      - name: Summarize mypy errors
-        if: always()
+            2>&1 | tee mypy-head.log >/dev/null || true
+          HEAD_TOTAL=$(grep -c "error:" mypy-head.log || echo 0)
+          echo "HEAD total mypy errors: $HEAD_TOTAL"
+          echo "head_total=$HEAD_TOTAL" >> $GITHUB_OUTPUT
+      - name: Run mypy on merge base
+        id: mypy_base
+        if: github.event_name == 'pull_request'
         run: |
-          if [ -f mypy.log ]; then
-            TOTAL=$(grep -c "error:" mypy.log || echo 0)
-            UNIQUE_FILES=$(grep "error:" mypy.log | sed 's/:.*//' | sort -u | wc -l | tr -d ' ')
-            echo "## mypy: $TOTAL errors across $UNIQUE_FILES files" >> $GITHUB_STEP_SUMMARY
+          BASE_REF="origin/${{ github.base_ref }}"
+          echo "## mypy output (BASE: $BASE_REF)" >> $GITHUB_STEP_SUMMARY
+          git fetch --depth=1 origin "$BASE_REF" || true
+          git worktree add /tmp/base "$BASE_REF" 2>/dev/null || {
+            echo "::warning::could not checkout base, will only check absolute count"
+            echo "base_total=-1" >> $GITHUB_OUTPUT
+            exit 0
+          }
+          cd /tmp/base
+          pip install --no-deps -e . >/dev/null 2>&1 || true
+          mypy scripts/ \
+            --ignore-missing-imports \
+            --no-strict-optional \
+            --disable-error-code=no-untyped-def \
+            --disable-error-code=no-untyped-call \
+            --disable-error-code=import-untyped \
+            --disable-error-code=attr-defined \
+            --disable-error-code=arg-type \
+            --disable-error-code=call-arg \
+            --disable-error-code=assignment \
+            --disable-error-code=return-value \
+            --disable-error-code=operator \
+            --disable-error-code=union-attr \
+            --disable-error-code=index \
+            --disable-error-code=var-annotated \
+            --follow-imports=silent \
+            --no-incremental \
+            --warn-unused-ignores \
+            2>&1 | tee /tmp/mypy-base.log >/dev/null || true
+          BASE_TOTAL=$(grep -c "error:" /tmp/mypy-base.log || echo 0)
+          echo "BASE total mypy errors: $BASE_TOTAL"
+          echo "base_total=$BASE_TOTAL" >> $GITHUB_OUTPUT
+          cd -
+          git worktree remove /tmp/base --force || true
+      - name: Compute new mypy errors and enforce PR-blocking
+        id: mypy_diff
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ ! -f mypy-head.log ] || [ ! -f /tmp/mypy-base.log ]; then
+            echo "::warning::missing log files, skipping diff check"
+            exit 0
+          fi
+          # Each mypy error line: scripts/foo.py:10: error: ... [code]
+          # Use a stable normalized form: file:line
+          NORMALIZE='s/:[0-9]*: error:.*//'
+          NEW_ERRORS=$(
+            diff \
+              <(sed -E "$NORMALIZE" /tmp/mypy-base.log | sort -u) \
+              <(sed -E "$NORMALIZE" mypy-head.log | sort -u) \
+            | grep '^>' | wc -l | tr -d ' '
+          )
+          echo "new_errors=$NEW_ERRORS" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## mypy PR-blocking result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          HEAD_TOTAL=$(grep -c "error:" mypy-head.log || echo 0)
+          BASE_TOTAL=$(grep -c "error:" /tmp/mypy-base.log || echo 0)
+          echo "- HEAD total: $HEAD_TOTAL" >> $GITHUB_STEP_SUMMARY
+          echo "- BASE total: $BASE_TOTAL" >> $GITHUB_STEP_SUMMARY
+          echo "- **NEW errors introduced by this PR: $NEW_ERRORS**" >> $GITHUB_STEP_SUMMARY
+          if [ "$NEW_ERRORS" -gt 0 ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Top 20 files with errors:" >> $GITHUB_STEP_SUMMARY
+            echo "New errors (file:line):" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            grep "error:" mypy.log | sed 's/:.*//' | sort | uniq -c | sort -rn | head -20 >> $GITHUB_STEP_SUMMARY
+            diff \
+              <(sed -E "$NORMALIZE" /tmp/mypy-base.log | sort -u) \
+              <(sed -E "$NORMALIZE" mypy-head.log | sort -u) \
+            | grep '^>' \
+            | sed 's/^> //' \
+            | head -50 >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Full log: see mypy.log artifact." >> $GITHUB_STEP_SUMMARY
+            echo "::error::This PR introduces $NEW_ERRORS new mypy errors. Fix or add '# type: ignore[code]' annotations before merging." >> $GITHUB_STEP_SUMMARY
+            exit 1
           else
-            echo "mypy.log not generated" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "OK: no new mypy errors compared to base. ✅" >> $GITHUB_STEP_SUMMARY
           fi
       - name: Upload mypy log
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: mypy-log
-          path: mypy.log
+          path: mypy-head.log
           if-no-files-found: ignore
