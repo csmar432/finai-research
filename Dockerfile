@@ -11,13 +11,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # ── Install Python dependencies ───────────────────────────────────────────────
 # Uses pyproject.toml directly (requirements.txt is deprecated).
-# Pin hatchling>=1.32 to avoid `AttributeError: module 'hatchling.build'
-# has no attribute 'prepare_metadata_for_build_editable'`. Older 1.30.x
-# releases lack this hook, which modern pip (>=24) calls. See issue
-# https://github.com/pypa/pip/issues/12963 for context.
+# audit-2026-07-04 PR-3: removed the unreachable `hatchling>=1.32` pin.
+# As of 2026-07, hatchling's latest stable on PyPI is 1.30.1; the pin was
+# historically wrong. The transitive hatchling dep is now resolved by
+# `pip install -e .` from pyproject.toml's build-system.requires.
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir "hatchling>=1.32" && \
-    pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -e .
 
 # ── Copy project files ────────────────────────────────────────────────────────
 COPY pyproject.toml ./

@@ -10,10 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies from pyproject.toml (requirements.txt is deprecated)
+# audit-2026-07-04 PR-3: hatchling comes as a transitive dep of pyproject.toml's
+# build-system. Earlier versions of this Dockerfile pinned `hatchling>=1.32`
+# (claiming older releases lacked `prepare_metadata_for_build_editable`),
+# but as of 2026-07 hatchling's latest stable is 1.30.1 — the >=1.32 pin
+# was unreachable and broke all 4 Dockerfile builds. We let pip resolve
+# hatchling from pyproject.toml's requires=[...] instead.
 COPY pyproject.toml ./
-# Pin hatchling>=1.32: older releases lack `prepare_metadata_for_build_editable`
-# which modern pip (>=24) calls; see https://github.com/pypa/pip/issues/12963
-RUN pip install --no-cache-dir "hatchling>=1.32"
 RUN pip install --no-cache-dir -e .
 
 COPY scripts/ ./scripts/
