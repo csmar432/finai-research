@@ -506,7 +506,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Install full deps (heavy: chromadb/faiss/torch/etc.)
+      - name: "Install full deps (heavy: chromadb/faiss/torch etc.)"
         run: |
           python -m pip install --upgrade pip
           # Use timeout because requirements.txt has heavy deps.
@@ -543,7 +543,7 @@ jobs:
                   print(f'  {m}: {t}: {msg}')
               sys.exit(1)
           "
-      - name: Sanity check: heavy modules
+      - name: "Sanity check: heavy modules"
         # Spot-check the heavy deps actually work (chromadb, faiss, etc.)
         run: |
           python -c "

@@ -512,6 +512,61 @@ def check_12_fail_under_floor() -> CheckResult:
     )
 
 
+def check_13_workflow_yaml_unquoted_colons() -> CheckResult:
+    """Verify all GitHub workflow YAML files parse, and warns on quoted-on-need
+    patterns.
+
+    Background: PR-3 (a623563) and PR-4 (997abff) both shipped ci.yml changes
+    that contained YAML mapping errors because the author(s) used `name: x: y`
+    without quoting. GitHub Actions silently fails the whole workflow in this
+    case (jobs_count=0, conclusion=failure, no per-job logs).
+
+    Defense: dynamically parse every .yml/.yaml under .github/workflows/ with
+    PyYAML, and additionally scan for the pattern 'name: <unquoted text with
+    colon>' as a heuristic to catch the bug class even when other YAML in the
+    file happens to parse (e.g. unquoted colons inside a `run:` block).
+    """
+    evidence: list[str] = []
+    bad_files: list[str] = []
+
+    for p in sorted((PROJECT_ROOT / ".github").rglob("*.y*ml")):
+        rel = p.relative_to(PROJECT_ROOT)
+        evidence.append(f"  parsing: {rel}")
+        try:
+            import yaml  # type: ignore[import-untyped]
+
+            yaml.safe_load(p.read_text(encoding="utf-8"))
+        except Exception as e:
+            bad_files.append(f"{rel}: {type(e).__name__}: {e}")
+        # Heuristic: scan for unquoted `name:` containing a colon.
+        for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            stripped = line.lstrip()
+            if not stripped.startswith("- name:") and not stripped.startswith("name:"):
+                continue
+            # Extract value after `name:`.
+            val = stripped.split("name:", 1)[1].lstrip()
+            # If the value is unquoted and contains a colon, that's the bug.
+            if val and not val.startswith('"') and not val.startswith("'"):
+                if ":" in val:
+                    bad_files.append(
+                        f"{rel}:{i}: name field contains unquoted colon: {line.strip()!r}"
+                    )
+
+    if bad_files:
+        return CheckResult(
+            passed=False,
+            actual=f"{len(bad_files)} issue(s)",
+            expected="0 (every workflow YAML must parse; no unquoted `name:` colons)",
+            evidence=evidence + [f"  PROBLEM: {x}" for x in bad_files],
+        )
+    return CheckResult(
+        passed=True,
+        actual="0 issues",
+        expected="0",
+        evidence=evidence,
+    )
+
+
 def check_10_llm_reviewer_stable_model() -> CheckResult:
     """Verify LLMReviewer doesn't default to a non-existent model name.
 
@@ -624,6 +679,12 @@ CHECKS: list[AuditCheck] = [
         "CI fail-under floor",
         "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=25 at PR-1; raise after PR-6)",
         check_12_fail_under_floor,
+    ),
+    AuditCheck(
+        13,
+        "Workflow YAML unquoted-colon check",
+        "Defense: ci.yml YAML parse failures caused silent CI failures in PR-3 (a623563) and PR-4 (997abff). This check parses every .github/workflows/*.yml with PyYAML and flags any unquoted `name:` containing a colon.",
+        check_13_workflow_yaml_unquoted_colons,
     ),
 ]
 
