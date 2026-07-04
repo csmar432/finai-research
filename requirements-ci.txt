@@ -48,5 +48,10 @@ pytest-asyncio>=0.23.0
 pytest-cov>=4.1.0
 pytest-timeout>=2.2.0
 
+# MCP (P3-audit-2026-07-04: 加入让 test_mcp_servers_import.py 真正跑 import 而非 skip)
+# 之前注释说 "mcp 是 heavyweight"，但实际 mcp 2.1MB，且能让 43 个 server.py 的
+# 1235 stmts 进入 coverage 覆盖。如果后续想瘦身，可以单独砍。
+mcp>=1.0.0
+
 # Lint
 ruff>=0.4.0
