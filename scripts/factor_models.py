@@ -100,7 +100,10 @@ def _grs_test(
     # F 分布近似
     pval = 1 - scipy_stats.f.cdf(grs_stat, N, T - N - K)
 
-    return float(grs_stat), float(pval)
+    # P3-audit-2026-07-04: numpy 2.x 严格要求 float() 输入是 0-d array。
+    # grs_stat / pval 是 1x1 matrix → .item() 转 0-d 再 float()。
+    # 老版本 numpy 1.x 也接受 1x1 matrix 的 float()，现统一用 .item() 防回归。
+    return float(grs_stat.item()), float(pval.item())
 
 
 # ════════════════════════════════════════════════════════════════════

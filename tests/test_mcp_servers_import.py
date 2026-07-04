@@ -38,13 +38,20 @@ SERVERS = _discover_servers()
 
 @pytest.mark.parametrize("module_name", SERVERS, ids=lambda x: x.replace("mcp_servers.", ""))
 def test_server_module_imports(module_name: str):
-    """每个 user_*/server.py 必须能成功 import（不调用网络）。"""
+    """每个 user_*/server.py 必须能成功 import（或优雅处理缺失依赖）。
+
+    P3-audit-2026-07-04: 一些 server.py 在 mcp 包缺失时调用 sys.exit(1) 而非 raise。
+    我们 capture SystemExit（在依赖缺失时算作正常失败）。
+    """
     try:
         mod = importlib.import_module(module_name)
     except (ImportError, ModuleNotFoundError) as e:
         # 可选依赖缺失（如 tushare 需 TUSHARE_TOKEN）— 允许失败但报告原因
         pytest.skip(f"可选依赖缺失: {e}")
-    assert mod is not None
+    except SystemExit as e:
+        # mcp 包未安装 — server.py 主动 sys.exit(1)，跳过
+        pytest.skip(f"server.py 显式 sys.exit({e.code}) — 缺 mcp 或其他可选依赖")
+    assert mod is not None, f"{module_name} import 返回 None"
     # 验证模块有 main 或 list_tools 或 mcp 对象
     has_main = hasattr(mod, "main") or hasattr(mod, "list_tools") or hasattr(mod, "mcp")
     assert has_main, f"{module_name} 缺少 main/list_tools/mcp"
