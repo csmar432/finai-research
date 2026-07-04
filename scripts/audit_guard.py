@@ -595,12 +595,9 @@ def check_14_diff_in_diff2_phantom_dep() -> CheckResult:
             if "diff-in-diff2" in line or "diff_in_diff2" in line:
                 refs.append(f"active install: {f.relative_to(PROJECT_ROOT)}:{i}: {stripped}")
 
-    # In source code, `import diff_in_diff2` is ALLOWED (graceful fallback).
-    # Only flag imports / installer hints in SCANNER itself.
-    for py in (PROJECT_ROOT / "scripts" / "audit_guard.py",):
-        text = py.read_text(encoding="utf-8")
-        # Don't scan this very check for self-references.
-        continue
+    # In source code, `import diff_in_diff2` is ALLOWED (graceful fallback
+    # via EstimatorUnavailableError in scripts/research_framework/modern_did.py).
+    # We only flag install directives in requirements files here.
 
     if refs:
         return CheckResult(
