@@ -15,14 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # As of 2026-07, hatchling's latest stable on PyPI is 1.30.1; the pin was
 # historically wrong. The transitive hatchling dep is now resolved by
 # `pip install -e .` from pyproject.toml's build-system.requires.
+# README.md must be present before `pip install -e .` because pyproject.toml
+# declares `readme = "README.md"` and hatchling validates it exists.
 COPY pyproject.toml ./
+COPY README.md ./
 RUN pip install --no-cache-dir -e .
 
 # ── Copy project files ────────────────────────────────────────────────────────
-# README.md is required because pyproject.toml has `readme = "README.md"`
-# and hatchling validates it exists during `pip install -e .`.
-COPY pyproject.toml ./
-COPY README.md ./
 COPY scripts/ ./scripts/
 COPY mcp_servers/ ./mcp_servers/
 COPY config/ ./config/
