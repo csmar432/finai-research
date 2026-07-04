@@ -2340,7 +2340,7 @@ class MediationAnalysis:
         ci_lower = np.percentile(indirect_effects, 2.5)
         ci_upper = np.percentile(indirect_effects, 97.5)
 
-        pvalue = 2.0 * min(
+        pvalue = 2.0 * min(  # type: ignore[call-overload]
             np.mean(indirect_effects < 0),
             np.mean(indirect_effects > 0),
         )
