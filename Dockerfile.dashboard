@@ -22,6 +22,7 @@ COPY README.md ./
 # pyproject.toml [tool.hatch.build.targets.wheel.force-include] requires
 # these dirs to exist at pip install time. See main Dockerfile for context.
 COPY config/ ./config/
+COPY templates/ ./templates/
 COPY knowledge/ ./knowledge/
 COPY mcp_servers/ ./mcp_servers/
 RUN pip install --no-cache-dir -e .
