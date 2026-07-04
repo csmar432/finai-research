@@ -118,6 +118,11 @@ jobs:
           # real failure surfaces in CI rather than being truncated.
           # We do NOT use --cov-append here because there's only one test
           # job now; coverage is written directly to .coverage.
+          #
+          # PYTHONPATH=.:$(pwd) is set so that 'scripts.core.*' imports
+          # work in worker subprocesses regardless of xdist timing of
+          # rootdir discovery vs conftest evaluation.
+          PYTHONPATH="${PYTHONPATH:-}:." \
           pytest tests/ \
             -n 2 \
             --cov=scripts --cov-branch \
