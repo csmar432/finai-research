@@ -368,6 +368,10 @@ markers = [
     # audit-2026-07-04 P0-1: smoke marker 语义 — 仅 verify 模块可 import 的轻测试。
     # 默认被 addopts 过滤掉；显式跑用 `pytest -m smoke`。
     "smoke: quick smoke tests (skipped by default, run with -m smoke)",
+    # audit-2026-07-04 PR-2: tests requiring LaTeX engines (tectonic/xelatex).
+    # CI ubuntu runner does not have tectonic; these tests self-skip via
+    # shutil.which() at test time. The marker is for explicit targeting.
+    "latex: tests requiring LaTeX engines (tectonic/xelatex) installed",
 ]
 filterwarnings = [
     # error 在前作为"基准"规则, ignore 在前作为"覆盖"规则

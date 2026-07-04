@@ -10,11 +10,14 @@ import pytest
 from scripts.journal_template import JournalTemplate
 
 
+@pytest.mark.latex
 def test_detect_best_backend_finds_tectonic():
-    """tectonic 在 macOS 上已安装，应被检测到。"""
+    """tectonic 在 macOS 上已安装，应被检测到。
+    Skip in environments without tectonic installed (CI ubuntu runner)."""
+    if shutil.which("tectonic") is None:
+        pytest.skip("tectonic LaTeX engine not installed in this environment")
     jt = JournalTemplate.__new__(JournalTemplate)
     backend = jt._detect_best_backend()
-    # macOS 上有 tectonic
     assert backend == "tectonic"
 
 
