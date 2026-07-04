@@ -1,0 +1,35 @@
+{
+  "name": "get_institutional_holdings",
+  "description": "获取A股上市公司机构投资者持股明细（按机构类型：QFII/基金/社保/券商/信托）。数据来源：Tushare Pro（需Token）或 akshare（免费备选）。返回机构投资者持股变化和比例。用于研究机构持股与企业创新/ESG/融资约束的关系。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码（格式：000001.SZ）"
+      },
+      "start_date": {
+        "type": "string",
+        "description": "开始日期（格式：YYYYMMDD），默认20180101"
+      },
+      "end_date": {
+        "type": "string",
+        "description": "结束日期（格式：YYYYMMDD），默认最新"
+      },
+      "holder_type": {
+        "type": "string",
+        "description": "机构类型过滤：qfii/基金/信托/券商/社保/all，默认all",
+        "enum": ["qfii", "fund", "trust", "broker", "social_security", "all"],
+        "default": "all"
+      },
+      "period": {
+        "type": "string",
+        "description": "报告期类型：season（季报）/ann（年报），默认season",
+        "enum": ["season", "ann"],
+        "default": "season"
+      }
+    },
+    "required": ["ts_code"],
+    "description": "获取A股机构投资者持股数据（按机构类型：QFII/基金/社保/券商/信托）。使用 Tushare Pro API。"
+  }
+}

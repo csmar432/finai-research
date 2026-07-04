@@ -230,8 +230,6 @@ did_results.json
 .bias_history.db
 
 # ── MCP server untracked tools ───────────────────────────────────────────────
-mcp_servers/user_tushare/tools/get_institutional_holdings.json
-mcp_servers/user_tushare/tools/get_top_holders.json
 
 # ── Local audit & development files ─────────────────────────────────────────
 AUDIT_2026-06-10.md

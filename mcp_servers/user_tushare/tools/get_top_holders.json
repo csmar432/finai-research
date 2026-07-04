@@ -1,0 +1,20 @@
+{
+  "name": "get_top_holders",
+  "description": "获取上市公司前10大股东信息，包括股东名称、持股数量、持股比例、股东性质及变动情况。数据来源：Tushare Pro（需Token）或 akshare（免费备选）。用于研究股权结构、大股东行为和控股权变更。",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ts_code": {
+        "type": "string",
+        "description": "股票代码（格式：000001.SZ）",
+        "examples": ["000001.SZ", "600519.SH"]
+      },
+      "ann_date": {
+        "type": "string",
+        "description": "公告日期（格式：YYYYMMDD），默认最新一期"
+      }
+    },
+    "required": ["ts_code"],
+    "description": "获取上市公司前10大股东信息。使用 Tushare Pro API。"
+  }
+}
