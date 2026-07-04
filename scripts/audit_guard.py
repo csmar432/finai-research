@@ -414,6 +414,104 @@ def check_9_ssot_numbers_match_docs() -> CheckResult:
     )
 
 
+def check_11_omit_longtail_not_growing() -> CheckResult:
+    """Audit claim (audit-2026-07-04 P0-1): 'CI 覆盖率凑数通过新增 omit 藏分母'.
+
+    Defense: bound the size of [tool.coverage.run] omit list. If it
+    grows beyond a known set of legitimate CLI / DEPRECATED modules,
+    this is a hallucinated-fix attempt and must be rejected.
+    """
+    p = PROJECT_ROOT / "pyproject.toml"
+    if not p.exists():
+        return CheckResult(False, "pyproject.toml missing", "exists", [])
+    text = p.read_text()
+    block_start = text.find("[tool.coverage.run]")
+    if block_start < 0:
+        return CheckResult(False, "no [tool.coverage.run] block", "present", [])
+    rest = text[block_start:]
+    # Stop at next TOML section header (line starting with `[name]`).
+    block_lines = []
+    lines = rest.splitlines(keepends=True)
+    for idx, ln in enumerate(lines):
+        if idx == 0:
+            block_lines.append(ln)
+            continue
+        s = ln.strip()
+        if s.startswith("[") and s.endswith("]") and not s.startswith("#"):
+            break
+        block_lines.append(ln)
+    block = "".join(block_lines)
+    in_omit = False
+    omit_lines = []
+    for ln in block.splitlines():
+        s = ln.strip()
+        if s.startswith("omit"):
+            in_omit = True
+            continue
+        if in_omit:
+            if s.startswith("]"):
+                in_omit = False
+                continue
+            if s.startswith('"') and ".py" in s:
+                omit_lines.append(s)
+    count = len(omit_lines)
+    # 2026-07-04 baseline (post PR-1): ~24 CLI/DEPRECATED entries.
+    # Cap at 29 to allow legitimate additions; bigger is suspicious.
+    cap = 29
+    evidence = [f"  omit entries: {count}", f"  cap: {cap}"]
+    if omit_lines:
+        evidence.extend(f"    -> {x[:60]}" for x in omit_lines[:3])
+    return CheckResult(
+        passed=count <= cap,
+        actual=f"{count} entries",
+        expected=f"<= {cap}",
+        evidence=evidence,
+    )
+
+
+def check_12_fail_under_floor() -> CheckResult:
+    """Audit claim (audit-2026-07-04 P0-1): 'fail-under is repeatedly lowered
+    (6 -> 3 -> 15 -> 25)'.
+
+    Defense: enforce a minimum floor on fail-under. The floor is
+    intentionally conservative (=25) at PR-1 time because removing the
+    9 "CI not-imported" omit entries drops the apparent coverage from
+    a padded 25-30% to a real 26-27%. PR-6 will add ~425 real tests to
+    push coverage naturally above 30%, at which point this check's
+    floor should be raised in lockstep.
+
+    Audit guard against silent threshold drift downward.
+    """
+    ci = PROJECT_ROOT / ".github" / "workflows" / "ci.yml"
+    if not ci.exists():
+        return CheckResult(False, "ci.yml missing", "present", [])
+    text = ci.read_text()
+    import re
+    matches = re.findall(r"fail[-_]under=(\d+)", text)
+    if not matches:
+        return CheckResult(False, "no fail-under directive", ">=25", [])
+    vals = [int(x) for x in matches]
+    min_v = min(vals)
+    evidence = [
+        f"  fail-under values found: {vals}",
+        f"  minimum: {min_v}",
+        f"  audit-2026-07-04 floor: 25 (PR-1); raise to 30 after PR-6",
+    ]
+    if min_v >= 25:
+        return CheckResult(
+            passed=True,
+            actual=f"min={min_v}",
+            expected=">=25 (audit-2026-07-04 floor at PR-1)",
+            evidence=evidence,
+        )
+    return CheckResult(
+        passed=False,
+        actual=f"min={min_v}",
+        expected=">=25",
+        evidence=evidence,
+    )
+
+
 def check_10_llm_reviewer_stable_model() -> CheckResult:
     """Verify LLMReviewer doesn't default to a non-existent model name.
 
@@ -514,6 +612,18 @@ CHECKS: list[AuditCheck] = [
         "LLMReviewer stable model",
         "Verify default judge_model is not gpt5 (non-existent)",
         check_10_llm_reviewer_stable_model,
+    ),
+    AuditCheck(
+        11,
+        "coverage omit size bounded",
+        "Defense vs. audit-2026-07-04 P0-1 'omit to hide coverage' (cap=29)",
+        check_11_omit_longtail_not_growing,
+    ),
+    AuditCheck(
+        12,
+        "CI fail-under floor",
+        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=25 at PR-1; raise after PR-6)",
+        check_12_fail_under_floor,
     ),
 ]
 

@@ -112,7 +112,7 @@ jobs:
             tests/test_regression_engine.py tests/test_planner.py tests/test_type_audit.py \
             tests/test_fin_charts.py tests/test_health_check.py \
             tests/test_core_ansi.py \
-            --cov=scripts --cov-branch --tb=long --timeout=120 --maxfail=10 -rfE \
+            --cov=scripts --cov-branch --tb=long --timeout=120 --maxfail=1 -rfE \
             -v 2>&1 | tee pytest-batch1.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -259,7 +259,7 @@ jobs:
             tests/test_agent_loader.py tests/test_data_cache.py \
             tests/test_agent_pipeline_core.py \
             tests/test_research_framework_exports.py tests/test_retry_utils.py \
-            --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=10 -rfE \
+            --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=1 -rfE \
             -v 2>&1 | tee pytest-batch2.log
         env:
           DEEPSEEK_API_KEY: dummy_key
@@ -395,7 +395,7 @@ jobs:
             tests/test_knowledge_graph_smoke.py \
             tests/test_factor_models_smoke.py \
             tests/test_mcp_servers_import.py \
-            --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=10 -rfE \
+            --cov=scripts --cov-branch --cov-append --tb=long --timeout=120 --maxfail=1 -rfE \
             -v 2>&1 | tee pytest-batch3.log
         env:
           DEEPSEEK_API_KEY: dummy_key
