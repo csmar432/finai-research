@@ -87,7 +87,12 @@ def test_pr4_latex_auto_detect():
 
 
 def test_pr4_tectonic_compiles_minimal():
+    import shutil
     from scripts.journal_template import JournalTemplate
+
+    # audit-2026-07-04 PR-2: tectonic not installed on CI ubuntu runner.
+    if shutil.which("tectonic") is None:
+        pytest.skip("tectonic LaTeX engine not installed in this environment")
 
     jt = JournalTemplate.__new__(JournalTemplate)
     tex = Path("/tmp/pr6_minimal.tex")
