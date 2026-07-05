@@ -2241,6 +2241,10 @@ class AgentPipeline:
         if self._hitl_gate is None:
             return {"error": "HITL not enabled"}
 
+        # _ensure_initialized guarantees _orchestrator is set
+        if self._orchestrator is None:
+            return {"error": "Orchestrator not initialized"}
+
         # 1. 执行批准
         approval_result = self._orchestrator.approve_step(stage, feedback)
 
@@ -2270,6 +2274,10 @@ class AgentPipeline:
             self._ensure_initialized()
         if self._hitl_gate is None:
             return {"error": "HITL not enabled"}
+
+        # _ensure_initialized guarantees _orchestrator is set
+        if self._orchestrator is None:
+            return {"error": "Orchestrator not initialized"}
 
         result = self._orchestrator.reject_step(stage, feedback)
 
@@ -2306,6 +2314,12 @@ class AgentPipeline:
             result = pipeline.resume_pipeline(orchestrator_result)
         """
         # Re-run orchestrator from the pause point
+        if self._orchestrator is None:
+            return AgentPipelineResult(
+                config=self.config,
+                success=False,
+                errors=["Orchestrator not initialized"],
+            )
         orchestrator_result = self._orchestrator.resume_pipeline(
             paused_result, self._current_steps
         )
