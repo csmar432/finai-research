@@ -137,9 +137,9 @@ class ChartRegistry:
 
     def register(self, record: ChartRecord) -> None:
         self.records.append(record)
-        self._persist()
+        self._persist(record)
 
-    def _persist(self) -> None:
+    def _persist(self, record: ChartRecord) -> None:
         with self._path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record.to_dict(), ensure_ascii=False) + "\n")
 
