@@ -107,7 +107,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 227 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
+- ✅ 241 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
