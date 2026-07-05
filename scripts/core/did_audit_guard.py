@@ -373,7 +373,9 @@ def install_audit_guard_into_rdd() -> bool:
         df = None
         if args and isinstance(args[0], pd.DataFrame):
             df = args[0]
-        df = df or kwargs.get("df")
+        # audit-2026-07-05 PR-7F: avoid `df or ...` which calls DataFrame.__bool__
+        if df is None:
+            df = kwargs.get("df")
         if df is not None and DID_AUDIT_ENABLED:
             result = assert_real_data(df, context="RDDEngine.__init__")
             if not result.is_real:
@@ -410,7 +412,10 @@ def install_audit_guard_into_iv_panel() -> bool:
         df = None
         if args and isinstance(args[0], pd.DataFrame):
             df = args[0]
-        df = df or kwargs.get("df")
+        # audit-2026-07-05 PR-7F: avoid `df or ...` which calls DataFrame.__bool__
+        # and raises ValueError on pandas 3.0+. Use explicit None check.
+        if df is None:
+            df = kwargs.get("df")
         if df is not None and DID_AUDIT_ENABLED:
             result = assert_real_data(df, context="IVPanel.__init__")
             if not result.is_real:
@@ -459,7 +464,9 @@ def install_audit_guard_into_rdd() -> bool:
         df = None
         if args and isinstance(args[0], pd.DataFrame):
             df = args[0]
-        df = df or kwargs.get("df")
+        # audit-2026-07-05 PR-7F: avoid `df or ...` which calls DataFrame.__bool__
+        if df is None:
+            df = kwargs.get("df")
         if df is not None and DID_AUDIT_ENABLED:
             result = assert_real_data(df, context="RDDEngine.__init__")
             if not result.is_real:

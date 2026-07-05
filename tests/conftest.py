@@ -39,6 +39,32 @@ except Exception:
     pass
 
 
+# ─── pandas.util._decorators.deprecate_kwarg compatibility shim ─────────────
+# audit-2026-07-05 PR-7F: pandas 3.0+ changed deprecate_kwarg() signature.
+# statsmodels 0.14.x calls it positionally with (old_arg, new_arg), but
+# pandas now uses keyword args only. Importing statsmodels.tsa.stattools
+# (transitively pulled by linearmodels → statsmodels.api) raises:
+#   TypeError: deprecate_kwarg() missing 1 required positional argument
+# This breaks scripts.research_framework.iv_panel and ~25 tests in
+# tests/test_iv_panel.py. Patch the decorator to a no-op stub.
+try:
+    import pandas.util._decorators as _pd_dec
+
+    class _StubDeprecateKwarg:
+        """No-op drop-in for pandas.util._decorators.deprecate_kwarg."""
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __call__(self, func):
+            return func
+
+    _pd_dec.deprecate_kwarg = _StubDeprecateKwarg
+    del _pd_dec, _StubDeprecateKwarg
+except Exception:
+    pass
+
+
 # ─── Shared mock fixtures ──────────────────────────────────────────────────────
 
 

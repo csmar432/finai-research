@@ -61,9 +61,11 @@ class TestKleibergenPaapRK:
 
         model = IVPanel(df, y_var="y", x_vars=["X"], iv_vars=["Z1", "Z2"],
                         unit_var="id", time_var="year")
-        kp_f, kp_p = model._kleibergen_paap_rk_f(
-            y.astype(float), X.astype(float), Z.astype(float), None
-        )
+        # Ensure numpy arrays
+        y_arr = np.asarray(y, dtype=float)
+        X_arr = np.asarray(X, dtype=float)
+        Z_arr = np.asarray(Z, dtype=float)
+        kp_f, kp_p = model._kleibergen_paap_rk_f(y_arr, X_arr, Z_arr, None)
         assert isinstance(kp_f, float)
         assert isinstance(kp_p, float)
         assert kp_f > 10, f"Strong instrument should give KP-F > 10, got {kp_f}"
