@@ -13,11 +13,11 @@
 | 📦 Core Modules (`scripts/core/`) | 101 | 核心库（被其他模块导入）|
 | 📊 Research Framework (`scripts/research_framework/`) | 48 | 计量方法模块 |
 | 🧭 Research Directions (`scripts/research_directions/`) | 15 | 研究方向领域 |
-| 🧪 Tests (`tests/`) | 156 | 测试文件 |
+| 🧪 Tests (`tests/`) | 168 | 测试文件 |
 | 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
-| **合计（仅 Python 文件）** | **416** | 不含 MCP / docs / tests fixtures |
+| **合计（仅 Python 文件）** | **428** | 不含 MCP / docs / tests fixtures |
 
-> 自动生成于 2026-07-04
+> 自动生成于 2026-07-05
 ---
 
 ## 一、Entry Points · 用户入口
