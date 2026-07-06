@@ -107,7 +107,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 389 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
+- ✅ 397 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
@@ -161,16 +161,17 @@ Each step is **independently callable** and **has its own output file** as a sta
 
 | Metric | Value | Note |
 |---|-------|------|
-| MCP data servers | **43** | 43 directories; ~15 fully free, rest require paid/institutional accounts; some stubs.
-| Econometric methods | **~30** | ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
-| Journal templates | **44** | 44 EN/ZH |
-| AI skills | **17** | .cursor/skills/ (operational source) |
-| Test files | **86** | pytest collect: 2,136 tests |
-| Python lines | **~200K** | |
-| CI jobs | **7** | 3 batches + lint + 2 smoke + docs + coverage |
-| Coverage | **15%** | gate: fail-under=15 (raised from 6 in 2026-06-25 audit fix) |
+| MCP data servers | **43** | 43 directories: 28 fully free, 12 API-key, 3 opt-in legal-risk (CNKI/Wanfang/Chinese Literature) |
+| Econometric methods | **47** | 33/47 with tests; ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
+| Journal templates | **30** | English + Chinese top journals (JF/JFE/RFS/经济研究/金融研究/管理世界/...) |
+| AI skills | **17** | `.cursor/skills/` operational source, 5 fully automated, 12 prompt-driven |
+| Research directions | **15** | digital_finance / green_finance / carbon_economics / ... |
+| Test files / functions | **397 / 7,804** | pytest; ~50K LOC tests |
+| Python lines | **~206K scripts + ~98K tests** | |
+| CI jobs | **7 batches × ~40 steps** | lint + 3× smoke + mypy + security + coverage + docker |
+| Coverage | **49.72%** | gate `fail-under=28` (raised from 6 in 2026-06-25 audit), target 60% |
 
-> Coverage is reported to Codecov; progressive increase toward 30% is planned.
+> Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/FinAI-Research-Workflow); progressive increase toward 60% target.
 
 ---
 

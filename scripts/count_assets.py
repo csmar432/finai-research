@@ -32,7 +32,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 def count_mcp_servers() -> dict[str, int]:
     """统计 MCP server 目录数 + server.py 状态。"""
     mcp_root = PROJECT_ROOT / "mcp_servers"
-    user_servers = sorted(d for d in mcp_root.iterdir() if d.is_dir() and d.name.startswith("user_"))
+    user_servers = sorted(
+        d for d in mcp_root.iterdir() if d.is_dir() and d.name.startswith("user_")
+    )
 
     free_count = 0
     stub_count = 0
@@ -47,7 +49,11 @@ def count_mcp_servers() -> dict[str, int]:
             continue
         content = server_py.read_text()
         # 真实实现：含具体的 tool 注册（list_tools / call_tool）
-        if "list_tools" in content and "call_tool" in content and "register_tool" not in content[:500]:
+        if (
+            "list_tools" in content
+            and "call_tool" in content
+            and "register_tool" not in content[:500]
+        ):
             if srv.name in LEGAL_RISK_SERVERS:
                 legal_risk_count += 1
             else:
@@ -120,6 +126,7 @@ def count_research_directions() -> int:
     """
     try:
         from scripts.research_directions import DirectionFactory  # noqa: E402
+
         if not DirectionFactory._initialized:
             DirectionFactory._init_registry()
         return len(DirectionFactory._registry)
@@ -163,6 +170,12 @@ def count_modules_with_tests(rf_count: int) -> dict[str, int]:
 
     Returns: {"with_tests": int, "without_tests": int, "total": int,
               "modules_without_tests": list[str]}  # 新增：模块名列表
+
+    测试文件命名约定（任一命中即算覆盖）：
+      - test_<module>.py            — 标准（最常见）
+      - test_<module>_*.py          — deep_exec / smoke 等变体
+      - test_research_framework_<module>.py — 旧风格（PR #132 之前）
+      - test_research_framework_<module>_*.py — 旧风格变体
     """
     rf = PROJECT_ROOT / "scripts" / "research_framework"
     tests = PROJECT_ROOT / "tests"
@@ -173,8 +186,14 @@ def count_modules_with_tests(rf_count: int) -> dict[str, int]:
         if m.name.startswith("_"):
             continue
         module_name = m.stem
-        test_file = tests / f"test_{module_name}.py"
-        if test_file.exists():
+        # 多命名约定匹配
+        candidates = [
+            tests / f"test_{module_name}.py",
+            *sorted(tests.glob(f"test_{module_name}_*.py")),
+            tests / f"test_research_framework_{module_name}.py",
+            *sorted(tests.glob(f"test_research_framework_{module_name}_*.py")),
+        ]
+        if any(p.exists() for p in candidates):
             with_test += 1
         else:
             without_test += 1
@@ -259,6 +278,10 @@ def sync_ssot() -> int:
     ssot["econometrics"]["total_method_modules"] = stats["econometric_methods"]
     ssot["econometrics"]["test_coverage"]["modules_with_tests"] = cov["with_tests"]
     ssot["econometrics"]["test_coverage"]["modules_total"] = cov["total"]
+    # 自动计算 percent（之前手写 66.0 与 47/47 = 100 不一致；分子分母都在 SSoT 中，派生即可）
+    if cov["total"] > 0:
+        pct = round(100.0 * cov["with_tests"] / cov["total"], 2)
+        ssot["econometrics"]["test_coverage"]["percent"] = pct
     # 自动维护 zero_test_modules（之前是手写列表，经常过时）
     if "modules_without_tests" in cov:
         ssot["econometrics"]["zero_test_modules"] = cov["modules_without_tests"]
@@ -268,11 +291,13 @@ def sync_ssot() -> int:
 
     # last_verified timestamp
     from datetime import datetime
+
     ssot["last_verified"] = datetime.now().strftime("%Y-%m-%d")
     ssot["verified_by"] = "scripts/count_assets.py --sync-ssot"
 
     with open(ssot_path, "w") as f:
         json.dump(ssot, f, ensure_ascii=False, indent=2)
+        f.write("\n")  # POSIX-style trailing newline (ruff W292)
 
     print(f"✅ Synced {ssot_path}")
     print(f"   MCP free: {mcp['free_no_key']}")
@@ -285,7 +310,9 @@ def main():
     parser = argparse.ArgumentParser(description="Count repository assets (auto-generated metrics)")
     parser.add_argument("--json", action="store_true", help="Output JSON")
     parser.add_argument("--markdown", action="store_true", help="Output Markdown table for README")
-    parser.add_argument("--sync-ssot", action="store_true", help="Regenerate scripts/PROJECT_NUMBERS.json from disk")
+    parser.add_argument(
+        "--sync-ssot", action="store_true", help="Regenerate scripts/PROJECT_NUMBERS.json from disk"
+    )
     args = parser.parse_args()
 
     if args.sync_ssot:

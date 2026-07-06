@@ -1,7 +1,7 @@
 # BibTeX Reference Check Report
 
 - .bib files: **2**
-- .tex files: **647**
+- .tex files: **746**
 - Total \cite commands: **30**
 - Unique keys cited: **20**
 

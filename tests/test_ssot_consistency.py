@@ -139,19 +139,32 @@ def test_ssot_zero_test_modules_matches_disk():
     count_assets 现在自动同步，应永不再误。
 
     本测试用独立 AST 方式验证（非 count_assets）以避免递归依赖。
+    多命名约定支持（与 scripts/count_assets.py 一致）：
+      - test_<module>.py
+      - test_<module>_*.py (deep_exec / smoke 变体)
+      - test_research_framework_<module>.py (旧风格)
+      - test_research_framework_<module>_*.py (旧风格变体)
     """
     ssot = json.loads(SSOT.read_text())
     reported = set(ssot["econometrics"].get("zero_test_modules", []))
 
-    # 独立磁盘验证（一对一映射：test_{module_name}.py）
+    # 独立磁盘验证（多命名约定，与 count_assets.py 保持一致）
     rf = Path("scripts/research_framework")
     tests = Path("tests")
     actual = set()
     for m in rf.glob("*.py"):
         if m.name.startswith("_"):
             continue
-        if not (tests / f"test_{m.stem}.py").exists():
-            actual.add(m.stem)
+        mod = m.stem
+        if (tests / f"test_{mod}.py").exists():
+            continue
+        if list(tests.glob(f"test_{mod}_*.py")):
+            continue
+        if (tests / f"test_research_framework_{mod}.py").exists():
+            continue
+        if list(tests.glob(f"test_research_framework_{mod}_*.py")):
+            continue
+        actual.add(mod)
 
     assert reported == actual, (
         f"SSOT zero_test_modules 漂移: 报告 {len(reported)} 个, 实际 {len(actual)} 个.\n"
