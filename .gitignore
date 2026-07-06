@@ -46,6 +46,10 @@ data/review_cache/
 data/policy_experiments/*.json
 !data/policy_experiments/policy_database.json
 
+# Local paper cache (downloaded PDFs for offline reading; large binary)
+knowledge/papers_fulltext/
+knowledge/papers_meta/
+
 # Models
 *.pt
 *.pth

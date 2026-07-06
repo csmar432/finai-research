@@ -33,7 +33,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
 [![Audit 2026-07-04](https://img.shields.io/badge/audit-2026--07--04%20PASSED-brightgreen)](docs/audit/audit-2026-07-04.md)
-[![Coverage 26.8%→40%](https://img.shields.io/badge/coverage-26.8%25%E2%86%92%E2%9F%A8_40%25-orange)](docs/audit/audit-2026-07-04.md)
+[![Coverage 49.72%](https://img.shields.io/badge/coverage-49.72%25-brightgreen)](https://codecov.io/gh/csmar432/FinAI-Research-Workflow)
 
 ---
 <!--
@@ -392,6 +392,13 @@ Each skill is documented in `.claude/skills/` (Claude Code) and `.github/skills/
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 | [docs/tutorials/](docs/tutorials/) | Step-by-step tutorials |
 | [docs/api_reference.md](docs/api_reference.md) | API documentation |
+| [docs/MANUAL_TASKS_RUNBOOK.md](docs/MANUAL_TASKS_RUNBOOK.md) | Operations runbook for GitHub-side manual steps |
+| [docs/MOCK_DATA_POLICY.md](docs/MOCK_DATA_POLICY.md) | Mock data policy (5 servers disabled by default) |
+| [docs/DOCKER_INSTALL.md](docs/DOCKER_INSTALL.md) | Docker installation guide |
+| [docs/CITATION_GUIDE.md](docs/CITATION_GUIDE.md) | Citation guidance for derived work |
+| [docs/GITHUB_DISCUSSIONS_SETUP.md](docs/GITHUB_DISCUSSIONS_SETUP.md) | GitHub Discussions enablement |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture overview |
+| [docs/audit/audit-2026-07-04.md](docs/audit/audit-2026-07-04.md) | Latest CI coverage governance audit |
 
 ---
 
