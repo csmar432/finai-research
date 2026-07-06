@@ -1112,8 +1112,8 @@ class CreditRiskSensitivity:
 
         # ── Merton Default Distance ─────────────────────────────────────
         if all(k in df.columns for k in ["total_assets", "market_cap", "debt"]):
-            V = df["total_assets"].values.clip(lower=1e-10)
-            D = df["debt"].values.clip(lower=1e-10)
+            V = np.clip(df["total_assets"].values, a_min=1e-10, a_max=None)
+            D = np.clip(df["debt"].values, a_min=1e-10, a_max=None)
             sigma_V = df.get("asset_volatility", pd.Series(np.ones(len(df)) * 0.2)).values
 
             r = 0.05  # 无风险利率假设
