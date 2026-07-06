@@ -247,7 +247,7 @@ class TestPSMDIDComputeBalance:
         control = pd.DataFrame({"x": [5.0] * 5})
         balance = PSMDID._compute_balance(treated, control, ["x"])
         assert balance["std_bias"].iloc[0] == 0.0
-        assert balance["abs_bias_lt_10pct"].iloc[0] == True
+        assert balance["abs_bias_lt_10pct"].iloc[0] is True or balance["abs_bias_lt_10pct"].iloc[0] == True  # noqa: E712
 
     def test_balance_large_bias(self):
         """Large mean difference gives large standardised bias."""
@@ -255,7 +255,7 @@ class TestPSMDIDComputeBalance:
         control = pd.DataFrame({"x": [0.0, 1.0, -1.0]})
         balance = PSMDID._compute_balance(treated, control, ["x"])
         assert abs(balance["std_bias"].iloc[0]) > 0.5
-        assert balance["abs_bias_lt_10pct"].iloc[0] == False
+        assert balance["abs_bias_lt_10pct"].iloc[0] is False or balance["abs_bias_lt_10pct"].iloc[0] == False  # noqa: E712
 
     def test_balance_missing_covariate(self):
         """Missing covariate in DataFrame raises KeyError (as expected)."""
