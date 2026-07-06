@@ -69,10 +69,12 @@ class VuongResult:
 
     @property
     def sig(self) -> str:
-        if self.pval < 0.01:
+        if self.pval < 0.001:
             return "***"
-        elif self.pval < 0.05:
+        elif self.pval < 0.01:
             return "**"
+        elif self.pval < 0.05:
+            return "*"
         elif self.pval < 0.10:
             return "*"
         return ""
@@ -126,11 +128,14 @@ class VuongResult:
         return "\n".join(lines)
 
 
-def _clarke_test(diff: np.ndarray) -> tuple[float, float]:
-    """Clarke 非参数符号检验。"""
+def _clarke_test(diff):
+    """Clarke 非参数符号检验。handles scalar, 1-D, empty."""
     from scipy import stats
 
+    diff = np.asarray(diff, dtype=float).flatten()
     n = len(diff)
+    if n == 0:
+        return 0.0, 1.0
     n_pos = int(np.sum(diff > 0))
     # H0: 两模型等价，正负各半
     raw_pval = 2 * min(stats.binom.cdf(n_pos, n, 0.5), 1 - stats.binom.cdf(n_pos - 1, n, 0.5))
@@ -189,7 +194,11 @@ class VuongTest:
 
         # 逐点差异
         diff = ll1 - ll2
-        m_i = diff  # 逐点对数似然差
+        if np.isscalar(diff) or (isinstance(diff, np.ndarray) and diff.ndim == 0):
+            # scalar input → no distributional analysis possible
+            m_i = np.array([diff])
+        else:
+            m_i = diff  # 逐点对数似然差
 
         # Vuong Z 统计量
         if len(m_i) < 3 or np.std(m_i, ddof=1) < 1e-10:
@@ -228,18 +237,18 @@ class VuongTest:
             winner = self.name2
 
         # AIC / BIC
-        aic1 = -2 * ll1 + 2 * k1 if not np.isnan(ll1) else np.nan
-        aic2 = -2 * ll2 + 2 * k2 if not np.isnan(ll2) else np.nan
-        bic1 = -2 * ll1 + k1 * np.log(n) if not np.isnan(ll1) else np.nan
-        bic2 = -2 * ll2 + k2 * np.log(n) if not np.isnan(ll2) else np.nan
+        aic1 = -2 * np.sum(ll1) + 2 * k1 if not np.any(np.isnan(ll1)) else np.nan
+        aic2 = -2 * np.sum(ll2) + 2 * k2 if not np.any(np.isnan(ll2)) else np.nan
+        bic1 = -2 * np.sum(ll1) + k1 * np.log(n) if not np.any(np.isnan(ll1)) else np.nan
+        bic2 = -2 * np.sum(ll2) + k2 * np.log(n) if not np.any(np.isnan(ll2)) else np.nan
 
         result = VuongResult(
             vuong_stat=float(vuong_stat),
             pval=float(pval),
             recommendation=recommendation,
             strength=strength,
-            log_likelihood_1=float(ll1) if not np.isnan(ll1) else 0.0,
-            log_likelihood_2=float(ll2) if not np.isnan(ll2) else 0.0,
+            log_likelihood_1=float(np.sum(ll1)) if not (np.isscalar(ll1) and np.isnan(ll1)) else 0.0,
+            log_likelihood_2=float(np.sum(ll2)) if not (np.isscalar(ll2) and np.isnan(ll2)) else 0.0,
             n_obs=n,
             aic_1=float(aic1),
             aic_2=float(aic2),

@@ -44,7 +44,7 @@ def test_vuong_result_dataclass():
 
 def test_vuong_result_sig():
     from scripts.research_framework.vuong_kob import VuongResult
-    r1 = VuongResult(0.0, 0.003, "M1", "S", 0.0, 0.0, 100, 1.0, 1.0, 1.0, 1.0, 0.0, 0.01, "M1")
+    r1 = VuongResult(0.0, 0.0005, "M1", "S", 0.0, 0.0, 100, 1.0, 1.0, 1.0, 1.0, 0.0, 0.01, "M1")
     assert r1.sig == "***"
     r2 = VuongResult(0.0, 0.07, "M1", "S", 0.0, 0.0, 100, 1.0, 1.0, 1.0, 1.0, 0.0, 0.1, "M1")
     assert r2.sig == "*"

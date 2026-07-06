@@ -775,7 +775,7 @@ class TestCheckContentStructure:
         content = {
             "text": "[1] Author et al., 2020 10.1234/test. [2] Author et al., 2021. [3] Author et al., 2022."
         }
-        rule = {"validation": {"min_verification_rate": 0.5}}
+        rule = {"validation": {"min_verification_rate": 0.5, "rules": [{"check": "citation_verifiable"}]}}
         passed, msg = reg._check_content_structure(content, rule)
         assert passed is False  # rate=1/3<0.5 → violation expected
 
