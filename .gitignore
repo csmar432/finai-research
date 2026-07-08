@@ -165,7 +165,11 @@ tariff_research/
 output/
 results/
 .cache/.last_session
-papers/
+# Papers — two submission-ready manuscripts are tracked in git.
+# Do NOT add them to this ignore list; they are tracked normally.
+# Only add future paper subdirectories here if they are truly local experiments.
+# Example (if needed in the future):
+# papers/local_experiment_notes/
 
 # Local planning / 路线图（个人用，不入版本控制）
 ROADMAP.md

@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+  \centering
+  \caption{Descriptive Statistics}
+  \label{tab:descriptive}
+  \begin{threeparttable}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    \textbf{Variable} & \textbf{N} & \textbf{Mean} & \textbf{Std} & \textbf{Min} & \textbf{Median} & \textbf{Max} \\
+    \midrule
+    Book Leverage ($\mathit{lev}$) & 42 & 0.240 & 0.108 & 0.085 & 0.239 & 0.499 \\
+    LTD Ratio ($\mathit{ltd\_ratio}$) & 42 & 0.223 & 0.102 & 0.078 & 0.226 & 0.453 \\
+    Cost of Debt, \% ($\mathit{cost\_debt}$) & 42 & 4.002 & 1.135 & 1.980 & 4.318 & 6.086 \\
+    ESG$_{\text{high}}$ & 42 & 0.357 & 0.485 & 0.000 & 0.000 & 1.000 \\
+    Post (2022+) & 42 & 1.000 & 0.000 & 1.000 & 1.000 & 1.000 \\
+    $\ln$(Total Assets) & 42 & 24.910 & 0.784 & 23.879 & 24.827 & 26.751 \\
+    ROA ($\mathit{roa}$) & 42 & 0.103 & 0.054 & 0.003 & 0.094 & 0.230 \\
+    Tangibility & 42 & 0.554 & 0.240 & 0.133 & 0.573 & 0.940 \\
+    Market-to-Book ($\mathit{mb}$) & 42 & 2.411 & 0.765 & 1.584 & 2.375 & 4.416 \\
+    Cash Ratio & 42 & 0.059 & 0.036 & 0.001 & 0.061 & 0.147 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small
+    \item \textit{Notes:} Sample: 14 U.S. energy sector firms, 2022--2024 ($N=42$ firm-years).
+    Financial data sourced from yfinance MCP API. All continuous variables winsorized at 1\%/99\%.
+    ESG classification based on Sustainalytics/MSCI public ratings terciles.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}

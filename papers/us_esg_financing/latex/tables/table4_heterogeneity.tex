@@ -1,0 +1,24 @@
+\begin{table}[htbp]
+  \centering
+  \caption{Heterogeneity Analysis: ESG Financing Effect by Sub-sample}
+  \label{tab:heterogeneity}
+  \begin{threeparttable}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    \textbf{Sub-sample} & \textbf{N} & \textbf{DID Coef (lev)} & \textbf{DID SE} & \textbf{t-stat} & \textbf{p-value} \\
+    \midrule
+    E\&P (non-integrated) & 15 & 0.0000*** & (0.0000) & 4.20 & 0.0000 \\
+    Small (below median) & 21 & 0.0038 & (0.0112) & 0.34 & 0.7360 \\
+    Large (above median) & 21 & -0.0405* & (0.0162) & -2.50 & 0.0122 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small
+    \item \textit{Notes:} DID coefficient on Book Leverage (lev) reported.
+    Robust standard errors in parentheses. $^{***} p<0.01$, $^{**} p<0.05$, $^{*} p<0.10$.
+    Sub-samples: E\&P = Exploration \& Production non-integrated; Equipment \& Services;
+    Integrated Majors; Refining (high ESG baseline).
+    Small/Large split at median $\ln$(Total Assets).
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}

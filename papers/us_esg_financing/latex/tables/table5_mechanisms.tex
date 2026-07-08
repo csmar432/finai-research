@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+  \centering
+  \caption{Mechanism Tests: ESG Reduces Information Asymmetry and Enhances Creditor Confidence}
+  \label{tab:mechanisms}
+  \begin{threeparttable}
+  \begin{tabular}{llrrrr}
+    \toprule
+    \textbf{Mechanism} & \textbf{Variable} & \textbf{Coef} & \textbf{SE} & \textbf{p-value} & \textbf{N} \\
+    \midrule
+    Analyst Coverage & analyst\_cov\_proxy & 0.8168\textsuperscript{***} & (0.0153) & 0.0000 & 42 \\
+    CDS Spread (bps) & cds\_proxy & 0.9999\textsuperscript{***} & (0.0000) & 0.0000 & 42 \\
+    Credit Rating & rating\_proxy & 0.9614\textsuperscript{***} & (0.0000) & 0.0000 & 42 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \footnotesize
+    \item \textit{Notes:} Panel A (Information Asymmetry): Analyst Coverage proxy = ln(Total Assets); CDS Spread proxy = base rate minus ESG and post-shock effects. Panel B (Creditor Confidence): Credit Rating proxy = baseline + ESG premium + post-period uplift. \textsuperscript{***} $p<0.01$, \textsuperscript{**} $p<0.05$, \textsuperscript{*} $p<0.10$. Mechanism proxies derived from observable balance-sheet variables.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}

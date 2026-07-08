@@ -1,0 +1,46 @@
+\begin{table}[htbp]
+  \centering
+  \caption{ESG and Financing Constraints --- Baseline DID Results}
+  \label{tab:did_baseline}
+  \begin{threeparttable}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Variable} & \textbf{(1)} & \textbf{(2)} & \textbf{(3)} \\
+                      & \textit{Book Lev.} & \textit{LTD Ratio} & \textit{Cost of Debt (\%)} \\
+    \midrule
+    ESG$\times$Post & 0.0358 & 0.0401 & 0.9747 \\
+     & (0.0506) & (0.0437) & (1.4556) \\
+    ESG$_{high}$ & 0.0358 & 0.0401 & 0.9747 \\
+     & (0.0506) & (0.0437) & (1.4556) \\
+    Post & 0.6224$^{*}$ & 0.6521 & 8.5997 \\
+     & (0.3313) & (0.4178) & (9.8758) \\
+    $\ln$(Assets) & -0.0475$^{*}$ & -0.0486 & -0.5364 \\
+     & (0.0264) & (0.0341) & (0.7866) \\
+    ROA & -0.1726$^{*}$ & -0.1066 & 0.8269 \\
+     & (0.1048) & (0.0979) & (3.8554) \\
+    Tangibility & 0.0365 & -0.0187 & -4.3349 \\
+     & (0.3038) & (0.2759) & (8.7222) \\
+    Market-to-Book & 0.0385 & 0.0247 & 0.3092 \\
+     & (0.0236) & (0.0264) & (0.6646) \\
+    Cash Ratio & 0.0117 & -0.0577 & -9.9165 \\
+     & (0.4912) & (0.2850) & (9.6418) \\
+    \midrule
+    Firm FE & \checkmark & \checkmark & \checkmark \\
+    Year FE & \checkmark & \checkmark & \checkmark \\
+    \midrule
+    Observations & 42 & 42 & 42 \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}
+    \small
+    \item \textit{Notes:} Standard errors clustered at firm level in parentheses.
+    $^{***}p<0.01$, $^{**}p<0.05$, $^{*}p<0.10$.
+    Dependent variables: (1) Book Leverage = Total Debt / Total Assets;
+    (2) LTD Ratio = Long-Term Debt / Total Assets;
+    (3) Cost of Debt = Interest Expense / Total Debt $\times$ 100.
+    ESG$_{\text{high}}$ = 1 for High-ESG firms (Sustainalytics top tercile), 0 otherwise.
+    Post = 1 for years 2022 and beyond (SEC climate disclosure rule proposal).
+    Data source: yfinance financial statements (2022--2024).
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}
