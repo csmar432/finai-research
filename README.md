@@ -35,6 +35,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research?style=social)](https://github.com/csmar432/finai-research/stargazers)
 [![Audit 2026-07-04](https://img.shields.io/badge/audit-2026--07--04%20PASSED-brightgreen)](docs/audit/audit-2026-07-04.md)
 [![Coverage 49.72%](https://img.shields.io/badge/coverage-49.72%25-brightgreen)](https://codecov.io/gh/csmar432/finai-research)
+[![Discussions](https://img.shields.io/github/discussions/csmar432/finai-research?color=blueviolet)](https://github.com/csmar432/finai-research/discussions)
 
 ---
 <!--

@@ -189,16 +189,16 @@ Five MCP servers return mock/hardcoded data by default. All are clearly labeled:
 **Scope**: `scripts/` (72,178 statements, 20,726 branches)  
 **Test framework**: pytest + pytest-cov 7.1.0 + pytest-xdist -n 2  
 **Hardware**: macOS Apple Silicon, Python 3.12  
-**Total tests**: 8,038 across 397 test files  
+**Total tests**: 8,048 across 398 test files (was 8,038 / 397 before PR-12)  
 **Threshold (CI gate)**: 28% (`coverage report --fail-under=28`)
 
 | Scope | Stmts | Miss | Branch | Cover | Notes |
 |-------|------:|-----:|-------:|------:|-------|
 | **Overall** | 72,178 | 46,240 | 20,726 | **32.2%** | Passes 28% CI gate |
+| `scripts/start_research.py` | 158 | 41 | 32 | **70.5%** | Raised from 0% by PR-12; pipeline entry point now smoke-tested |
 | `scripts/research_framework/` | ~12K | ~3K | ~2K | **~80%** | All 47 econometric methods individually tested |
 | `scripts/core/` | ~6K | ~2K | ~1.5K | **~70%** | Agent orchestration, checkpoint, observability |
 | `scripts/research_directions/` | ~3K | ~3K | ~500 | **~5%** | Lightweight stubs, integration-tested via pipeline |
-| `scripts/start_research.py` | 158 | 158 | 32 | **0%** | Pipeline entry point — known gap, integration tests cover |
 | `scripts/run_research.py` | 224 | 197 | 32 | **10%** | CLI wrapper, exercised via shell integration |
 
 **Run yourself**:
