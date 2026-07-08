@@ -228,5 +228,5 @@
 
 - Each blog links to the FinAI GitHub repo
 - Each blog embeds the banner.svg and quickstart.svg
-- Each blog ends with "If you want to try this: github.com/csmar432/finai-research-workflow"
+- Each blog ends with "If you want to try this: github.com/csmar432/finai-research"
 - All blogs share a "FinAI Blog" tag

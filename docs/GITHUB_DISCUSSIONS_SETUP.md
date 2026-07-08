@@ -4,7 +4,7 @@ GitHub Discussions must be enabled manually (no API available).
 
 ## How to Enable
 
-1. Go to your repo: https://github.com/csmar432/FinAI-Research-Workflow
+1. Go to your repo: https://github.com/csmar432/finai-research
 2. Click **Settings** (top navigation bar)
 3. Scroll down to **Features** section
 4. Toggle **Discussions** ON

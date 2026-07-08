@@ -4,10 +4,10 @@
 site_name: FinResearch Agent 文档
 site_description: 经济金融领域 AI 学术研究工作流文档
 site_author: FinAI Research Workflow Contributors
-site_url: https://csmar432.github.io/finai-research-workflow
+site_url: https://csmar432.github.io/finai-research
 
-repo_name: csmar432/finai-research-workflow
-repo_url: https://github.com/csmar432/finai-research-workflow
+repo_name: csmar432/finai-research
+repo_url: https://github.com/csmar432/finai-research
 edit_uri: ""
 
 site_dir: .site

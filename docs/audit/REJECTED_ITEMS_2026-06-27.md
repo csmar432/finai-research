@@ -59,7 +59,7 @@
 > CI 添加 codecov 上传步骤，使 README 徽章有实际数据支撑
 
 **核实结果**：
-- `README.md` L21：`[![codecov](...)](https://codecov.io/gh/csmar432/finai-research-workflow)`
+- `README.md` L21：`[![codecov](...)](https://codecov.io/gh/csmar432/finai-research)`
 - 徽章已存在，是否有数据是 codecov 服务端问题，与 CI 步骤无关
 
 **结论**：**报告不实**。

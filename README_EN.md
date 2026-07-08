@@ -6,18 +6,18 @@
 >
 > ⚠️ **Legal Risk Servers**: 3 MCP servers (`user-cnki`, `user-wanfang`, `user-chinese-literature`) scrape websites that prohibit automated access. **They are disabled by default for all users.** See [LEGAL_CONSENT.md](LEGAL_CONSENT.md) to understand the risk and opt-in with `CLI_ACCEPT_RISK`.
 
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/FinAI-Research-Workflow)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/FinAI-Research-Workflow#installation)
-[![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research-workflow?color=blue)](https://github.com/csmar432/FinAI-Research-Workflow/releases)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow)](https://github.com/csmar432/FinAI-Research-Workflow/stargazers)
+[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/finai-research#installation)
+[![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research?color=blue)](https://github.com/csmar432/finai-research/releases)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research)](https://github.com/csmar432/finai-research/stargazers)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
-[![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research/actions)
+[![codecov](https://codecov.io/gh/csmar432/finai-research/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research)
 <!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。 -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.PENDING.svg)](https://doi.org/10.5281/zenodo.PENDING)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research?style=social)](https://github.com/csmar432/finai-research/stargazers)
 
 [🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](#)
 
@@ -122,7 +122,7 @@
 
 ```bash
 # 1. Install
-git clone https://github.com/csmar432/finai-research-workflow.git
+git clone https://github.com/csmar432/finai-research.git
 cd finai-research-workflow
 pip install -e ".[dev, econometrics]"  # econometrics adds linearmodels + diff-in-diff2
 
@@ -171,7 +171,7 @@ Each step is **independently callable** and **has its own output file** as a sta
 | CI jobs | **7 batches × ~40 steps** | lint + 3× smoke + mypy + security + coverage + docker |
 | Coverage | **49.72%** | gate `fail-under=28` (raised from 6 in 2026-06-25 audit), target 60% |
 
-> Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/FinAI-Research-Workflow); progressive increase toward 60% target.
+> Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/finai-research); progressive increase toward 60% target.
 
 ---
 
@@ -195,10 +195,10 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 
 ## 🔗 Links
 
-- **Source**: https://github.com/csmar432/FinAI-Research-Workflow
+- **Source**: https://github.com/csmar432/finai-research
 - **Install**: `pip install -e .` (clone first) — **not yet published to PyPI**
-- **Issues**: https://github.com/csmar432/finai-research-workflow/issues
-- **Discussions**: https://github.com/csmar432/finai-research-workflow/discussions
+- **Issues**: https://github.com/csmar432/finai-research/issues
+- **Discussions**: https://github.com/csmar432/finai-research/discussions
 - **Security**: See [SECURITY.md](SECURITY.md)
 - **Cite this work**: See [CITATION.cff](CITATION.cff)
 - **Full Changelog**: [CHANGELOG.md](CHANGELOG.md)
@@ -210,9 +210,9 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 
 This project is maintained by **[@csmar432](https://github.com/csmar432)**.
 
-- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
-- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research-workflow/discussions)
-- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
+- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research/issues)
+- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research/discussions)
+- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research/security/advisories/new)
 - 💖 **Sponsor / support**: [GitHub Sponsors](https://github.com/sponsors/csmar432) · [爱发电](https://afdian.net/a/finresearch)
 
 > Contributions of all sizes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.

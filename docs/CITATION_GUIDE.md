@@ -14,7 +14,7 @@
   year      = {2026},
   month     = jun,
   version   = {0.1.0},
-  url       = {https://github.com/csmar432/finai-research-workflow},
+  url       = {https://github.com/csmar432/finai-research},
   doi       = {10.5281/zenodo.PENDING},  % NOTE: PENDING. Replace after Zenodo release (https://zenodo.org)
   note      = {44 MCP data sources, 42 econometric methods, 17 AI skills, 44 journal templates}
 }
@@ -24,21 +24,21 @@
 
 ```
 csmar432. (2026). FinAI Research Workflow (Version 0.1.0) [Computer software].
-https://github.com/csmar432/finai-research-workflow
+https://github.com/csmar432/finai-research
 ```
 
 ## 3. Chicago (Author-Date)
 
 ```
 csmar432. 2026. "FinAI Research Workflow." Version 0.1.0.
-https://github.com/csmar432/finai-research-workflow.
+https://github.com/csmar432/finai-research.
 ```
 
 ## 4. MLA (9th edition)
 
 ```
 csmar432. "FinAI Research Workflow." Version 0.1.0, 2026,
-github.com/csmar432/finai-research-workflow.
+github.com/csmar432/finai-research.
 ```
 
 ## 5. Chinese GB/T 7714
@@ -46,7 +46,7 @@ github.com/csmar432/finai-research-workflow.
 ```
 csmar432. FinAI Research Workflow: 经济金融领域端到端AI智能体流水线
 [软件]. 版本 0.1.0. 2026.
-https://github.com/csmar432/finai-research-workflow.
+https://github.com/csmar432/finai-research.
 ```
 
 ## 6. Acknowledgement Text (适合论文致谢/Acknowledgement)
@@ -110,7 +110,7 @@ DOI: 10.5281/zenodo.PENDING  (replace with actual after Zenodo release — see h
   author = {{csmar432}},
   title  = {{FinAI Research Workflow: Modern DiD module}},
   year   = {2026},
-  url    = {https://github.com/csmar432/finai-research-workflow/blob/main/scripts/research_framework/modern_did.py}
+  url    = {https://github.com/csmar432/finai-research/blob/main/scripts/research_framework/modern_did.py}
 }
 
 % 如果只用了 China policy events
@@ -118,7 +118,7 @@ DOI: 10.5281/zenodo.PENDING  (replace with actual after Zenodo release — see h
   author = {{csmar432}},
   title  = {{FinAI Research Workflow: China Policy Events Library}},
   year   = {2026},
-  url    = {https://github.com/csmar432/finai-research-workflow/blob/main/scripts/research_framework/china_policy_events.py}
+  url    = {https://github.com/csmar432/finai-research/blob/main/scripts/research_framework/china_policy_events.py}
 }
 ```
 
@@ -137,7 +137,7 @@ DOI: 10.5281/zenodo.PENDING  (replace with actual after Zenodo release — see h
 
 ```
 Acknowledgements: This work used FinAI Research Workflow
-(https://github.com/csmar432/finai-research-workflow), an open-source
+(https://github.com/csmar432/finai-research), an open-source
 AI agent for economic and financial research. We thank the FinAI
 contributors for making this tool publicly available. All errors are
 our own.

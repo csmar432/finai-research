@@ -28,6 +28,6 @@ assignees: ''
 
 ## Checklist
 
-- [ ] I have searched the [existing discussions](https://github.com/csmar432/finai-research-workflow/discussions) and [issues](https://github.com/csmar432/finai-research-workflow/issues?q=is%3Aissue)
+- [ ] I have searched the [existing discussions](https://github.com/csmar432/finai-research/discussions) and [issues](https://github.com/csmar432/finai-research/issues?q=is%3Aissue)
 - [ ] I have read the [使用指南.md](使用指南.md) Chinese manual
 - [ ] I have run `python scripts/health_check.py --json`

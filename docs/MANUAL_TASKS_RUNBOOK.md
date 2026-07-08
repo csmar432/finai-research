@@ -10,7 +10,7 @@
 
 | # | 任务 | 耗时 | 难度 | 关键链接 |
 |---|------|------|------|----------|
-| 1 | 合并 PR (5 commit) | 10 min | 简单 | https://github.com/csmar432/finai-research-workflow/pull/new/audit-fixes-2026-06-16 |
+| 1 | 合并 PR (5 commit) | 10 min | 简单 | https://github.com/csmar432/finai-research/pull/new/audit-fixes-2026-06-16 |
 | 2 | 设置 GitHub Topics | 5 min | 简单 | 仓库 Settings → Topics |
 | 3 | 发 awesome list PR (×7) | 60 min | 中等 | 7 个 awesome list 仓库 |
 | 4 | 发 HN/Reddit/知乎 | 30 min | 中等 | HN/Reddit/知乎平台 |
@@ -23,7 +23,7 @@
 
 ## 1.1 进入 PR 页面
 
-1. 打开 https://github.com/csmar432/finai-research-workflow/pull/new/audit-fixes-2026-06-16
+1. 打开 https://github.com/csmar432/finai-research/pull/new/audit-fixes-2026-06-16
 2. 看到 "Open pull request" 表单
 3. **Title**: `🚀 v1.0 全面修复 + 高星路线图 (5 commits)`
 4. **Comment** 粘贴：
@@ -126,7 +126,7 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ## 1.4 验证合并成功
 
-1. 打开 https://github.com/csmar432/finai-research-workflow/commits/main
+1. 打开 https://github.com/csmar432/finai-research/commits/main
 2. 应该看到刚才的 commit 在最顶部
 3. README 顶部会自动展示 social-preview-1280x640.png
 
@@ -144,7 +144,7 @@ Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ## 2.1 进入设置
 
-1. 打开 https://github.com/csmar432/finai-research-workflow/settings#repo-topics
+1. 打开 https://github.com/csmar432/finai-research/settings#repo-topics
 2. 滚到 **"Topics"** 部分
 3. 看到一个输入框 + "Add topic" 按钮
 
@@ -251,7 +251,7 @@ agent
 4. 在适当位置加一行：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - End-to-end AI agent pipeline for economic & financial research (lit review → empirical design → DID/IV/RDD → paper writing). 43 MCP data sources, 42 econometric methods, 17 AI skills. MIT.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end AI agent pipeline for economic & financial research (lit review → empirical design → DID/IV/RDD → paper writing). 43 MCP data sources, 42 econometric methods, 17 AI skills. MIT.
 ```
 
 5. Commit title: `Add FinAI Research Workflow`
@@ -268,7 +268,7 @@ agent
 3. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - End-to-end AI agent for empirical research with modern causal inference (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH, Synthetic DiD, IV, GMM, RDD, PSM).
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end AI agent for empirical research with modern causal inference (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon, dCdH, Synthetic DiD, IV, GMM, RDD, PSM).
 ```
 
 4. PR title: `Add FinAI Research Workflow`
@@ -283,7 +283,7 @@ agent
 2. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - 43 MCP servers for economic/financial research: Tushare (A-share), CSMAR, Wind, yfinance, FRED, OpenAlex (200M papers), ArXiv, Context7 (paper fulltext), and 35+ more.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - 43 MCP servers for economic/financial research: Tushare (A-share), CSMAR, Wind, yfinance, FRED, OpenAlex (200M papers), ArXiv, Context7 (paper fulltext), and 35+ more.
 ```
 
 3. PR title: `Add FinAI Research Workflow (43 MCP servers for economic research)`
@@ -298,7 +298,7 @@ agent
 2. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - Multi-agent pipeline for economic research: 8 specialised agents (idea, lit review, novelty, design, data, analysis, writing, adversarial review) with human-in-the-loop checkpoints. 17 Skills, 43 MCP data sources.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - Multi-agent pipeline for economic research: 8 specialised agents (idea, lit review, novelty, design, data, analysis, writing, adversarial review) with human-in-the-loop checkpoints. 17 Skills, 43 MCP data sources.
 ```
 
 3. PR title: `Add FinAI Research Workflow (multi-agent economic research pipeline)`
@@ -313,7 +313,7 @@ agent
 2. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - AI-assisted academic paper writing for economists. 45 journal templates (English: JF/JFE/RFS/JAE/Econometrica; Chinese: 经济研究/金融研究/管理世界/会计研究/中国工业经济). LaTeX compilation, BibTeX management, citation verification, multi-round adversarial review.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - AI-assisted academic paper writing for economists. 45 journal templates (English: JF/JFE/RFS/JAE/Econometrica; Chinese: 经济研究/金融研究/管理世界/会计研究/中国工业经济). LaTeX compilation, BibTeX management, citation verification, multi-round adversarial review.
 ```
 
 3. PR title: `Add FinAI Research Workflow (45 journal templates, EN+CN)`
@@ -328,7 +328,7 @@ agent
 2. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - Python equivalent of a complete Stata workflow for empirical economics. Modern DiD (CS/SunAb/Borusyak/GB/dCdH), IV, GMM, RDD, PSM. Outputs publication-ready LaTeX. Use when you want a Python-based end-to-end pipeline.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - Python equivalent of a complete Stata workflow for empirical economics. Modern DiD (CS/SunAb/Borusyak/GB/dCdH), IV, GMM, RDD, PSM. Outputs publication-ready LaTeX. Use when you want a Python-based end-to-end pipeline.
 ```
 
 3. PR title: `Add FinAI Research Workflow (Python equivalent of complete Stata workflow)`
@@ -344,7 +344,7 @@ agent
 3. 加：
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research-workflow) - End-to-end AI agent for economic & financial research. 43 MCP data sources, 42 econometric methods, 17 AI skills, 45 journal templates (EN+CN). MIT.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end AI agent for economic & financial research. 43 MCP data sources, 42 econometric methods, 17 AI skills, 45 journal templates (EN+CN). MIT.
 ```
 
 4. PR title: `Add FinAI Research Workflow to Science section`
@@ -377,7 +377,7 @@ agent
 
 1. 确认 PR 已合并（任务 1 完成）
 2. README 顶部 banner 已生效
-3. **测试链接**（用 `curl -I https://github.com/csmar432/finai-research-workflow` 验证 200）
+3. **测试链接**（用 `curl -I https://github.com/csmar432/finai-research` 验证 200）
 
 ## 4.1 Hacker News (Show HN)
 
@@ -392,7 +392,7 @@ agent
 ### Step 2: 填表
 
 - **Title**: `Show HN: I built an end-to-end AI research agent for economists`
-- **URL**: `https://github.com/csmar432/finai-research-workflow`
+- **URL**: `https://github.com/csmar432/finai-research`
 - **Text** (可选, 如果用 text 模式):
 
 打开 https://news.ycombinator.com/submit → 选 "Show HN" 分类 → 把 `docs/LAUNCH_KIT.md` 中 "1. Hacker News — Show HN" 部分的 **Body** 整段粘贴。

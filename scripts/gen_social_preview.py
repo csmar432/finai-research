@@ -60,7 +60,7 @@ for x, label, color in cards:
 # Bottom URL
 ax.text(
     6.4, 0.55,
-    "github.com/csmar432/FinAI-Research-Workflow",
+    "github.com/csmar432/finai-research",
     ha="center", va="center",
     fontsize=15, color=SUB, family="monospace",
 )

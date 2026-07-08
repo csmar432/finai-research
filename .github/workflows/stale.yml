@@ -12,7 +12,7 @@ permissions:
 jobs:
   stale:
     runs-on: ubuntu-latest
-    if: github.repository == 'csmar432/finai-research-workflow'
+    if: github.repository == 'csmar432/finai-research'
     steps:
       - name: Mark and close stale issues
         uses: actions/stale@v10

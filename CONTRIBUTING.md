@@ -126,7 +126,7 @@ Adding a new estimator? Follow this checklist:
 
 ## Questions?
 
-- Open a [GitHub Discussion](https://github.com/csmar432/FinAI-Research-Workflow/discussions) for questions not suitable for an Issue.
+- Open a [GitHub Discussion](https://github.com/csmar432/finai-research/discussions) for questions not suitable for an Issue.
 - For security issues, see [SECURITY.md](./SECURITY.md) — do **not** open a public Issue.
 
 ---

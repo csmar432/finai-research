@@ -50,6 +50,6 @@ assignees: ''
 
 ## Checklist
 
-- [ ] I have searched the [existing issues](https://github.com/csmar432/finai-research-workflow/issues?q=is%3Aissue) to avoid duplicates
+- [ ] I have searched the [existing issues](https://github.com/csmar432/finai-research/issues?q=is%3Aissue) to avoid duplicates
 - [ ] I have read the [Contributing Guide](../blob/main/CONTRIBUTING.md)
 - [ ] I have run `python scripts/health_check.py --json` and attached the output

@@ -36,5 +36,5 @@ template: |
 
   $CONTRIBUTORS
 
-  **Full Changelog**: https://github.com/csmar432/FinAI-Research-Workflow/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+  **Full Changelog**: https://github.com/csmar432/finai-research/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 exclude-labels: ["skip-changelog"]

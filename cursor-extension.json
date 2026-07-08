@@ -21,13 +21,13 @@
     "mcp",
     "finai"
   ],
-  "homepage": "https://github.com/csmar432/finai-research-workflow",
+  "homepage": "https://github.com/csmar432/finai-research",
   "repository": {
     "type": "git",
-    "url": "https://github.com/csmar432/finai-research-workflow.git"
+    "url": "https://github.com/csmar432/finai-research.git"
   },
   "bugs": {
-    "url": "https://github.com/csmar432/finai-research-workflow/issues"
+    "url": "https://github.com/csmar432/finai-research/issues"
   },
   "license": "MIT",
   "activationEvents": [
