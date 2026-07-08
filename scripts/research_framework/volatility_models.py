@@ -1422,7 +1422,7 @@ class VolatilitySpillover:
             n = n_assets
 
             # 获取 MA 表征系数 (H+1) × n × n
-            A = var_result.ma_rep(maxlags=H)
+            A = var_result.ma_rep(maxn=H)
             if A is None or A.shape[0] < 2:
                 _log.warning("[Spillover] VAR MA rep unavailable, using rolling vol instead")
                 return self._spillover_from_rolling(vol_sub)
@@ -1457,16 +1457,19 @@ class VolatilitySpillover:
             spillover_to = fevd_norm.sum(axis=0)    # 流入的总比例
             total_spillover = float(spillover_from.sum() / n)
 
-            # 构建 DataFrame
+            # 构建 DataFrame — 扩展到 (n+1) × (n+1)，加 "FROM Others" 行 + "TO Others" 列
+            fevd_ext = np.zeros((n + 1, n + 1))
+            fevd_ext[:n, :n] = fevd_norm
+            # 重新归一化以容纳扩展维度（"Others" 行/列初始为 0）
             col_names = list(vol_sub.columns)
             idx_names = col_names + ["FROM Others"]
             spill_mat = pd.DataFrame(
-                fevd_norm,
+                fevd_ext,
                 index=idx_names,
                 columns=col_names + ["TO Others"],
             )
             spill_mat["TO Others"] = list(spillover_from) + [total_spillover]
-            spill_mat.loc["FROM Others", :n_assets] = spillover_to
+            spill_mat.loc["FROM Others", col_names] = spillover_to
             spill_mat.loc["FROM Others", "TO Others"] = total_spillover
 
             self._spillover = spill_mat
@@ -1550,7 +1553,7 @@ class VolatilitySpillover:
         len(df) - 1
 
         # 格式化为百分比
-        df_pct = df.applymap(lambda x: f"{float(x)*100:{fmt}}\\%")
+        df_pct = df.map(lambda x: f"{float(x)*100:{fmt}}\\%")
 
         col_spec = "l" + "c" * len(df.columns)
 
