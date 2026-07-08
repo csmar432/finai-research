@@ -48,6 +48,6 @@ For example: *"I'm writing a paper on carbon trading policy... I need X to do Y 
 
 ## Checklist
 
-- [ ] I have searched the [existing issues](https://github.com/csmar432/finai-research-workflow/issues?q=is%3Aissue+label%3Aenhancement) to avoid duplicates
+- [ ] I have searched the [existing issues](https://github.com/csmar432/finai-research/issues?q=is%3Aissue+label%3Aenhancement) to avoid duplicates
 - [ ] This is a feature for the *workflow / research methodology* (not just a personal script)
 - [ ] It would benefit at least 10 other researchers

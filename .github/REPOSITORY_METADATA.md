@@ -1,7 +1,7 @@
 # GitHub Repository Metadata
 
 > 📋 集中存放 GitHub 仓库页需要手动粘贴的所有元数据。
-> 用法：到 https://github.com/csmar432/FinAI-Research-Workflow/settings
+> 用法：到 https://github.com/csmar432/finai-research/settings
 > 把下面字段对应填入。
 
 ## 1. Description (顶部 "About" 卡片)
@@ -13,7 +13,7 @@ End-to-end AI agent workflow for economic & financial research: lit review → i
 ## 2. Website
 
 ```
-https://github.com/csmar432/FinAI-Research-Workflow
+https://github.com/csmar432/finai-research
 ```
 （或留空，等 GitHub Pages 发布后填 `https://csmar432.github.io/FinAI-Research-Workflow/`）
 

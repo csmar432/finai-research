@@ -19,22 +19,22 @@
 
 ![FinAI Research Workflow Banner](docs/assets/banner.svg)
 
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/FinAI-Research-Workflow)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/FinAI-Research-Workflow#installation)
-[![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research-workflow?color=blue)](https://github.com/csmar432/FinAI-Research-Workflow/releases)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow)](https://github.com/csmar432/FinAI-Research-Workflow/stargazers)
-[![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in%20Codespaces-526ADF?logo=github)](https://codespaces.new/csmar432/FinAI-Research-Workflow)
+[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/finai-research#installation)
+[![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research?color=blue)](https://github.com/csmar432/finai-research/releases)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research)](https://github.com/csmar432/finai-research/stargazers)
+[![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in%20Codespaces-526ADF?logo=github)](https://codespaces.new/csmar432/finai-research)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
-[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research-workflow/actions)
-[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research-workflow/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research-workflow/actions)
-[![codecov](https://codecov.io/gh/csmar432/finai-research-workflow/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research-workflow)
+[![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research/actions)
+[![codecov](https://codecov.io/gh/csmar432/finai-research/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research)
 [![Security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research-workflow?style=social)](https://github.com/csmar432/finai-research-workflow/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research?style=social)](https://github.com/csmar432/finai-research/stargazers)
 [![Audit 2026-07-04](https://img.shields.io/badge/audit-2026--07--04%20PASSED-brightgreen)](docs/audit/audit-2026-07-04.md)
-[![Coverage 49.72%](https://img.shields.io/badge/coverage-49.72%25-brightgreen)](https://codecov.io/gh/csmar432/FinAI-Research-Workflow)
+[![Coverage 49.72%](https://img.shields.io/badge/coverage-49.72%25-brightgreen)](https://codecov.io/gh/csmar432/finai-research)
 
 ---
 <!--
@@ -92,7 +92,7 @@ FinAI is purpose-built for economic & financial research. Here is what it does t
 | **Multi-stage pipeline with checkpoints** | One-off answers | ✅ 8-stage pipeline with human approval |
 
 > [!TIP]
-> Start now with zero setup: **[Open in GitHub Codespaces](https://codespaces.new/csmar432/FinAI-Research-Workflow)** (free, 120 hours/month). No install required.
+> Start now with zero setup: **[Open in GitHub Codespaces](https://codespaces.new/csmar432/finai-research)** (free, 120 hours/month). No install required.
 
 > **For Chinese users:** The most comprehensive guide is **[使用指南.md](使用指南.md)** — a complete 13-chapter manual covering installation, workflows, data sources, econometric methods, paper writing, and FAQ.
 
@@ -267,7 +267,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/csmar432/finai-research-workflow.git
+git clone https://github.com/csmar432/finai-research.git
 cd finai-research-workflow
 
 # 2. Install dependencies
@@ -521,7 +521,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research-workflow&type=Timeline)](https://star-history.com/#csmar432/finai-research-workflow&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=csmar432/finai-research&type=Timeline)](https://star-history.com/#csmar432/finai-research&Timeline)
 
 ---
 
@@ -639,9 +639,9 @@ flowchart TD
 
 This project is maintained by **[@csmar432](https://github.com/csmar432)**.
 
-- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
-- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research-workflow/discussions)
-- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research-workflow/security/advisories/new)
+- 🐛 **Bug reports & feature requests**: [GitHub Issues](https://github.com/csmar432/finai-research/issues)
+- 💬 **Questions & ideas**: [GitHub Discussions](https://github.com/csmar432/finai-research/discussions)
+- 🔒 **Security disclosures**: [GitHub Security Advisories](https://github.com/csmar432/finai-research/security/advisories/new)
 - 💖 **Sponsor / support**: [GitHub Sponsors](https://github.com/sponsors/csmar432) · [爱发电](https://afdian.net/a/finresearch)
 
 > Contributions of all sizes are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
@@ -658,7 +658,7 @@ If you use FinAI Research Workflow in published research, please cite it as:
   author = {csmar432},
   year   = {2026},
   month  = jun,
-  url    = {https://github.com/csmar432/finai-research-workflow},
+  url    = {https://github.com/csmar432/finai-research},
   note   = {GitHub repository. For a permanent DOI, publish on Zenodo and update this field.}
 }
 ```

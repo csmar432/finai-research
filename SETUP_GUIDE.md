@@ -401,7 +401,7 @@ pip install -e .
 
 ### Getting Help
 
-1. Check existing issues: [GitHub Issues](https://github.com/csmar432/finai-research-workflow/issues)
+1. Check existing issues: [GitHub Issues](https://github.com/csmar432/finai-research/issues)
 2. Run with verbose logging:
 
 ```bash

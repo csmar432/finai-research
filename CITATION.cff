@@ -6,9 +6,9 @@ type: software
 title: "FinAI Research Workflow"
 version: 1.0.0
 date-released: 2026-06-15
-url: "https://github.com/csmar432/finai-research-workflow"
-repository-code: "https://github.com/csmar432/finai-research-workflow"
-repository: "https://github.com/csmar432/finai-research-workflow"
+url: "https://github.com/csmar432/finai-research"
+repository-code: "https://github.com/csmar432/finai-research"
+repository: "https://github.com/csmar432/finai-research"
 license: MIT
 keywords:
   - academic-research
@@ -47,7 +47,7 @@ preferred-citation:
   journal: "GitHub"
   year: 2026
   month: 6
-  url: "https://github.com/csmar432/finai-research-workflow"
+  url: "https://github.com/csmar432/finai-research"
 abstract: |
   FinAI Research Workflow is an end-to-end AI agent pipeline that automates
   the entire research workflow for economic and financial scholars: from

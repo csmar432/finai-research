@@ -14,7 +14,7 @@ Only the latest minor version receives security updates.
 
 Instead, send a private report:
 
-1. Go to [Report a vulnerability](https://github.com/csmar432/FinAI-Research-Workflow/security/advisories/new)
+1. Go to [Report a vulnerability](https://github.com/csmar432/finai-research/security/advisories/new)
 2. Or email the maintainer directly at the address in [MAINTAINERS.md](./MAINTAINERS.md)
 
 Expected response time: within 7 days.
