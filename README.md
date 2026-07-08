@@ -36,6 +36,7 @@
 [![Audit 2026-07-04](https://img.shields.io/badge/audit-2026--07--04%20PASSED-brightgreen)](docs/audit/audit-2026-07-04.md)
 [![Coverage 49.72%](https://img.shields.io/badge/coverage-49.72%25-brightgreen)](https://codecov.io/gh/csmar432/finai-research)
 [![Discussions](https://img.shields.io/github/discussions/csmar432/finai-research?color=blueviolet)](https://github.com/csmar432/finai-research/discussions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21262689.svg)](https://doi.org/10.5281/zenodo.21262689)
 
 ---
 <!--
