@@ -2,8 +2,13 @@
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
   "last_verified": "2026-07-08",
-  "verified_by": "scripts/count_assets.py --sync-ssot",
+  "verified_by": "scripts/count_assets.py --sync-ssot + manual Zenodo version bump",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
+  "_manual_overrides": {
+    "_comment": "Fields below are NOT auto-detected by count_assets.py and require manual maintenance.",
+    "version.github_release": "v1.0.1 (Zenodo DOI 10.5281/zenodo.21262689, archive minted 2026-07-08)",
+    "version.pypi": "not published (planned for v1.1.0)"
+  },
   "mcp": {
     "total_directories": 43,
     "breakdown": {
@@ -97,8 +102,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 397,
-    "test_functions": 7804,
+    "test_files": 398,
+    "test_functions": 7814,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 28,
     "ci_coverage_target": 60,
@@ -124,7 +129,9 @@
   },
   "version": {
     "pyproject": "0.1.0",
-    "github_release": "v0.1.0",
+    "github_release": "v1.0.1",
+    "github_release_doi": "10.5281/zenodo.21262689",
+    "github_release_date": "2026-07-08",
     "pypi": "not published"
   }
 }

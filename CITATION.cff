@@ -28,28 +28,24 @@ keywords:
   - causal-inference
   - panel-data
 authors:
-  - family-names: csmar432
-    given-names: ""
-    affiliation: "FinAI Research Workflow"
-    # P2-7 修复 2026-06-28: noreply@users.noreply.github.com 是 GitHub 占位邮箱，
-    # 真实联系方式由 maintainer 在 release 前补全（PR 提交时验证）
-    email: "noreply@users.noreply.github.com"
-    orcid: "https://github.com/csmar432"
-# Zenodo DOI 占位说明：
-# P2-7 修复 2026-06-28: DOI 在第一次 release v1.0.0 后由 Zenodo 自动分配，
-# 之前所有版本用 "10.5281/zenodo.PENDING" 占位符。
-# 当前 v0.1.0 尚未发布到 PyPI/Zenodo，故 doi 字段留空。
-# 发布流程：GitHub release → Zenodo 自动 mint DOI → 同步回 CITATION.cff。
+  - family-names: Xu
+    given-names: Zheyi
+    affiliation: "Central South University, Changsha, China"
+    email: "yi1353370501@gmail.com"
+    orcid: "https://orcid.org/0009-0000-3428-816X"
 preferred-citation:
   type: article
   title: "FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research"
   authors:
-    - family-names: csmar432
-      affiliation: "FinAI Research Workflow"
-  journal: "GitHub"
+    - family-names: Xu
+      given-names: Zheyi
+      affiliation: "Central South University, Changsha, China"
+      orcid: "https://orcid.org/0009-0000-3428-816X"
+  journal: "arXiv preprint"
   year: 2026
-  month: 6
+  month: 7
   url: "https://github.com/csmar432/finai-research"
+  doi: 10.5281/zenodo.21262689
 abstract: |
   FinAI Research Workflow is an end-to-end AI agent pipeline that automates
   the entire research workflow for economic and financial scholars: from
