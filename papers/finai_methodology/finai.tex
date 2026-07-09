@@ -19,6 +19,7 @@
 % ─────────────────────────────────────────────────────────────────────────────
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{booktabs}
+\usepackage{threeparttable}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{algorithm}
@@ -235,52 +236,95 @@ Compared to manual research workflows, FinAI achieves approximately 20x speedup 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Case Studies}
 
-% TODO (researcher-supplied): Replace the 3 placeholder case studies below
-% with full case studies that include actual numerical results (point
-% estimates, standard errors, sample sizes, robustness checks).
-%
-% A complete case study should be ~1 page and contain:
-%   1. Research question and motivation
-%   2. Identification strategy chosen and why
-%   3. Data sources (with citations) and sample construction
-%   4. Main regression result table (3-5 columns, 5-8 rows)
-%   5. At least one robustness check result
-%   6. Heterogeneity analysis (if applicable)
-%   7. Researcher interpretation
-%
-% Source for full case-study templates: papers/finai_methodology/case_study_template.md
-% (to be created when this paper is finalized for submission).
+We demonstrate FinAI on three real empirical studies drawn from Chinese
+administrative-firm matched datasets.  Each case study uses
+two-way fixed effects (firm + year) with standard errors clustered by firm,
+run via the \texttt{linearmodels} \texttt{PanelOLS} engine.
+All data are sourced from \texttt{~/Desktop/实证数据/} and staged with
+standardized merge keys (6-digit firm code + year).%
+\input{../../output/fin-experiments/case_studies/results/table_cs1_lcc.tex}
+\includegraphics[width=0.75\textwidth]{../../output/fin-experiments/case_studies/results/fig_event_cs1.pdf}
 
-\subsection{Case Study 1: Carbon Trading and Green Innovation}
+\subsection{Case Study 1: Low-Carbon City Pilot and Firm Innovation}
 
-We apply FinAI to the research question: \textit{Does China's carbon emission trading scheme (ETS) affect firms' green innovation?}
+\textbf{Research question:} Does China's Low-Carbon City (LCC) pilot program,
+which designated 79 cities in three staggered batches (2010, 2012, 2017),
+affect patenting activity among listed firms headquartered in those cities?
 
-FinAI generates a complete research design including: (i) staggered DID with Callaway-Sant'Anna estimator; (ii) 47-paper literature review via OpenAlex MCP; (iii) 12 robustness checks including Borusyak imputation and Goodman-Bacon decomposition; (iv) JF/JFE-format LaTeX manuscript outline.
+\textbf{Data.} The treatment variable (time-varying city-level LCC designation)
+is from the \textit{DID Dataset Compendium} administrative list matched to firm
+identifiers.  Outcome variable is firm patent applications from the
+\textit{Listed-Firm Innovation Dataset (2006--2023)} (2006--2023).  Control variables
+(Size, Lev, ROA, Growth, Top1, ListAge) are from the \textit{上市公司
+常用控制变量大全 B13} (2006--2024, winsorized at 1\%/99\%).
 
-Total pipeline time: 25 minutes. The system correctly identifies the need for staggered DID due to the multi-cohort ETS rollout (2011/2013/2021 pilots) and recommends appropriate estimators.
+\textbf{Identification.} Staggered difference-in-differences with cohort
+fixed effects.  The event study in Figure 5.1 plots the coefficient on
+relative-time indicators (relative to each cohort's first treatment year)
+with 95\% confidence intervals.
 
-% TODO: Add Table 5.1 with main DID coefficient, standard errors,
-% sample size, and fixed effects specification. Provide reference for
-% a published paper using similar identification (e.g., Hu et al. 2023).
+\textbf{Result.} Table 5.1 reports the main TWFE estimate
+($\hat{\beta} = 0.006$, SE = 0.009, N = 35,732, firm-clustered).
+The effect is statistically indistinguishable from zero, consistent with
+the hypothesis that the LCC pilot primarily targets energy structure
+rather than directly stimulating firm-level innovation.
+Heterogeneity analysis (Column 3, SOE sub-sample) reveals a marginally
+significant positive effect for state-owned firms
+($\hat{\beta} = 0.024^{*}$, p = 0.089).
+Figure 5.1 shows no clear pre-trend violation and a flat post-treatment
+path, supporting the parallel trends assumption.%
+\input{../../output/fin-experiments/case_studies/results/table_cs2_gc.tex}
 
-\subsection{Case Study 2: Green Credit Policy and Firm TFP}
+\subsection{Case Study 2: Green Credit Policy and Firm Financing Constraints}
 
-We apply FinAI to the question: \textit{Does the 2012 Green Credit Guidelines affect TFP of heavy-pollution firms?}
+\textbf{Research question:} Does the 2012 Green Credit Guidelines
+(green credit directive for heavy-pollution industries) tighten or relax
+financing constraints on affected firms?
 
-FinAI produces a feasibility report assessing 5 data sources (A-share financials, green patents, pollution lists, city GDP), identifies 5 critical risks with mitigation strategies, and recommends a PSM-DID design. Data feasibility rating: medium.
+\textbf{Data.} The treatment indicator ($did$) and the policy dummy are from
+the \textit{Green Credit -- Firm Matched Dataset (2000--2022)} (2000--2022), matched on
+stock code and year.  The outcome is the SA index
+(\textit{SA指数}, B13 dataset), where higher values indicate greater
+financial constraint.  Full control set from B13 is included.
 
-% TODO: Add Table 5.2 with PSM-DID coefficient, control variables,
-% sample before/after matching, ATT for sub-samples.
+\textbf{Identification.} Standard TWFE DID with firm and year fixed effects.
+The $did$ term is constructed as the interaction between heavy-pollution
+industry classification and post-2012 year indicators.
 
-\subsection{Case Study 3: Digital Finance and ESG Performance}
+\textbf{Result.} Table 5.2 reports a positive and statistically significant
+coefficient on the $did$ term ($\hat{\beta} = 0.060^{***}$,
+SE = 0.012, p < 0.001, N = 68,279).  The interpretation is that
+heavy-pollution firms subject to green credit constraints experienced
+an increase in the SA index (greater financing constraint) relative
+to the control group after 2012.  This finding is robust to
+removing control variables (Column 1, $\hat{\beta} = 0.070^{***}$).%
+\input{../../output/fin-experiments/case_studies/results/table_cs3_bd.tex}
+\includegraphics[width=0.75\textwidth]{../../output/fin-experiments/case_studies/results/fig_event_cs3.pdf}
 
-We apply FinAI to the question: \textit{How does digital finance penetration affect corporate ESG performance?}
+\subsection{Case Study 3: National Big-Data Pilot Zones and AI Innovation}
 
-FinAI identifies a Panel IV strategy using the PKU Digital Finance Index as the treatment variable and internet penetration as the instrument. The novelty check correctly identifies this as a gap in the JF/JFE literature (novelty score: 7.2/10).
+\textbf{Research question:} Do National Big-Data Comprehensive Experimental
+Zones (BDCEZ), designated by the State Council starting October 2016,
+stimulate AI-related patenting among headquartered firms?
 
-% TODO: Add Table 5.3 with 2SLS first-stage F-statistic, second-stage
-% coefficient, Kleibergen-Paap rk Wald F statistic, and overidentification
-% test results.
+\textbf{Data.} Treatment (time-varying BDCEZ city designation) is from the
+\textit{Big-Data Comprehensive Experimental Zone Dataset (2010--2022)} (2010--2022) matched to firm identifiers.
+Outcome is annual AI patent counts from the \textit{Listed-Firm AI Patent Dataset (2001--2022)}
+(2001--2022), transformed as $\ln(1 + \text{AI\_patents})$.  Controls
+from B13 as above.
+
+\textbf{Identification.} Staggered TWFE DID.  The 8 pilot zones approved
+in October 2016 (Beijing, Tianjin, Hebei, Shanghai, Jiangsu, Zhejiang,
+Anhui, Fujian, Guangdong, Chongqing) generate the first cohort; subsequent
+additions in 2017--2022 create additional cohorts.
+
+\textbf{Result.} Table 5.3 reports a negative but statistically insignificant
+coefficient ($\hat{\beta} = -0.019$, SE = 0.020, N = 35,691).
+The point estimate suggests the BDCEZ designation did not
+increase firm-level AI innovation on average during the observed window,
+possibly reflecting a lag between zone establishment and observable
+innovation outputs.  Figure 5.2 shows a null pre-trend and a
+weakly negative post-treatment path.%
 
 % ─────────────────────────────────────────────────────────────────────────────
 % 6. LIMITATIONS AND ETHICAL CONSIDERATIONS
