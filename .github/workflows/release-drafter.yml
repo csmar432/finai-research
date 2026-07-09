@@ -1,12 +1,10 @@
 name: Release Drafter
 
 on:
-  push:
-    # branches to consider in the configuration (defaults to all)
-    branches:
-      - main
+  # Only run on PRs (draft release notes for the next release) and manual trigger
+  # Do NOT run on push to main — that would create a release with tag "main" which conflicts
+  # with the project's proper semantic-versioned tags (v1.0.0, v1.0.1, etc.)
   pull_request:
-    # types of activity which trigger a new draft release
     types: [opened, reopened, synchronize, labeled, unlabeled]
   workflow_dispatch:
 
@@ -24,6 +22,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           config-name: release-drafter.yml
-          tag: ${{ github.ref_name }}
-          # publish action runs in the github-actions bot, by default
-          publish: ${{ github.event_name != 'pull_request' }}
+          # Always create draft (don't auto-publish); maintainer publishes manually
+          publish: false
