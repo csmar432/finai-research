@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # scripts/check_latex.sh
 # 用法:
-#   bash scripts/check_latex.sh                     # 编译 output/ 下所有 .tex
+#   bash scripts/check_latex.sh                     # 编译所有主文档
 #   bash scripts/check_latex.sh path/to/paper.tex   # 编译指定文件
 # 退出码: 0=全部成功, 1=有失败
+#
+# 规则: 独立文档（有 \documentclass）正常编译；
+#       片段文件（\input{} 目标，无 \documentclass）跳过不报错。
 
 set -uo pipefail
 
@@ -21,87 +24,121 @@ ok()    { echo "${GREEN}✓${NC} $*"; }
 warn()  { echo "${YELLOW}⚠${NC} $*"; }
 err()   { echo "${RED}✗${NC} $*"; }
 
-# 收集 .tex 文件
+# 判断一个 .tex 文件是否为独立文档（有 \documentclass）
+is_standalone_doc() {
+    grep -q '^\s*\\documentclass' "$1" 2>/dev/null
+}
+
+# 判断文件是否应被排除（表/图/演示片段）
+is_excluded_fragment() {
+    case "$1" in
+        */tables/*|*/figures/*|*/charts/*|*/results/table_*|*/results/fig_*)
+            return 0 ;;
+        */event_runs/*|*/demo_*.tex)
+            return 0 ;;
+    esac
+    return 1
+}
+
+# 收集待检查文件
+TEX_FILES=""
 if [ $# -gt 0 ]; then
-    TEX_FILES=("$@")
+    # 命令行指定文件
+    for f in "$@"; do
+        TEX_FILES="${TEX_FILES}${f}"$'\n'
+    done
 else
-    mapfile -t TEX_FILES < <(find output/ -name "*.tex" -type f 2>/dev/null | sort)
+    # papers/ 下所有 .tex
+    while IFS= read -r f; do
+        TEX_FILES="${TEX_FILES}${f}"$'\n'
+    done < <(find papers/ -name "*.tex" -type f 2>/dev/null | sort)
 fi
 
-if [ ${#TEX_FILES[@]} -eq 0 ]; then
-    warn "No .tex files to check"
+if [ -z "$TEX_FILES" ]; then
+    warn "No LaTeX files to check"
     exit 0
 fi
 
-log "Found ${#TEX_FILES[@]} LaTeX file(s) to check"
+# 统计
+TOTAL=$(echo "$TEX_FILES" | grep -c .)
+log "Found ${TOTAL} LaTeX file(s) in scope (before filtering)"
 echo ""
 
 PASS=0
 FAIL=0
-FAILED_FILES=()
+SKIP_FRAGMENT=0
+SKIP_EXCLUDED=0
+FAILED_FILES=""
 
-for TEX in "${TEX_FILES[@]}"; do
-    [ -f "$TEX" ] || continue
+while IFS= read -r TEX; do
+    [ -z "$TEX" ] && continue
+    [ ! -f "$TEX" ] && continue
+
     DIR=$(dirname "$TEX")
     BASENAME=$(basename "$TEX" .tex)
 
-    log "Checking: $TEX"
+    # 跳过辅助文件
+    case "$BASENAME" in
+        preamble|settings|macros) warn "  $TEX: skipped (auxiliary)"; continue ;;
+    esac
 
-    # 跳过明显不是主文档的 (如 preamble.tex, settings.tex)
-    if [[ "$BASENAME" == "preamble" || "$BASENAME" == "settings" || "$BASENAME" == "macros" ]]; then
-        warn "  Skipped (auxiliary file)"
+    # 排除表/图/演示片段
+    if is_excluded_fragment "$TEX"; then
+        SKIP_EXCLUDED=$((SKIP_EXCLUDED+1))
         continue
     fi
 
+    # 判断是否为独立文档
+    if ! is_standalone_doc "$TEX"; then
+        warn "  $TEX: skipped (fragment — lacks \\documentclass)"
+        SKIP_FRAGMENT=$((SKIP_FRAGMENT+1))
+        continue
+    fi
+
+    log "Checking: $TEX"
+
     cd "$PROJECT_ROOT/$DIR" || continue
 
-    # 标准 4 步编译: pdflatex -> bibtex -> pdflatex -> pdflatex
-    cp /dev/null "${BASENAME}.log" 2>/dev/null || true
-    cp /dev/null "${BASENAME}.blg" 2>/dev/null || true
+    : > "${BASENAME}.log" 2>/dev/null || true
+    : > "${BASENAME}.blg" 2>/dev/null || true
 
-    # 第 1 遍 pdflatex
+    # 标准 4 步编译
     pdflatex -interaction=nonstopmode -halt-on-error "$BASENAME.tex" > /dev/null 2>&1
-    RC1=$?
 
-    # bibtex (如果 .aux 存在且包含 \citation 或 \bibdata)
-    if [ -f "${BASENAME}.aux" ] && grep -qE "\\\\citation|\\\\bibdata" "${BASENAME}.aux" 2>/dev/null; then
+    if [ -f "${BASENAME}.aux" ] && grep -qE '\\\\citation|\\\\bibdata' "${BASENAME}.aux" 2>/dev/null; then
         bibtex "$BASENAME" > /dev/null 2>&1 || true
     fi
 
-    # 第 2、3 遍 pdflatex (解析引用)
     pdflatex -interaction=nonstopmode -halt-on-error "$BASENAME.tex" > /dev/null 2>&1
-    RC2=$?
     pdflatex -interaction=nonstopmode -halt-on-error "$BASENAME.tex" > /dev/null 2>&1
-    RC3=$?
 
-    # 检查是否生成了 PDF
     if [ -f "${BASENAME}.pdf" ] && [ -s "${BASENAME}.pdf" ]; then
-        ok "  $BASENAME.pdf compiled ($(stat -f%z "${BASENAME}.pdf" 2>/dev/null || stat -c%s "${BASENAME}.pdf") bytes)"
+        SIZE=$(wc -c < "${BASENAME}.pdf" 2>/dev/null || echo 0)
+        ok "  $BASENAME.pdf compiled ($SIZE bytes)"
         PASS=$((PASS+1))
     else
         err "  Compile FAILED for $BASENAME"
-        # 输出错误信息
         if [ -f "${BASENAME}.log" ]; then
-            grep -E "^!|Error|error" "${BASENAME}.log" 2>/dev/null | head -5 | sed 's/^/    /'
+            grep -E "^!" "${BASENAME}.log" 2>/dev/null | head -3 | sed 's/^/    /'
         fi
         FAIL=$((FAIL+1))
-        FAILED_FILES+=("$TEX")
+        FAILED_FILES="${FAILED_FILES}  - ${TEX}"$'\n'
     fi
 
     cd "$PROJECT_ROOT"
-done
+done <<EOF
+$(echo "$TEX_FILES")
+EOF
 
 echo ""
 echo "================================================"
-log "Result: $PASS passed, $FAIL failed"
+log "Result: $PASS passed, $FAIL failed, $SKIP_FRAGMENT skipped, $SKIP_EXCLUDED excluded"
 
 if [ $FAIL -gt 0 ]; then
     err "Failed files:"
-    for f in "${FAILED_FILES[@]}"; do
-        echo "  - $f"
-    done
+    echo "$FAILED_FILES"
     exit 1
 fi
 
-ok "All LaTeX files compiled successfully"
+ok "All standalone LaTeX documents compiled successfully"
 exit 0
