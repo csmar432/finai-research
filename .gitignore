@@ -171,8 +171,7 @@ results/
 # Example (if needed in the future):
 # papers/local_experiment_notes/
 
-# Local planning / 路线图（个人用，不入版本控制）
-ROADMAP.md
+# Local planning / 路线图
 STAR_GROWTH_PLAN.md
 *.local.md
 
