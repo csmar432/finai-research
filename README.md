@@ -36,25 +36,18 @@ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 > **PyPI:** [finai-research-workflow · 0.2.0a0](https://pypi.org/project/finai-research-workflow/) · MIT
 > **DOI:** [10.5281/zenodo.21262689](https://doi.org/10.5281/zenodo.21262689)
 
-### 🎬 完整 8 阶段研究流水线 Demo (v3, 推荐)
+### Quick Demo
 
-![Quick Demo v3 — Complete 8-Stage Research Pipeline](.github/demo/demo_full_pipeline.gif)
+![Complete 8-stage research pipeline demo](.github/demo/demo_full_pipeline.gif)
 
-> **900×224 px, 24 frames × 1.4 s = 34 s 完整循环**
-> 内容：8 阶段（健康检查 → 资产盘点 → 想法生成 → 文献综述 → 新颖性验证 →
-> 实证设计 → 数据获取 → DID 估计 → 论文写作 → Audit + Review）
-> 中文支持：STHeiti Medium / Hiragino Sans GB（macOS 系统字体）
-> 重新生成: `bash scripts/demo/record_full_pipeline_v3.sh > /tmp/demo.txt && python scripts/demo/render_demo_gif_v3.py /tmp/demo.txt .github/demo/demo_full_pipeline.gif`
-
-<details>
-<summary>📜 旧版 Demo（仅 health check, 100×30, 6 s）</summary>
-
-![Quick Demo v1](.github/demo/demo.gif)
-
-> 100×30, ~6 sec, 60 KB. Source cast: `.github/demo/demo.cast`.
-> 仅展示 `python3 scripts/cli.py health` + `python3 scripts/count_assets.py`，**不推荐**。
-
-</details>
+The demo shows an end-to-end run on a sample topic (carbon emissions
+trading and green innovation): tool inventory, OpenAlex literature
+search, empirical specification, real data acquisition from five
+public MCP endpoints (yfinance, SEC EDGAR, World Bank, OpenAlex,
+FRED), a DID coefficient table, LaTeX paper compile, and the
+audit_guard report. All numerical output is fetched live at demo
+generation time. See [`.github/demo/README.md`](.github/demo/README.md)
+for the full inventory and regeneration commands.
 
 **一次输入 → 8 阶段流水线：想法生成 → 文献综述 → 新颖性验证 → 实证设计 → 数据获取 → 分析 → 论文写作 → 对抗性 Review。每阶段需研究者确认。**
 
