@@ -145,9 +145,8 @@ def main() -> int:
     if not frames:
         return 1
 
-    # Resample so the GIF plays ~8-12s for ~80 frames (10 fps)
+    # Resample so the GIF plays ~8-12s for ~80 frames
     target_duration_ms = 10_000  # 10s
-    target_fps = max(10, min(30, len(frames) // 5))
     target_frames = max(20, min(120, target_duration_ms // 33))
     step = max(1, len(frames) // target_frames)
     selected = frames[::step][:target_frames]
