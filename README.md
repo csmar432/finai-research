@@ -668,13 +668,13 @@ If you use FinAI Research Workflow in published research, please cite it as:
 
 ## Related Projects
 
-- [**dowhy**](https://github.com/py-why/dowhy) — causal inference library (8.1K ⭐)
-- [**StatsPAI**](https://github.com/brycewang-stanford/StatsPAI) — agent-native causal inference toolkit (50 ⭐)
-- [**moderndid**](https://github.com/jordandeklerk/moderndid) — GPU-accelerated modern DiD
-- [**diff-diff**](https://github.com/igerber/diff-diff) — sklearn-like DiD in Python
-- [**PaperOrchestra**](https://github.com/google-research/paper-orchestra) — Google's multi-agent paper writing (58 ⭐)
-- [**E2ER-project**](https://github.com/bhanneke/E2ER-project) — end-to-end empirical research pipeline
-- [**econ-paper-studio**](https://github.com/gaaiyun/econ-paper-studio) — agent-native CLI for empirical economics
+- [**dowhy**](https://github.com/py-why/dowhy) — causal inference library (8.2K ⭐)
+- [**StatsPAI**](https://github.com/brycewang-stanford/StatsPAI) — agent-native causal inference toolkit (274 ⭐)
+- [**moderndid**](https://github.com/jordandeklerk/moderndid) — GPU-accelerated modern DiD (25 ⭐)
+- [**diff-diff**](https://github.com/igerber/diff-diff) — sklearn-like DiD in Python (280 ⭐)
+- [**PaperOrchestra**](https://github.com/google-research/paper-orchestra) — Google's multi-agent paper writing (82 ⭐)
+- [**E2ER-project**](https://github.com/bhanneke/E2ER-project) — end-to-end empirical research pipeline (1 ⭐)
+- [**econ-paper-studio**](https://github.com/gaaiyun/econ-paper-studio) — agent-native CLI for empirical economics (2 ⭐)
 
 
 MIT License — see [LICENSE](LICENSE) for the full text.
