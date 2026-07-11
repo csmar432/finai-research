@@ -1,6 +1,7 @@
 # Awesome-list PR Campaign — Summary
 
-> **Status:** 5 PR drafts ready for review + 2 documented non-submissions.
+> **Status:** 4 PRs **submitted live** + 1 documented WITHDRAWN
+> + 2 documented non-submissions (wong2 no-PR / vinta no-PyPI).
 > **Methodology:** every entry verified against the target list's actual
 > CONTRIBUTING.md (downloaded and parsed before drafting).
 
@@ -20,17 +21,30 @@ Real-world replacements were searched via GitHub API + WebSearch.
 | 6 | vinta/awesome-python | ✅ real | But project not on PyPI → auto-rejected |
 | 7 | emptymalei/awesome-research | ✅ real | OK to submit |
 
-## PR Campaign — Final Plan
+## PR Campaign — Final Plan (live status)
 
-| # | Draft file | Submit URL | Status |
-|---|------------|------------|--------|
-| 1 | [PR-01](./PR-01-antontarasenko-awesome-economics.md) | https://github.com/antontarasenko/awesome-economics/pulls | ✅ READY |
-| 2 | [PR-02](./PR-02-matteocourthoud-awesome-causal-inference.md) | https://github.com/matteocourthoud/awesome-causal-inference/pulls | ✅ READY |
-| 3 | [PR-03](./PR-03-wilsonfreitas-awesome-quant.md) | https://github.com/wilsonfreitas/awesome-quant/pulls | ✅ READY |
-| 4 | [PR-04](./PR-04-academic-awesome-datascience.md) | https://github.com/academic/awesome-datascience/pulls | ✅ READY |
-| 5 | [PR-05](./PR-05-emptymalei-awesome-research.md) | https://github.com/emptymalei/awesome-research/pulls | ✅ READY |
+| # | Draft file | Live PR | Status |
+|---|------------|---------|--------|
+| 1 | [PR-01](./PR-01-antontarasenko-awesome-economics.md) | (none — repo has_pull_requests=false) | ⚠️ WITHDRAWN |
+| 2 | [PR-02](./PR-02-matteocourthoud-awesome-causal-inference.md) | https://github.com/matteocourthoud/awesome-causal-inference/pull/14 | ✅ OPEN |
+| 3 | [PR-03](./PR-03-wilsonfreitas-awesome-quant.md) | https://github.com/wilsonfreitas/awesome-quant/pull/468 | ✅ OPEN |
+| 4 | [PR-04](./PR-04-academic-awesome-datascience.md) | https://github.com/academic/awesome-datascience/pull/654 | ✅ OPEN |
+| 5 | [PR-05](./PR-05-emptymalei-awesome-research.md) | https://github.com/emptymalei/awesome-research/pull/111 | ✅ OPEN |
 | 6 | [PR-06](./PR-06-WITHDRAWN-wong2-awesome-mcp-servers.md) | (none — wong2 README explicitly says no PRs) | ⚠️ WITHDRAWN |
 | 7 | [PR-07](./PR-07-DEFERRED-vinta-awesome-python.md) | (deferred — needs PyPI + 100 stars) | ⏸️ DEFERRED |
+
+## Verification commands
+
+```bash
+# 4 live PRs
+gh api repos/matteocourthoud/awesome-causal-inference/pulls/14 --jq '.title, .state, .created_at'
+gh api repos/wilsonfreitas/awesome-quant/pulls/468 --jq '.title, .state, .created_at'
+gh api repos/academic/awesome-datascience/pulls/654 --jq '.title, .state, .created_at'
+gh api repos/emptymalei/awesome-research/pulls/111 --jq '.title, .state, .created_at'
+
+# Re-run the auto-submitter (idempotent — won't double-PR)
+python scripts/submit_awesome_list_prs.py
+```
 
 ## Sending Order (1 per day)
 
@@ -84,3 +98,4 @@ For every PR:
 - `ruff`: not applicable (markdown only).
 - `pytest`: not applicable.
 - Manual review by maintainer: ⏳ **required**.
+

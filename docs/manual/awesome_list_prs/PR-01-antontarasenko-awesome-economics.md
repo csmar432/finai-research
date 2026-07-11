@@ -1,8 +1,14 @@
 # PR 1: antontarasenko/awesome-economics
 
-> **Status:** DRAFT — awaiting your review before submitting via web UI.
+> **Status:** WITHDRAWN — `has_pull_requests=false` (verified via GitHub API).
 > **Submit URL:** https://github.com/antontarasenko/awesome-economics/pulls
-> **Suggested branch name:** `add-finai-research-workflow`
+> **Submit URL:** https://github.com/antontarasenko/awesome-economics/pulls
+> **API verification:**
+> ```json
+> {"has_pull_requests": false, "pull_request_creation_policy": "all"}
+> ```
+> PR creation returns HTTP 404 even with admin scopes on csmar432 fork.
+> This is the upstream repo owner's intentional policy; nothing we can do.
 
 ## Repository
 
@@ -59,3 +65,4 @@ must be verified by the human researcher before submission. The tool enforces
 this via HITL gates, but does not eliminate the responsibility.
 
 Thanks for curating this list!
+
