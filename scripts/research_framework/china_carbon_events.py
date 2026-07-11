@@ -204,7 +204,7 @@ def robustness_cs(df):
 def heterogeneity(df):
     return df.groupby(["size_quartile", "soe"]).apply(baseline_twfe)
 
-# Robustness checks (standard 18 from FinAI's robustness_runner):
+# Robustness checks (standard 19 from FinAI's robustness_runner "full" level):
 # 1. Placebo treatment (shift to 2 years before actual)
 # 2. Different bandwidth (firms with 1-3 years pre/post)
 # 3. Exclude specific industries (heavy polluters)
