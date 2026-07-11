@@ -19,14 +19,71 @@ import sys
 from pathlib import Path
 
 # ── Banner ─────────────────────────────────────────────────────────────
-BANNER = """
+def _read_pyproject_version() -> str:
+    """Read version from pyproject.toml (single source of truth).
+
+    Fallback chain:
+      1. tomllib load (Python 3.11+)
+      2. tomli load (backport)
+      3. regex extract from pyproject.toml
+      4. importlib.metadata (installed package)
+      5. hardcoded fallback (last resort)
+    """
+    try:
+        try:
+            import tomllib
+        except ImportError:
+            try:
+                import tomli as tomllib  # type: ignore[no-redef]
+            except ImportError:
+                tomllib = None  # type: ignore[assignment]
+
+        if tomllib is not None:
+            from pathlib import Path as _P
+
+            pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
+            if pyproject.exists():
+                with open(pyproject, "rb") as f:
+                    data = tomllib.load(f)
+                v = data.get("project", {}).get("version")
+                if v:
+                    return str(v)
+    except Exception:
+        pass
+
+    # Regex fallback (works on any pyproject.toml without tomllib)
+    try:
+        from pathlib import Path as _P
+        import re
+
+        pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
+        if pyproject.exists():
+            text = pyproject.read_text(encoding="utf-8")
+            m = re.search(r'^version\s*=\s*"([^"]+)"', text, re.MULTILINE)
+            if m:
+                return m.group(1)
+    except Exception:
+        pass
+
+    # importlib.metadata fallback (when installed via pip)
+    try:
+        from importlib.metadata import version as _v
+
+        return _v("finai-research-workflow")
+    except Exception:
+        pass
+
+    return "0.0.0+unknown"
+
+
+BANNER = f"""
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
 ║   FinAI Research Workflow · CLI                          ║
 ║   经济金融领域 AI 学术研究工作流                            ║
 ║                                                          ║
-║   v1.0.0 · MIT License · 2026                            ║
-║   43 MCP Servers · 49 Methods · 17 Skills                ║
+║   v{_read_pyproject_version()} · MIT License · 2026                     ║
+║   43 MCP Servers · 47 Methods · 30 Journal Templates     ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
 """
@@ -197,13 +254,7 @@ def lit_review_cmd(args) -> int:
 
 def version_cmd(args=None) -> int:
     """显示版本。"""
-    try:
-        import tomllib
-        with open("pyproject.toml", "rb") as f:
-            data = tomllib.load(f)
-        version = data.get("project", {}).get("version", "?")
-    except Exception:
-        version = "1.0.0"
+    version = _read_pyproject_version()
     print(f"FinAI Research Workflow v{version}")
     print(f"Python: {sys.version.split()[0]}")
     print(f"平台: {sys.platform}")

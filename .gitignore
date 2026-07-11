@@ -196,6 +196,7 @@ papers/*/table*_*.csv
 
 # Local planning / 路线图
 STAR_GROWTH_PLAN.md
+MANUAL_TASKS.md
 *.local.md
 
 # examples/ — 案例脚本依赖 DEEPSEEK_API_KEY 且质量参差，不上传

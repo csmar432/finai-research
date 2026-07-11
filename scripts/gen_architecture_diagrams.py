@@ -48,8 +48,25 @@ def _esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def header(title: str, subtitle: str, version: str = "v1.0.0") -> str:
-    """所有图共享的页眉。"""
+def header(title: str, subtitle: str, version: str | None = None) -> str:
+    """所有图共享的页眉。version 默认为动态读取 pyproject。"""
+    if version is None:
+        try:
+            from pathlib import Path as _P
+
+            try:
+                import tomllib
+            except ImportError:
+                import tomli as tomllib  # type: ignore[no-redef]
+            pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
+            if pyproject.exists():
+                with open(pyproject, "rb") as f:
+                    data = tomllib.load(f)
+                version = "v" + data.get("project", {}).get("version", "0.0.0")
+            else:
+                version = "v?"
+        except Exception:
+            version = "v?"
     return f'''  <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="{BG}"/>
@@ -482,7 +499,22 @@ def gen_05_deployment_data_flow() -> str:
     parts.append(node(dx+20, ay+220, dw-40, 70, "data/ 目录", "用户上传/缓存", COL_DATA))
     parts.append(node(dx+20, ay+310, dw-40, 70, "output/", "LaTeX/PDF/图表", COL_DATA))
     parts.append(node(dx+20, ay+400, dw-40, 70, "knowledge/", "skills/rules", COL_DATA))
-    parts.append(node(dx+20, ay+490, dw-40, 70, "GitHub Releases", "v1.0.0 标签", COL_DATA))
+    # 版本号动态读取（pyproject.toml → 避免硬编码漂移）
+    _version_tag = "v?"
+    try:
+        from pathlib import Path as _P
+        try:
+            import tomllib
+        except ImportError:
+            import tomli as tomllib  # type: ignore[no-redef]
+        _pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
+        if _pyproject.exists():
+            with open(_pyproject, "rb") as _f:
+                _data = tomllib.load(_f)
+            _version_tag = "v" + _data.get("project", {}).get("version", "0.0.0")
+    except Exception:
+        pass
+    parts.append(node(dx+20, ay+490, dw-40, 70, "GitHub Releases", f"{_version_tag} 标签", COL_DATA))
 
     # 横向箭头
     for x1_end, x2_start in [(ax+aw, bx), (bx+bw, cx), (cx+cw, dx)]:

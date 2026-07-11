@@ -23,8 +23,12 @@ import requests
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("cryptocompare-mcp")
 
-APP_NAME = "cryptocompare-mcp"
-APP_VERSION = "1.0.0"
+try:
+    from mcp_servers._shared._version import APP_NAME as _APP_NAME, APP_VERSION
+except Exception:
+    _APP_NAME = "cryptocompare-mcp"
+    APP_VERSION = "0.0.0+unknown"
+APP_NAME = _APP_NAME
 BASE_URL = "https://min-api.cryptocompare.com/data"
 server = Server(APP_NAME)
 

@@ -752,6 +752,118 @@ def check_10_llm_reviewer_stable_model() -> CheckResult:
 
 
 # ────────────────────────────────────────────────────────────────────
+# Check 16: version drift (defense for 2026-07-11 audit findings)
+# ────────────────────────────────────────────────────────────────────
+
+
+def check_16_version_drift() -> CheckResult:
+    """Audit claim: 'Multiple files hardcode APP_VERSION = "1.0.0" or banner v1.0.0'.
+
+    Defense: scan scripts/**/*.py for literal version strings that don't
+    match pyproject.toml. Triggered by the 2026-07-11 audit finding that
+    scripts/cli.py, 3 MCP servers, and scripts/gen_architecture_diagrams.py
+    all had hardcoded '1.0.0'.
+    """
+    import re as _re
+
+    # Get canonical version
+    pyproject = PROJECT_ROOT / "pyproject.toml"
+    if not pyproject.exists():
+        return CheckResult(
+            passed=True,
+            actual="no pyproject.toml",
+            expected="consistent",
+            evidence=[],
+        )
+    text = pyproject.read_text()
+    m = _re.search(r'^version\s*=\s*"([^"]+)"', text, re.MULTILINE)
+    if not m:
+        return CheckResult(
+            passed=False,
+            actual="pyproject.toml has no version",
+            expected="version line present",
+            evidence=[],
+        )
+    canonical = m.group(1)  # e.g. "0.2.0-alpha"
+
+    # Files to scan for hardcoded version drift
+    scan_patterns = [
+        r'APP_VERSION\s*=\s*"(?P<v1>[0-9]+\.[0-9]+\.[0-9]+)"',
+        r"v(?P<v2>[0-9]+\.[0-9]+\.[0-9]+)\s*·",
+        r'= "v(?P<v3>[0-9]+\.[0-9]+\.[0-9]+)"',
+    ]
+    combined_re = _re.compile("|".join(scan_patterns))
+
+    drift_files: list[tuple[str, str, int]] = []
+    scanned = 0
+    try:
+        from glob import glob as _glob
+
+        for fpath in _glob(
+            str(PROJECT_ROOT / "scripts" / "**" / "*.py"), recursive=True
+        ):
+            scanned += 1
+            if "__pycache__" in fpath or "/legacy/" in fpath:
+                continue
+            # Skip the legitimate sub-pyproject reference files
+            if fpath.endswith("/mcp_servers/_shared/_version.py"):
+                continue
+            # Skip audit guard docstring (it cites v1.8.5 as known hallucination)
+            if fpath.endswith("audit_guard.py"):
+                continue
+            # Skip files documenting the v1.0.0 fix history (e.g. CHANGELOG mentions)
+            with open(fpath) as fp:
+                for lineno, line in enumerate(fp, start=1):
+                    for match in combined_re.finditer(line):
+                        # extract version from whichever named group matched
+                        v_group = (
+                            match.group("v1")
+                            or match.group("v2")
+                            or match.group("v3")
+                        )
+                        if v_group and v_group != canonical:
+                            try:
+                                rel = str(Path(fpath).relative_to(PROJECT_ROOT))
+                            except ValueError:
+                                rel = fpath
+                            drift_files.append((rel, v_group, lineno))
+    except Exception as e:
+        return CheckResult(
+            passed=False,
+            actual=f"scan error: {e}",
+            expected="scannable",
+            evidence=[str(e)],
+        )
+
+    evidence = [
+        f"  canonical version: {canonical}",
+        f"  files scanned:    {scanned}",
+    ]
+    if drift_files:
+        evidence.append(
+            f"  DRIFT FOUND ({len(drift_files)} occurrence(s)):"
+        )
+        for rel, found, lineno in drift_files[:10]:
+            evidence.append(
+                f"    → {rel}:{lineno}  '{found}' (expected '{canonical}')"
+            )
+
+    if drift_files:
+        return CheckResult(
+            passed=False,
+            actual=f"{len(drift_files)} hardcoded version drift occurrences",
+            expected="0 (all must match pyproject.toml)",
+            evidence=evidence,
+        )
+    return CheckResult(
+        passed=True,
+        actual="0 drift (all hardcoded versions match pyproject)",
+        expected="0 drift",
+        evidence=evidence,
+    )
+
+
+# ────────────────────────────────────────────────────────────────────
 # Registry
 # ────────────────────────────────────────────────────────────────────
 
@@ -847,7 +959,13 @@ CHECKS: list[AuditCheck] = [
         "Defense vs. typo'd / phantom deps: spot-checks first 30 deps from requirements.txt + pyproject.toml against PyPI. Skipped when network unavailable.",
         check_15_pypi_deps_exist,
     ),
-]
+    AuditCheck(
+        16,
+        "No hardcoded version drift",
+        "Defense for 2026-07-11 audit: scan scripts/**/*.py for hardcoded 'vX.Y.Z' literals that drift from pyproject.toml [project].version",
+        check_16_version_drift,
+    ),
+]  # noqa: E501
 
 
 def main() -> int:

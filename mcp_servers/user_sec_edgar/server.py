@@ -26,8 +26,13 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("sec-edgar-mcp")
 
-APP_NAME = "sec-edgar-mcp"
-APP_VERSION = "1.0.0"
+try:
+    from mcp_servers._shared._version import APP_NAME as _APP_NAME, APP_VERSION
+except Exception:
+    # Fallback for standalone install / dev where shared package is missing
+    _APP_NAME = "sec-edgar-mcp"
+    APP_VERSION = "0.0.0+unknown"
+APP_NAME = _APP_NAME
 server = Server(APP_NAME)
 
 _HEADERS = {"User-Agent": "FinResearch/1.0 research@example.com"}

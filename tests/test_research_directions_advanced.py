@@ -44,7 +44,7 @@ def _make_mock_data():
 
 
 class TestAllDirectionFetchData:
-    """Mock _fetch_via_mcp to test fetch_data for all 12 directions."""
+    """Mock _fetch_via_mcp to test fetch_data for all 13 directions."""
 
     @pytest.mark.parametrize("slug", SLUGS)
     def test_fetch_data(self, slug, monkeypatch):
