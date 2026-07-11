@@ -1,17 +1,34 @@
 # GitHub Discussions 模板与种子问题
 
 > **审计来源**: `docs/audit/GITHUB_STAR_AUDIT_2026-07-09.md` §2.4
-> **前置条件**: 手动在 GitHub repo Settings → Features → Discussions → Enable
+> **状态**: ✅ **已启用并配置**（2026-07-11 17:11 验证）
 > **更新**: 2026-07-11
 
-## 启用步骤（用户手动）
+## 启用状态（已自动验证）
+
+```
+✅ has_discussions: true
+✅ 6 个默认分类已就绪:
+   • Announcements    (DIC_kwDOS7QcBc4C_QUG)
+   • General         (DIC_kwDOS7QcBc4C_QUH)
+   • Ideas           (DIC_kwDOS7QcBc4C_QUJ)
+   • Polls           (DIC_kwDOS7QcBc4C_QUK)
+   • Q&A             (DIC_kwDOS7QcBc4C_QUI)
+   • Show and tell   (DIC_kwDOS7QcBc4C_QUK)
+```
+
+> ⚠️ **常见困惑**: 启用 Discussions 后，"Set up discussions" 按钮会**消失**，
+> 改为在 Discussions 标签页右上角的 **"Edit categories"** 按钮管理分类。
+> 这不是 bug，是 GitHub 在 2024 年改版后的新流程。
+
+## 启用步骤（已完成，仅供参考）
 
 1. 访问 https://github.com/csmar432/finai-research/settings
 2. 向下滚动至 **Features** 部分
-3. ✅ 勾选 **Discussions**
-4. 点击 **Set up discussions**
-5. 选择分类模板（见下文）
-6. 创建首批示例帖子（见"种子问题"）
+3. ✅ 勾选 **Discussions** ← 你已执行
+4. ~~点击 "Set up discussions"~~ ← GitHub 2024+ 已移除此按钮
+5. 现在管理分类：访问 https://github.com/csmar432/finai-research/discussions
+   → 右上角 **⚙️** → **Edit categories**
 
 ---
 
