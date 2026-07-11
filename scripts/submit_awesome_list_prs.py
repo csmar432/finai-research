@@ -264,6 +264,20 @@ def submit_one(target: dict) -> Optional[str]:
     default_branch = get_default_branch(upstream_slug)
     print(f"   ✓ Detected default branch: {default_branch}")
 
+    # 0. Idempotency: if a PR already exists, return its URL
+    head_ref = f"{fork_slug.split('/', 1)[0]}:{branch}"
+    existing_prs = gh_api("GET", f"/repos/{upstream_slug}/pulls?head={head_ref}&state=open")
+    if isinstance(existing_prs, list) and existing_prs:
+        url = existing_prs[0].get("html_url")
+        print(f"   ↪️  PR already open: {url}")
+        return url
+    closed_prs = gh_api("GET", f"/repos/{upstream_slug}/pulls?head={head_ref}&state=closed")
+    if isinstance(closed_prs, list) and closed_prs:
+        # A closed PR exists — don't reopen; let user handle
+        url = closed_prs[0].get("html_url")
+        print(f"   ↪️  PR already closed: {url}")
+        return url
+
     # 1. Get current README from fork (it should match upstream after fork sync)
     print(f"   📥 Reading {readme_path} from fork {fork_slug}@{default_branch}...")
     current = get_readme_content(fork_slug, default_branch, readme_path)
@@ -272,9 +286,9 @@ def submit_one(target: dict) -> Optional[str]:
         return None
     print(f"   ✓ Got {len(current)} chars")
 
-    # 2. Check if already added
+    # 2. Idempotency: check if entry already added (regardless of which branch)
     if "csmar432/finai-research" in current:
-        print(f"   ⚠️  finai-research already present in {readme_path}; will still commit but entry may duplicate")
+        print(f"   ⚠️  finai-research already present in fork {default_branch} {readme_path}; committing anyway (will be deduped upstream if previously merged)")
 
     # 3. Apply entry
     new_content = apply_entry_to_readme(current, target["section"], target["entry_text"])
