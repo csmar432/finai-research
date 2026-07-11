@@ -607,18 +607,29 @@ flowchart TD
 
 ---
 
-## Comparison with Existing Tools
+## How FinAI Fits in the Ecosystem
 
-| Feature | **FinAI Research Workflow** | [dowhy](https://github.com/py-why/dowhy) | [StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
-|---------|--------------------------|------------------------------------------|--------------------------------------|
-| **Domain** | Economic & financial research | Industrial causal inference | Causal inference toolkit |
-| **Data sources** | 43 MCP servers (A股/US/FRED/OECD; 28 free + 12 API-key + 3 opt-in) | None (import only) | None (import only) |
-| **Econometric methods** | ~30 (DID/IV/RDD/GMM focus) | 0 (general framework) | 550+ (general) |
-| **Journal templates** | 45 (JF/JFE/RFS + 中文顶刊) | 0 | 0 |
-| **Chinese market** | ✅ Tushare/CSMAR/Wind | ❌ | ❌ |
-| **Human-in-the-loop** | ✅ HITL gates at pipeline stages | ❌ | ❌ |
-| **Adversarial review** | ✅ Multi-round AI review | ❌ | ❌ |
-| **Best for** | Economists: JF/JFE/RFS/经济研究 | Production causal ML | Causal inference devs |
+FinAI focuses on the **end-to-end workflow of empirical economic and finance research**:
+research idea → literature review → empirical design → data acquisition → analysis → paper draft → submission.
+
+General causal-inference libraries (e.g. [`dowhy`](https://github.com/py-why/dowhy),
+[`StatsPAI`](https://github.com/brycewang-stanford/StatsPAI),
+[`diff-diff`](https://github.com/igerber/diff-diff)) focus on the CI *algorithm* layer.
+FinAI focuses on the *research workflow* layer that wraps data, econometrics, journal
+templates, and human-in-the-loop gates into one pipeline.
+
+This focus brings complementary features for economists:
+
+- **43 MCP data sources** for A-share financials (Tushare/CSMAR/Wind), US equities (yfinance),
+  global macro (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv).
+- **47 econometric method modules** including modern staggered DID
+  (Callaway-Sant'Anna, Sun-Abraham, Borusyak), synthetic control/DiD, IV/2SLS,
+  panel GMM, RDD, triple-diff, panel quantile, spatial regression, etc.
+- **30 journal templates** (EN+ZH+JP+DE) covering *JF / JFE / RFS / JPE / Econometrica /
+  经济研究 / 金融研究 / 管理世界 / 会计研究 / ZWiSt / JNS* and more.
+- **Human-in-the-loop gates** at every pipeline stage to prevent LLM hallucinations.
+
+See [Related Projects](#related-projects) below for tools that work alongside FinAI.
 
 ---
 
