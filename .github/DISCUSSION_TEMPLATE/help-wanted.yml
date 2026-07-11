@@ -1,0 +1,42 @@
+name: Help Wanted
+description: Volunteer for a task or look for contributors.
+title: "[Help Wanted] "
+labels: ["help-wanted"]
+body:
+  - type: input
+    id: task
+    attributes:
+      label: 任务标题
+      placeholder: 编写 3 篇高 Star 项目的对比分析
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: 难度
+      options:
+        - good first issue
+        - intermediate
+        - advanced
+        - expert
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 任务描述
+      placeholder: |
+        在 docs/benchmark/ 下编写 markdown，对比：
+        - microsoft/autogen
+        - anthropic/anthropic-cookbook
+        - crewai/crewai
+        - csmar432/finai-research
+    validations:
+      required: true
+  - type: input
+    id: reward
+    attributes:
+      label: 奖励
+      placeholder: |
+        🎁 50 USD GitHub Sponsors credit
+        📜 写入 CONTRIBUTORS.md

@@ -1,0 +1,37 @@
+name: Show and Tell
+description: Share your research output, paper, or experiment using FinAI.
+title: "[Show & Tell] "
+labels: ["show-and-tell"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: 项目/论文标题
+      placeholder: 数字金融对企业创新的影响 — A 股 DID 实证
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: 工作流程
+      description: 你使用了哪些脚本、阶段、MCP？
+      placeholder: |
+        1. start_research.py --topic "..."
+        2. literature_download.py 检索 12 篇文献
+        3. modern_did.py::CallawaySantAnnaEstimator
+        4. robustness_runner.py::run_comprehensive("full")
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 结果 / 产出
+      placeholder: |
+        - 论文投稿至《经济研究》
+        - arXiv ID: 2607.12345
+        - 5 轮 AI review 后手动修改
+  - type: textarea
+    id: feedback
+    attributes:
+      label: 反馈 / 改进建议
+      placeholder: data_fetcher 在 Tushare 限流时会卡住，建议添加 retry with backoff

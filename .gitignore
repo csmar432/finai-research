@@ -165,11 +165,31 @@ tariff_research/
 output/
 results/
 .cache/.last_session
-# Papers — two submission-ready manuscripts are tracked in git.
-# Do NOT add them to this ignore list; they are tracked normally.
+# ────────────────────────────────────────────────────────────
+# Local experiment artifacts (added 2026-07-11, audit GITHUB_STAR_AUDIT §5.3)
+# These are runtime outputs that must never enter git history.
+# ────────────────────────────────────────────────────────────
+*.parquet
+*.feather
+*.arrow
+output/**/*.log
+output/**/*.pdf
+output/**/*.png
+output/**/*.json
+output/**/*.tex
+output/**/*.staged
+# Keep pipeline scripts (.py) tracked; ignore everything else under output/
+output/fin-experiments/case_studies/staged/
+output/fin-experiments/case_studies/output/
+output/fin-experiments/case_studies/results/
 # Papers — event_runs/ and future local experiments are auto-generated
 papers/event_runs/
 papers/output/
+# Local data staging (CSV that get produced by pipeline scripts)
+papers/*/mcp_raw/
+papers/*/stage_data/
+papers/*/panel_data.csv
+papers/*/table*_*.csv
 # Only add future paper subdirectories here if they are truly local experiments.
 # Example (if needed in the future):
 # papers/local_experiment_notes/

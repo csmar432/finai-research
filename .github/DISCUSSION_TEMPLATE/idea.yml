@@ -1,0 +1,39 @@
+name: Idea
+description: Suggest a new feature, MCP server, or research direction.
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题 / 现状
+      description: 当前缺失什么？痛点是什么？
+      placeholder: 当前需要手动执行 X，操作繁琐...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 描述你期望的实现方式
+      placeholder: |
+        1. 在 scripts/ 中添加新脚本
+        2. 添加 CLI 参数
+        3. 测试覆盖
+    validations:
+      required: true
+  - type: input
+    id: motivation
+    attributes:
+      label: 动机 / 价值
+      placeholder: 降低学者使用门槛，提升 arXiv 引用率
+  - type: dropdown
+    id: effort
+    attributes:
+      label: 估算工时
+      options:
+        - XS (< 1 小时)
+        - S (1-3 小时)
+        - M (3-8 小时)
+        - L (1-3 天)
+        - XL (> 3 天)

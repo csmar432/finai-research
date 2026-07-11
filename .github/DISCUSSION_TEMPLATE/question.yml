@@ -1,0 +1,36 @@
+name: Question
+description: Ask the community a question about FinAI Research Workflow.
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 详细描述你遇到的问题
+      placeholder: |
+        报错信息：
+        执行命令：
+        期望结果：
+        实际结果：
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: 环境信息
+      placeholder: macOS 14.5, Python 3.12.3
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: 受影响组件
+      options:
+        - scripts/research_framework/
+        - scripts/agent_pipeline.py
+        - MCP 服务器
+        - LaTeX 生成
+        - 其他
+    validations:
+      required: true
