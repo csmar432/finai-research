@@ -21,7 +21,8 @@
 ## Quick Start (30 秒上手)
 
 ```bash
-# 1. 安装
+# 1. 安装 (Option A 从 PyPI 装，可选；Option B 从源码装，推荐给贡献者)
+#    pip install 'finai-research-workflow[extras]'
 git clone https://github.com/csmar432/finai-research.git && cd finai-research
 pip install -e ".[extras]"
 
@@ -31,6 +32,9 @@ export DEEPSEEK_API_KEY=sk-xxxx
 # 3. 开始研究
 python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 ```
+
+> **PyPI:** [finai-research-workflow · 0.2.0a0](https://pypi.org/project/finai-research-workflow/) · MIT
+> **DOI:** [10.5281/zenodo.21262689](https://doi.org/10.5281/zenodo.21262689)
 
 ![Quick Demo](.github/demo/demo.gif)
 
@@ -678,3 +682,4 @@ If you use FinAI Research Workflow in published research, please cite it as:
 
 
 MIT License — see [LICENSE](LICENSE) for the full text.
+
