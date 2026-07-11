@@ -235,25 +235,56 @@ def check_4_coverage_threshold() -> CheckResult:
 def check_5_pypi_badges_redirected() -> CheckResult:
     """Audit claim: 'README has fake PyPI badges.'
 
-    We grep README.md for pypi.org/project/finai links.
+    After 2026-07-11 real PyPI publication, README legitimately links to
+    https://pypi.org/project/finai-research-workflow/. The previous
+    "fake-badge detector" hard-coded zero links; we now verify that any
+    such link RESOLVES (200 from PyPI).
     """
     cmd = ["grep", "-n", "pypi.org/project/finai\\|pypi/v/finai\\|pypi/dm/finai", "README.md", "README_EN.md"]
     res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
     matches = [m for m in res.stdout.strip().split("\n") if m]
-    evidence = [f"  fake PyPI badge lines: {len(matches)}"]
+    evidence = [f"  README PyPI links found: {len(matches)}"]
     if matches:
         evidence.extend(f"    → {m}" for m in matches[:5])
+
     if len(matches) == 0:
         return CheckResult(
             passed=True,
-            actual="no fake PyPI badges",
-            expected="0 fake badges",
+            actual="no PyPI mention",
+            expected="at least 0 working PyPI links",
+            evidence=evidence,
+        )
+
+    # Verify each link actually resolves (200 from PyPI = real link)
+    import urllib.request
+    import urllib.error
+    import re as _re
+    bad = []
+    for m in matches:
+        url_m = _re.search(r"https?://[^\s)]+", m)
+        if url_m:
+            url = url_m.group(0).rstrip(")")
+            try:
+                with urllib.request.urlopen(url, timeout=5) as r:
+                    if r.status != 200:
+                        bad.append((url, r.status))
+            except Exception as exc:
+                bad.append((url, str(exc)[:50]))
+    evidence.append(f"  broken PyPI links: {len(bad)}")
+    for u, s in bad[:5]:
+        evidence.append(f"    → HTTP {s}: {u}")
+
+    if len(bad) == 0:
+        return CheckResult(
+            passed=True,
+            actual=f"{len(matches)} working PyPI links",
+            expected="all links resolve",
             evidence=evidence,
         )
     return CheckResult(
         passed=False,
-        actual=f"{len(matches)} fake PyPI badges",
-        expected="0 fake badges",
+        actual=f"{len(bad)} broken PyPI links",
+        expected="all links resolve",
         evidence=evidence,
     )
 
