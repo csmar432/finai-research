@@ -64,10 +64,10 @@ python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
 ## Why FinAI Research Workflow?
 
 - **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at the firm level, 19 robustness checks, parallel-trend plots).
-- **43 MCP server directories** — covers A-share financials, US equities, global macro (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers. **41 directories have full Python implementations; 2 are mock-only (user-csmar, user-wind require institutional accounts); 3 are opt-in legal-risk (CNKI, Wanfang, Chinese Literature)**. Free alternatives exist via `user-financial` (akshare) and `user-yfinance`.
-- **~20 econometric method implementations, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon, requires `pip install diff-in-diff2`), synthetic control, instrumental variables (requires `linearmodels`), panel GMM, RDD, event studies, mediation, and more. See CLAUDE.md for the full list with dependency notes.
+- **43 MCP server directories** — covers A-share financials, US equities, global macro (FRED/World Bank/IMF/OECD/BEA), and 400M+ academic papers (OpenAlex). **41 directories have full Python implementations; 2 are mock-only (user-csmar, user-wind require institutional accounts); 3 are opt-in legal-risk (CNKI, Wanfang, Chinese Literature)**. Free alternatives exist via `user-financial` (akshare) and `user-yfinance`.
+- **47 econometric method modules, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon, requires `pip install diff-in-diff2`), synthetic control, instrumental variables (requires `linearmodels`), panel GMM, RDD, event studies, mediation, and more. See CLAUDE.md for the full list with dependency notes.
 - **30 journal templates, English/Chinese/Japanese/German** — JF, JFE, RFS, JAE, Econometrica, 经济研究, 金融研究, 管理世界, 会计研究, 中国工业经济.
-- **18 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
+- **17 specialised AI skills** (Claude Code / Cursor / GitHub Copilot) — idea discovery, literature review, novelty check, experiment design, data acquisition, paper drafting, figure generation, LaTeX compilation, review loops.
 - **Human-in-the-loop, never autonomous fabrication** — every stage requires explicit checkpoint approval; data sources are verified before use; no synthetic data without user consent.
 
 ## Why Not Just Use ChatGPT?
@@ -223,7 +223,7 @@ Describe your research in plain Chinese — the agent handles the rest:
 | Stage | Output |
 |-------|--------|
 | Research Design | DID/IV/RDD identification strategy + data sourcing plan |
-| Empirical Analysis | ~30 econometric methods, automated robustness tests (18 types) |
+| Empirical Analysis | 47 econometric methods, automated robustness tests (19 types) |
 | Paper Draft | LaTeX manuscript in journal format (JF/JFE/RFS/经济研究/金融研究/管理世界) |
 | Review Loop | AI-assisted adversarial review with researcher verification required |
 
@@ -338,7 +338,7 @@ The system uses a **layered agent architecture** with an AI Agent (Claude Code /
 | **user-bea-data** | Bureau of Economic Analysis (US GDP) | ✅ Free | Full |
 | **user-eastmoney-reports** | Research reports, news, analyst rankings | ✅ Free | Full |
 | **user-enhanced-finance** | Forex, shipping indices, commodities | ✅ Free | Full |
-| **user-openalex** | 250M+ academic papers + citation graph | ✅ Free | Full |
+| **user-openalex** | 400M+ academic papers + citation graph | ✅ Free | Full |
 | **user-arxiv** | Academic paper search and download | ✅ Free | Full |
 | **user-context7** | Full-text retrieval for papers (ArXiv/DOI) | ✅ Free | Full |
 | **user-semantic-scholar** | AI-enhanced paper search | ⚠️ Limited | Optional API key |
@@ -626,7 +626,7 @@ templates, and human-in-the-loop gates into one pipeline.
 This focus brings complementary features for economists:
 
 - **43 MCP data sources** for A-share financials (Tushare/CSMAR/Wind), US equities (yfinance),
-  global macro (FRED/World Bank/IMF/OECD/BEA), and 200M+ academic papers (OpenAlex/ArXiv).
+  global macro (FRED/World Bank/IMF/OECD/BEA), and 400M+ academic papers (OpenAlex/ArXiv).
 - **47 econometric method modules** including modern staggered DID
   (Callaway-Sant'Anna, Sun-Abraham, Borusyak), synthetic control/DiD, IV/2SLS,
   panel GMM, RDD, triple-diff, panel quantile, spatial regression, etc.
