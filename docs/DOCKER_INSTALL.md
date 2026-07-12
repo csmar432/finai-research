@@ -1,12 +1,12 @@
 # Docker Desktop 安装指南
 
-> 本指南帮助你在 macOS（及 Linux）上安装并配置 Docker Desktop，使其能够运行本项目的 43 个 MCP 数据服务器容器。
+> 本指南帮助你在 macOS（及 Linux）上安装并配置 Docker Desktop，使其能够运行本项目的 `{{MCP_COUNT}}` 个 MCP 数据服务器容器（数字由 `scripts/count_mcp.py` 自动统计）。
 
 ---
 
 ## 一、为什么需要 Docker
 
-本项目包含 **43 个 MCP 数据服务器**（MicroContext Protocol），每个服务器对应一种数据类型或 API：
+本项目包含 **`{{MCP_COUNT}}` 个 MCP 数据服务器**（MicroContext Protocol），每个服务器对应一种数据类型或 API：
 
 - **金融数据**: yfinance（美股）、tushare（A股）、eastmoney（研报）
 - **宏观数据**: fed-data、wb-data、imf-data、oecd-data

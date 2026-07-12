@@ -30,8 +30,9 @@
 # 确认 Python 版本 >= 3.11
 python3 --version
 
-# 安装全部依赖
-pip install -e .
+# 安装核心依赖及 extras 组中的全部常用可选依赖
+# extras 包含 Tushare、akshare、yfinance、MCP、仪表盘和文档处理等集成
+pip install -e ".[extras]"
 
 # 仅安装核心依赖（不含深度学习等重型包）
 pip install pandas numpy scikit-learn statsmodels matplotlib seaborn
@@ -72,7 +73,7 @@ python3 scripts/setup_wizard.py --guided
 # 或者创建虚拟环境
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e ".[extras]"
 ```
 
 ---

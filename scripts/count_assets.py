@@ -30,7 +30,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def count_mcp_servers() -> dict[str, int]:
-    """统计 MCP server 目录数 + server.py 状态。"""
+    """统计 MCP server 目录数 + server.py 状态。
+
+    委托给 scripts/count_mcp.py 统一计数逻辑 (真理源),
+    避免与文档占位符 `{{MCP_COUNT}}` 不一致。
+    """
+    from scripts.count_mcp import count_mcp_directories
+
     mcp_root = PROJECT_ROOT / "mcp_servers"
     user_servers = sorted(
         d for d in mcp_root.iterdir() if d.is_dir() and d.name.startswith("user_")
@@ -66,7 +72,7 @@ def count_mcp_servers() -> dict[str, int]:
             stub_count += 1
 
     return {
-        "total": len(user_servers),
+        "total": count_mcp_directories(mcp_root),  # 委托给 count_mcp.py (与 {{MCP_COUNT}} 一致)
         "free_no_key": free_count,
         "requires_api_key": full_impl_count,
         "stub_only": stub_count,

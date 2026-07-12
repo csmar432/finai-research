@@ -67,7 +67,7 @@
    - **Gap 4: Style** — writes in the wrong register (NeurIPS, not JF)
 
 3. **The FinAI approach (500 words)**
-   - 43 MCP data sources
+   - `{{MCP_COUNT}}` MCP data sources
    - Pre-built CSMAR schema, 12 standard controls
    - Modern DiD, IV, GMM, RDD all built in
    - 45 journal templates (incl. 经济研究 / 金融研究)

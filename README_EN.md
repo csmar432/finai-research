@@ -194,7 +194,7 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 ## 🔗 Links
 
 - **Source**: https://github.com/csmar432/finai-research
-- **Install**: `pip install -e .` (clone first) — **not yet published to PyPI**
+- **Install**: `pip install -e ".[extras]"` (clone first; includes Tushare and all common optional integrations) — **not yet published to PyPI**
 - **Issues**: https://github.com/csmar432/finai-research/issues
 - **Discussions**: https://github.com/csmar432/finai-research/discussions
 - **Security**: See [SECURITY.md](SECURITY.md)

@@ -1,12 +1,13 @@
 # MCP Server Tiering — 分层指南
 
 > **审计来源**: `docs/audit/GITHUB_STAR_AUDIT_2026-07-09.md` §4.1
-> **目的**: 解决"43 vs 50 MCP 平铺展示"问题，降低新用户认知负担
+> **目的**: 解决 MCP 平铺展示问题，降低新用户认知负担
 > **更新**: 2026-07-11
+> **MCP 总数**: 见 `{{MCP_COUNT}}`（由 `scripts/count_mcp.py` 自动生成）
 
 ## 概述
 
-仓库现有 **43 个 MCP 服务器**（不含 `__pycache__/`）。按安装难度与价值分为三层：
+仓库现有 **`{{MCP_COUNT}}` 个 MCP 服务器**（不含 `__pycache__/`）。按安装难度与价值分为三层：
 
 | Tier | 数量 | 安装方式 | 适用场景 |
 |------|------|---------|---------|
@@ -132,8 +133,8 @@ python scripts/register_mcp_servers.py --tier optional --server user-cnki
 
 | 来源 | 数字 | 备注 |
 |------|------|------|
-| README.md | "43 个 MCP" | ✅ 与本表一致 |
-| 本文档 | 8 + 12 + 23 = **43** | ✅ |
+| README.md | `{{MCP_COUNT}}` 个 MCP | ✅ 与本表一致 |
+| 本文档 | 8 + 12 + 23 = `{{MCP_COUNT}}` | ✅ |
 
 > 早期文档提及"50 个"源于包含 `__pycache__/` 等目录。本文档以"有效 MCP server"计。
 

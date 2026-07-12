@@ -35,7 +35,7 @@ python scripts/agent.py --goal "<topic>"
 1. 文献综述 — arXiv / NBER / OpenAlex 搜索
 2. 研究想法生成 — 8-12 个候选想法，数据验证
 3. 实证设计 — DID / IV / RDD / PSM 识别策略
-4. 数据获取 — 41 个 MCP 服务器自动拉取
+4. 数据获取 — `{{MCP_COUNT}}` 个 MCP 服务器自动拉取
 5. 回归分析 — 38+ 种计量方法
 6. 论文写作 — LaTeX 输出（JF / JFE / RFS / 经济研究）
 7. 对抗性 review — 多轮迭代直到发表标准

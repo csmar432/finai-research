@@ -10,7 +10,7 @@
 **论文-研报工作流 (FinResearch Agent)** 是经济金融领域的 AI 研究助手，自动化从文献综述到可投稿论文的全流程。
 
 - **语言**: Python 3.10+
-- **数据**: MCP (Model Context Protocol) 服务器，43 个数据源
+- **数据**: MCP (Model Context Protocol) 服务器，`{{MCP_COUNT}}` 个数据源（见 `scripts/count_mcp.py`）
 - **关键**: 大部分数据源无需 API Key（世界银行、IMF、OECD 等免费数据）
 
 ---
@@ -62,7 +62,7 @@ scripts/
 │   └── data_fetcher.py    # MCP 数据获取
 ├── core/                   # Agent 编排模块
 ├── research_directions/     # 研究方向（12个）
-mcp_servers/               # 43 个 MCP 数据服务器
+mcp_servers/               # `{{MCP_COUNT}}` 个 MCP 数据服务器
 knowledge/skills/           # 17 个技能文档（真相源）
 ```
 

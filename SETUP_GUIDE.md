@@ -32,10 +32,11 @@
 conda create -n finai python=3.12
 conda activate finai
 
-# Install dependencies
-pip install -e .           # 推荐方式（支持 entry points）
+# Install the package and all common optional integrations
+# extras includes Tushare, akshare, yfinance, MCP, dashboards, and document processing.
+pip install -e ".[extras]"           # 推荐方式（支持 entry points）
 # 或仅安装依赖：
-pip install -e . --no-deps 2>&1 || pip install -e .
+pip install -e ".[extras]" --no-deps 2>&1 || pip install -e ".[extras]"
 ```
 
 ### Setup with venv
@@ -50,8 +51,8 @@ source .venv/bin/activate
 # Activate (Windows)
 # .venv\Scripts\activate
 
-# Install
-pip install -e .
+# Install the package and all common optional integrations
+pip install -e ".[extras]"
 ```
 
 ### Verify Installation
@@ -193,8 +194,9 @@ Add to Cursor MCP settings:
 #### user-tushare (A股数据)
 
 ```bash
-# Install Tushare
-pip install tushare
+# Tushare is included in the extras dependency group
+pip install -e ".[extras]"
+# To install only the client instead: pip install "tushare>=1.4.0,<2.0"
 
 # Configure token
 echo "TUSHARE_TOKEN=your-tushare-token" >> .env
@@ -396,7 +398,7 @@ pip install fails with permission error
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e ".[extras]"
 ```
 
 ### Getting Help

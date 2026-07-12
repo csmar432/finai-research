@@ -275,11 +275,12 @@ Describe your research in plain Chinese — the agent handles the rest:
 git clone https://github.com/csmar432/finai-research.git
 cd finai-research-workflow
 
-# 2. Install dependencies
+# 2. Install the package with all common optional integrations
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install -e ".[extras]"
+# extras includes Tushare, akshare, yfinance, MCP, dashboard, and document-processing packages.
 
-# Optional: install econometrics extras (includes diff-in-diff2 for CS/BJS/Gardner DiD)
+# Optional: install econometrics packages (linearmodels, pandas-datareader, pandasql, honestdid)
 pip install -e ".[econometrics]"
 
 # 3. Configure API key (at least one required)

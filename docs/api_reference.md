@@ -129,7 +129,9 @@ README 主推前者作为用户入口；后者供框架内调用。
 
 完整 17 个 skill 文件在 `.cursor/skills/`。
 
-## 8. MCP 数据源（43 个目录）
+## 8. MCP 数据源（`{{MCP_COUNT}}` 个目录，自动生成）
+
+> 数字由 `scripts/count_mcp.py` 自动扫描并写入 `.docs-cache/MCP_COUNT.txt`。
 
 | 类型 | 数量 | 说明 |
 |------|------|------|

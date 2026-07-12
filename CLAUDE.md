@@ -1,5 +1,9 @@
 # 论文-研报工作流 · FinResearch Agent
 
+> **📌 占位符约定**：本文档中提及的 MCP 总数使用 `{{MCP_COUNT}}` 占位符。
+> 实际数字由 `python scripts/count_mcp.py` 自动扫描 `mcp_servers/user_*` 目录后写入
+> `.docs-cache/MCP_COUNT.txt`。新增/删除 MCP 目录后，跑一次该脚本即可让所有引用保持准确。
+>
 > **最新审计 (2026-07-04)**：[CI 覆盖治理审计](.archive/audit/audit-2026-07-04.md) —
 > 4 P0 / 2 P1 / 1 P2 全部完成；剩余 PR-6 推覆盖率至 60%+。
 > **Audit guard 状态**：[`scripts/audit_guard.py`](scripts/audit_guard.py) 17 checks，
@@ -68,9 +72,9 @@ pytest tests/ -v
 
 ## 核心能力
 
-### 数据获取（MCP，43个服务器目录）
+### 数据获取（MCP，`{{MCP_COUNT}}` 个服务器目录）
 
-> **重要说明**：43个MCP目录中，28个完全免费（无需API Key），12个需要API Key，3个为 opt-in 法律风险。详见 `python scripts/count_assets.py`。
+> **重要说明**：`{{MCP_COUNT}}` 个 MCP 目录中，28 个完全免费（无需 API Key），12 个需要 API Key，3 个为 opt-in 法律风险。详见 `python scripts/count_assets.py`。
 
 | 你要什么 | 用这个 MCP |
 |---------|-----------|
@@ -198,7 +202,7 @@ scripts/
     ├── international_finance.py    # 国际金融
     └── political_economy_finance.py # 政治经济学
 
-mcp_servers/                      # 43个MCP服务器目录
+mcp_servers/                      # `{{MCP_COUNT}}` 个 MCP 服务器目录
 output/                           # 输出目录
 ├── fin-literature/              # 文献综述
 ├── fin-ideas/                   # 研究想法
@@ -221,7 +225,7 @@ output/                           # 输出目录
 | `scripts/data_source_checker.py` | 数据源预检查（**新**）|
 | `scripts/pipeline_checkpoint.py` | 强制交互 checkpoint（**新**）|
 | `scripts/setup_wizard.py --guided` | 交互式配置向导 |
-| `scripts/register_mcp_servers.py --list` | 列出 43 个 MCP 服务器注册状态（首次必须跑）|
+| `scripts/register_mcp_servers.py --list` | 列出 `{{MCP_COUNT}}` 个 MCP 服务器注册状态（首次必须跑）|
 | `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
 | `scripts/research_framework/pipeline.py` | 研究执行层 |
 | `scripts/research_framework/modern_did.py` | 现代 DID 回归 |
@@ -279,7 +283,7 @@ output/                           # 输出目录
 第2步  文献综述     → literature_download.py + arxiv/openalex/semantic_scholar MCP → 引文网络 → 识别研究缺口
 第3步  新颖性验证   → agent_pipeline.py --topic "..." (内部触发 NoveltyGate + llm_reviewer) → JF/JFE/RFS/arXiv/NBER 检索 → 输出新颖性评分 → 确认
 第4步  实证设计     → research_framework/pipeline.py → DID/IV/RDD → REFINED_DESIGN.md → data_source_checker.py → 确认
-第5步  数据获取     → universal_data_fetcher.py → 43个MCP → Python/Stata脚本 → 确认
+第5步  数据获取     → universal_data_fetcher.py → `{{MCP_COUNT}}` 个 MCP → Python/Stata脚本 → 确认
 第6步  论文写作     → research_framework/report_generator.py → 大纲 → 正文 → 图表 → LaTeX草稿
 第7步  对抗性Review → core/llm_reviewer.py → 多轮严格评审 → 达到发表标准
 ```
