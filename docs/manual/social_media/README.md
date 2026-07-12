@@ -1,10 +1,12 @@
 # HN / Reddit / 中文社媒 提交包
 
-> **状态 (2026-07-12)**: 5/5 任务中, 1/5 可自动化 (已推 4 个 awesome-list PR)。
-> 其他 4 项 (HN/Reddit/知乎/微博/X.com) **需要人工 web 提交** —
+> **状态 (2026-07-12)**: 5/5 任务中, **1/5 可自动化 (已推 4 个 awesome-list PR), 1/5 已手动完成 (mcpservers.org)**.
+> 剩余 3 项 (HN/Reddit/知乎/微博/X.com) **需要人工 web 提交** —
 > 每个文件含完整可复制粘贴的文案 + 详细操作步骤。
 >
-> **2026-07-12 更新**: 文案润色 — 移除未确认的 PR 编号, 加入真实 PyPI/Zenodo 引用.
+> **2026-07-12 更新**:
+> - mcpservers.org 已发布 (✅ HTTP 200, https://mcpservers.org/zh-CN/servers/csmar432/finai-research)
+> - 文案润色 — 移除未确认的 PR 编号, 加入真实 PyPI/Zenodo 引用.
 
 ## 5 项任务总览
 
@@ -12,7 +14,7 @@
 |---|------|------|------|
 | 1 | 5 个 awesome-list PR | **GitHub API** | ✅ 4 DRAFT + 2 WITHDRAWN/DEFERRED (见 `awesome_list_prs/PR-*.md`) |
 | 2 | PyPI 发布 | **PyPI token 必需** | ✅ **已发布 v0.2.0a0** (2026-07-11) |
-| 3 | mcpservers.org | **Web form + 邮件验证** | ⏸️ 需 web 提交 (可选) |
+| 3 | mcpservers.org | **Web form + 邮件验证** | ✅ **已发布 (2026-07-12)** | https://mcpservers.org/zh-CN/servers/csmar432/finai-research |
 | 4 | HN/Reddit | **Web form** | ⏸️ 需 web 提交 (文案备好) |
 | 5 | 知乎/微博/X.com | **Web form + 登录** | ⏸️ 需 web 提交 (文案备好) |
 
@@ -83,18 +85,19 @@ this responsibility.
 - 4 个 GitHub PR 已开 (matteocourthoud / wilsonfreitas / academic / emptymalei)
 - PR 链接已写入 `docs/manual/social_media/README.md` 顶部 (见下)
 - PyPI 包已构建 (`dist/finai_research_workflow-0.2.0a0-py3-none-any.whl`)
-- mcpservers.org 提交指引已写
+- mcpservers.org 已发布: https://mcpservers.org/zh-CN/servers/csmar432/finai-research (HTTP 200, 2026-07-12)
 
 ❌ **无法自动完成** (需人工):
 
 - HN/Reddit/知乎/微博/X.com — 平台防 spam，不开放自动 post API
 - PyPI 上传 — 需 PyPI token (你可在 https://pypi.org/account/register/ 注册)
 
-## 引用的 4 个 PR 链接 (用于文案)
+## 引用的 4 个 PR 链接 + mcpservers.org (用于文案)
 
 ```
 https://github.com/matteocourthoud/awesome-causal-inference/pull/14
 https://github.com/wilsonfreitas/awesome-quant/pull/468
 https://github.com/academic/awesome-datascience/pull/654
 https://github.com/emptymalei/awesome-research/pull/111
+https://mcpservers.org/zh-CN/servers/csmar432/finai-research   # 已发布 2026-07-12
 ```

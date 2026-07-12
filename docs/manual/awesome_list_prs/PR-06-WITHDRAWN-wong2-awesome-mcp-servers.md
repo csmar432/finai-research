@@ -10,8 +10,10 @@ From `wong2/awesome-mcp-servers` README line 4:
 > [!NOTE]
 > We do not accept PRs. Please submit your MCP on the website: https://mcpservers.org/submit
 
-We respect this. As an alternative we have submitted the project at
-`https://mcpservers.org/submit` (need to verify submission separately).
+We respect this. As an alternative **we submitted to the mcpservers.org
+directory** on 2026-07-12:
+
+✅ Live: https://mcpservers.org/zh-CN/servers/csmar432/finai-research (HTTP 200)
 
 ## Alternatives we DID pursue
 
@@ -32,6 +34,9 @@ is acknowledged, but not submitted to wong2 itself.
 
 ## Action item for user
 
-If you want FinAI listed on the mcpservers.org directory, navigate to
+~~If you want FinAI listed on the mcpservers.org directory, navigate to
 https://mcpservers.org/submit and submit manually (it's a web form that
-asks for repo URL, description, category).
+asks for repo URL, description, category).~~
+
+**✅ DONE (2026-07-12)**: Listed at https://mcpservers.org/zh-CN/servers/csmar432/finai-research
+(HTTP 200 verified). This action item is now closed.
