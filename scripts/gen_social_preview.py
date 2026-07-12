@@ -93,5 +93,10 @@ plt.savefig(
     ".github/social-preview.png",
     dpi=100, facecolor=BG, bbox_inches=None,
 )
-print(f"saved .github/social-preview.png  (MCP={mcp_total}, methods={methods_total}, "
+
+import shutil
+shutil.copy(".github/social-preview.png", "docs/assets/social-preview.png")
+
+print(f"saved .github/social-preview.png + docs/assets/social-preview.png "
+      f"(MCP={mcp_total}, methods={methods_total}, "
       f"skills={skills_total}, journals={jt_total})")
