@@ -210,14 +210,16 @@ python scripts/journal_template.py --generate JFE output/paper.tex
 - ✅ All `scripts/*.py` entry points
 - ✅ 43 MCP servers (pure Python stdlib)
 - ✅ Checkpoint (`fcntl.flock` falls back to no-op on Windows)
-- ✅ 2,234 unit tests (pytest --collect-only; CI matrix: Ubuntu + macOS; no Windows)
+- ✅ Unit tests (pytest --collect-only; CI matrix: Ubuntu + macOS + Windows; daemon mode uses polling loop on Windows)
 
 ### Known Cross-Platform Limitations
 
 - ⚠️ `event_monitor.py` uses `signal.pause()` which is Unix-only; on Windows it falls back to a polling loop
 - ⚠️ `keychain_setup.py` is macOS-specific; for Windows/Linux, use the cross-platform keyring via `scripts/keychain_manager.py`
 - ⚠️ `core/sandbox.py` uses `os.fork` (Unix-only); falls back to `subprocess` on Windows
+- ⚠️ `event_monitor.py --daemon` uses `os.fork`; on Windows the daemon exits with a friendly "use --interval 300 instead" message at startup (T2 audit 2026-07-12)
 - ✅ Skills sync: `knowledge/skills/`, `.claude/skills/`, and `.github/skills/` are kept in sync via `python scripts/sync_skills.py` (no symlinks, Windows-safe). Run after editing any skill doc.
+- ✅ Codex support: `AGENTS.md` at root + `.agents/skills/<name>/SKILL.md` per skill (frontmatter with `name` and `description`). Both synced by `sync_skills.py`.
 
 ---
 

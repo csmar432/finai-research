@@ -252,7 +252,7 @@ class StreamingPipeline:
                 data={"message": "Streaming not available, using batch mode"},
             )
             # Fall back to synchronous execution
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             try:
                 result = await loop.run_in_executor(
                     None, agent.run, context
@@ -285,7 +285,7 @@ class StreamingPipeline:
                 event_type=StreamEventType.STREAMING_UNAVAILABLE,
                 data={"message": f"Streaming failed, falling back: {str(exc)[:100]}"},
             )
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             try:
                 result = await loop.run_in_executor(
                     None, agent.run, context
@@ -428,7 +428,7 @@ class StreamingPipeline:
             return await agent.act(context, stream=True)
         else:
             # Fall back to regular act
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             return await loop.run_in_executor(None, agent.act, context)
 
     async def _stream_llm_response(

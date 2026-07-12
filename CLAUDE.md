@@ -2,7 +2,7 @@
 
 > **最新审计 (2026-07-04)**：[CI 覆盖治理审计](.archive/audit/audit-2026-07-04.md) —
 > 4 P0 / 2 P1 / 1 P2 全部完成；剩余 PR-6 推覆盖率至 60%+。
-> **Audit guard 状态**：[`scripts/audit_guard.py`](scripts/audit_guard.py) 15 checks，
+> **Audit guard 状态**：[`scripts/audit_guard.py`](scripts/audit_guard.py) 17 checks，
 > 包括 YAML 解析、phantom dep 检测、PyPI 依赖存在性。
 
 > 经济金融领域 AI 研究助手。生成论文草稿，集成 MCP 数据获取、因果推断、LaTeX 排版和 AI 辅助 review。

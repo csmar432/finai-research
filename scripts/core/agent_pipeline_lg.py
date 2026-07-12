@@ -254,7 +254,7 @@ class LangGraphPipeline:
                 initial_context=initial_context,
             )
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         with concurrent.futures.ThreadPoolExecutor() as pool:
             result = await loop.run_in_executor(pool, _run)
         return result

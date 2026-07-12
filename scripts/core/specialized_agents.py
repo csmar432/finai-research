@@ -142,7 +142,7 @@ Output JSON only:"""
         )
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
@@ -235,7 +235,7 @@ CODE:
 Output JSON only:"""
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
@@ -317,7 +317,7 @@ TIKZ/PGFPLOTS CODE:
 Output JSON only:"""
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
@@ -466,7 +466,7 @@ PAPER:
 Output JSON only:"""
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
@@ -560,7 +560,7 @@ CHECKS:
 Output JSON only:"""
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
@@ -648,7 +648,7 @@ REGRESSION OUTPUTS:
 Output JSON only:"""
 
         try:
-            response = await asyncio.get_event_loop().run_in_executor(
+            response = await asyncio.get_running_loop().run_in_executor(
                 None,
                 lambda: self.gateway.generate(prompt, format_json=True),
             )
