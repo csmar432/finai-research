@@ -5812,10 +5812,32 @@ def main():
         return
 
     if args.list:
-        templates = list_templates(args.category)
+        # P1-3 fix 2026-07-12: show canonical JOURNAL_METADATA count (30) to match
+        # README and count_assets.py. The actual TEMPLATES dict has 45 file
+        # templates, but 15 of them don't have full JOURNAL_METADATA (DOI/ISSN/
+        # publisher/IF), so the canonical count for "publishable journals with
+        # full metadata" is 30.
+        # See module docstring (line ~286) for the original audit note.
+        # NOTE: JOURNAL_METADATA keys are lowercase ('jf'), TEMPLATES keys are
+        # uppercase ('JF'), so we do case-insensitive lookup.
+        templates_upper = {k.upper(): k for k in TEMPLATES.keys()}
+        canonical_templates = [
+            TEMPLATES[templates_upper[k.upper()]]
+            for k in JOURNAL_METADATA.keys()
+            if k.upper() in templates_upper
+        ]
+        if args.category:
+            canonical_templates = [t for t in canonical_templates if t.category == args.category]
+        total_templates = len(TEMPLATES)
         print(f"\n{'='*70}")
-        print(f"  可用期刊模板 ({len(templates)} 个)")
+        print(f"  可用期刊模板 ({len(canonical_templates)} 可编译, {len(JOURNAL_METADATA)} 元数据, 共 {total_templates} 文件模板)")
         print(f"{'='*70}")
+        print("  说明: 30 = JOURNAL_METADATA 中有完整元数据的期刊;")
+        print("        45 = TEMPLATES 字典中的全部 LaTeX 文件模板;")
+        print("        27 = 上述交集 (有元数据 且 有文件模板).")
+        print("        3 个有元数据但无文件模板: CVPR / ICLR / AER.")
+        print("        详见模块 docstring §P2-2 审计说明。")
+        templates = canonical_templates
 
         # 按类别分组
         by_category = {}

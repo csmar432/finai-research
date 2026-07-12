@@ -217,6 +217,7 @@ python scripts/journal_template.py --generate JFE output/paper.tex
 - ⚠️ `event_monitor.py` uses `signal.pause()` which is Unix-only; on Windows it falls back to a polling loop
 - ⚠️ `keychain_setup.py` is macOS-specific; for Windows/Linux, use the cross-platform keyring via `scripts/keychain_manager.py`
 - ⚠️ `core/sandbox.py` uses `os.fork` (Unix-only); falls back to `subprocess` on Windows
+- ✅ Skills sync: `knowledge/skills/`, `.claude/skills/`, and `.github/skills/` are kept in sync via `python scripts/sync_skills.py` (no symlinks, Windows-safe). Run after editing any skill doc.
 
 ---
 
@@ -412,13 +413,11 @@ Each skill is documented in `.claude/skills/` (Claude Code) and `.github/skills/
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 | [docs/tutorials/](docs/tutorials/) | Step-by-step tutorials |
 | [docs/api_reference.md](docs/api_reference.md) | API documentation |
-| [docs/MANUAL_TASKS_RUNBOOK.md](docs/MANUAL_TASKS_RUNBOOK.md) | Operations runbook for GitHub-side manual steps |
 | [docs/MOCK_DATA_POLICY.md](docs/MOCK_DATA_POLICY.md) | Mock data policy (5 servers disabled by default) |
 | [docs/DOCKER_INSTALL.md](docs/DOCKER_INSTALL.md) | Docker installation guide |
 | [docs/CITATION_GUIDE.md](docs/CITATION_GUIDE.md) | Citation guidance for derived work |
 | [docs/GITHUB_DISCUSSIONS_SETUP.md](docs/GITHUB_DISCUSSIONS_SETUP.md) | GitHub Discussions enablement |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture overview |
-| [docs/audit/audit-2026-07-04.md](docs/audit/audit-2026-07-04.md) | Latest CI coverage governance audit |
 
 ---
 

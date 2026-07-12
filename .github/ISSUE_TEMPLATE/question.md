@@ -13,7 +13,7 @@ assignees: ''
 ## Context
 
 - **What are you trying to accomplish?** (e.g., reproduce a paper, write a thesis chapter, build a tutorial)
-- **What have you tried so far?** (e.g., read [docs](使用指南.md), searched issues)
+- **What have you tried so far?** (e.g., read [docs](../../使用指南.md), searched issues)
 - **Specific error / behaviour** (if applicable)
 
 ```bash
@@ -29,5 +29,5 @@ assignees: ''
 ## Checklist
 
 - [ ] I have searched the [existing discussions](https://github.com/csmar432/finai-research/discussions) and [issues](https://github.com/csmar432/finai-research/issues?q=is%3Aissue)
-- [ ] I have read the [使用指南.md](使用指南.md) Chinese manual
+- [ ] I have read the [使用指南.md](../../使用指南.md) Chinese manual
 - [ ] I have run `python scripts/health_check.py --json`

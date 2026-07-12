@@ -1,6 +1,6 @@
 # 论文-研报工作流 · FinResearch Agent
 
-> **最新审计 (2026-07-04)**：[CI 覆盖治理审计](docs/audit/audit-2026-07-04.md) —
+> **最新审计 (2026-07-04)**：[CI 覆盖治理审计](.archive/audit/audit-2026-07-04.md) —
 > 4 P0 / 2 P1 / 1 P2 全部完成；剩余 PR-6 推覆盖率至 60%+。
 > **Audit guard 状态**：[`scripts/audit_guard.py`](scripts/audit_guard.py) 15 checks，
 > 包括 YAML 解析、phantom dep 检测、PyPI 依赖存在性。
