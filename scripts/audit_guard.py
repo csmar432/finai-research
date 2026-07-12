@@ -827,6 +827,86 @@ def _check_reproducibility_layer() -> CheckResult:
     )
 
 
+def _check_mcp_registration_health() -> CheckResult:
+    """T4 audit 2026-07-12: verify all mcp.json registered servers have
+    valid command + module path. External whitelist (e.g. user_pdf_excel
+    pointing outside this repo) is allowed but flagged."""
+    import json, re
+    from pathlib import Path
+    try:
+        from scripts.core.platform import get_mcp_config
+    except ImportError:
+        return CheckResult(
+            passed=False,
+            expected="scripts.core.platform importable",
+            actual="import failed",
+        )
+    try:
+        cfg = get_mcp_config()
+    except Exception as e:
+        return CheckResult(
+            passed=False,
+            expected="mcp.json loadable",
+            actual=f"load failed: {e}",
+        )
+    servers = cfg.get("mcpServers", {})
+    if not servers:
+        return CheckResult(
+            passed=False,
+            expected="at least 1 MCP server registered",
+            actual="0 servers found",
+        )
+
+    EXTERNAL_WHITELIST_PATHS = (
+        "/Users/xuzheyi/Desktop/pdf-to-excel",  # external pdf-to-excel tool
+    )
+
+    broken: list[str] = []
+    for name, entry in servers.items():
+        cmd = entry.get("command", "")
+        # Skip external-whitelisted entries (operator-managed, may not exist locally)
+        if any(wh in cmd for wh in EXTERNAL_WHITELIST_PATHS):
+            continue
+        if cmd and not Path(cmd).exists():
+            broken.append(f"{name}: cmd missing ({cmd})")
+            continue
+        # find sys.path.insert target + from user_xxx.server import
+        path_str = None
+        mod_name = None
+        for a in entry.get("args", []):
+            if isinstance(a, str) and "sys.path.insert" in a:
+                m = re.search(r"insert\(0, ['\"]([^'\"]+)", a)
+                if m:
+                    path_str = m.group(1)
+            if isinstance(a, str) and "from user_" in a:
+                m2 = re.findall(r"from (user_\w+)", a)
+                if m2:
+                    mod_name = m2[0]
+        if path_str:
+            # Skip external-whitelisted paths
+            if any(wh in path_str for wh in EXTERNAL_WHITELIST_PATHS):
+                continue
+            if not Path(path_str).exists():
+                broken.append(f"{name}: path missing ({path_str})")
+                continue
+            if mod_name:
+                server_py = Path(path_str) / mod_name / "server.py"
+                if not server_py.exists():
+                    broken.append(f"{name}: module {mod_name} not at {server_py}")
+
+    if broken:
+        return CheckResult(
+            passed=False,
+            expected="all registered servers have valid command+path+module",
+            actual=f"broken: {broken[:5]}",
+        )
+    return CheckResult(
+        passed=True,
+        expected="all registered servers have valid command+path+module",
+        actual=f"{len(servers)} servers OK (incl. external whitelist)",
+    )
+
+
 def check_16_version_drift() -> CheckResult:
     """Audit claim: 'Multiple files hardcode APP_VERSION = "1.0.0" or banner v1.0.0'.
 
@@ -1182,6 +1262,13 @@ CHECKS: list[AuditCheck] = [
         "Cross-platform reproducibility layer exists",
         "Verify scripts/core/normalize.py exists with setup_reproducible_env + normalize_json_dumps + normalize_path",
         lambda: _check_reproducibility_layer(),
+    ),
+    # T4 audit 2026-07-12: MCP server registration health
+    AuditCheck(
+        19,
+        "MCP server registration health",
+        "Verify all mcp.json registered servers have working command + module path (excludes external whitelist)",
+        lambda: _check_mcp_registration_health(),
     ),
 ]  # noqa: E501
 

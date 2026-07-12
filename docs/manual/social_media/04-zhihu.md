@@ -81,6 +81,7 @@ empirical economics 圈子小众到根本撑不起 SaaS 估值。
 - **GitHub**: https://github.com/csmar432/finai-research
 - **协议**: MIT
 - **Zenodo DOI**: 10.5281/zenodo.21262689
+- **MCP 目录**: https://mcpservers.org/zh-CN/servers/csmar432/finai-research (2026-07-12 已发布)
 - **arXiv**: 即将提交
 - ⚠️ 所有 AI 生成的因果识别 / 统计结果 / 引用必须由研究者复核后投稿
 

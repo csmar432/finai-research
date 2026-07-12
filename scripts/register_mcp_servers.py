@@ -71,6 +71,12 @@ def discover_servers() -> list[dict]:
     Servers in OPTIN_ONLY are always skipped from auto-registration,
     regardless of profile. See LEGAL_CONSENT.md for how to enable them
     after reading and accepting the legal risk.
+
+    Servers in EXTERNAL_WHITELIST live outside this repo
+    (e.g. user_pdf_excel at /Users/xuzheyi/Desktop/pdf-to-excel) and
+    are NOT discovered from mcp_servers/, but their existence is
+    SURFACED in --list output so the operator knows they're already
+    registered manually.
     """
     import os as _os
 
@@ -78,6 +84,18 @@ def discover_servers() -> list[dict]:
     # They exist in mcp_servers/ but require CLI_ACCEPT_RISK to load.
     # See scripts/check_legal_consent.py for the enforcement mechanism.
     OPTIN_ONLY = {"user_cnki", "user_wanfang", "user_chinese_literature"}
+
+    # External repos registered manually by the operator.
+    # Not auto-registered, but listed in --list output for visibility.
+    # Reason: lives outside this repo and points at an environment-specific
+    # absolute path. Manual editing / version pinning recommended.
+    EXTERNAL_WHITELIST = {
+        "user_pdf_excel": {
+            "mcp_key": "pdf-excel",
+            "external_root": "/Users/xuzheyi/Desktop/pdf-to-excel",
+            "description": "外部 PDF→Excel 工具 (位于 /Users/xuzheyi/Desktop/pdf-to-excel, 非本仓库内)",
+        },
+    }
 
     servers = []
     for d in sorted((ROOT / "mcp_servers").glob("user_*/")):
@@ -107,6 +125,19 @@ def discover_servers() -> list[dict]:
                 "description": "(无 SERVER_METADATA.json — 需要手动创建)",
                 "has_metadata": False,
             })
+
+    # Surface external whitelist entries in --list output
+    for ext_name, info in EXTERNAL_WHITELIST.items():
+        servers.append({
+            "dir": ext_name,
+            "module": ext_name,
+            "server_id": f"external:{info['mcp_key']}",
+            "mcp_key": info["mcp_key"],
+            "description": info["description"],
+            "has_metadata": False,
+            "external": True,
+        })
+
     return servers
 
 
