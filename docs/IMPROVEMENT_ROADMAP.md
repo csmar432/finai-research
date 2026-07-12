@@ -3,11 +3,64 @@
 > 综合项目设计理念（"研究主题一句话 → 论文草稿"，人类在环，科研诚信第一），
 > 覆盖 **P0 学术诚信 → P1 可复现 → P2 文档 → P3 架构 → P4 测试 → P5 增长** 6 个优先级。
 >
-> 最后更新：2026-07-12 · 创建于 2026-07-12 (commit `5ed1538`) · **状态更新于 commit `c159edc`** (P0-A/B + P1-2 + P2-1 全部完成，P1-1 评估后取消)
+> 最后更新：2026-07-12 · 创建于 2026-07-12 (commit `5ed1538`) · **状态更新于 commit `1da3XXX` (本轮)** (P0-A/B + P1-2 + P2-1 + P0-C + P2-3 + P1-5/P2-4 + P1-3/P1-4 全部完成)
 >
 > **Legend**:
 > - `[ ]` Pending · `[~]` In Progress · `[x]` Completed · `[!]` Blocked / Need user confirm
 > - `🔴` 高严重度 · `🟡` 中 · `🟢` 低
+
+---
+
+## ✅ 完成总结 (commit `de1e02c` — 第二轮审计: P0-C + P2-3 + P1-5/P2-4)
+
+| 优先级 | 已完成 | 总数 | 状态 |
+|---|---|---|---|
+| P0 (代码 bug) | P0-A (dispatch), P0-B (Bacon), **P0-C (vuong_kob OB algebra)** | 3/3 | ✅ 100% |
+| P1 (架构) | P1-2 (orphan engines), P1-1 (cancelled), **P1-5 (mediation deprecate)**, **P1-3 + P1-4 (TripleDiffDID + PSMDID)** | 4/4 | ✅ 100% |
+| P2 (代码质量) | P2-1 (significance consistency), **P2-3 (data catalog init)**, **P2-4 (moderation deprecate)** | 3/3 | ✅ 100% |
+| **合计** | **10 项完备修复** + **1 项审计取消** | — | — |
+
+### 测试统计
+- **新增 64 个回归测试** (P0-C=22, P2-3=8, P1-5/P2-4=8, P1-3+P1-4=26)
+- **完整测试套件**: 8100+ 通过, 0 回归
+- **audit_guard.py: 17/17 checks 全通过**
+
+### P0-C: vuong_kob 直接测试 + OB 分解代数修复 (🔴 P0)
+**问题**: `vuong_kob` 主类 (VuongTest, KOBDecomposition, OaxacaBlinderDecomposition) 无直接 unit test, 仅依赖 `vuong_test.py` re-export 间接覆盖.
+**触发**: 新增的 `test_oaxaca_additive_decomposition_with_intercept` 揭露 OB 分解 **代数错误**: 代码声称 E + C + I = Gap (Cotton 1988 3-fold), 但实际代数推导得 `b1'(2X̄1-X̄2) - b2'X̄1`, 不等于 Gap.
+**修复**: 改用 Jann (2008) Stata Journal "Oaxaca threefold" — pooled reference β*:
+```
+β* = (n1·β1 + n2·β2)/(n1+n2)
+E = β*'(X̄1-X̄2)
+C = X̄1'(β1-β*) + X̄2'(β*-β2)
+I = 0  (absorbed into C)
+代数证明: E + C = β1'X̄1 - β2'X̄2 = Gap  ✓  (exactly additive)
+```
+**测试**: `tests/test_vuong_kob_direct_p0_audit.py` (22 测试)
+
+### P2-3: 数据/工具类模块接入 __init__.py (🟢 P2)
+**问题**: 3 个模块 `a_share_firm_controls`, `china_carbon_events`, `china_policy_events` 此前零公共出口, 用户需路径 import.
+**修复**: `__init__.py` 加 try/except re-export + `__all__` 注册 11 个新符号.
+**注意**: `china_carbon_events` 的 `baseline_twfe`/`robustness_cs`/`heterogeneity` 实际是 docstring 里的示例代码, 已剔除.
+**测试**: `tests/test_data_catalog_p2_audit.py` (8 测试)
+
+### P1-5 + P2-4: mediation.py + moderation.py 标 deprecation (🟡 P1 + 🟢 P2)
+**决策**: 仅标 deprecation, **不合并** (合并风险高, 见审计报告 `P2-2-EVALUATION-2026-07-12.md` §1).
+**修复**:
+- 模块顶部 + 类 docstring 加 `.. deprecated:: 1.8.6 ..`
+- import 触发 `DeprecationWarning`, 含推荐替代模块名
+- 旧 `MediationResult` 字段 (`indirect_effect`/`direct_effect`/`total_effect`/`indirect_ci`) 与新 `MediationTest.MediationResult` 字段 (`alpha`/`beta`/`gamma`/`delta`/`ci_lower`/`ci_upper`) 不兼容, 已告知
+- 模块保留向后兼容, v1.10.0 删除
+
+**推荐替代**:
+- mediation → `mediation_test.MediationTest` (canonical class-based API)
+- moderation → `PanelThresholdRegression` (Hansen 2000) 或直接 OLS 交互项
+
+**测试**: `tests/test_deprecation_warnings_p1_p2_audit.py` (8 测试)
+
+### P2-2 决策: 不推进
+**评估**: `pipeline.py` 仅消费预先渲染的 figures, 不调用 `FinancialChartFactory`. `agent_pipeline._auto_generate_did_charts` 已存在 (L1778) 覆盖 6 类图, **但 `pipeline.py` 从未调用它**. 这是架构分层: `agent_pipeline` (编排层, 出图) → `pipeline.py` (渲染层, 消费图). 修复 P2-2 会混淆职责.
+**结论**: 保持 SoC 现状. 详见 `docs/audit/P2-2-EVALUATION-2026-07-12.md`.
 
 ---
 

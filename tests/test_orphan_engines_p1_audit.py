@@ -67,18 +67,20 @@ class TestOrphanEnginesWired:
     EXPECTED_METHODS = {
         "rdd", "lp_did", "ife", "synthetic_did", "panel_quantile",
         "panel_threshold", "spatial", "panel_var", "garch", "tvp_var", "cox_ph",
+        # v1.8.7 additions (P1-3, P1-4): wire TripleDiffDID + PSMDID
+        "triple_diff_did", "psm_did",
     }
 
-    def test_list_methods_returns_all_eleven(self, runner):
+    def test_list_methods_returns_all_thirteen(self, runner):
         methods = runner.list_methods()
         assert isinstance(methods, list), "list_methods must return list"
         assert set(methods) == self.EXPECTED_METHODS, (
             f"Expected {self.EXPECTED_METHODS}, got {set(methods)}"
         )
 
-    def test_list_methods_count_is_eleven(self, runner):
+    def test_list_methods_count_is_thirteen(self, runner):
         methods = runner.list_methods()
-        assert len(methods) == 11, f"Expected 11 methods, got {len(methods)}"
+        assert len(methods) == 13, f"Expected 13 methods, got {len(methods)}"
 
     @pytest.mark.parametrize("method", sorted(EXPECTED_METHODS))
     def test_run_method_specific_returns_correct_shape(self, runner, synthetic_panel, method):

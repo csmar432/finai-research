@@ -342,17 +342,17 @@ class RobustnessRunner:
         return runner(config)
 
     # ── Orphan-engine dispatch (v1.8.0 / audit_fix_2026_07_12) ─────────
-    # 11 specialized econometric engines reachable via run_method_specific().
+    # 13 specialized econometric engines reachable via run_method_specific().
     # Imports are wrapped in try/except; missing optional deps degrade gracefully
     # (status="skipped", not a crash). Results are cached by (method, id(df), kw)
     # so repeated calls with the same inputs are idempotent.
     #
-    # Before this fix (P1-2), 11/47 econometric modules were orphans:
-    #   rdd, local_projections_did, interactive_fixed_effects, synthetic_did,
-    #   panel_quantile_regression, panel_threshold_regression, spatial_regression,
-    #   panel_var, volatility_models, time_varying_models, survival_analysis
-    # The framework was a "library catalog" — code existed but only ~10% was
-    # reachable from any pipeline entry point.
+    # v1.8.0 (P1-2): wired 11 orphan engines (rdd, lp_did, ife, synthetic_did,
+    #   panel_quantile, panel_threshold, spatial, panel_var, garch, tvp_var, cox_ph).
+    # v1.8.7 (P1-3): wired triple_diff_did and psm_did (DDD + PSM-DID).
+    # The framework was a "library catalog" — code existed but only ~28% was
+    # reachable from any pipeline entry point. After this fix 13/47 modules
+    # are reachable (28%).
     _METHOD_DISPATCH: dict[str, str] = {
         "rdd": "rdd.RDDEngine",
         "lp_did": "local_projections_did.LocalProjectionsDIDEngine",
@@ -365,6 +365,9 @@ class RobustnessRunner:
         "garch": "volatility_models.GARCHModel",
         "tvp_var": "time_varying_models.TVPVAR",
         "cox_ph": "survival_analysis.CoxPHModel",
+        # v1.8.7 additions (P1-3 audit follow-up): triple-diff DID + PSM-DID
+        "triple_diff_did": "triple_diff_did.TripleDiffDIDEngine",
+        "psm_did": "psm_did.PSMDID",
     }
 
     def run_method_specific(
@@ -385,7 +388,7 @@ class RobustnessRunner:
         method : str
             One of: "rdd", "lp_did", "ife", "synthetic_did",
             "panel_quantile", "panel_threshold", "spatial", "panel_var",
-            "garch", "tvp_var", "cox_ph".
+            "garch", "tvp_var", "cox_ph", "triple_diff_did", "psm_did".
         df : pd.DataFrame
             Input panel / series.
         **kwargs
@@ -671,6 +674,137 @@ class RobustnessRunner:
                 summary_text = (
                     f"### Cox Proportional Hazards\n"
                     f"- coefs (first 5): {lines}"
+                )
+            elif method == "triple_diff_did":
+                # TripleDiffDIDEngine.__init__(df, y, treat, time, unit, group3)
+                # and .fit(x_vars, cluster_var) returns a DDDResult dataclass.
+                # We resolve column names from kwargs > runner defaults > df
+                # heuristics, so callers can omit them when df uses standard
+                # short names (y/treat/post/unit/...).
+                def _pick(df_, explicit, candidates):
+                    if explicit and explicit in df_.columns:
+                        return explicit
+                    for c in candidates:
+                        if c in df_.columns:
+                            return c
+                    return explicit  # may not exist → engine error path
+
+                y_v = _pick(df, kwargs.get("y_var", self.y_var), ["y", "outcome"])
+                t_v = _pick(df, kwargs.get("treat_var", self.treat_var),
+                            ["treat", "treatment", "did", "D"])
+                tm_v = _pick(df, kwargs.get("time_var", self.time_var),
+                             ["time", "year", "post", "period"])
+                u_v = _pick(df, kwargs.get("unit_var", self.unit_var),
+                            ["unit", "firm_id", "id", "ticker"])
+                g3_var = kwargs.get("group3_var")
+                if not g3_var or g3_var not in df.columns:
+                    for cand in ("group3", "industry", "region", "sector",
+                                 "province"):
+                        if cand in df.columns:
+                            g3_var = cand
+                            break
+                if not g3_var:
+                    # Synthetic binary split by unit (deterministic per df).
+                    g3_var = f"_dispatch_g3_{id(df)}"
+                    df = df.copy()
+                    df[g3_var] = (
+                        pd.Series(df[u_v].astype(str).values).map(
+                            lambda s: int(hash(s) % 2)
+                        ).values
+                    )
+                engine = engine_cls(
+                    df=df,
+                    y_var=y_v,
+                    treat_var=t_v,
+                    time_var=tm_v,
+                    unit_var=u_v,
+                    group3_var=g3_var,
+                )
+                result = engine.fit(
+                    x_vars=kwargs.get("x_vars", self.x_vars),
+                    cluster_var=kwargs.get("cluster_var"),
+                )
+                sig_marker = getattr(result, "sig", "")
+                summary_text = (
+                    f"### Triple DiD (DDD)\n"
+                    f"- coef: `{result.coef:.4f}{sig_marker}`, "
+                    f"se: `{result.se:.4f}`, "
+                    f"p: `{result.pval:.4f}`\n"
+                    f"- group3_var: `{g3_var}`, "
+                    f"N: {result.n_obs}, groups: {result.n_groups}\n"
+                    f"- 95% CI: [{result.ci_lower:.4f}, {result.ci_upper:.4f}]"
+                )
+            elif method == "psm_did":
+                # PSMDID signature: __init__(outcome, treatment, time, unit, ...);
+                # .fit(df, covariates, pre_period=None, post_period=None) returns
+                # PSMDIDResult dataclass with did_coefficient / did_se /
+                # did_pvalue / first_stage_auc / n_obs_after_match / covariate_balance.
+                def _pick(df_, explicit, candidates):
+                    if explicit and explicit in df_.columns:
+                        return explicit
+                    for c in candidates:
+                        if c in df_.columns:
+                            return c
+                    return explicit
+
+                y_v = _pick(df, kwargs.get("y_var", self.y_var), ["y", "outcome"])
+                t_v = _pick(df, kwargs.get("treat_var", self.treat_var),
+                            ["treat", "treatment", "did", "D"])
+                tm_v = _pick(df, kwargs.get("time_var", self.time_var),
+                             ["time", "year", "post", "period"])
+                u_v = _pick(df, kwargs.get("unit_var", self.unit_var),
+                            ["unit", "firm_id", "id", "ticker"])
+                engine = engine_cls(
+                    outcome=y_v,
+                    treatment=t_v,
+                    time=tm_v,
+                    unit=u_v,
+                    method=kwargs.get("psm_method", "nearest"),
+                    caliper=kwargs.get("caliper"),
+                    n_neighbors=kwargs.get("n_neighbors", 1),
+                    replace=kwargs.get("replace", False),
+                )
+                covs = kwargs.get("x_vars", self.x_vars) or []
+                if not covs:
+                    reserved = {y_v, t_v, tm_v, u_v}
+                    numeric_cols = [
+                        c for c in df.columns
+                        if c not in reserved
+                        and pd.api.types.is_numeric_dtype(df[c])
+                    ]
+                    covs = numeric_cols[:1]
+                if not covs:
+                    raise ValueError(
+                        "psm_did requires at least one covariate column "
+                        "in df or in x_vars"
+                    )
+                result = engine.fit(
+                    df=df,
+                    covariates=list(covs),
+                    pre_period=kwargs.get("pre_period"),
+                    post_period=kwargs.get("post_period"),
+                )
+                balance_df = getattr(result, "covariate_balance", None)
+                n_balanced = (
+                    int(balance_df["abs_bias_lt_10pct"].sum())
+                    if balance_df is not None and not balance_df.empty
+                    else 0
+                )
+                n_balance_total = (
+                    int(len(balance_df))
+                    if balance_df is not None and not balance_df.empty
+                    else 0
+                )
+                summary_text = (
+                    f"### PSM-DID (Abadie 2005)\n"
+                    f"- ATT: `{result.did_coefficient:.4f}`, "
+                    f"se: `{result.did_se:.4f}`, "
+                    f"t: `{result.did_tstat:.4f}`, "
+                    f"p: `{result.did_pvalue:.4f}`\n"
+                    f"- method: `{result.method}`, "
+                    f"AUC: `{result.first_stage_auc:.4f}`\n"
+                    f"- N after match: {result.n_obs_after_match}, "
+                    f"balance OK: {n_balanced}/{n_balance_total}"
                 )
         except Exception as exc:  # noqa: BLE001
             _log.warning(
