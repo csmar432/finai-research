@@ -2,6 +2,17 @@
 Moderation Analysis (调节效应分析)
 ====================================
 
+.. deprecated:: 1.8.6
+    This module is **DEPRECATED** as of 2026-07-12 (audit_fix_2026_07_12).
+    It is retained for backward compatibility only.
+
+**Recommended replacement**:
+  - For interaction-term moderation analysis, use direct OLS regression with
+    interaction terms via :class:`scripts.research_framework.regression_engine.RegressionEngine`,
+    or split-sample analysis via panel subsample re-estimation.
+  - For threshold regression (Hansen 2000), use the canonical implementation:
+    ``from scripts.research_framework.panel_threshold_regression import PanelThresholdRegression``
+
 Three implementations:
   1. Interaction term (standard)
   2. Subsample analysis (split by moderator)
@@ -14,12 +25,14 @@ References:
   - 温忠麟, 侯杰泰, 张雷 (2005) 调节效应与中介效应的比较和应用
 
 Usage:
-  >>> from scripts.research_framework.moderation import ModerationAnalysis
+  >>> from scripts.research_framework.moderation import ModerationAnalysis  # DEPRECATED
   >>> result = ModerationAnalysis.interaction(df, X='X', M='M', Y='Y', controls=['size', 'age'])
   >>> print(result.summary())
 """
 
 from __future__ import annotations
+
+import warnings
 
 from dataclasses import dataclass
 
@@ -28,9 +41,23 @@ import pandas as pd
 import statsmodels.api as sm
 
 
+warnings.warn(
+    "scripts.research_framework.moderation is DEPRECATED as of v1.8.6 "
+    "(2026-07-12). For moderation/interaction analysis, use direct OLS with "
+    "interaction terms via RegressionEngine, or PanelThresholdRegression "
+    "for threshold effects. This module will be removed in v1.10.0.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+
 @dataclass
 class ModerationResult:
-    """Result of a moderation analysis."""
+    """Result of a moderation analysis.
+
+    .. deprecated:: 1.8.6
+        Use direct OLS interaction-term regression or PanelThresholdRegression.
+    """
 
     method: str
     main_effect_X: float

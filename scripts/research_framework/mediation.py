@@ -2,7 +2,25 @@
 Mediation Analysis (中介效应分析)
 ===================================
 
-Three implementations:
+.. deprecated:: 1.8.6
+    This module is **DEPRECATED** as of 2026-07-12 (audit_fix_2026_07_12).
+    It is retained for backward compatibility only.
+
+**Recommended replacement**:
+  Use the canonical class-based implementation:
+  ``from scripts.research_framework.mediation_test import MediationTest, MediationResult``
+
+  ``MediationTest`` provides the same analyses (Baron-Kenny / Sobel / Bootstrap /
+  Joint Significance) with a unified, class-based API and a richer ``MediationResult``
+  dataclass (``alpha/beta/gamma/delta`` fields, ``ci_lower/ci_upper`` confidence
+  intervals). The free-function API of this module (``sobel()``, ``bootstrap()``,
+  ``classify_mediation()``) is functionally redundant with ``MediationTest.fit()``.
+
+**Migration**:
+  Old (this module): ``MediationAnalysis.bootstrap(df, X='X', M='M', Y='Y')``
+  New:               ``MediationTest(df, outcome='Y', treatment='X', mediator='M').fit()``
+
+Three implementations (deprecated):
   1. Baron-Kenny (1986) - 4-step, classical
   2. Bootstrap confidence intervals (Preacher & Hayes, 2004, 2008)
   3. Sobel test (1982) - approximate z-test
@@ -19,18 +37,34 @@ References:
   - Zhao, Lynch & Chen (2010) "Reconsidering Baron and Kenny"
 
 Usage:
+  >>> # DEPRECATED:
   >>> from scripts.research_framework.mediation import MediationAnalysis
   >>> result = MediationAnalysis.bootstrap(df, X='X', M='M', Y='Y', n_boot=1000)
   >>> print(result.summary())
+  >>> # RECOMMENDED:
+  >>> from scripts.research_framework.mediation_test import MediationTest
+  >>> result = MediationTest(df, outcome='Y', treatment='X', mediator='M').fit()
 """
 
 from __future__ import annotations
+
+import warnings
 
 from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+
+
+warnings.warn(
+    "scripts.research_framework.mediation is DEPRECATED as of v1.8.6 "
+    "(2026-07-12). Use scripts.research_framework.mediation_test.MediationTest "
+    "for the canonical class-based implementation. This module will be removed "
+    "in v1.10.0.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -40,7 +74,15 @@ import statsmodels.api as sm
 
 @dataclass
 class MediationResult:
-    """Result of a mediation analysis."""
+    """Result of a mediation analysis.
+
+    .. deprecated:: 1.8.6
+        Use ``MediationResult`` from ``scripts.research_framework.mediation_test``
+        instead. Field names differ: this version uses ``indirect_effect`` /
+        ``direct_effect`` / ``total_effect`` / ``indirect_ci``; the canonical
+        version uses ``alpha`` / ``beta`` / ``gamma`` / ``delta`` / ``ci_lower``
+        / ``ci_upper``.
+    """
 
     method: str
     indirect_effect: float  # a*b

@@ -35,6 +35,9 @@ Module structure:
   synthetic_did.py        — Synthetic DiD with placebo/conformal inference
   panel_threshold_regression.py — Panel Threshold Regression (Hansen 2000) + bootstrap
   mediation_test.py       — Causal mediation analysis (Baron-Kenny/Sobel/Bootstrap/JointSig)
+  a_share_firm_controls.py — A-share firm-level control variables catalog (FirmControl + helpers)
+  china_carbon_events.py   — China carbon ETS pilot panel builder + baseline/robustness templates
+  china_policy_events.py   — China policy event database (ChinaPolicyEvent catalog for staggered DID)
 
   # v1.8.1 new modules
   panel_var.py            — Panel VAR (Abrigo & Love 2016) + IRF/FEVD/Granger causality
@@ -338,6 +341,37 @@ from .panel_threshold_regression import (
 # Mediation analysis
 from .mediation_test import MediationTest, MediationResult
 
+# ── v1.8.6 NEW: Data/control catalogs (lightweight wrappers) ──
+try:
+    from .a_share_firm_controls import (
+        FirmControl, list_controls, get_control, compute_controls,
+    )
+except ImportError:
+    FirmControl = None
+    list_controls = None
+    get_control = None
+    compute_controls = None
+
+try:
+    from .china_carbon_events import (
+        CarbonETSConfig, build_carbon_ets_panel,
+        carbon_ets_regression_template,
+    )
+except ImportError:
+    CarbonETSConfig = None
+    build_carbon_ets_panel = None
+    carbon_ets_regression_template = None
+
+try:
+    from .china_policy_events import (
+        ChinaPolicyEvent, get_event as get_china_policy_event,
+        list_events as list_china_policy_events,
+    )
+except ImportError:
+    ChinaPolicyEvent = None
+    get_china_policy_event = None
+    list_china_policy_events = None
+
 # Vuong non-nested hypothesis test + Clarke test
 from .vuong_test import (
     VuongTest,
@@ -434,4 +468,9 @@ __all__ = [
     "vuong_different_controls", "vuong_different_samples", "vuong_linear_vs_logit",
     # ── Finance sensitivity ──
     "OLSPLSSensitivity",
+    # ── v1.8.6 NEW: Data/control catalogs ──
+    "FirmControl", "list_controls", "get_control", "compute_controls",
+    "CarbonETSConfig", "build_carbon_ets_panel",
+    "carbon_ets_regression_template",
+    "ChinaPolicyEvent", "get_china_policy_event", "list_china_policy_events",
 ]
