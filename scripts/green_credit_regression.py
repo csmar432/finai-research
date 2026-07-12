@@ -446,8 +446,10 @@ def main():
 
     # 保存交叉验证结果
     cv_path = out_dir / "cross_validation.json"
-    with open(cv_path, "w", encoding="utf-8") as f:
-        json.dump(cross_results, f, ensure_ascii=False, indent=2)
+    with open(cv_path, "w", encoding="utf-8", newline="\n") as f:
+        # T3 audit 2026-07-12: use normalize_json_dumps for cross-OS byte-identity
+        from core.normalize import normalize_json_dumps
+        f.write(normalize_json_dumps(cross_results))
     print(f"\n  交叉验证结果 → {cv_path.name}")
 
     print(f"\n{'='*60}")

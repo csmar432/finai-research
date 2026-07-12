@@ -388,11 +388,34 @@ class FinancialChartFactory:
         return sns.color_palette(self.config.color_palette, idx + 1)[idx]
 
     def _save(self, fig: "plt.Figure", name: str, formats: list[str] | None = None):
-        """Save figure to disk."""
+        """Save figure to disk.
+
+        T3 audit 2026-07-12: strip PNG metadata to remove DateTime / Software
+        fields that vary by matplotlib version + OS, reducing cross-OS drift.
+        PDF metadata is left intact (LaTeX embedders need it).
+        """
         fmt_list = formats or self.config.output_formats
         for fmt in fmt_list:
             path = self.output_dir / f"{name}.{fmt}"
-            fig.savefig(path, bbox_inches="tight", dpi=self.config.dpi)
+            # Strip OS-version-dependent metadata. Fields like DateTime and
+            # Software change across matplotlib builds / OSes; clearing them
+            # brings PNG/PDF metadata closer to byte-identity.
+            md = {
+                "Title": name,
+                "Author": "",
+                "Subject": "",
+                "Keywords": "",
+                "Creator": "",
+                "Producer": "matplotlib (T3 audit normalized)",
+                "CreationDate": "",
+                "ModDate": "",
+            }
+            fig.savefig(
+                path,
+                bbox_inches="tight",
+                dpi=self.config.dpi,
+                metadata=md,
+            )
             _log.info(f"Saved {path}")
         import matplotlib.pyplot as plt
         plt.close(fig)

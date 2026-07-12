@@ -56,6 +56,12 @@ from scripts.core import _bootstrap  # noqa: F401
 from scripts.core.ansi import bold, cyan, dim, yellow, red  # P3-8 修复 2026-06-29: mypy name-defined (120 errors) 根因
 _bootstrap.bootstrap()
 
+# T3 audit 2026-07-12: set up reproducible environment BEFORE any computation.
+# This pins BLAS to single-thread, PYTHONHASHSEED=0, locale to C, and sets
+# random seeds. See scripts/core/normalize.py for full documentation.
+from scripts.core.normalize import setup_reproducible_env
+setup_reproducible_env()
+
 logger = logging.getLogger(__name__)
 
 from scripts.core.platform import (

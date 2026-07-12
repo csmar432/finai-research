@@ -171,11 +171,15 @@ class JournalTemplate:
             return False
 
         try:
-            # tectonic 是单文件编译器，不需要 -interaction 参数
-            # 使用 --outdir 确保 PDF 输出到正确位置
+            # T3 audit 2026-07-12: --keep-intermediates ensures .tex source
+            # is preserved for byte-identity comparison (PDF metadata contains
+            # compile-time timestamps that differ across OS/runs; see
+            # scripts/core/normalize.py LIMITATIONS §1).
             out_dir = tex_path.parent
             result = subprocess.run(
-                ["tectonic", str(tex_path), "--outdir", str(out_dir)],
+                ["tectonic", str(tex_path),
+                 "--outdir", str(out_dir),
+                 "--keep-intermediates"],
                 capture_output=True,
                 text=True,
                 timeout=120,

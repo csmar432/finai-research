@@ -791,6 +791,42 @@ def check_10_llm_reviewer_stable_model() -> CheckResult:
 # ────────────────────────────────────────────────────────────────────
 
 
+def _check_reproducibility_layer() -> CheckResult:
+    """T3 audit 2026-07-12: verify normalize.py exists with required exports."""
+    import ast, sys
+    root = Path(__file__).parent.parent
+    norm_path = root / "scripts" / "core" / "normalize.py"
+    if not norm_path.exists():
+        return CheckResult(
+            passed=False,
+            expected="normalize.py exists",
+            actual=f"NOT FOUND at {norm_path}",
+        )
+    # Verify key exports
+    src = norm_path.read_text(encoding="utf-8")
+    exports = [
+        "setup_reproducible_env",
+        "normalize_json_dumps",
+        "normalize_path",
+        "normalize_datetime",
+        "normalize_line_endings",
+        "normalize_random_seed",
+        "LIMITATIONS",
+    ]
+    missing = [e for e in exports if f"def {e}" not in src and e not in src]
+    if missing:
+        return CheckResult(
+            passed=False,
+            expected="all required functions exported",
+            actual=f"missing: {missing}",
+        )
+    return CheckResult(
+        passed=True,
+        expected="all required functions exported",
+        actual=f"normalize.py OK ({len(src)} bytes)",
+    )
+
+
 def check_16_version_drift() -> CheckResult:
     """Audit claim: 'Multiple files hardcode APP_VERSION = "1.0.0" or banner v1.0.0'.
 
@@ -1139,6 +1175,13 @@ CHECKS: list[AuditCheck] = [
         "Defense for audit_fix_2026_07_12: detect (T001) mechanism tautology in us_esg_regression, "
         "(T002) RMSPE-ratio heuristic sig in synthetic_control, (T003) silent short-panel DID",
         check_17_no_research_integrity_anti_patterns,
+    ),
+    # T3 audit 2026-07-12: cross-platform reproducibility
+    AuditCheck(
+        18,
+        "Cross-platform reproducibility layer exists",
+        "Verify scripts/core/normalize.py exists with setup_reproducible_env + normalize_json_dumps + normalize_path",
+        lambda: _check_reproducibility_layer(),
     ),
 ]  # noqa: E501
 

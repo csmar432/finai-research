@@ -38,6 +38,8 @@ _bootstrap.bootstrap()
 # CORE MODULES (shared via base.py)
 # ─────────────────────────────────────────
 from scripts.research_framework.base import DataSource, ProvenanceTracker
+# T3 audit 2026-07-12: reproducibility layer
+from scripts.core.normalize import setup_reproducible_env; setup_reproducible_env()
 
 import logging
 logger = logging.getLogger(__name__)
