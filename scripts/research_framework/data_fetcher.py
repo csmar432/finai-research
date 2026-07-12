@@ -180,7 +180,25 @@ class MCPCallError(Exception):
 
 
 def _call_mcp(server: str, tool: str, args: dict, timeout: float = 30.0) -> Any:
-    """Internal MCP call without retry — used by tenacity and circuit breaker."""
+    """Internal MCP call without retry — used by tenacity and circuit breaker.
+
+    T10 fix (2026-07-12): emit a paid-source warning BEFORE the actual call
+    when `server` is in the paid registry and the env var is unset. The warning
+    is non-blocking — execution continues, fallback chain still kicks in.
+    Users see 🟡 hint with cost / get_url / fallback info the first time the
+    MCP is called.
+    """
+    # ── T10: paid-source proactive warning (non-blocking) ────────────
+    try:
+        from scripts.core.paid_source_notifier import paid_notifier
+        paid_notifier.warn_if_paid(
+            server, tool,
+            reason=f"调用 {server}/{tool}, 自动切 fallback (akshare/baostock/synthetic)",
+        )
+    except Exception:
+        # Notifier failures must never break MCP calls
+        pass
+
     # Try via llm_gateway's call_mcp_tool first (uses proper venv python)
     try:
         from scripts.core.llm_gateway import call_mcp_tool as _mcp_call

@@ -1123,6 +1123,122 @@ def _check_refinement_truncation_policy() -> CheckResult:
     )
 
 
+def _check_paid_source_notifier() -> CheckResult:
+    """T10 audit 2026-07-12: verify scripts/core/paid_source_notifier.py
+    exists, registers paid MCPs, AND is wired into the 3 main MCP call
+    paths so users see a 🟡 warning when they invoke a paid MCP without
+    configuring its key.
+
+    Bug fix context: prior to this, calling user-tushare (or any paid MCP)
+    silently fell through to fallback / synthetic data, and users only
+    discovered the missing key when they ran --health-check (too late).
+    Now every paid-MCP invocation emits one 🟡 warning per process per
+    (server, tool) pair, with cost / get_url / fallback info.
+
+    Non-blocking by design: the notifier never raises, never exits. Users
+    can suppress with FINAI_SUPPRESS_PAID_WARNINGS=1.
+    """
+    root = Path(__file__).parent.parent
+    notifier_path = root / "scripts" / "core" / "paid_source_notifier.py"
+    if not notifier_path.exists():
+        return CheckResult(
+            passed=False,
+            expected="scripts/core/paid_source_notifier.py exists",
+            actual="NOT FOUND",
+        )
+
+    # Notifier must register at least 6 paid sources
+    import sys as _sys
+    project_root_str = str(root)
+    if project_root_str not in _sys.path:
+        _sys.path.insert(0, project_root_str)
+    try:
+        from scripts.core.paid_source_notifier import PAID_SOURCE_REGISTRY, paid_notifier
+    except Exception as e:
+        return CheckResult(
+            passed=False,
+            expected="paid_source_notifier importable",
+            actual=f"import failed: {e}",
+        )
+    registered = list(PAID_SOURCE_REGISTRY.keys())
+    if len(registered) < 6:
+        return CheckResult(
+            passed=False,
+            expected=">=6 paid MCPs registered",
+            actual=f"only {len(registered)}: {registered}",
+        )
+
+    # All registered entries must have non-empty required fields
+    required_fields = ("display_name", "env_var", "cost", "get_url", "fallback", "impact")
+    for srv, entry in PAID_SOURCE_REGISTRY.items():
+        for field in required_fields:
+            if not getattr(entry, field, "").strip():
+                return CheckResult(
+                    passed=False,
+                    expected=f"{srv}.{field} is non-empty",
+                    actual="empty",
+                )
+
+    # Notifier must be non-blocking — its warn method must NOT contain
+    # raise / sys.exit / SystemExit calls. (We grep the source to be sure.)
+    notifier_src = notifier_path.read_text(encoding="utf-8")
+    # Check the warn_if_paid method specifically
+    warn_idx = notifier_src.find("def warn_if_paid")
+    next_def = notifier_src.find("\n    def ", warn_idx + 1)
+    warn_body = notifier_src[warn_idx:next_def if next_def != -1 else warn_idx + 2000]
+    for bad in ("raise ", "sys.exit", "SystemExit"):
+        if bad in warn_body and "NotImplementedError" not in warn_body:
+            # raise is OK only if it's inside a try/except that swallows it,
+            # but our pattern in the warn body doesn't include any.
+            # Be strict: no raise in warn_if_paid body.
+            return CheckResult(
+                passed=False,
+                expected=f"warn_if_paid is non-blocking (no '{bad}')",
+                actual=f"found '{bad}' in method body",
+            )
+
+    # The 3 main MCP call paths must invoke the notifier
+    paths_to_check = [
+        ("scripts/core/mcp_client.py", "MCPToolClient.call"),
+        ("scripts/research_framework/data_fetcher.py", "_call_mcp"),
+        ("scripts/universal_data_fetcher.py", "try_mcp"),
+    ]
+    missing_wiring = []
+    for rel_path, method_name in paths_to_check:
+        p = root / rel_path
+        if not p.exists():
+            missing_wiring.append(f"{rel_path}: file missing")
+            continue
+        src = p.read_text(encoding="utf-8")
+        # Must import notifier AND call warn_if_paid
+        if "paid_source_notifier" not in src:
+            missing_wiring.append(f"{rel_path}: notifier import missing")
+            continue
+        if "warn_if_paid" not in src:
+            missing_wiring.append(f"{rel_path}: warn_if_paid() call missing")
+            continue
+    if missing_wiring:
+        return CheckResult(
+            passed=False,
+            expected="notifier wired into all 3 MCP call paths",
+            actual=f"missing: {missing_wiring}",
+        )
+
+    # Suppression env var must be honored
+    if "FINAI_SUPPRESS_PAID_WARNINGS" not in notifier_src:
+        return CheckResult(
+            passed=False,
+            expected="FINAI_SUPPRESS_PAID_WARNINGS env var respected",
+            actual="not referenced in source",
+        )
+
+    return CheckResult(
+        passed=True,
+        expected="notifier non-blocking + wired into 3 call paths",
+        actual=f"{len(registered)} paid MCPs registered; MCPClient + data_fetcher + universal_data_fetcher all wired",
+    )
+
+
 def check_16_version_drift() -> CheckResult:
     """Audit claim: 'Multiple files hardcode APP_VERSION = "1.0.0" or banner v1.0.0'.
 
@@ -1521,6 +1637,15 @@ CHECKS: list[AuditCheck] = [
         "AND keeps both head and tail (so reviewer sees abstract + conclusion), "
         "instead of hard head-only truncation at 3000 chars.",
         lambda: _check_refinement_truncation_policy(),
+    ),
+    # T10 audit 2026-07-12: paid-source proactive warning is non-blocking
+    AuditCheck(
+        24,
+        "Paid-source notifier is non-blocking + integrated into MCP call paths",
+        "Verify scripts/core/paid_source_notifier.py exists, registers >=6 "
+        "paid MCPs, and is wired into MCPClient.call() + data_fetcher._call_mcp() "
+        "+ universal_data_fetcher.try_mcp() as a non-blocking warning (not raise).",
+        lambda: _check_paid_source_notifier(),
     ),
 ]  # noqa: E501
 

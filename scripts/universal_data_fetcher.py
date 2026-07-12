@@ -296,6 +296,17 @@ class AStockFinancialFetcher(DataFetcher):
         import os
         token = os.getenv("TUSHARE_TOKEN", "").strip()
         if not token:
+            # T10 fix (2026-07-12): proactive paid-source warning before
+            # silently returning False. Non-blocking — caller still falls
+            # back to akshare/baostock/synthetic.
+            try:
+                from scripts.core.paid_source_notifier import paid_notifier
+                paid_notifier.warn_if_paid(
+                    "user-tushare", "try_mcp",
+                    reason=f"Tushare Token 未配置, 调用 {ts_code or '标的'} 将走 fallback",
+                )
+            except Exception:
+                pass
             return False, None, "TUSHARE_TOKEN not set"
         # MCP不可在脚本层直接调用，返回False让fallback生效
         return False, None, "MCP requires CallMcpTool in Cursor context"

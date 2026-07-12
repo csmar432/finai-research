@@ -3,6 +3,12 @@
 P0 修复 2026-06-28: 此模块之前在 event_monitor.py 中被 try-import 但不存在，
 导致 _call_mcp 直接走 subprocess fallback（隐藏能力缺失）。
 
+T10 修复 2026-07-12: 调用付费 MCP（tushare/csmar/wind/cnki/wanfang 等）时,
+如果对应 API Key 未配置，自动打印 🟡 非阻塞警告 + 引导用户配置.
+- 警告只打印 1 次 (进程内去重)
+- 不抛异常，不阻断 (用户按需配置)
+- 可用 FINAI_SUPPRESS_PAID_WARNINGS=1 全局关闭
+
 本模块提供:
 - MCPToolClient 类，统一调用任意 MCP server/tool
 - 自动选择通信方式：
@@ -41,8 +47,24 @@ class MCPToolClient:
 
         Returns:
             解析后的 JSON 响应字典；调用失败时返回 None
+
+        T10 fix (2026-07-12): paid-source warning is emitted here BEFORE
+        the subprocess call, so users see the warning even if subprocess
+        fails (which is the most common failure mode for paid MCPs whose
+        key is missing). The warning is non-blocking — execution continues.
         """
         params = params or {}
+        # ── T10: paid-source proactive warning (non-blocking) ────────────
+        try:
+            from scripts.core.paid_source_notifier import paid_notifier
+            paid_notifier.warn_if_paid(
+                server, tool,
+                reason=f"调用 {server}/{tool} 时 API Key 未配置, 将由 fallback 链接管",
+            )
+        except Exception:
+            # Notifier failures must never break MCP calls
+            pass
+
         payload = json.dumps({
             "jsonrpc": "2.0",
             "method": f"{server}/{tool}",
