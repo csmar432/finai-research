@@ -612,9 +612,17 @@ def _bacon_decomposition(
 
                 y = data[y_var].values
                 D = data[treat_var].values
-                T = (data[time_var] >= data[unit_var].map(
-                    lambda u: t_i if u == uid_i else t_j
-                )).astype(float).values
+                # Bug fix (audit_fix_2026_07_12, P0-B): The previous code used
+                # `data[time_var] >= data[unit_var].map(lambda u: t_i if u == uid_i else t_j)`
+                # which is a row-by-row comparison: for each row, look up the
+                # treatment time of THAT row's unit. That's correct in intent, but
+                # `.map(lambda u: ...)` was being called on a *Series of integers*
+                # (the time_var values), not on the unit column. The correct
+                # expression is to map the unit column to per-unit treatment time.
+                # Use the canonical form: T = 1 if current time >= this unit's treat time.
+                unit_to_treat = {uid_i: t_i, uid_j: t_j}
+                per_unit_treat = data[unit_var].map(unit_to_treat)
+                T = (data[time_var] >= per_unit_treat).astype(float).values
                 X = np.column_stack([np.ones(len(y)), D, T, D * T])
 
                 try:

@@ -347,6 +347,11 @@ def _parse_args() -> argparse.Namespace:
         choices=["did", "iv", "rdd", "psm", "gmm", "fe"],
         help="Identification strategy when --mode design",
     )
+    ap.add_argument(
+        "--list-methods", action="store_true",
+        help="Print inventory of orphan-engine methods wired into RobustnessRunner "
+             "and exit (no pipeline execution).",
+    )
     return ap.parse_args()
 
 
@@ -736,24 +741,52 @@ def _run_review_mode(args: argparse.Namespace) -> int:
 
 
 def _main_dispatch() -> int:
-    """Top-level CLI dispatcher: --mode design/review short-circuit the full pipeline."""
+    """Top-level CLI dispatcher: --mode design/review short-circuit the full pipeline.
+
+    Bug fix (audit_fix_2026_07_12): Previous implementation only dispatched
+    `design` / `review` modes; the default `--mode full` silently fell through
+    and the function returned None (which Python implicitly converts to exit
+    code 0 ONLY when running via `python pipeline.py`, but actually printed
+    nothing useful — confusing UX).
+
+    New behavior:
+    - `--mode full` (default) → call `_run_full_pipeline(args)`
+    - `--mode design`        → call `_run_design_mode(args)`
+    - `--mode review`        → call `_run_review_mode(args)`
+    - `--list-methods`       → print orphan-engine inventory and exit
+    - Any other value        → print actionable error and return 1
+    """
     args = _parse_args()
-    if args.mode != "full":
-        dispatch = {
-            "design": _run_design_mode,
-            "review": _run_review_mode,
-        }
-        handler = dispatch.get(args.mode)
-        if handler is None:
-            if args.mode == "full":
-                return _run_full_pipeline(args)
-            print(
-                f"ERROR: --mode {args.mode} is not yet implemented as a stand-alone stage. "
-                "Use --mode design or --mode review, or omit --mode for the full pipeline.",
-                file=sys.stderr,
-            )
+    if args.list_methods:
+        # Print inventory of orphan engines wired into RobustnessRunner.
+        # Done locally to avoid importing the heavy module in --list-methods-only runs.
+        try:
+            from scripts.research_framework.robustness_runner import RobustnessRunner
+            methods = RobustnessRunner.list_methods()
+        except Exception as exc:  # noqa: BLE001
+            print(f"ERROR: cannot import RobustnessRunner.list_methods: {exc}",
+                  file=sys.stderr)
             return 1
-        return handler(args)
+        print(f"\nOrphan-engine methods available via "
+              f"`RobustnessRunner.run_method_specific(method, df, **kwargs)` "
+              f"(n={len(methods)}):\n")
+        for m in methods:
+            print(f"  - {m}")
+        print()
+        return 0
+    if args.mode == "full":
+        return _run_full_pipeline(args)
+    if args.mode == "design":
+        return _run_design_mode(args)
+    if args.mode == "review":
+        return _run_review_mode(args)
+    # Unknown mode: actionable error.
+    print(
+        f"ERROR: --mode {args.mode!r} is not recognized. "
+        "Valid modes are: full (default), design, review.",
+        file=sys.stderr,
+    )
+    return 1
 
 
 # Public CLI entry point: alias so `python pipeline.py` and `from pipeline import main` work

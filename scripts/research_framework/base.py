@@ -240,6 +240,10 @@ def _stars(pval: float) -> str:
       *   : p < 0.05
       †   : p < 0.10
 
+    Note: this differs slightly from `scripts.core.formatters.significance_mark`
+    which uses '.' for p<0.10. We preserve the dagger here for backward
+    compatibility with existing LaTeX tables in the project.
+
     Args:
         pval: The p-value from a statistical test.
 

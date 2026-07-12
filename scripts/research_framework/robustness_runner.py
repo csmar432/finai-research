@@ -341,6 +341,373 @@ class RobustnessRunner:
 
         return runner(config)
 
+    # ── Orphan-engine dispatch (v1.8.0 / audit_fix_2026_07_12) ─────────
+    # 11 specialized econometric engines reachable via run_method_specific().
+    # Imports are wrapped in try/except; missing optional deps degrade gracefully
+    # (status="skipped", not a crash). Results are cached by (method, id(df), kw)
+    # so repeated calls with the same inputs are idempotent.
+    #
+    # Before this fix (P1-2), 11/47 econometric modules were orphans:
+    #   rdd, local_projections_did, interactive_fixed_effects, synthetic_did,
+    #   panel_quantile_regression, panel_threshold_regression, spatial_regression,
+    #   panel_var, volatility_models, time_varying_models, survival_analysis
+    # The framework was a "library catalog" — code existed but only ~10% was
+    # reachable from any pipeline entry point.
+    _METHOD_DISPATCH: dict[str, str] = {
+        "rdd": "rdd.RDDEngine",
+        "lp_did": "local_projections_did.LocalProjectionsDIDEngine",
+        "ife": "interactive_fixed_effects.InteractiveFixedEffects",
+        "synthetic_did": "synthetic_did.SyntheticDiDEngine",
+        "panel_quantile": "panel_quantile_regression.PanelQuantileRegression",
+        "panel_threshold": "panel_threshold_regression.PanelThresholdRegression",
+        "spatial": "spatial_regression.SpatialRegressionEngine",
+        "panel_var": "panel_var.PanelVAR",
+        "garch": "volatility_models.GARCHModel",
+        "tvp_var": "time_varying_models.TVPVAR",
+        "cox_ph": "survival_analysis.CoxPHModel",
+    }
+
+    def run_method_specific(
+        self,
+        method: str,
+        df: pd.DataFrame,
+        **kwargs,
+    ) -> dict:
+        """Run one of the 11 specialized orphan econometric engines.
+
+        Lightweight dispatcher that wires previously-orphan modules
+        (RDD, Local-Projections DID, IFE, Synthetic DiD, Panel Quantile,
+        Panel Threshold, Spatial Regression, Panel VAR, GARCH, TVP-VAR,
+        Cox PH) into the orchestrator's public API.
+
+        Parameters
+        ----------
+        method : str
+            One of: "rdd", "lp_did", "ife", "synthetic_did",
+            "panel_quantile", "panel_threshold", "spatial", "panel_var",
+            "garch", "tvp_var", "cox_ph".
+        df : pd.DataFrame
+            Input panel / series.
+        **kwargs
+            Forwarded to the engine's fit/estimate method. Common keys:
+            y_var, treat_var, time_var, unit_var, x_vars, cutoff,
+            running_var, horizons, duration, event, model_type.
+
+        Returns
+        -------
+        dict
+            Standardized envelope:
+            {
+              "method": str,
+              "status": "ok" | "skipped" | "error",
+              "result": <engine-specific object>,
+              "summary": markdown str with key coefficients,
+              "skipped_reason": str | None,
+            }
+
+        Notes
+        -----
+        Idempotent: repeated calls with the same `(method, df, kwargs)`
+        return the cached result without re-executing the heavy fit.
+        """
+        if not hasattr(self, "_method_specific_cache"):
+            self._method_specific_cache: dict = {}
+
+        if method not in self._METHOD_DISPATCH:
+            return {
+                "method": method,
+                "status": "error",
+                "result": None,
+                "summary": (
+                    f"Unknown method {method!r}. Available: "
+                    f"{sorted(self._METHOD_DISPATCH.keys())}."
+                ),
+                "skipped_reason": "unknown_method",
+            }
+
+        try:
+            import hashlib
+            df_token = id(df)
+            kw_token = hashlib.md5(
+                repr(sorted(kwargs.items())).encode()
+            ).hexdigest()
+            cache_key = (method, df_token, kw_token)
+        except Exception:
+            cache_key = None
+
+        if cache_key is not None and cache_key in self._method_specific_cache:
+            return self._method_specific_cache[cache_key]
+
+        module_path, _, class_name = self._METHOD_DISPATCH[method].partition(".")
+        try:
+            mod = __import__(
+                f"scripts.research_framework.{module_path}",
+                fromlist=[class_name],
+            )
+            engine_cls = getattr(mod, class_name)
+        except ImportError as exc:
+            _log.warning(
+                f"[RobustnessRunner] {method}: engine import failed ({exc})"
+            )
+            out = {
+                "method": method,
+                "status": "skipped",
+                "result": None,
+                "summary": (
+                    f"### {method}\n_skipped: engine import failed_ - {exc}"
+                ),
+                "skipped_reason": (
+                    f"import_error: {module_path} ({type(exc).__name__})"
+                ),
+            }
+            if cache_key is not None:
+                self._method_specific_cache[cache_key] = out
+            return out
+        except Exception as exc:
+            _log.warning(
+                f"[RobustnessRunner] {method}: cannot resolve {class_name} ({exc})"
+            )
+            out = {
+                "method": method,
+                "status": "skipped",
+                "result": None,
+                "summary": (
+                    f"### {method}\n_skipped: cannot resolve {class_name}_ ({exc})"
+                ),
+                "skipped_reason": f"attribute_error: {type(exc).__name__}",
+            }
+            if cache_key is not None:
+                self._method_specific_cache[cache_key] = out
+            return out
+
+        result = None
+        summary_text = ""
+        try:
+            if method == "rdd":
+                engine = engine_cls(
+                    df,
+                    kwargs.get("y_var", self.y_var),
+                    kwargs.get("running_var", self.time_var),
+                    cutoff=kwargs.get("cutoff", 0.0),
+                    treat_var=kwargs.get("treat_var", None),
+                    covariate_vars=kwargs.get("x_vars", self.x_vars),
+                )
+                result = engine.fit()
+                summary_text = (
+                    f"### RDD (Sharp RD)\n"
+                    f"- coef: `{result.coef:.4f}`, se: `{result.se:.4f}`, "
+                    f"p: `{result.pval:.4f}`\n"
+                    f"- 95% CI: [{result.ci_lower:.4f}, {result.ci_upper:.4f}]\n"
+                    f"- bandwidth: `{result.bandwidth:.4f}`, "
+                    f"N_left={result.n_left}, N_right={result.n_right}"
+                )
+            elif method == "lp_did":
+                engine = engine_cls(
+                    df,
+                    outcome_var=kwargs.get("y_var", self.y_var),
+                    treatment_var=kwargs.get("treat_var", self.treat_var),
+                    time_var=kwargs.get("time_var", self.time_var),
+                    unit_var=kwargs.get("unit_var", self.unit_var),
+                    horizons=kwargs.get("horizons"),
+                    controls=kwargs.get("x_vars", self.x_vars),
+                )
+                result = engine.fit()
+                rs = result if isinstance(result, dict) else {0: result}
+                lines = " | ".join(
+                    f"h={h}: {r.coef:.4f}" for h, r in sorted(rs.items())
+                )
+                summary_text = (
+                    f"### Local-Projections DID\n"
+                    f"- horizons={list(rs.keys())}\n- coefs: {lines}"
+                )
+            elif method == "ife":
+                n_units = df[kwargs.get("unit_var", self.unit_var)].nunique()
+                n_periods = df[kwargs.get("time_var", self.time_var)].nunique()
+                engine = engine_cls(n_units=n_units, n_periods=n_periods)
+                x_cols = kwargs.get("x_vars", self.x_vars) or [self.treat_var]
+                # IFE expects (n_units, n_periods, k) panel; first column is y.
+                y_col = kwargs.get("y_var", self.y_var)
+                panel3d = (
+                    df.pivot_table(
+                        index=kwargs.get("unit_var", self.unit_var),
+                        columns=kwargs.get("time_var", self.time_var),
+                        values=[y_col] + x_cols,
+                    )
+                    .fillna(0)
+                    .to_numpy()
+                    .reshape(n_units, n_periods, 1 + len(x_cols))
+                )
+                result = engine.fit(X=panel3d)
+                summary_text = (
+                    f"### Interactive Fixed Effects (Bai 2009)\n"
+                    f"- result attrs: `{sorted(vars(result).keys())[:6]}`"
+                )
+            elif method == "synthetic_did":
+                t_var = kwargs.get("treat_var", self.treat_var)
+                treated_mask = df[t_var].astype(float) > 0
+                pre = df.loc[~treated_mask].pivot_table(
+                    index=kwargs.get("unit_var", self.unit_var),
+                    columns=kwargs.get("time_var", self.time_var),
+                    values=kwargs.get("y_var", self.y_var),
+                )
+                engine = engine_cls(
+                    pre_outcome_matrix=pre.fillna(0),
+                    post_outcome_matrix=pre.fillna(0),
+                )
+                result = engine.fit()
+                summary_text = (
+                    f"### Synthetic DiD (Arkhangelsky et al. 2021)\n"
+                    f"- ATT: `{result.att:.4f}`, se: `{result.se:.4f}`, "
+                    f"estimator: `{result.estimator}`"
+                )
+            elif method == "panel_quantile":
+                engine = engine_cls()
+                result = engine.fit(
+                    data=df,
+                    y=kwargs.get("y_var", self.y_var),
+                    X=kwargs.get("x_vars", self.x_vars),
+                    quantiles=kwargs.get("quantiles", [0.25, 0.5, 0.75]),
+                    unit_var=kwargs.get("unit_var", self.unit_var),
+                    time_var=kwargs.get("time_var", self.time_var),
+                )
+                n_res = len(result) if hasattr(result, "__len__") else 1
+                summary_text = (
+                    f"### Panel Quantile Regression\n"
+                    f"- {n_res} quantile level(s) estimated"
+                )
+            elif method == "panel_threshold":
+                engine = engine_cls()
+                result = engine.estimate(
+                    df=df,
+                    y_var=kwargs.get("y_var", self.y_var),
+                    x_vars=kwargs.get("x_vars", self.x_vars),
+                    threshold_var=kwargs.get(
+                        "threshold_var", self.time_var
+                    ),
+                    entity_var=kwargs.get("unit_var", self.unit_var),
+                    time_var=kwargs.get("time_var", self.time_var),
+                )
+                summary_text = (
+                    f"### Panel Threshold (Hansen 2000)\n"
+                    f"- estimated threshold: `{getattr(result, 'threshold', None)}`"
+                )
+            elif method == "spatial":
+                engine = engine_cls(
+                    df=df,
+                    y_var=kwargs.get("y_var", self.y_var),
+                    x_vars=kwargs.get("x_vars", self.x_vars),
+                )
+                result = engine.fit(model_type=kwargs.get("model_type", "sar"))
+                summary_text = (
+                    f"### Spatial Regression\n"
+                    f"- estimator: `{result.estimator}`"
+                )
+            elif method == "panel_var":
+                y_vars = kwargs.get("y_vars")
+                if y_vars is None:
+                    base_y = kwargs.get("y_var", self.y_var)
+                    extra_x = (
+                        kwargs.get("x_vars", self.x_vars)[:1]
+                        or [self.treat_var]
+                    )
+                    y_vars = [base_y, *extra_x]
+                engine = engine_cls(max_lags=kwargs.get("max_lags", 2))
+                result = engine.fit(
+                    data=df,
+                    y_vars=list(y_vars),
+                    unit_var=kwargs.get("unit_var", self.unit_var),
+                    time_var=kwargs.get("time_var", self.time_var),
+                )
+                summary_text = (
+                    f"### Panel VAR (Abrigo & Love 2016)\n"
+                    f"- lag order: `{result.lag_order}`, y_vars: `{result.y_vars}`"
+                )
+            elif method == "garch":
+                returns = kwargs.get(
+                    "returns",
+                    df[kwargs.get("y_var", self.y_var)].astype(float),
+                )
+                engine = engine_cls(
+                    model_type=kwargs.get("model_type", "GARCH"),
+                    p=kwargs.get("p", 1),
+                    q=kwargs.get("q", 1),
+                )
+                result = engine.fit(returns=returns)
+                summary_text = (
+                    f"### GARCH ({result.model_type})\n"
+                    f"- params: `{result.params}`, AIC: `{result.aic}`"
+                )
+            elif method == "tvp_var":
+                y_cols = kwargs.get("y_vars")
+                if y_cols is None:
+                    y_cols = [kwargs.get("y_var", self.y_var)] + list(
+                        kwargs.get("x_vars", self.x_vars)[:1]
+                    )
+                Y = df[list(y_cols)].astype(float).values
+                engine = engine_cls(p=kwargs.get("p", 2), sv=kwargs.get("sv", True))
+                result = engine.fit(
+                    Y=Y,
+                    n_iter=kwargs.get("n_iter", 1000),
+                    burn=kwargs.get("burn", 200),
+                )
+                summary_text = (
+                    f"### TVP-VAR (Nakajima 2010)\n"
+                    f"- periods: `{result.n_periods}`, "
+                    f"iter: `{result.n_iterations}`"
+                )
+            elif method == "cox_ph":
+                engine = engine_cls()
+                result = engine.fit(
+                    df=df,
+                    duration=kwargs.get("duration", "duration"),
+                    event=kwargs.get("event", "event"),
+                    X=kwargs.get("X", kwargs.get("x_vars", self.x_vars)),
+                )
+                coef_dict = getattr(result, "coef_dict", {})
+                lines = ", ".join(
+                    f"`{k}`={v:.4f}"
+                    for k, v in list(coef_dict.items())[:5]
+                )
+                summary_text = (
+                    f"### Cox Proportional Hazards\n"
+                    f"- coefs (first 5): {lines}"
+                )
+        except Exception as exc:  # noqa: BLE001
+            _log.warning(
+                f"[RobustnessRunner] {method} raised: "
+                f"{type(exc).__name__}: {exc}"
+            )
+            out = {
+                "method": method,
+                "status": "error",
+                "result": None,
+                "summary": (
+                    f"### {method}\n_error: {type(exc).__name__}: {exc}_"
+                ),
+                "skipped_reason": (
+                    f"runtime_error: {type(exc).__name__}"
+                ),
+            }
+            if cache_key is not None:
+                self._method_specific_cache[cache_key] = out
+            return out
+
+        out = {
+            "method": method,
+            "status": "ok",
+            "result": result,
+            "summary": summary_text or f"### {method}\n_fit successful_",
+            "skipped_reason": None,
+        }
+        if cache_key is not None:
+            self._method_specific_cache[cache_key] = out
+        return out
+
+    @classmethod
+    def list_methods(cls) -> list[str]:
+        """Return the inventory of orphan-engine method names."""
+        return list(cls._METHOD_DISPATCH.keys())
+
     def _get_result(self, df_sub: pd.DataFrame) -> tuple[float, float, float]:
         """在子样本上运行 DID 回归。"""
         try:
