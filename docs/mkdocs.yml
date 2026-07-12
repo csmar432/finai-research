@@ -62,7 +62,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - 📘 使用指南（完整版）: ../使用指南.md
   - 快速入门:
       - 教程总览: tutorials/README.md
       - 安装配置: tutorials/01-quickstart.md
@@ -71,10 +70,14 @@ nav:
   - MCP 工具:
       - MCP 市场: tutorials/04-mcp-marketplace.md
       - 数据源参考: external_data_sources.md
+      - MCP 分层: MCP_SERVER_TIERING.md
   - 进阶:
       - 事件驱动研究: tutorials/05-event-driven-research.md
       - API 参考: api_reference.md
   - 项目:
       - 架构设计: ARCHITECTURE.md
-      - 快速参考: ../USAGE_GUIDE.md
-      - 完整使用指南（docs版）: 论文写作工作流使用指南.md
+      - 改进路线: IMPROVEMENT_ROADMAP.md
+      - 数据溯源: MOCK_DATA_POLICY.md
+      - 安装部署: DOCKER_INSTALL.md
+      - 审计工作流: audit-workflow.md
+      - 引用指南: CITATION_GUIDE.md

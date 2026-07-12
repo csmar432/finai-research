@@ -282,7 +282,7 @@ target-version = "py312"
 # Note: ruff >=0.6 renamed B001→B010 (flake8-bugbear reclassification).
 # Codebase verified to have 0 bare except: as of 2026-06-24.
 #  谨慎启用 B —— 先只在 CI 阶段扫，不作为 pre-commit 阻塞
-#  B001 (bare except) 是 P1 修复目标之一: docs/TASKS_RUNBOOK.md §P1-5
+#  B001 (bare except) 修复进展追踪: docs/IMPROVEMENT_ROADMAP.md
 select = ["E", "F", "W", "I"]
 ignore = [
     "E501",  # line too long (有专门 line-length)
@@ -306,7 +306,7 @@ ignore = [
 # 现移除 F841 from ignore list，CI 必须 0 F841 错误才能合并。
 # P2-2 修复 2026-06-28: 移除 W291/W292/W293 (trailing whitespace, no newline at eof, ws on blank line)
 # 这些是 trivial 风格问题，CI 跑 formatter (black/ruff format) 自动处理
-# F841 死代码清理路线图（143 处）已记录在 docs/TASKS_RUNBOOK.md §P2-2-cleanup
+# 死代码清理记录: docs/IMPROVEMENT_ROADMAP.md (P2-2 已修 237 处)
 # 当前仅在 ruff 中显式为 warning，不在 CI fail 阻断流程
 
 # S110 (try-except-pass) management:

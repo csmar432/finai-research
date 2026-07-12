@@ -1,10 +1,22 @@
 # Agent Orchestration Architecture
 
 > Created: 2026-05-28
-> Last Updated: 2026-06-20
+> Last Updated: 2026-07-12 (audit_fix_2026_07_12 — 新增 CLI 入口 + 类名核对)
 > Status: Active
 
 This document describes the two distinct orchestrator systems in the codebase and their architectural boundaries.
+
+> **CLI 入口 (v1.0+ 推荐用户入口)**
+>
+> 上述两个编排器 (`AgentOrchestrator` / `MultiAgentOrchestrator`) 是**库级 API**, 用户应通过以下 CLI 入口调用:
+>
+> | CLI | 用途 | 模块 |
+> |-----|------|------|
+> | `python scripts/start_research.py --topic "..."` | 5 轮渐进式主题澄清入口 | `scripts/start_research.py` |
+> | `python scripts/agent_pipeline.py --topic "..."` | 端到端研究流水线（主题→论文 PDF） | `scripts/agent_pipeline.py` |
+> | `python scripts/agent.py --task "..."` | 单任务智能体入口（轻量级） | `scripts/agent.py` |
+>
+> README 主推 `start_research.py` 作为新用户入口.
 
 ---
 

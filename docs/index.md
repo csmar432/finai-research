@@ -1,12 +1,14 @@
 # FinResearch Agent
 
 > 经济金融领域 AI 学术研究工作流。从研究想法到可投稿论文，集成 MCP 数据获取、因果推断、LaTeX 排版和对抗性 review 循环。
+>
+> Last updated: 2026-07-12 (audit_fix_2026_07_12 — 修正占位符 + 计数)
 
 ## 核心能力
 
 - **数据获取**：43 个 MCP 数据服务器，覆盖 A股/美股/宏观/学术论文
-- **因果推断**：DID / IV / RDD / PSM / 面板 GMM 等 42 种计量方法
-- **论文写作**：支持 JF / JFE / RFS / 经济研究 / 金融研究 等中英文顶刊格式
+- **因果推断**：DID / IV / RDD / PSM / 面板 GMM 等 **47** 种计量方法
+- **论文写作**：支持 JF / JFE / RFS / 经济研究 / 金融研究 等 **30** 种中英文顶刊格式
 - **智能 Review**：多轮对抗性评审循环，自动检查实证严谨性
 
 ## 快速开始
@@ -30,7 +32,7 @@ python scripts/health_check.py --json
 - [事件驱动研究](tutorials/05-event-driven-research.md)
 - [API 参考](api_reference.md)
 - [架构设计](ARCHITECTURE.md)
-- [使用指南](../USAGE_GUIDE.md)
+- [改进路线](IMPROVEMENT_ROADMAP.md)
 
 ## 可用研究方向
 
@@ -50,6 +52,6 @@ python scripts/health_check.py --json
 
 ## 链接
 
-- [项目主页](https://github.com/YOUR_USERNAME/finai-research-workflow)
-- [使用指南](../USAGE_GUIDE.md)
+- [项目主页](https://github.com/csmar432/finai-research)
+- [使用指南](../使用指南.md)
 - [安装配置](tutorials/01-quickstart.md)
