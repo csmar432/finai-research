@@ -152,7 +152,8 @@ class DefaultAgentExecutor:
 
     async def async_execute(self, agent: Agent, task: Task) -> Any:
         """异步执行任务"""
-        loop = asyncio.get_event_loop()
+        # T2 audit 2026-07-12: use get_running_loop (avoids DeprecationWarning on 3.10+)
+        loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.execute, agent, task)
 
 

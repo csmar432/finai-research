@@ -279,7 +279,7 @@ async def _run_pipeline_streaming(
             continue
 
         # Run agent in executor to avoid blocking
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         try:
             result = await loop.run_in_executor(None, agent.run, context)
             # Update context with stage result

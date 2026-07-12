@@ -1598,7 +1598,15 @@ def _daemonize(log_file: str, pid_file: str):
         except (ValueError, OSError):
             pid_path.unlink()
 
-    # Fork
+    # Fork — T2 audit 2026-07-12: provide Windows-friendly error.
+    # os.fork() doesn't exist on Windows; AttributeError raises
+    # before we can catch it. Check platform explicitly.
+    if sys.platform == "win32":
+        print("ERROR: --daemon mode is not supported on Windows.")
+        print("  os.fork() is Unix-only. Use polling mode instead:")
+        print("    python scripts/event_monitor.py --interval 300")
+        print("  Or run as a foreground process via Task Scheduler / NSSM.")
+        sys.exit(1)
     try:
         pid = _os.fork()
         if pid > 0:
