@@ -354,6 +354,12 @@ def _parse_args() -> argparse.Namespace:
         help="Print inventory of orphan-engine methods wired into RobustnessRunner "
              "and exit (no pipeline execution).",
     )
+    ap.add_argument(
+        "--no-hitl", action="store_true",
+        help="Disable all Human-in-the-Loop gates and run fully autonomously "
+             "(for batch CI / non-interactive runs). Equivalent to "
+             "setting FINAI_NO_HITL=1.",
+    )
     return ap.parse_args()
 
 
@@ -547,6 +553,25 @@ def _run_full_pipeline(args: argparse.Namespace) -> int:
     print(f"\n  [2/6] Panel summary:")
     print(f"      N={len(df)}, firms={df['ticker'].nunique()}, years={sorted(df['year'].unique())}")
 
+    # HITL: pause after data is loaded — let user confirm panel before regression
+    panel_summary = (
+        f"Panel 已就绪: N={len(df)}, "
+        f"firms={df['ticker'].nunique()}, "
+        f"years={sorted(df['year'].unique())}. "
+        f"Simulated fields: {tracker.simulated_fields() or 'None'}."
+    )
+    choice = _hitl_pause(
+        stage_id="data_loaded",
+        summary=panel_summary,
+        session_dir=OUTPUT,
+    )
+    if choice == "revise":
+        print("  → 用户选择修改。返回 Step 1 重新加载...")
+        # Caller decides; we just exit and let user re-run.
+        return 1
+    if choice == "skip":
+        print("  → 用户选择跳过此 gate。继续执行。")
+
     # Step 2: DID Regression
     print("\n  [3/6] Running DID regressions...")
     X_VARS = ["ln_assets","roa","tangibility","mb","cash_ratio"]
@@ -560,6 +585,20 @@ def _run_full_pipeline(args: argparse.Namespace) -> int:
     print(f"  DID (lev):       coef={results_lev['did_coef']:+.4f}, p={results_lev['did_pval']:.3f}")
     print(f"  DID (ltd):      coef={results_ltd['did_coef']:+.4f}, p={results_ltd['did_pval']:.3f}")
     print(f"  DID (cost_debt): coef={results_cod['did_coef']:+.4f}, p={results_cod['did_pval']:.3f}")
+
+    # HITL: pause after first regression — let user decide to continue, refine,
+    # or accept and move to heterogeneity. This is THE critical gate where users
+    # previously had no chance to inspect coefficient signs/magnitudes.
+    reg_summary = (
+        f"DID 已完成: lev={results_lev['did_coef']:+.4f} (p={results_lev['did_pval']:.3f}), "
+        f"ltd={results_ltd['did_coef']:+.4f} (p={results_ltd['did_pval']:.3f}), "
+        f"cost_debt={results_cod['did_coef']:+.4f} (p={results_cod['did_pval']:.3f})."
+    )
+    _hitl_pause(
+        stage_id="regression_run",
+        summary=reg_summary,
+        session_dir=OUTPUT,
+    )
 
     # Heterogeneity
     print("\n  [4/6] Heterogeneity analysis...")
@@ -795,3 +834,127 @@ def _main_dispatch() -> int:
 main = _run_full_pipeline
 if __name__ == "__main__":
     raise SystemExit(_main_dispatch())
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HITL Stage Gates (audit_fix_2026_07_12)
+#
+# Bug fix: prior pipeline ran fully autonomously from topic → regression → Word
+# doc, only pausing on topic change. Users had no chance to review the data
+# source plan, identification strategy choice, variable list, or headline
+# results before they were committed to disk and (often) to a paper draft.
+#
+# New design: each transition into a new stage calls a HITL gate that:
+#   1. Prints a 1-page summary of what the previous stage produced
+#   2. Lists 4 actionable options: continue / revise / skip-this-stage / abort
+#   3. Logs the decision to `output/.hitl_history.jsonl` for audit
+#
+# Disable globally with `--no-hitl` (e.g. for batch CI runs).
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_HITL_STAGES = (
+    # (stage_id, label, when_to_pause, required_in_noninteractive)
+    ("data_loaded",     "数据加载完成",     "after panel CSV is loaded",       False),
+    ("data_validated",  "数据缺口处理决定", "when DataSourceChecker requires user authorization", True),
+    ("design_locked",   "实证设计已锁定",   "after REFINED_DESIGN.md is written", False),
+    ("regression_run",  "回归结果已生成",   "after first DID/IV/RD regression", False),
+    ("robustness_done", "稳健性检验完成",   "after RobustnessRunner.run_comprehensive", False),
+    ("draft_outlined",  "论文大纲已生成",   "after PAPER_OUTLINE.md",           False),
+)
+
+
+def _hitl_pause(stage_id: str, summary: str, options: list[tuple[str, str]] | None = None,
+                session_dir: Path | None = None, force: bool = False) -> str:
+    """Pause the pipeline and ask the user to choose how to proceed.
+
+    Args:
+        stage_id:    One of `_HITL_STAGES` — must match a configured checkpoint.
+        summary:     1-2 sentence plain-text summary of what just completed.
+        options:     List of (option_id, label) for the user. If None, use defaults:
+                       ("continue", "继续"), ("revise", "修改"),
+                       ("skip", "跳过此阶段"), ("abort", "终止").
+        session_dir: Where to write `hitl_history.jsonl`. Defaults to cwd.
+        force:       If True, also pause in --no-hitl mode (escape hatch).
+
+    Returns:
+        Chosen option_id (string). "abort" → caller should sys.exit(0).
+    """
+    import os as _os
+    no_hitl = (
+        _os.environ.get("FINAI_NO_HITL") == "1"
+        or "--no-hitl" in _os.sys.argv
+    )
+    if no_hitl and not force:
+        return "continue"
+
+    valid = {sid for sid, *_ in _HITL_STAGES}
+    if stage_id not in valid:
+        # Unknown stage — log and continue (don't block on programmer error)
+        return "continue"
+
+    if options is None:
+        options = [
+            ("continue", "继续（按当前结果进入下一阶段）"),
+            ("revise",   "修改（返回上一阶段重新生成）"),
+            ("skip",     "跳过此阶段（保留当前结果）"),
+            ("abort",    "终止（保留所有产物，下次可 --resume）"),
+        ]
+
+    # ── Print gate UI ────────────────────────────────────────────────────
+    bar = "━" * 64
+    print(f"\n\033[96m{bar}\033[0m")
+    print(f"\033[96m  🛑  HITL Gate · {stage_id}\033[0m")
+    print(f"\033[96m{bar}\033[0m")
+    print(f"\n  {summary}\n")
+    print("  请选择下一步操作：\n")
+    for i, (_, label) in enumerate(options, 1):
+        print(f"    ({i}) {label}")
+    print()
+
+    chosen_id = "continue"
+    while True:
+        try:
+            raw = input(f"  请输入选项编号 (1-{len(options)}): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\n  → 默认选择 'abort' (EOF/Ctrl-C)")
+            chosen_id = "abort"
+            break
+        if not raw:
+            print(f"  请输入有效选项 (1-{len(options)})")
+            continue
+        try:
+            idx = int(raw) - 1
+            if 0 <= idx < len(options):
+                chosen_id = options[idx][0]
+                break
+        except ValueError:
+            pass
+        # Also accept option_id
+        matched = [oid for oid, _ in options if oid == raw]
+        if matched:
+            chosen_id = matched[0]
+            break
+        print(f"  无效输入，请输入 1-{len(options)} 或选项 ID")
+
+    # ── Log decision ─────────────────────────────────────────────────────
+    log_path = (session_dir or Path.cwd()) / "hitl_history.jsonl"
+    try:
+        import json as _json
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(log_path, "a", encoding="utf-8") as fh:
+            fh.write(_json.dumps({
+                "ts": time.time(),
+                "stage": stage_id,
+                "choice": chosen_id,
+                "summary_excerpt": summary[:200],
+            }, ensure_ascii=False) + "\n")
+    except Exception:  # log failures must not break pipeline
+        pass
+
+    if chosen_id == "abort":
+        print("\n  → 已中止。保留所有产物；下次使用 --resume 继续。\n")
+        import sys as _sys
+        _sys.exit(0)
+    print(f"\n  → 已选择: {chosen_id}\n")
+    return chosen_id

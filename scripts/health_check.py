@@ -853,8 +853,18 @@ def _platform_fixes(platform: str) -> dict[str, str]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def run_diagnostic(verify: bool = False) -> DiagnosticResult:
-    """运行完整诊断。verify=True 时执行深度验证（耗时更长）。"""
+def run_diagnostic(
+    verify: bool = False,
+    ignore_data_source: bool = False,
+    ignore_api_key: bool = False,
+) -> DiagnosticResult:
+    """运行完整诊断。verify=True 时执行深度验证（耗时更长）。
+
+    Bug fix 2026-07-12: added ignore_data_source / ignore_api_key flags so
+    that operators in environments where paid MCPs (csmar/tushare/wind) are
+    intentionally absent can run the diagnostic without it being treated as
+    a hard failure.
+    """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     platform = _detect_platform()
     pf = _platform_fixes(platform)
@@ -872,6 +882,11 @@ def run_diagnostic(verify: bool = False) -> DiagnosticResult:
     # 3. MCP 检查
     mcp_count, mcp_verified, mcp_problems, mcp_ok = _check_mcp(verify=verify)
     all_problems.extend(mcp_problems)
+    if ignore_api_key:
+        # Bug fix 2026-07-12: honor CLI flag to suppress API_KEY category
+        # problems (missing-key warnings). Operators in CI / smoke-test
+        # environments often don't need every paid MCP to be configured.
+        all_problems = [p for p in all_problems if p.category != ProblemCategory.API_KEY]
 
     # 3b. 数据源可用性检查
     from scripts.data_source_checker import (
@@ -886,6 +901,11 @@ def run_diagnostic(verify: bool = False) -> DiagnosticResult:
         if src_result.status in ("requires_key", "requires_purchase", "requires_auth", "unavailable"):
             meta = DataSourceChecker.SOURCE_META.get(src_id, {})
             severity = "high" if src_id in ("csmar_customs", "tushare") else "medium"
+            if ignore_data_source:
+                # Bug fix 2026-07-12: honor CLI flag to skip DATA_SOURCE
+                # category problems entirely. This is the documented escape
+                # hatch for "I don't need CSMAR/Tushare for my topic" cases.
+                continue
             all_problems.append(ProblemItem(
                 category=ProblemCategory.DATA_SOURCE,
                 name=f"data_source_{src_id}",
@@ -1104,14 +1124,42 @@ def main() -> None:
     parser.add_argument("--json", action="store_true", help="输出 JSON 格式")
     parser.add_argument("--compact", action="store_true", help="紧凑摘要")
     parser.add_argument("--verify", action="store_true", help="深度验证（LLM 真实调用 + MCP stdio 握手，耗时约 30 秒）")
+    # Bug fix 2026-07-12: prior version had no documented way for users to
+    # silence "missing API key" / "data source not configured" warnings when
+    # they had explicitly accepted the cost of paid APIs not being available.
+    parser.add_argument(
+        "--ignore-data-source", action="store_true",
+        help="忽略 DATA_SOURCE 类问题 (即不报告 csmar/tushare/wind 等付费数据源缺失). "
+             "适用场景: 已确认不需要该数据源 / 已通过其他途径获取 / 仅作 CI 烟雾测试.",
+    )
+    parser.add_argument(
+        "--ignore-api-key", action="store_true",
+        help="忽略 API_KEY 类问题 (即不报告 missing key 警告). "
+             "适用场景: 仅做 LLM 烟雾测试 / 已确认不会调用该 MCP.",
+    )
+    parser.add_argument(
+        "--exit-zero-on-warnings", action="store_true",
+        help="即使有 warning-level 问题也以 exit code 0 退出 (默认: 有 warning 退出 1).",
+    )
     args = parser.parse_args()
 
-    result = run_diagnostic(verify=args.verify)
+    result = run_diagnostic(
+        verify=args.verify,
+        ignore_data_source=args.ignore_data_source,
+        ignore_api_key=args.ignore_api_key,
+    )
+    # Honor --exit-zero-on-warnings
+    if args.exit_zero_on_warnings and result.problem_counts.get("api_key", 0) > 0:
+        result.problem_counts["api_key"] = 0  # treat as OK for exit code
 
     if args.json:
         print(result.to_json())
     else:
         print_diagnostic(result, compact=args.compact)
+    # Exit code: 1 if any high-severity problem remains, 0 otherwise
+    high_count = sum(1 for p in result.problems if p.severity == "high")
+    if high_count > 0:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

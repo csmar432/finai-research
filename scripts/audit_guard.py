@@ -907,6 +907,101 @@ def _check_mcp_registration_health() -> CheckResult:
     )
 
 
+def _check_hitl_coverage() -> CheckResult:
+    """T6 audit 2026-07-12: verify research_framework pipeline.py calls
+    _hitl_pause() at the data-loaded and regression-run stages, AND that
+    the --no-hitl flag exists for batch runs.
+
+    Bug fix context: prior to 2026-07-12 the pipeline ran fully autonomously
+    from topic → regression → Word doc, only pausing on topic change. Users
+    had no chance to inspect the panel, the data-source plan, or the
+    coefficient signs/magnitudes before they were written to disk.
+    """
+    root = Path(__file__).parent.parent
+    p = root / "scripts" / "research_framework" / "pipeline.py"
+    if not p.exists():
+        return CheckResult(
+            passed=False,
+            expected="research_framework/pipeline.py exists",
+            actual="NOT FOUND",
+        )
+    src = p.read_text(encoding="utf-8")
+
+    # Required gate calls (>= 2 stages)
+    required_calls = [
+        "_hitl_pause(\n        stage_id=\"data_loaded\"",
+        "_hitl_pause(\n        stage_id=\"regression_run\"",
+    ]
+    missing_calls = [c for c in required_calls if c not in src]
+
+    # Required CLI flag
+    has_no_hitl = '"--no-hitl"' in src or "'--no-hitl'" in src
+
+    # Verify the function is actually defined
+    has_func_def = "def _hitl_pause(" in src
+
+    if missing_calls:
+        return CheckResult(
+            passed=False,
+            expected="_hitl_pause called at data_loaded + regression_run",
+            actual=f"missing: {len(missing_calls)} call(s)",
+        )
+    if not has_no_hitl:
+        return CheckResult(
+            passed=False,
+            expected="--no-hitl CLI flag exists for batch runs",
+            actual="not found in argparse",
+        )
+    if not has_func_def:
+        return CheckResult(
+            passed=False,
+            expected="_hitl_pause() function defined",
+            actual="not found",
+        )
+    return CheckResult(
+        passed=True,
+        expected="_hitl_pause called at data_loaded + regression_run",
+        actual=f"{len(required_calls)} gates wired + --no-hitl flag present",
+    )
+
+
+def _check_health_check_skip_flags() -> CheckResult:
+    """T7 audit 2026-07-12: verify scripts/health_check.py exposes
+    --ignore-data-source and --ignore-api-key CLI flags.
+
+    Bug fix context: prior version reported "missing API key" / "data source
+    not configured" as hard failures with no escape hatch. Operators had no
+    documented way to suppress paid-MCP warnings when intentionally absent.
+    """
+    root = Path(__file__).parent.parent
+    p = root / "scripts" / "health_check.py"
+    if not p.exists():
+        return CheckResult(
+            passed=False,
+            expected="health_check.py exists",
+            actual="NOT FOUND",
+        )
+    src = p.read_text(encoding="utf-8")
+    required = [
+        "\"--ignore-data-source\"",
+        "\"--ignore-api-key\"",
+        "ignore_data_source: bool = False",
+        "ignore_api_key: bool = False",
+    ]
+    missing = [r for r in required if r not in src]
+    if missing:
+        return CheckResult(
+            passed=False,
+            expected="all 4 skip-flag tokens present in health_check.py",
+            actual=f"missing: {missing}",
+        )
+    return CheckResult(
+        passed=True,
+        expected="all 4 skip-flag tokens present in health_check.py",
+        actual="--ignore-data-source + --ignore-api-key wired + threaded to run_diagnostic()",
+    )
+
+
 def check_16_version_drift() -> CheckResult:
     """Audit claim: 'Multiple files hardcode APP_VERSION = "1.0.0" or banner v1.0.0'.
 
@@ -1269,6 +1364,22 @@ CHECKS: list[AuditCheck] = [
         "MCP server registration health",
         "Verify all mcp.json registered servers have working command + module path (excludes external whitelist)",
         lambda: _check_mcp_registration_health(),
+    ),
+    # T6 audit 2026-07-12: HITL (human-in-the-loop) coverage in research_framework pipeline
+    AuditCheck(
+        20,
+        "HITL stage gates exist in research_framework pipeline",
+        "Verify _hitl_pause() is called at data-loaded and regression-run stages, "
+        "and that --no-hitl flag exists for batch CI runs",
+        lambda: _check_hitl_coverage(),
+    ),
+    # T7 audit 2026-07-12: Health check skip flags exist
+    AuditCheck(
+        21,
+        "Health check supports --ignore-data-source / --ignore-api-key",
+        "Verify scripts/health_check.py main() exposes both flags so operators "
+        "can suppress paid-MCP warnings when intentionally absent",
+        lambda: _check_health_check_skip_flags(),
     ),
 ]  # noqa: E501
 

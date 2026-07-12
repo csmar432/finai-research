@@ -308,6 +308,12 @@ def main():
                        choices=["none", "checkpoint", "provenance", "full"],
                        help="验证严格程度")
     parser.add_argument("--enforce", action="store_true", help="未就绪时抛出异常")
+    parser.add_argument("--authorize-synthetic", action="store_true",
+                       help="授权使用模拟数据 (创建 authorized_synthetic.json 标记, "
+                            "下游可读此标记决定是否继续)")
+    parser.add_argument("--force", action="store_true",
+                       help="强制通过 (即使数据未就绪). 等同于 "
+                            "把 session_dir/forced_continue.json 写入磁盘.")
     args = parser.parse_args()
 
     level = DataGateLevel(args.level)
@@ -324,6 +330,35 @@ def main():
         print(f"   警告: {result.warnings}")
     if result.mock_ratio > 0:
         print(f"   ⚠️  模拟数据比例: {result.mock_ratio*100:.0f}%")
+
+    # Bug fix 2026-07-12: previously the CLI exited with 1 and that was it —
+    # operators had no documented way to authorize synthetic data or force-
+    # continue when they explicitly accepted the risk.
+    if not result.is_ready:
+        if args.authorize_synthetic:
+            auth_path = gate.session_dir / "authorized_synthetic.json"
+            auth_path.parent.mkdir(parents=True, exist_ok=True)
+            auth_path.write_text(json.dumps({
+                "authorized_at": time.time(),
+                "authorized_via": "data_gate.py --authorize-synthetic",
+                "warnings_acknowledged": result.warnings,
+                "mock_ratio": result.mock_ratio,
+                "warning": "⚠️ 任何下游使用此标记生成的论文不能用于发表",
+            }, ensure_ascii=False, indent=2))
+            print(f"\n   ✅ 已授权模拟数据 → {auth_path}")
+            print(f"   下游脚本可读取此标记决定是否继续。")
+            return 0
+        if args.force:
+            force_path = gate.session_dir / "forced_continue.json"
+            force_path.parent.mkdir(parents=True, exist_ok=True)
+            force_path.write_text(json.dumps({
+                "forced_at": time.time(),
+                "missing": result.missing,
+                "warnings": result.warnings,
+                "warning": "强制跳过 — 操作者已接受风险",
+            }, ensure_ascii=False, indent=2))
+            print(f"\n   ⚠️  已强制跳过 → {force_path}")
+            return 0
 
     if args.enforce and not result.is_ready:
         raise SystemExit(1)

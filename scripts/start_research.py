@@ -131,7 +131,7 @@ def cmd_new_research(args) -> int:
         if gate_result.is_ready:
             print("  ✅ 数据验证通过，可以进入写作阶段")
         else:
-            print("  🔴 数据未就绪 — 禁止进入写作阶段")
+            print("  🔴 数据未就绪 — 禁止自动进入写作阶段")
             print(f"     缺失项: {len(gate_result.missing)}")
             for m in gate_result.missing:
                 print(f"       • {m}")
@@ -142,6 +142,15 @@ def cmd_new_research(args) -> int:
             print("\n     💡 解决方案:")
             print("       ① 补充数据后重新检查: python scripts/start_research.py --resume")
             print("       ② 或授权模拟数据: CLI_ACCEPT_RISK=1 python scripts/...")
+            # Bug fix 2026-07-12: prior version only PRINTED the gate result and
+            # gave users no way to interactively authorize synthetic data or skip.
+            # Now we delegate to gate.prompt_user() which offers 3 actionable
+            # choices in non-TTY / EOF-safe mode.
+            try:
+                print("\n     ── 进入交互式授权 ──")
+                gate.prompt_user()
+            except (EOFError, KeyboardInterrupt):
+                print("\n     → EOF/Ctrl-C，跳过交互 (保留 blocked.json)")
     except Exception as exc:
         print(f"  ⚠️  DataGate 检查失败: {exc}")
 
