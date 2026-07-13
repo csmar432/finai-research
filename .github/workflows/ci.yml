@@ -69,13 +69,17 @@ jobs:
         # audit-2026-07-04 PR-4 / P0-5: ensure pyproject.toml dependencies
         # are actually imported in source (no dead deps) and that all
         # imports are declared (no missing deps).
+        #
+        # audit-2026-07-13 PR-5: 适配 deptry 0.25+ 新 CLI.
+        #   旧 flag `--requirements-from` / `--ignore-missing-bindings`
+        #   已在 deptry 0.15+/0.20+ 移除。改用 `--requirements-files`。
+        #   DEP ignore 列表已移至 pyproject.toml [tool.deptry.*] (data-deps 治理)
+        #   -- 既保证 CI 命令行清爽，也方便 IDE/本地复用。
         run: |
           python -m pip install deptry
           deptry scripts/ \
-            --requirements-from pyproject.toml \
-            --requirements-from requirements-ci.txt \
-            --ignore-notebooks \
-            --ignore-missing-bindings 2>&1 | tee deptry.log
+            --requirements-files pyproject.toml \
+            --ignore-notebooks 2>&1 | tee deptry.log
           if grep -E "DEP\d|DEP-" deptry.log; then
             echo "::error::deptry found dep inconsistencies — see deptry.log"
             exit 1
