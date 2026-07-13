@@ -366,7 +366,12 @@ def call_mcp_tool(server: str, tool: str, arguments: dict,
             proc.stdin.write(json.dumps(msg) + "\n")
             proc.stdin.flush()
         proc.stdin.close()
-        time.sleep(0.5)
+        # v2.2 (2026-07-13, PR-2.3): removed the hard ``time.sleep(0.5)``.
+        # The original comment claimed to "let the MCP server start up",
+        # but in practice MCP servers respond within tens of ms once they
+        # receive the call message.  ``proc.wait(timeout=timeout)`` already
+        # blocks until the process exits, so the extra sleep just added
+        # 500ms of wall time to every MCP call.
         proc.wait(timeout=timeout)
     except Exception as exc:
         return MCPResult(success=False, error=str(exc), server=server, tool=tool,

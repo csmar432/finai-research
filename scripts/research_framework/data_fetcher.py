@@ -292,7 +292,21 @@ class DataFetcher:
 
     def __init__(self, output_dir: str | Path = "data/",
                  tracker: ProvenanceTracker | None = None,
-                 probe_delay_ms: int = 300, verbose: bool = False):
+                 probe_delay_ms: int | None = None, verbose: bool = False):
+        """Initialize the fetcher.
+
+        v2.2 (2026-07-13, PR-2.4): default probe_delay is read from the
+        ``FINAI_PROBE_DELAY_MS`` environment variable, falling back to
+        ``0`` (no extra sleep).  The previous default of 300ms multiplied
+        across N tickers × N statements added tens of seconds to every
+        batch pull.  Pass ``probe_delay_ms=300`` explicitly if you want
+        the legacy behaviour, or set ``FINAI_PROBE_DELAY_MS=300`` in the
+        environment for a session-wide override.
+        """
+        import os as _os
+        if probe_delay_ms is None:
+            env_val = _os.environ.get("FINAI_PROBE_DELAY_MS")
+            probe_delay_ms = int(env_val) if env_val else 0
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.raw_dir = self.output_dir / "raw"

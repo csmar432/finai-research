@@ -28,6 +28,7 @@ import hashlib
 import json
 import re
 import sys
+import threading
 import time
 import warnings
 from dataclasses import asdict, dataclass, field
@@ -108,9 +109,93 @@ def _arxiv_id_pattern(value: str) -> bool:
     return bool(new_re.match(value) or old_re.match(value))
 
 
-def _rate_limit(min_seconds: float = 3.0):
-    """全局速率限制。"""
-    time.sleep(min_seconds)
+# ── v2.2 (2026-07-13, PR-2.7): token-bucket rate limiter ───────────────
+# Replaces the old ``time.sleep(3.0)`` blanket which made literature pulls
+# O(papers × 3s) — i.e. ~5 minutes for 50 SS detail fetches.  The new
+# limiter honors ``X-RateLimit-Remaining`` headers when present and falls
+# back to a default 3 req/s budget otherwise.  Calls coming from the
+# data_cache layer skip the limiter entirely (the cache hit already paid
+# the cost once).
+
+_DEFAULT_BUCKET_CAPACITY = 3.0      # tokens
+_DEFAULT_BUCKET_REFILL_PER_SEC = 1.0  # tokens per second
+_bucket_lock = threading.Lock()
+_bucket_state: dict[str, tuple[float, float]] = {}
+
+
+class _TokenBucket:
+    """Simple token bucket: capacity tokens, refilled at refill_per_sec."""
+
+    __slots__ = ("capacity", "refill_per_sec", "_tokens", "_last", "_lock")
+
+    def __init__(
+        self,
+        capacity: float = _DEFAULT_BUCKET_CAPACITY,
+        refill_per_sec: float = _DEFAULT_BUCKET_REFILL_PER_SEC,
+    ):
+        self.capacity = capacity
+        self.refill_per_sec = refill_per_sec
+        self._tokens = capacity
+        self._last = time.monotonic()
+        self._lock = threading.Lock()
+
+    def acquire(self, blocking: bool = True, timeout: float | None = None) -> bool:
+        with self._lock:
+            now = time.monotonic()
+            elapsed = now - self._last
+            self._tokens = min(
+                self.capacity,
+                self._tokens + elapsed * self.refill_per_sec,
+            )
+            self._last = now
+            if self._tokens >= 1.0:
+                self._tokens -= 1.0
+                return True
+            if not blocking:
+                return False
+            wait = (1.0 - self._tokens) / self.refill_per_sec
+        time.sleep(min(wait, timeout) if timeout else wait)
+        with self._lock:
+            self._tokens = max(0.0, self._tokens - 1.0)
+            return True
+
+    def update_from_headers(self, remaining: float | None, reset_seconds: float | None) -> None:
+        """Update capacity / refill rate from a server ``X-RateLimit-*`` hint."""
+        if remaining is None:
+            return
+        with self._lock:
+            self._tokens = max(0.0, min(self.capacity, float(remaining)))
+            self._last = time.monotonic()
+
+
+_SS_BUCKET = _TokenBucket(capacity=3.0, refill_per_sec=1.0)
+_ARXIV_BUCKET = _TokenBucket(capacity=2.0, refill_per_sec=0.5)
+_OPENALEX_BUCKET = _TokenBucket(capacity=10.0, refill_per_sec=5.0)
+
+
+def _rate_limit(
+    min_seconds: float = 3.0,  # kept for backward compatibility
+    server: str = "semantic_scholar",
+    cache_hit: bool = False,
+) -> None:
+    """Backward-compatible rate limit.  v2.2: token-bucket, not sleep.
+
+    Old behaviour: ``time.sleep(min_seconds)``.  New behaviour: take one
+    token from the per-server bucket; cache hits bypass the bucket
+    entirely.  ``min_seconds`` is preserved as the *minimum* spacing
+    between requests via the bucket's ``refill_per_sec``.
+    """
+    if cache_hit:
+        return
+    if server == "semantic_scholar":
+        _SS_BUCKET.acquire()
+    elif server == "arxiv":
+        _ARXIV_BUCKET.acquire()
+    elif server == "openalex":
+        _OPENALEX_BUCKET.acquire()
+    else:
+        # Unknown server: fall back to legacy sleep behaviour.
+        time.sleep(min_seconds)
 
 
 # ── arXiv 下载 ────────────────────────────────────────────────────────────────
@@ -198,7 +283,7 @@ def search_semantic(query: str, limit: int = 20) -> list[dict]:
     """搜索 Semantic Scholar。"""
     if not _REQUESTS_AVAILABLE:
         return []
-    _rate_limit()
+    _rate_limit(server="semantic_scholar")
     try:
         resp = requests.get(
             f"{_SS_BASE}/paper/search",
@@ -226,7 +311,7 @@ def get_semantic_details(paper_id: str) -> dict | None:
     """获取论文详情。"""
     if not _REQUESTS_AVAILABLE:
         return None
-    _rate_limit()
+    _rate_limit(server="semantic_scholar")
     try:
         resp = requests.get(
             f"{_SS_BASE}/paper/{paper_id}",
@@ -311,7 +396,7 @@ def download_batch(
             arxiv_id = _normalize_arxiv_id(str(paper["pdf_url"]))
 
         if arxiv_id and "arxiv" in sources:
-            _rate_limit(delay)
+            _rate_limit(delay, server="arxiv")
             r = download_arxiv_pdf(arxiv_id, output_dir)
             r.title = paper.get("title", r.title)
             r.authors = paper.get("authors", r.authors)
@@ -323,7 +408,7 @@ def download_batch(
             records.append(r)
         elif paper.get("pdf_url"):
             # 通用 PDF 下载
-            _rate_limit(delay)
+            _rate_limit(delay, server="openalex")
             dest = Path(output_dir) / f"{record.paper_id.replace('/','_')}.pdf"
             try:
                 resp = requests.get(paper["pdf_url"], timeout=60, stream=True)

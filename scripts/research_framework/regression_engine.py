@@ -74,12 +74,35 @@ Examples 段对应 Issue #22 — 为 5 个核心计量模块添加可独立运�
 from __future__ import annotations
 
 import logging
+from collections import OrderedDict
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from scipy import stats
+
+
+# ── v2.2 (2026-07-13, PR-2.5): cache container for OLS baseline objects ──
+@dataclass
+class _BaselineCacheEntry:
+    """Cached artefacts for one (y_var, x_vars, FE) baseline fit.
+
+    ``XtX_inv`` and ``residuals`` together are sufficient to recompute
+    cluster-robust SEs without re-fitting the design matrix, so callers
+    (e.g. RobustnessRunner) can amortise the OLS fit across the
+    robustness sweep.
+    """
+    X: np.ndarray
+    y: np.ndarray
+    params: np.ndarray
+    residuals: np.ndarray
+    XtX_inv: np.ndarray
+    xnames: list[str]
+    n_obs: int
+    r2: float
+
 
 _log = logging.getLogger(__name__)
 
@@ -169,6 +192,36 @@ class RegressionEngine:
         self._warnings: list[str] = []
         self.strict_no_simulated = strict_no_simulated
 
+        # ── v2.2 (2026-07-13, PR-2.5): cache nunique() calls so that the
+        # repeated did() invocations during a robustness sweep don't
+        # re-scan the full DataFrame every time.  These are O(N) over the
+        # panel and were being executed 4-16× per robustness run.
+        try:
+            self._n_firms = (
+                int(self.df[self.firm_col].nunique())
+                if self.firm_col in self.df.columns
+                else 0
+            )
+        except Exception:  # noqa: S110
+            self._n_firms = 0
+        try:
+            self._n_periods = (
+                int(self.df[self.year_col].nunique())
+                if self.year_col in self.df.columns
+                else 0
+            )
+        except Exception:  # noqa: S110
+            self._n_periods = 0
+
+        # ── v2.2 (2026-07-13, PR-2.5): LRU cache of OLS baseline objects
+        # so that robustness sweeps sharing (y_var, x_vars, FE flags) do
+        # not refit the design matrix from scratch.  The cache key omits
+        # ``df`` identity — instead we hash the column-name list — and
+        # callers needing ``XtX``/``residuals``/``groups`` for cluster SE
+        # can pull them straight from this cache.
+        self._baseline_cache: "OrderedDict[tuple, _BaselineCacheEntry]" = OrderedDict()
+        self._baseline_cache_size = 32
+
         # ── P2-QUAL-2: DRY-consolidated simulated data integrity check ─────
         # Extracted from duplicate blocks (audit fix 2026-06-24).
         # Scans df.attrs / column metadata for is_simulated=True flags.
@@ -222,10 +275,12 @@ class RegressionEngine:
         """Check if the regression has sufficient DOF. Returns diagnostic dict."""
         n_reg = len(x_vars)
         n_fe = 0
+        # v2.2 (2026-07-13, PR-2.5): use cached nunique() values to avoid
+        # repeated O(N) scans of the panel.
         if has_firm_fe and self.firm_col in self.df.columns:
-            n_fe += self.df[self.firm_col].nunique() - 1
+            n_fe += max(0, getattr(self, "_n_firms", 0) - 1)
         if has_year_fe and self.year_col in self.df.columns:
-            n_fe += self.df[self.year_col].nunique() - 1
+            n_fe += max(0, getattr(self, "_n_periods", 0) - 1)
         n_params = n_reg + n_fe
         residual_df = max(0, n_obs - n_params)
         min_df = 10
@@ -507,8 +562,9 @@ class RegressionEngine:
         n_reg = len(x_vars_for_dof)
 
         def _did_fe_drop(n_obs, n_reg, has_firm, has_year):
-            f_fe = (self.df[self.firm_col].nunique() - 1) if has_firm and self.firm_col in self.df.columns else 0
-            y_fe = (self.df[self.year_col].nunique() - 1) if has_year and self.year_col in self.df.columns else 0
+            # v2.2 (2026-07-13, PR-2.5): use cached nunique.
+            f_fe = (getattr(self, "_n_firms", 0) - 1) if has_firm and self.firm_col in self.df.columns else 0
+            y_fe = (getattr(self, "_n_periods", 0) - 1) if has_year and self.year_col in self.df.columns else 0
             if n_obs - (n_reg + f_fe + y_fe) >= 10:
                 return True, True, "both FEs"
             if has_firm and n_obs - (n_reg + f_fe) >= 10:
@@ -556,9 +612,10 @@ class RegressionEngine:
         diag = {
             "n_obs": n_obs,
             "n_reg": n_reg,
+            # v2.2 (2026-07-13, PR-2.5): use cached nunique.
             "n_fe": (
-                (self.df[self.firm_col].nunique() - 1 if use_firm_fe and self.firm_col in self.df.columns else 0) +
-                (self.df[self.year_col].nunique() - 1 if use_year_fe and self.year_col in self.df.columns else 0)
+                (getattr(self, "_n_firms", 0) - 1 if use_firm_fe and self.firm_col in self.df.columns else 0) +
+                (getattr(self, "_n_periods", 0) - 1 if use_year_fe and self.year_col in self.df.columns else 0)
             ),
             "residual_df": max(0, n_obs - n_reg),
             "is_valid": True,
@@ -701,8 +758,9 @@ class RegressionEngine:
 
         def _fe_drop_dof(n_obs, n_reg, has_firm, has_year):
             """Test if combined FEs are affordable, then try each selectively."""
-            f_fe = (self.df[self.firm_col].nunique() - 1) if has_firm and self.firm_col in self.df.columns else 0
-            y_fe = (self.df[self.year_col].nunique() - 1) if has_year and self.year_col in self.df.columns else 0
+            # v2.2 (2026-07-13, PR-2.5): use cached nunique.
+            f_fe = (getattr(self, "_n_firms", 0) - 1) if has_firm and self.firm_col in self.df.columns else 0
+            y_fe = (getattr(self, "_n_periods", 0) - 1) if has_year and self.year_col in self.df.columns else 0
             # Try no FE
             if n_obs - n_reg >= 10:
                 return False, False, "pooled OLS (N≥10)"
@@ -778,9 +836,10 @@ class RegressionEngine:
             diag = {
                 "n_obs": n_obs,
                 "n_reg": len(x_vars),
+                # v2.2 (2026-07-13, PR-2.5): use cached nunique.
                 "n_fe": (
-                    (self.df[self.firm_col].nunique() - 1 if use_firm_fe and self.firm_col in self.df.columns else 0) +
-                    (self.df[self.year_col].nunique() - 1 if use_year_fe and self.year_col in self.df.columns else 0)
+                    (getattr(self, "_n_firms", 0) - 1 if use_firm_fe and self.firm_col in self.df.columns else 0) +
+                    (getattr(self, "_n_periods", 0) - 1 if use_year_fe and self.year_col in self.df.columns else 0)
                 ),
                 "residual_df": max(0, n_obs - len(x_vars)),
                 "is_valid": True,
@@ -809,9 +868,10 @@ class RegressionEngine:
         diag = {
             "n_obs": n_obs,
             "n_reg": len(x_vars),
+            # v2.2 (2026-07-13, PR-2.5): use cached nunique.
             "n_fe": (
-                (self.df[self.firm_col].nunique() - 1 if use_firm and self.firm_col in self.df.columns else 0) +
-                (self.df[self.year_col].nunique() - 1 if use_year and self.year_col in self.df.columns else 0)
+                (getattr(self, "_n_firms", 0) - 1 if use_firm and self.firm_col in self.df.columns else 0) +
+                (getattr(self, "_n_periods", 0) - 1 if use_year and self.year_col in self.df.columns else 0)
             ),
             "residual_df": max(0, n_obs - len(x_vars)),
             "is_valid": True,

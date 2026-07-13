@@ -429,8 +429,23 @@ class RobustnessRunner:
             }
 
         try:
-            import hashlib
-            df_token = id(df)
+            # v2.2 (2026-07-13, PR-2.6): content-based fingerprint instead of
+            # id(df).  ``id()`` is the in-memory object address which (a)
+            # changes on every DataFrame.copy() and (b) may alias after GC
+            # to a different DataFrame — both caused silent stale-result
+            # bugs in robustness sweeps.
+            #
+            # Head-limit protects against huge panels; the first 200K rows
+            # is enough to fingerprint any real research dataset.
+            try:
+                df_token = hashlib.sha256(
+                    pd.util.hash_pandas_object(
+                        df.head(200_000), index=False
+                    ).values.tobytes()
+                ).hexdigest()[:16]
+            except Exception:
+                # Fallback to id() if hashing fails (e.g. non-hashable columns)
+                df_token = f"id-{id(df)}"
             # MD5 is used purely as a deterministic cache-key fingerprint
             # (NOT for security). Bandit B324 flags it; explicitly opt out.
             kw_token = hashlib.md5(  # nosec B324

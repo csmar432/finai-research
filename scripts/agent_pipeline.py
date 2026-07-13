@@ -1723,8 +1723,11 @@ class AgentPipeline:
                 pass
 
         # ── 首次运行配置检测 ────────────────────────────────────────────────
+        # v2.2 (2026-07-13, PR-2.2): reuse the same ``diag`` we already
+        # computed earlier in run() so the second health probe in
+        # _check_and_suggest_setup doesn't re-run network checks.
         topic_for_check = (topic or self.config.topic or "")
-        ir = self._check_and_suggest_setup(topic_for_check)
+        ir = self._check_and_suggest_setup(topic_for_check, diag=diag)
 
         # 仅在交互式终端中调用 input()（Cursor IDE）
         # Claude Code / Codex 等 AI agent 环境：返回 InteractionResult，
@@ -2215,7 +2218,11 @@ class AgentPipeline:
 
         return False
 
-    def _check_and_suggest_setup(self, topic: str = "") -> InteractionResult:
+    def _check_and_suggest_setup(
+        self,
+        topic: str = "",
+        diag=None,
+    ) -> InteractionResult:
         """系统健康检查 + 交互准备。
 
         诊断并返回 InteractionResult 对象，供调用方决定如何与用户交互：
@@ -2223,6 +2230,16 @@ class AgentPipeline:
           - AI agent（Claude Code/Codex）：读取返回值 → 在对话中询问用户
 
         不在脚本内部调用 input()，只返回结构化结果。
+
+        Parameters
+        ----------
+        topic : str
+            研究主题，仅用于打印/记录。
+        diag : optional
+            v2.2 (2026-07-13, PR-2.2) 新增：调用方可传入预先计算的
+            ``run_diagnostic()`` 结果，避免对同一进程内重复运行两次
+            健康检查（每次都做网络探测）。  当传入 ``None`` 时，本方法
+            会自己跑一次。
 
         Returns
         -------
@@ -2235,11 +2252,14 @@ class AgentPipeline:
             print("⚠️  无法导入 health_check 模块，跳过自检")
             return InteractionResult(needs_input=False, action_needed="proceed")
 
-        try:
-            result = run_diagnostic()
-        except Exception as e:
-            print(f"⚠️  健康检查执行失败: {e}，跳过自检继续运行")
-            return InteractionResult(needs_input=False, action_needed="proceed")
+        if diag is None:
+            try:
+                result = run_diagnostic()
+            except Exception as e:
+                print(f"⚠️  健康检查执行失败: {e}，跳过自检继续运行")
+                return InteractionResult(needs_input=False, action_needed="proceed")
+        else:
+            result = diag
 
         # 打印诊断报告（始终打印，用户看到状态）
         print_diagnostic(result, compact=False)

@@ -533,11 +533,39 @@ class CacheManager:
             except OSError:
                 pass
 
-    def _hash(self, content: str, model: str) -> str:
-        return hashlib.sha256(f"{model}:{content}".encode()).hexdigest()[:16]
+    def _hash(
+        self,
+        content: str,
+        model: str,
+        system: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        task: str | None = None,
+    ) -> str:
+        """Stable hash for the cache entry.
 
-    def get(self, content: str, model: str) -> str | None:
-        key = self._hash(content, model)
+        v2.2 (2026-07-13, PR-2.1): include system_prompt, temperature,
+        max_tokens, and task in the hash so different agents (or different
+        temperature regimes) cannot inadvertently share a cached response.
+        Old cache entries without these fields become unreachable and are
+        simply ignored on read (treated as cache miss).  Users may clear
+        ``~/.cache/finai-research-workflow/`` to reclaim disk.
+        """
+        parts = [model, content, system or "", str(temperature or ""),
+                 str(max_tokens or ""), task or ""]
+        payload = "|".join(parts)
+        return hashlib.sha256(payload.encode()).hexdigest()[:16]
+
+    def get(
+        self,
+        content: str,
+        model: str,
+        system: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        task: str | None = None,
+    ) -> str | None:
+        key = self._hash(content, model, system, temperature, max_tokens, task)
         if key in self._memory:
             return self._memory[key].get("response")
         cache_file = self.cache_dir / f"{key}.json"
@@ -550,12 +578,24 @@ class CacheManager:
                 return None
         return None
 
-    def set(self, content: str, model: str, response: str, task: str):
-        key = self._hash(content, model)
+    def set(
+        self,
+        content: str,
+        model: str,
+        response: str,
+        task: str,
+        system: str | None = None,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+    ):
+        key = self._hash(content, model, system, temperature, max_tokens, task)
         entry = {
             "content_hash": key,
             "model": model,
             "task": task,
+            "system_hash": hashlib.sha256((system or "").encode()).hexdigest()[:16],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
             "response": response,
             "timestamp": time.time(),
         }
@@ -1247,9 +1287,20 @@ class AIRouter:
             model_key_str = primary_keys[0].value if isinstance(primary_keys[0], ModelKey) else primary_keys[0]
 
         # Step 3：检查缓存
+        # v2.2 (2026-07-13, PR-2.1): include system_prompt / temperature /
+        # max_tokens in the cache key.  Two agents that send the same
+        # user_input but different system prompts will no longer share a
+        # cached response.
         cached_response = None
         if self.cache:
-            cached_response = self.cache.get(user_input, model_key_str)
+            cached_response = self.cache.get(
+                user_input,
+                model_key_str,
+                system=system_prompt,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                task=actual_task.value,
+            )
 
         if cached_response:
             return AIResult(
@@ -1280,7 +1331,15 @@ class AIRouter:
                 )
                 # 成功：写入缓存并返回
                 if self.cache:
-                    self.cache.set(user_input, mk_str, response, actual_task.value)
+                    self.cache.set(
+                        user_input,
+                        mk_str,
+                        response,
+                        actual_task.value,
+                        system=system_prompt,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                    )
 
                 # 获取模型显示名
                 cfg = self._pool.get(mk) if isinstance(mk, ModelKey) else None
