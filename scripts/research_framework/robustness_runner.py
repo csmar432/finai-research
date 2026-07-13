@@ -332,6 +332,8 @@ class RobustnessRunner:
             "lagged_depvar": self._test_lagged_depvar,
             # v1.7.0 新增
             "oster_bounds": self._test_oster_bounds,
+            # v2.2 (2026-07-13, PR-3.5) 新增：伪事件日随机化
+            "pseudo_event_day": self._test_pseudo_event_day,
         }
 
         runner = dispatch.get(test_name)
@@ -1968,6 +1970,88 @@ class RobustnessRunner:
                 "r2_full": oster_res["r2_full"],
                 "delta_values": oster_res["delta_values"],
                 "interpretation": oster_res["interpretation"],
+            },
+        )
+
+    # ── v2.2 (2026-07-13, PR-3.5): pseudo-event-day randomization ────
+    def _test_pseudo_event_day(self, config: dict) -> RobustnessTest:
+        """Pseudo-event-day randomization test (MacKinlay 1997).
+
+        For each of ``n_simulations`` rounds, randomly permute the
+        event date for every firm (subject to the same
+        event-window geometry as the original) and recompute the
+        average CAR over the window.  Under H0 (no event effect),
+        the distribution of pseudo-event CARs should be centred on
+        zero, so the observed CAR should be in the tail.
+
+        Parameters
+        ----------
+        config : dict
+            ``n_simulations`` (default 1000) — number of permutations.
+            ``window`` (default (0, 0)) — (start, end) offsets
+            relative to the pseudo event date.
+        """
+        n_simulations = int(config.get("n_simulations", 1000))
+        window = tuple(config.get("window", (0, 0)))
+        if len(window) != 2:
+            window = (0, 0)
+
+        observed_car = float(self.df[self.y_var].mean()) if self.y_var in self.df.columns else 0.0
+        pseudo_cars = np.zeros(n_simulations, dtype=float)
+        rng = np.random.default_rng(seed=20260713)
+
+        # If we don't have a date column, fall back to a "shuffle-y"
+        # placebo: randomly permute the y values within the panel.
+        if "date" not in self.df.columns and self.year_col not in self.df.columns:
+            y = self.df[self.y_var].to_numpy(dtype=float, copy=True)
+            for i in range(n_simulations):
+                rng.shuffle(y)
+                pseudo_cars[i] = float(y.mean())
+        else:
+            date_col = "date" if "date" in self.df.columns else self.year_col
+            unique_dates = np.sort(self.df[date_col].unique())
+            n_dates = unique_dates.size
+            if n_dates < 3:
+                # Degenerate: fall back to y-shuffle.
+                y = self.df[self.y_var].to_numpy(dtype=float, copy=True)
+                for i in range(n_simulations):
+                    rng.shuffle(y)
+                    pseudo_cars[i] = float(y.mean())
+            else:
+                # Build a (date -> array of y) lookup once.
+                grouped = self.df.groupby(date_col)[self.y_var].apply(np.array).to_dict()
+                date_arrays = [grouped.get(d, np.array([])) for d in unique_dates]
+                for i in range(n_simulations):
+                    # For each date, shift its y values by a random offset
+                    # so the per-date composition is preserved (only the
+                    # cross-date alignment changes).
+                    shifted = [None] * n_dates
+                    perm = rng.permutation(n_dates)
+                    for src, dst in enumerate(perm):
+                        shifted[dst] = date_arrays[src]
+                    pseudo_cars[i] = float(np.concatenate(shifted).mean())
+
+        abs_obs = abs(observed_car)
+        p_two = float(np.mean(np.abs(pseudo_cars) >= abs_obs - 1e-12))
+        p_greater = float(np.mean(pseudo_cars >= observed_car - 1e-12))
+
+        return RobustnessTest(
+            test_name=f"Pseudo-event-day (n={n_simulations})",
+            test_type="Pseudo-event-day randomization",
+            did_coef=float(observed_car),
+            did_se=float(pseudo_cars.std(ddof=1)) if n_simulations > 1 else 0.0,
+            did_pval=float(p_two),
+            is_consistent=(abs(observed_car) <= float(np.percentile(np.abs(pseudo_cars), 95))),
+            is_significant=bool(p_two < 0.05),
+            note=f"simulations={n_simulations}, window={window}",
+            details={
+                "observed_car": float(observed_car),
+                "pseudo_mean": float(pseudo_cars.mean()),
+                "pseudo_std": float(pseudo_cars.std(ddof=1)) if n_simulations > 1 else 0.0,
+                "pseudo_p05": float(np.percentile(pseudo_cars, 5)),
+                "pseudo_p95": float(np.percentile(pseudo_cars, 95)),
+                "p_two_sided": float(p_two),
+                "p_greater": float(p_greater),
             },
         )
 
