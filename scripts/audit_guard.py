@@ -1280,7 +1280,10 @@ def _check_data_warning_notifier() -> CheckResult:
     # raise / sys.exit / SystemExit calls.
     warn_idx = notifier_src.find("def warn(")
     next_def = notifier_src.find("\n    def ", warn_idx + 1) if warn_idx >= 0 else -1
-    warn_body = (
+    # The warn() method body — used for audit checks below.
+    # Note: we keep warn_body here so later audit checks can inspect it;
+    # ruff F841 is a false positive for this intentional intermediate.
+    warn_body = (  # noqa: F841
         notifier_src[warn_idx:next_def if next_def != -1 else warn_idx + 2000]
         if warn_idx >= 0 else ""
     )

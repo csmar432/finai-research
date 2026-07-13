@@ -481,11 +481,9 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
 
     # ── Ollama 本地模型（v2.1: 无需 API Key）────────────────────────────────
     # 不读 .env，只查 ollama 是否在本地 11434 运行。
-    ollama_ok = False
     try:
         ok, msg = _probe_url("http://127.0.0.1:11434/api/tags", timeout=3)
         if ok:
-            ollama_ok = True
             available.append("Ollama (本地 ✅)")
         else:
             problems.append(ProblemItem(
