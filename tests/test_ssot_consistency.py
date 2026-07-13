@@ -26,6 +26,7 @@ def test_sync_ssot_works():
         "TMPDIR": os.environ.get("TMPDIR", "/tmp"),
         "SHELL": os.environ.get("SHELL", "/bin/zsh"),
         "USER": os.environ.get("USER", ""),
+        "PYTHONPATH": str(PROJECT_ROOT),  # 让 `from scripts.count_mcp import` 工作
     }
     result = subprocess.run(
         [sys.executable, str(SCRIPT), "--sync-ssot"],
@@ -115,6 +116,7 @@ def test_sync_apply_no_markdown_bold_breakage():
     env.setdefault("LANG", "C.UTF-8")
     env.setdefault("LC_ALL", "C.UTF-8")
     env.setdefault("PYTHONIOENCODING", "utf-8")
+    env["PYTHONPATH"] = str(PROJECT_ROOT) + os.pathsep + env.get("PYTHONPATH", "")
     result = subprocess.run(
         [sys.executable, "scripts/sync_numbers.py", "--apply"],
         capture_output=True, text=True, timeout=30,
