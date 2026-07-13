@@ -84,7 +84,7 @@ def _get_gh_token() -> str | None:
         )
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.strip()
-    except (FileNotFoundError, subprocess.TimeoutExpired, Exception):
+    except (FileNotFoundError, subprocess.TimeoutExpired, Exception):  # noqa: S110
         pass
     return None
 

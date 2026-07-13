@@ -949,7 +949,8 @@ def _hitl_pause(stage_id: str, summary: str, options: list[tuple[str, str]] | No
                 "choice": chosen_id,
                 "summary_excerpt": summary[:200],
             }, ensure_ascii=False) + "\n")
-    except Exception:  # log failures must not break pipeline
+    except Exception:  # noqa: S110
+        # log failures must not break pipeline
         pass
 
     if chosen_id == "abort":

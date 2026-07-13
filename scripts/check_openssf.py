@@ -74,7 +74,7 @@ def _count_tests() -> int:
         try:
             text = path.read_text(encoding="utf-8")
             cnt += len(re.findall(r"^\s*def\s+test_", text, re.MULTILINE))
-        except Exception:
+        except Exception:  # noqa: S110
             pass
     return cnt
 

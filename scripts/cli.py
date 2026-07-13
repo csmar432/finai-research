@@ -48,7 +48,7 @@ def _read_pyproject_version() -> str:
                 v = data.get("project", {}).get("version")
                 if v:
                     return str(v)
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     # Regex fallback (works on any pyproject.toml without tomllib)
@@ -62,7 +62,7 @@ def _read_pyproject_version() -> str:
             m = re.search(r'^version\s*=\s*"([^"]+)"', text, re.MULTILINE)
             if m:
                 return m.group(1)
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     # importlib.metadata fallback (when installed via pip)
@@ -70,7 +70,7 @@ def _read_pyproject_version() -> str:
         from importlib.metadata import version as _v
 
         return _v("finai-research-workflow")
-    except Exception:
+    except Exception:  # noqa: S110
         pass
 
     return "0.0.0+unknown"
