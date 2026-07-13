@@ -86,13 +86,18 @@ _TASK_TEMPLATE_MAP: dict[str, dict[str, str]] = {
 
 @dataclass
 class MockResult:
-    """MockTemplateEngine 的输出。"""
+    """MockTemplateEngine 的输出。
+
+    v2.2 (2026-07-13) 增加 ``is_mock`` 字段，供下游 agent_pipeline.py
+    检测并阻止写入有效输出目录（避免占位文本被误当作真结果使用）。
+    """
     content: str
     latency_ms: float
     model: str = "mock_template"
     provider: str = "template"
     tokens_used: int = 0
     error: str | None = None
+    is_mock: bool = True
 
 
 # ─── Main Class ───────────────────────────────────────────────────────────────

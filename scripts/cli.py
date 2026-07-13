@@ -15,6 +15,7 @@ FinAI Research Workflow · CLI 入口
   - 出错时给出修复建议
 """
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -160,22 +161,102 @@ def main() -> int:
     return handler(args)
 
 
-def pipeline_cmd_wrapper() -> int:
-    """finai-pipeline 入口：打印提示并退出（避免误触发 LLM）。"""
-    print("🚀 FinAI Research Workflow · 流水线")
-    print()
-    print("ℹ️  LLM 配置是可选的：")
-    print("   1. 在 Cursor/Claude Code/Codex 等 host agent 中运行时，host agent 本身提供 LLM")
-    print("   2. CLI 进程无法直接调 host agent LLM —— 缺少 key 时降级到 MockTemplateEngine")
-    print("   3. 推荐配置 .env 中的 DEEPSEEK_API_KEY / RELAY_API_KEY 以获得真 LLM 输出")
-    print("   4. 或运行 `ollama serve` 启用本地模型")
-    print()
-    print("实际启动：")
-    print("   python scripts/agent_pipeline.py --topic '你的研究主题'")
-    print()
-    print("或交互式：")
-    print("   python scripts/agent_pipeline.py --interactive")
-    return 0
+def pipeline_cmd_wrapper(argv: list[str] | None = None) -> int:
+    """``finai-pipeline`` 入口：解析 ``--topic`` 等参数并启动流水线。
+
+    这是从 PyPI wheel 安装后的主要入口路径。优先级：
+
+    1. 如果传入了 ``--topic`` 等参数（或者在 wheel 安装后用户直接运行
+       ``finai-pipeline --topic "..."``），调用 ``agent_pipeline.main()``。
+    2. 如果没有参数但 ``sys.stdin`` 是 TTY（用户在 shell 里直接敲了
+       ``finai-pipeline`` 而忘了加参数），打印友好的使用提示并退出 0。
+    3. 如果没有参数且 stdin 不是 TTY（例如脚本里调用），按空 topic 调用
+       ``agent_pipeline.main()``，让它走交互模式。
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="finai-pipeline",
+        description="FinAI Research Workflow · 流水线入口（PyPI wheel 推荐调用）",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "示例:\n"
+            "  finai-pipeline --topic '碳排放权交易与企业绿色创新'\n"
+            "  finai-pipeline --topic 'CBAM 信息类型与高碳企业市场重估' --venue JFE\n"
+            "  finai-pipeline --help\n"
+        ),
+    )
+    parser.add_argument("--topic", help="研究主题")
+    parser.add_argument(
+        "--venue",
+        "--journal",
+        dest="venue",
+        default="经济研究",
+        choices=["经济研究", "金融研究", "管理世界", "JF", "JFE", "RFS", "JAE"],
+        help="目标期刊",
+    )
+    parser.add_argument("--langgraph", action="store_true", help="使用 LangGraph 编排")
+    parser.add_argument("--use-hitl", action="store_true", help="启用人工干预检查点")
+    parser.add_argument("--language", choices=["zh", "en"], default="zh", help="输出语言")
+    parser.add_argument("--output-dir", default="./output", help="输出目录")
+    parser.add_argument("--novelty-check", action="store_true", help="强制做新颖性检查")
+    parser.add_argument(
+        "--skip-health",
+        action="store_true",
+        help="跳过启动时的健康检查（已通过 finai-doctor 验证时使用）",
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="交互模式（即使 --topic 为空也启动）",
+    )
+    parser.add_argument(
+        "--strict-llm",
+        action="store_true",
+        help="无 LLM 时直接退出码 4（默认行为；保留参数以兼容旧脚本）",
+    )
+
+    args = parser.parse_args(argv)
+
+    if not args.topic and not args.interactive:
+        # 用户忘了加参数：提示一下再退出。
+        print("🚀 FinAI Research Workflow · 流水线")
+        print()
+        print("ℹ️  用法：finai-pipeline --topic '<研究主题>'")
+        print()
+        print("示例：")
+        print("  finai-pipeline --topic '碳排放权交易与企业绿色创新'")
+        print("  finai-pipeline --topic 'CBAM 信息类型与高碳企业市场重估' --venue JFE")
+        print()
+        print("💡 首次使用请先运行 `finai-doctor` 检查环境。")
+        return 0
+
+    # 委托给真正的流水线入口
+    try:
+        from scripts.agent_pipeline import main as pipeline_main
+    except ImportError as exc:  # pragma: no cover - 极端情况
+        print(f"❌ 无法导入 scripts.agent_pipeline: {exc}", file=sys.stderr)
+        print("   请确认 finai-research-workflow 已正确安装。", file=sys.stderr)
+        return 2
+
+    forwarded = [
+        "--topic", args.topic,
+        "--venue", args.venue,
+        "--language", args.language,
+        "--output-dir", args.output_dir,
+    ]
+    if args.langgraph:
+        forwarded.append("--langgraph")
+    if args.use_hitl:
+        forwarded.append("--use-hitl")
+    if args.novelty_check:
+        forwarded.append("--novelty-check")
+    if args.skip_health:
+        forwarded.append("--skip-health")
+    if args.interactive:
+        forwarded.append("--interactive")
+
+    return pipeline_main(forwarded)
 
 
 def pipeline_cmd(args) -> int:
@@ -261,6 +342,150 @@ def version_cmd(args=None) -> int:
     print(f"Python: {sys.version.split()[0]}")
     print(f"平台: {sys.platform}")
     return 0
+
+
+def doctor_cmd(argv: list[str] | None = None) -> int:
+    """``finai-doctor`` 入口：诊断环境变量、.env、llm_config.json 来源。
+
+    列出每个已知 API key 的最终解析值与来源，方便用户在"Claude 改了
+    .env 但 health-check 还是找不到"等场景下快速定位问题。
+    """
+    print("🩺 FinAI Doctor · 环境诊断\n")
+
+    # 1. 项目根解析
+    try:
+        from scripts.core.paths import resolve_project_root, env_path, find_env_file
+
+        root = resolve_project_root()
+        print(f"📁 项目根目录: {root}")
+    except Exception as exc:  # pragma: no cover
+        print(f"❌ 无法解析项目根目录: {exc}")
+        return 2
+
+    # 2. .env 文件查找
+    print("\n📄 .env 文件查找：")
+    for name in (".env", ".env.local"):
+        path = find_env_file(name)
+        if path:
+            print(f"  ✅ {name}: {path}")
+        else:
+            print(f"  ⚪ {name}: 未找到")
+
+    # 3. 关键 API key 来源追踪
+    print("\n🔑 关键 API key 来源追踪：")
+    keys = [
+        "DEEPSEEK_API_KEY",
+        "RELAY_API_KEY",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "TUSHARE_TOKEN",
+        "EODHD_API_KEY",
+        "FRED_API_KEY",
+        "BRAVE_SEARCH_API_KEY",
+        "NEWSAPI_API_KEY",
+        "E2B_API_KEY",
+    ]
+    from scripts.core.paths import find_env_file as _fef
+
+    for key in keys:
+        sources = []
+        # os.environ
+        env_val = os.environ.get(key, "")
+        if env_val:
+            sources.append(("os.environ", _mask(env_val)))
+        # .env.local
+        for env_name in (".env.local", ".env"):
+            env_path_obj = _fef(env_name)
+            if env_path_obj:
+                dot_val = _read_dotenv_value(env_path_obj, key)
+                if dot_val:
+                    sources.append((env_name, _mask(dot_val)))
+        # config/llm_config.json
+        llm_cfg = root / "config" / "llm_config.json"
+        cfg_val = _read_llm_config_value(llm_cfg, key) if llm_cfg.is_file() else ""
+        if cfg_val and not cfg_val.startswith("$"):
+            sources.append(("config/llm_config.json", _mask(cfg_val)))
+
+        if sources:
+            line = "  ✅ " + key + "："
+            line += " | ".join(f"{src}={val}" for src, val in sources)
+            print(line)
+        else:
+            print(f"  ⚪ {key}: 未设置")
+
+    # 4. LLM 路由就绪状态
+    print("\n🤖 LLM 路由就绪状态：")
+    try:
+        from scripts.ai_router import AI  # noqa: F401
+
+        ai = AI()
+        status = ai.status() if hasattr(ai, "status") else "unknown"
+        if isinstance(status, dict):
+            available = [k for k, v in status.items() if v]
+            print(f"  可用模型: {available or '无'}")
+        else:
+            print(f"  AI.status() 返回: {status}")
+    except Exception as exc:
+        print(f"  ⚠️  AI router 初始化失败: {exc}")
+
+    # 5. 总结与建议
+    print("\n📋 总结：")
+    has_deepseek = False
+    for src in (".env", ".env.local"):
+        env_path_obj = _fef(src)
+        if env_path_obj and _read_dotenv_value(env_path_obj, "DEEPSEEK_API_KEY"):
+            has_deepseek = True
+            break
+    if not has_deepseek and os.environ.get("DEEPSEEK_API_KEY"):
+        has_deepseek = True
+    if has_deepseek:
+        print("  ✅ 已检测到 LLM 配置。可运行 finai-pipeline --topic '...' 启动流水线。")
+        return 0
+    print("  ⚠️  未检测到 LLM 配置。建议：")
+    print("     1. 创建 .env 并写入 DEEPSEEK_API_KEY=sk-...")
+    print("     2. 或运行 `ollama serve` 启用本地模型")
+    print("     3. 详见 INSTALL.md")
+    return 4
+
+
+def _mask(value: str, head: int = 4, tail: int = 4) -> str:
+    """部分掩码 API key。"""
+    if not value or len(value) <= head + tail + 3:
+        return "***"
+    return f"{value[:head]}...{value[-tail:]}"
+
+
+def _read_dotenv_value(env_path, key: str) -> str:
+    """从 .env 文件读取指定 key 的值（不解析为环境变量）。"""
+    try:
+        for raw in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k = k.strip()
+            v = v.strip().strip('"').strip("'")
+            if k == key:
+                return v
+    except Exception:  # noqa: S110
+        pass
+    return ""
+
+
+def _read_llm_config_value(json_path, key: str) -> str:
+    """从 config/llm_config.json 读取与 key 对应的 provider 的 api_key。"""
+    try:
+        import json
+
+        data = json.loads(json_path.read_text(encoding="utf-8"))
+        # key 形如 DEEPSEEK_API_KEY，映射到 deepseek.api_key
+        provider = key.replace("_API_KEY", "").replace("_TOKEN", "").lower()
+        provider_cfg = data.get(provider, {})
+        return str(provider_cfg.get("api_key", "") or "")
+    except Exception:  # noqa: S110
+        return ""
 
 
 if __name__ == "__main__":

@@ -1582,6 +1582,9 @@ class AgentPipeline:
         #   3. MockTemplateEngine 仍可生成结构化草稿，至少让 pipeline 跑通落盘
         # 新行为：降级到 MockTemplateEngine，stderr 显式 [LLM FALLBACK] 提示，
         #         绝不静默退化（CLAUDE.md 核心原则 #3）。
+        #
+        # v2.2 (2026-07-13): 新增 --strict-llm 行为：未配置 LLM 时直接退出码 4，
+        # 不再静默跑 MockTemplateEngine 并落盘占位文件（PR-1.4）。
         from scripts.health_check import run_diagnostic
         try:
             diag = run_diagnostic()
@@ -1596,15 +1599,32 @@ class AgentPipeline:
                 if diag is None or not diag.llm_status
                 else f"原因：{diag.llm_status[:200]}"
             )
+            # 严格模式（默认开启）下，直接退出 4，避免下游脚本误读 mock 输出。
+            _strict = bool(getattr(self.config, "strict_llm", True))
+            if _strict:
+                print(
+                    "\n⚠️  [LLM FALLBACK] 未配置 LLM，严格模式下退出。\n"
+                    "    \n"
+                    f"    诊断：{_reason}\n"
+                    "    \n"
+                    "    解决方式（任选其一）：\n"
+                    "      1. 在 .env 写入 DEEPSEEK_API_KEY=sk-...\n"
+                    "      2. 运行 `ollama serve` 启用本地模型\n"
+                    "      3. 临时绕过：finai-pipeline --topic '...' （不要加 --strict-llm 关闭；\n"
+                    "         当前已默认开启，不需显式传）\n"
+                    "    \n"
+                    "    说明：Cursor / Claude Code / Codex 等 host agent 本身有 LLM，但 CLI\n"
+                    "    进程无法直接调用它。如需在 host agent 中跑 pipeline，请通过 MCP\n"
+                    "    反向调用或 host agent 端补全 LLM 反馈。\n",
+                    file=_sys.stderr,
+                )
+                return 4
             print(
                 "\n⚠️  [LLM FALLBACK] 本次 pipeline 将降级到 MockTemplateEngine。\n"
                 "    产出物仍可落盘到 output/papers/，但内容是模板（带 [MOCK] 前缀），\n"
                 "    不是真实 LLM 生成。请配置 DEEPSEEK_API_KEY 或运行 `ollama serve`\n"
                 "    后重跑以获得真 LLM 输出。\n"
-                f"    诊断：{_reason}\n"
-                "    说明：如果你正在 Cursor / Claude Code / Codex 等 host agent 中\n"
-                "    运行，host agent 本身有 LLM，但 CLI 进程无法直接调用它——\n"
-                "    需要通过 MCP 反向调用或 host agent 端补全 LLM 反馈。\n",
+                f"    诊断：{_reason}\n",
                 file=_sys.stderr,
             )
 
@@ -1733,6 +1753,10 @@ class AgentPipeline:
         # ── P1-3: 方向锁定 — 读取 REFINED_DESIGN.md 作为全局 anchor ─────────────
         # 如果存在 REFINED_DESIGN.md，则将其内容注入 input_data 传递给所有阶段，
         # 防止各阶段独立生成不同方向的内容（两 AI 漂移问题）。
+        #
+        # v2.2 (2026-07-13): 跳过 ``output/_mock/REFINED_DESIGN.md`` —
+        # MockTemplateEngine 在无 LLM 时也会写一份占位设计文档到 ``output/``，
+        # 该占位文本不能被当作真实方向锁定（PR-1.4 修复静默失效）。
         _direction_lock: dict = {}
         _design_paths = [
             Path("output/REFINED_DESIGN.md"),
@@ -1741,9 +1765,21 @@ class AgentPipeline:
         ]
         for _dp in _design_paths:
             if _dp and _dp.exists():
+                # Skip mock placeholder design files
+                if "_mock" in str(_dp):
+                    continue
                 try:
                     _text = _dp.read_text(encoding="utf-8")
                     if len(_text) > 100:
+                        # Avoid loading a mock-template placeholder as a real
+                        # direction lock. The Mock engine tags all content
+                        # with `[MOCK —`; refuse to lock on that.
+                        if "[MOCK —" in _text or "[MOCK]" in _text:
+                            import logging as _dl_log
+                            _dl_log.getLogger("agent_pipeline").info(
+                                "Skipping mock-tagged design file: %s", _dp
+                            )
+                            continue
                         _direction_lock = {"REFINED_DESIGN": _text, "_design_path": str(_dp)}
                         import logging as _dl_log
                         _dl_log.getLogger("agent_pipeline").info(
@@ -2818,7 +2854,14 @@ class AgentPipeline:
 # ─── CLI Entry Point ────────────────────────────────────────────────────────────
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
+    """Entry point used by ``finai-pipeline`` and ``python -m scripts.agent_pipeline``.
+
+    Returns the process exit code (0 = success, 1 = partial failure,
+    2 = bad CLI args, 4 = no LLM in strict mode).  Defined as a function so
+    that ``scripts.cli:pipeline_cmd_wrapper`` can programmatically invoke it
+    from a PyPI-wheel install.
+    """
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -2871,6 +2914,20 @@ Examples:
         "--report-path", type=str, default=None,
         help="When --novelty-check is set, override the output path (default: <output-dir>/NOVELTY_REPORT.md).",
     )
+    parser.add_argument(
+        "--strict-llm",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "默认开启：未配置 LLM 时直接退出码 4（避免静默跑 MockTemplateEngine 并落盘占位文件）。"
+            "用 --no-strict-llm 关闭，回归到 MockTemplateEngine 降级行为。"
+        ),
+    )
+    parser.add_argument(
+        "--skip-health",
+        action="store_true",
+        help="跳过启动时的健康检查（已通过 finai-doctor 验证时使用）。",
+    )
 
     args = parser.parse_args()
 
@@ -2878,7 +2935,7 @@ Examples:
     if args.novelty_check:
         if not args.topic:
             print("ERROR: --novelty-check requires --topic", file=sys.stderr)
-            raise SystemExit(2)
+            return 2
         from scripts.core.evolution_gate import NoveltyGate  # local import to keep cold-start fast
         gate = NoveltyGate()
         result = gate.evaluate({"ideas": [args.topic]})
@@ -2912,13 +2969,18 @@ Examples:
         Path(report_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(f"✅ Novelty report written: {report_path}")
         print(f"   passed={result.passed}  score={result.score:.2f}")
-        raise SystemExit(0 if result.passed else 1)
+        return 0 if result.passed else 1
 
     config = AgentPipelineConfig(topic=args.topic or "")
     if args.venue:
         config.venue = args.venue
     if args.use_hitl:
         config.use_hitl = True
+    # v2.2 (2026-07-13): forward strict-llm/skip-health to pipeline config so
+    # PR-1.4 的 exit code 4 行为能正确触发（默认开启）。
+    config.strict_llm = bool(args.strict_llm)
+    if args.skip_health:
+        config.skip_health = True
     output_dir = args.output_dir or "output/papers/"
 
     pipeline = AgentPipeline(config=config, use_langgraph=args.langgraph)
@@ -2926,5 +2988,10 @@ Examples:
 
     if result.success:
         print("\n✅ 流水线执行完成")
-    else:
-        print("\n⚠️  流水线执行完成，但部分阶段可能失败，请检查输出")
+        return 0
+    print("\n⚠️  流水线执行完成，但部分阶段可能失败，请检查输出")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

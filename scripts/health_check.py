@@ -43,37 +43,45 @@ from typing import Optional
 
 # ── Load .env before any other module reads environment variables ─────────────
 def _find_project_root() -> Path:
-    """智能定位项目根目录。
+    """Locate the project root, working in both source-checkout and wheel layouts.
 
-    v2.1 改进（2026-07-12）：site-packages 场景。
-    当脚本被 `pip install -e .` 链接到 site-packages 时，
-    Path(__file__).parent.parent 是 site-packages 的父目录，不是项目根。
-    采用从该目录向上搜索包含 pyproject.toml / .git / .env 的最浅目录的策略。
-
-    Returns:
-        找到的项目根目录；如果找不到则退化到原 logic 的结果。
+    Delegates to :func:`scripts.core.paths.resolve_project_root`, which tries
+    ``importlib.metadata`` first (works after ``pip install``), then the cwd,
+    then an in-tree ``__file__`` walk.  Shared with ``ai_router.py`` and
+    ``agent_pipeline.py`` so the three modules agree on where ``.env`` lives.
     """
-    file_here = Path(__file__).resolve()
-    start = file_here.parent.parent  # <scripts>/..
-    if (start / "pyproject.toml").exists() or (start / ".git").exists():
+    try:
+        from scripts.core.paths import resolve_project_root
+
+        return resolve_project_root()
+    except Exception:  # pragma: no cover - extremely defensive
+        file_here = Path(__file__).resolve()
+        start = file_here.parent.parent
+        if (start / "pyproject.toml").exists() or (start / ".git").exists():
+            return start
+        cwd = Path.cwd().resolve()
+        if (cwd / "pyproject.toml").exists() or (cwd / ".git").exists() or (cwd / ".env").exists():
+            return cwd
+        cur = file_here
+        for _ in range(8):
+            cur = cur.parent
+            if (cur / "pyproject.toml").exists() or (cur / ".git").exists():
+                return cur
         return start
-    cwd = Path.cwd().resolve()
-    if (cwd / "pyproject.toml").exists() or (cwd / ".git").exists() or (cwd / ".env").exists():
-        return cwd
-    # Walk up from scripts/ looking for pyproject.toml
-    cur = file_here
-    for _ in range(8):  # max 8 levels
-        cur = cur.parent
-        if (cur / "pyproject.toml").exists() or (cur / ".git").exists():
-            return cur
-    return start  # fallback
 
 
 _PROJECT_ROOT = _find_project_root()
 try:
     from dotenv import load_dotenv
-    load_dotenv(_PROJECT_ROOT / ".env", override=False)
-    load_dotenv(_PROJECT_ROOT / ".env.local", override=True)
+    # v2.2 (2026-07-13): try both .env.local and .env in the resolved root,
+    # plus the cwd, so wheel users with .env.local in cwd still get picked up.
+    for env_name in (".env.local", ".env"):
+        candidate = _PROJECT_ROOT / env_name
+        if candidate.is_file():
+            load_dotenv(candidate, override=False)
+    cwd_env = Path.cwd().resolve() / ".env"
+    if cwd_env.is_file():
+        load_dotenv(cwd_env, override=False)
 except ImportError:
     import logging as _dotenv_log
     _dotenv_log.warning(

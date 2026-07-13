@@ -81,7 +81,10 @@ dependencies = [
 dev = [
     "ruff>=0.1.0,<2.0",
 ]
-# extras: 装 [dev,extras] 一次拿齐所有功能
+# extras: 装 [dev,extras] 一次拿齐非 Web 功能（数据/绘图/导出/MCP 客户端）。
+# 注意：fastapi/streamlit/uvicorn 会传递依赖 PyJWT，
+# 在 Debian/Ubuntu 系统中会与 apt 管理的 python3-jwt 冲突。
+# 因此 Web 套件拆到独立的 [web] extra，默认不装。
 extras = [
     "plotly>=5.21.0,<7.0",
     "pdfplumber>=0.11.0,<2.0",
@@ -94,13 +97,19 @@ extras = [
     "mcp>=1.0.0,<99.0",
     "fastmcp>=0.1.0,<99.0",
     "duckdb>=0.9.0,<2.0",
+    "openpyxl>=3.1.0,<4.0",
+    "tenacity>=8.2.0,<10.0",
+    "tushare>=1.4.0,<2.0",
+]  # noqa: E501
+# web: Web/SSE/Dashboard 套件（含 fastapi+streamlit，会传递依赖 PyJWT）。
+# 仅在需要本地 Web UI 或 SSE 服务时安装：
+#   pip install 'finai-research-workflow[web]'
+# 不要与 apt 的 python3-fastapi / python3-jwt 共存，会触发 PEP 668。
+web = [
     "fastapi>=0.115.0,<2.0",
     "uvicorn[standard]>=0.30.0",
     "streamlit>=1.32.0,<2.0",
-    "openpyxl>=3.1.0,<4.0",
-    "tenacity>=8.2.0,<10.0",  # optional retry decorator (graceful degradation if absent)
-    "tushare>=1.4.0,<2.0",
-]  # noqa: E501
+]
 rag = [
     "chromadb>=0.4.22,<2.0",
     "faiss-cpu>=1.7.4,<2.0",
@@ -175,6 +184,9 @@ finai-test = "scripts.cli:test_cmd"
 finai-health = "scripts.cli:health_cmd"
 finai-data = "scripts.cli:data_cmd"
 finai-lit-review = "scripts.cli:lit_review_cmd"
+# 与 PyPI 包名同名的别名，方便 wheel 安装用户直接调用
+finai-research-workflow = "scripts.cli:pipeline_cmd_wrapper"
+finai-doctor = "scripts.cli:doctor_cmd"
 
 [project.urls]
 Homepage = "https://github.com/csmar432/finai-research"

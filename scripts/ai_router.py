@@ -54,7 +54,13 @@ from pathlib import Path
 
 # Bootstrap sys.path so `python scripts/ai_router.py` works
 # without requiring `pip install -e .` first.
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Use the wheel-aware resolver from scripts.core.paths so the same logic
+# works whether installed via pip or run from a source checkout.
+try:
+    from scripts.core.paths import resolve_project_root as _resolve_root
+    _PROJECT_ROOT = _resolve_root()
+except Exception:  # pragma: no cover - fallback for very early imports
+    _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
@@ -129,7 +135,10 @@ _load_secrets()
 # 常量
 # ═══════════════════════════════════════════════════════════════════════
 
-CONFIG_DIR = Path(__file__).parent.parent / "config"
+# CONFIG_DIR points at the bundled config/ directory regardless of whether
+# the package is run from a source checkout or installed via pip.
+# (scripts/ is shipped next to config/ in both layouts.)
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
 
 # ═══════════════════════════════════════════════════════════════════════
