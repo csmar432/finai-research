@@ -21,19 +21,37 @@
 ## Quick Start (30 秒上手)
 
 ```bash
-# 1. 安装 (Option A 从 PyPI 装，可选；Option B 从源码装，推荐给贡献者)
-#    pip install 'finai-research-workflow[extras]'
-git clone https://github.com/csmar432/finai-research.git && cd finai-research
-pip install -e ".[extras]"
+# ── 推荐方式：PyPI wheel 安装（首次约 60s）────────────────────────────
+# Debian/Ubuntu：先创建虚拟环境，避免与系统 Python 冲突
+python3 -m venv .venv && source .venv/bin/activate
+pip install "finai-research-workflow[extras]"
 
-# 2. 配置 LLM（DeepSeek 直连，免费）
+# 配置 LLM（DeepSeek 直连，免费）
 export DEEPSEEK_API_KEY=sk-xxxx
 
-# 3. 开始研究
+# 启动流水线（wheel 安装后的推荐入口）
+finai-pipeline --topic "Carbon trading and green innovation"
+# 或
+python -m finai.pipeline --topic "碳排放权交易与企业绿色创新"
+
+# ── 源码安装（推荐贡献者 / 想改代码的用户）────────────────────────────
+git clone https://github.com/csmar432/finai-research.git && cd finai-research
+pip install -e ".[extras]"
+export DEEPSEEK_API_KEY=sk-xxxx
 python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+
+# ── Debian/Ubuntu apt 系统 Python ─────────────────────────────────────
+# apt 的 Python 被系统管理，直接 pip install 会触发 PEP 668 冲突。
+# 解法：使用虚拟环境（见上方），或加 --break-system-packages
+pip install --break-system-packages "finai-research-workflow[extras]"
 ```
 
+> **重要提示**：缺少 `DEEPSEEK_API_KEY` 时，`finai-pipeline` 默认以退出码 4
+> 退出（严格模式），并打印明确指引。可以用 `finai-doctor` 诊断配置来源。
+
 > **PyPI:** [finai-research-workflow · 0.2.0a0](https://pypi.org/project/finai-research-workflow/) · MIT
+> · 默认安装 `pip install finai-research-workflow` 不含 fastapi/streamlit（避免 PyJWT/apt 冲突）
+> · Web 套件：`pip install 'finai-research-workflow[web]'`
 > **DOI:** [10.5281/zenodo.21262689](https://doi.org/10.5281/zenodo.21262689)
 
 ### Quick Demo

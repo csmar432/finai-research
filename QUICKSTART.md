@@ -2,6 +2,25 @@
 
 ## 只需 3 步，立刻用起来
 
+### 环境准备（重要！先看这一步）
+
+**强烈建议使用虚拟环境**，否则 Debian/Ubuntu 会报 PEP 668 冲突：
+
+```bash
+# 创建虚拟环境（只要做一次）
+python3 -m venv .venv && source .venv/bin/activate
+
+# 确认环境激活
+which python  # 应指向 .venv/bin/python
+
+# 安装（wheel 安装推荐）
+pip install "finai-research-workflow[extras]"
+```
+
+> **为什么不直接 pip install？**
+> Debian/Ubuntu 用 apt 管理系统的 Python，直接 pip install 会触发
+> "externally-managed-environment" 错误。使用虚拟环境即可解决。
+
 ### 第一步：在 Cursor 里说话
 
 所有功能通过自然语言触发，不需要记命令。

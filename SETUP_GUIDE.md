@@ -15,6 +15,31 @@
 
 ---
 
+## 0. Wheel install vs source checkout
+
+There are two supported ways to install FinAI Research Workflow, and they
+determine **where** the pipeline looks for your ``.env`` file:
+
+| Installation method | Command | Where to put ``.env`` |
+|---|---|---|
+| **PyPI wheel** (recommended for users) | ``pip install finai-research-workflow[extras]`` | Your working directory (``cwd``) |
+| **Source checkout** (for contributors) | ``git clone ... && pip install -e ".[extras]"`` | The repo root (``<checkout>/.env``) |
+
+The pipeline uses ``FINAI_PROJECT_ROOT`` / ``importlib.metadata`` / ``cwd``
+in that priority order to locate the project root.  If you install via PyPI
+and run ``finai-pipeline --topic "..."`` from a directory *other* than
+where your ``.env`` lives, set the environment variable first:
+
+```bash
+export FINAI_PROJECT_ROOT=/path/to/your/project
+finai-pipeline --topic "..."
+```
+
+The ``finai-doctor`` command (installed with the wheel) will show you
+exactly where each key is being read from.
+
+---
+
 ## 1. Environment Setup
 
 ### System Requirements
