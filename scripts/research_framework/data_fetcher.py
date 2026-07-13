@@ -195,7 +195,7 @@ def _call_mcp(server: str, tool: str, args: dict, timeout: float = 30.0) -> Any:
             server, tool,
             reason=f"调用 {server}/{tool}, 自动切 fallback (akshare/baostock/synthetic)",
         )
-    except Exception:
+    except Exception:  # noqa: S110
         # Notifier failures must never break MCP calls
         pass
 

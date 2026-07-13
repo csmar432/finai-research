@@ -521,7 +521,7 @@ def gen_05_deployment_data_flow() -> str:
             with open(_pyproject, "rb") as _f:
                 _data = tomllib.load(_f)
             _version_tag = "v" + _data.get("project", {}).get("version", "0.0.0")
-    except Exception:
+    except Exception:  # noqa: S110
         pass
     parts.append(node(dx+20, ay+490, dw-40, 70, "GitHub Releases", f"{_version_tag} 标签", COL_DATA))
 
