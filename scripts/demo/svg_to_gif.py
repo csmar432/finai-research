@@ -20,7 +20,12 @@ import re
 import math
 from pathlib import Path
 from PIL import Image
-import cairosvg
+try:
+    import cairosvg
+    _CAIRO_AVAILABLE = True
+except ImportError:
+    cairosvg = None  # type: ignore[assignment]
+    _CAIRO_AVAILABLE = False
 import io
 
 
@@ -55,6 +60,10 @@ def render_svg_to_png(svg_text: str, w: int, h: int) -> Image.Image:
 
 
 def main() -> int:
+    if not _CAIRO_AVAILABLE:
+        print("cairosvg not installed. Install with: pip install cairosvg", file=sys.stderr)
+        return 1
+
     if len(sys.argv) < 3:
         print(__doc__)
         return 1

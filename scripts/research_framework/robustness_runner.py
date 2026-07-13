@@ -431,8 +431,11 @@ class RobustnessRunner:
         try:
             import hashlib
             df_token = id(df)
-            kw_token = hashlib.md5(
-                repr(sorted(kwargs.items())).encode()
+            # MD5 is used purely as a deterministic cache-key fingerprint
+            # (NOT for security). Bandit B324 flags it; explicitly opt out.
+            kw_token = hashlib.md5(  # nosec B324
+                repr(sorted(kwargs.items())).encode(),
+                usedforsecurity=False,
             ).hexdigest()
             cache_key = (method, df_token, kw_token)
         except Exception:

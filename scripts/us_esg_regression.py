@@ -279,7 +279,6 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
     # pre-trend test power. Emit explicit warning so researchers do not interpret
     # the baseline coefficients as definitive causal estimates.
     n_post = df.loc[df["post"] == 1, "year"].nunique()
-    n_pre = df.loc[df["post"] == 0, "year"].nunique()
     if n_post < 5:
         import warnings as _w
         _w.warn(

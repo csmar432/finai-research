@@ -181,7 +181,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Cross-platform reproducibility checks")
     parser.add_argument("--check", choices=["json", "path", "datetime", "random", "all"])
     parser.add_argument("--output", default="/tmp/xplat-verify")
-    args = parser.parse_args()
+    parser.parse_args()
 
     # Bootstrap reproducible env first
     setup_reproducible_env()
