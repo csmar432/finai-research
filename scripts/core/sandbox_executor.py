@@ -375,7 +375,10 @@ class FullSandboxExecutor:
             success_file = os.path.join(sandbox_str, "success.txt")
             if os.path.exists(success_file):
                 try:
-                    with open(success_file) as f:
+                    # audit-2026-07-14 PR-6: P1-2 — explicit encoding.
+                    # Was reading cp936 on Windows which garbled UTF-8
+                    # contents, causing "flag != '1'" false negatives.
+                    with open(success_file, encoding="utf-8") as f:
                         flag = f.read().strip()
                     if flag == "1":
                         return_code = 1
@@ -460,7 +463,9 @@ except Exception as e:
     _stderr.write(_tb.format_exc())
 
 # Write success flag so the outer wrapper can detect failure
-with open({str(sandbox / "success.txt")!r}, "w") as f:
+# audit-2026-07-14 PR-6: P1-2 — explicit encoding on write side.
+# Pairs with the read side fix above.
+with open({str(sandbox / "success.txt")!r}, "w", encoding="utf-8") as f:
     f.write("0" if _exec_error is None else "1")
 
 # Restore and output

@@ -166,11 +166,14 @@ def run_checks() -> list[CheckResult]:
         f"PYTHONHASHSEED={hashseed}",
     ))
 
-    # ── 9. Locale C ────────────────────────────────────────────────────────
+    # ── 9. Locale C.UTF-8 ─────────────────────────────────────────────
+    # audit-2026-07-14 PR-6: was `C` (broken Chinese stdout).
+    # C.UTF-8 keeps the deterministic locale (no ',' decimal separator)
+    # while supporting Chinese/UTF-8 chars in stdout.
     lc_all = os.environ.get("LC_ALL", "NOT SET")
     results.append(CheckResult(
-        "LC_ALL is C (no locale-dependent formatting)",
-        lc_all == "C",
+        "LC_ALL is C.UTF-8 (deterministic + UTF-8)",
+        lc_all == "C.UTF-8",
         f"LC_ALL={lc_all}",
     ))
 

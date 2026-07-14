@@ -1637,7 +1637,9 @@ def _daemonize(log_file: str, pid_file: str):
         log_path.parent.mkdir(parents=True, exist_ok=True)
         sys.stdout.flush()
         sys.stderr.flush()
-        with open(log_path, "a") as f:
+        # audit-2026-07-14 PR-6: P2-3 — open() without encoding crashed
+        # on Windows with Chinese/UTF-8 paths (cp936 default).
+        with open(log_path, "a", encoding="utf-8") as f:
             _os.dup2(f.fileno(), 1)
             _os.dup2(f.fileno(), 2)
     else:

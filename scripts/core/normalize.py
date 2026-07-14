@@ -181,15 +181,21 @@ def setup_reproducible_env(*, seed: int = 42, verbose: bool = False) -> None:
     # 2. Hash seed for deterministic dict iteration
     os.environ.setdefault("PYTHONHASHSEED", "0")
 
-    # 3. Locale to C — avoid e.g. German ',' as decimal separator
-    os.environ.setdefault("LC_ALL", "C")
-    os.environ.setdefault("LANG", "C")
+    # 3. Locale to C.UTF-8 — avoid e.g. German ',' as decimal separator,
+    #    while still supporting Chinese/UTF-8 chars in stdout.
+    #    audit-2026-07-14 PR-6: was `LC_ALL=C` which broke Chinese stdout
+    #    on macOS (cp1252) and Windows (cp936) with UnicodeEncodeError.
+    #    C.UTF-8 keeps the deterministic locale (no ',' separator) while
+    #    making UTF-8 the default encoding everywhere.
+    os.environ.setdefault("LC_ALL", "C.UTF-8")
+    os.environ.setdefault("LANG", "C.UTF-8")
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
     # 4. Random seeds
     normalize_random_seed(seed)
 
     if verbose:
-        print(f"[normalize] Reproducible env set: seed={seed}, single-thread BLAS, LC_ALL=C")
+        print(f"[normalize] Reproducible env set: seed={seed}, single-thread BLAS, LC_ALL=C.UTF-8")
 
 
 # ── C. Documented limitations ────────────────────────────────────────────────
