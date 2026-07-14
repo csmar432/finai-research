@@ -494,7 +494,6 @@ class TestVerifyText:
     def v(self):
         return CitationVerifier()
 
-    @pytest.mark.skip(reason="score differs from test assumption")
     def test_full_structural_match(self, v):
         """Citation with year, bracket ref, and quoted title → score=0.8 (valid)."""
         text = '[1] Smith et al. (2020). "A Great Empirical Study". Journal of Finance.'
