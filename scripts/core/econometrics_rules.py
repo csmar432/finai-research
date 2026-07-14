@@ -474,8 +474,10 @@ class WeakInstrumentTest:
         try:
             # 残差对Z回归（含常数）求R²
             Z_with_const = np.column_stack([np.ones(n), Z_arr])
-            _, ssr_full, _ = np.linalg.lstsq(Z_with_const, residuals, rcond=None)[:3]
-            tss = np.sum((residuals - np.mean(residuals))**2)
+            lstsq_result = np.linalg.lstsq(Z_with_const, residuals, rcond=None)
+            # lstsq returns (x, residuals, rank, s); residuals may be empty if rank is full
+            ssr_full = float(lstsq_result[1].sum()) if len(lstsq_result[1]) > 0 else 0.0
+            tss = float(np.sum((residuals - np.mean(residuals))**2))
             r_sq = 1 - ssr_full / tss if tss > 0 else 0.0
         except np.linalg.LinAlgError:
             return {
