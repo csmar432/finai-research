@@ -355,12 +355,15 @@ class FullSandboxExecutor:
             wrapper_path = f.name
 
         try:
-            # SECURITY FIX: Use sandbox venv Python instead of host sys.executable
+            # audit-2026-07-14 comprehensive-audit: text=True without explicit
+            # encoding falls back to locale encoding, which is cp1252/gb2312 on
+            # Windows Chinese systems, garbling UTF-8 output.
             proc = subprocess.Popen(
                 [str(venv_python), wrapper_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                encoding="utf-8",
             )
             try:
                 stdout, stderr = proc.communicate(timeout=timeout + 5)
