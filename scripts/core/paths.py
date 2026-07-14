@@ -50,6 +50,14 @@ def resolve_project_root() -> Path:
 def _candidate_roots() -> list[Path | None]:
     roots: list[Path | None] = []
 
+    # 0. FINAI_PROJECT_ROOT env var (highest priority when explicitly set).
+    #    audit-fix-2026-07-14 PR-5: previously this was candidate [2] after
+    #    wheel-install, so when the package was installed in site-packages,
+    #    the env var was ignored. Tests/test_paths.py expects env var to win.
+    cwd_env = os.environ.get("FINAI_PROJECT_ROOT")
+    if cwd_env:
+        roots.append(Path(cwd_env).expanduser().resolve())
+
     # 1. Wheel / installed layout via importlib.metadata.
     try:
         from importlib import metadata
@@ -64,12 +72,8 @@ def _candidate_roots() -> list[Path | None]:
     except (metadata.PackageNotFoundError, OSError, ValueError):
         pass
 
-    # 2. CWD override (set by CLI when --project-root is given, or when
-    #    user explicitly cd's into a project).  Always cheap to add.
-    cwd_env = os.environ.get("FINAI_PROJECT_ROOT")
-    if cwd_env:
-        roots.append(Path(cwd_env).expanduser().resolve())
-    else:
+    # 2. CWD override when FINAI_PROJECT_ROOT is unset.
+    if not cwd_env:
         roots.append(Path.cwd().resolve())
 
     # 3. In-tree walk (the legacy behaviour used by scripts/<file>.py
