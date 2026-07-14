@@ -131,3 +131,67 @@ def test_ci_verify_recognizes_utf8_locale():
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-v"]))
+
+
+# ─── Additional coverage: normalize_line_endings_bytes ────────────────────────────
+
+
+def test_normalize_line_endings_bytes():
+    """normalize_line_endings_bytes() must convert CRLF/CR to LF."""
+    from scripts.core.normalize import normalize_line_endings_bytes
+
+    assert normalize_line_endings_bytes(b"hello\r\nworld\r\n") == b"hello\nworld\n"
+    assert normalize_line_endings_bytes(b"line1\rline2\rline3") == b"line1\nline2\nline3"
+    # Idempotent
+    assert normalize_line_endings_bytes(b"hello\nworld\n") == b"hello\nworld\n"
+
+
+def test_normalize_datetime_tz_naive_with_utc_flag():
+    """normalize_datetime() with tz-naive datetime + utc=True must attach UTC."""
+    from scripts.core.normalize import normalize_datetime
+    from datetime import datetime
+
+    naive = datetime(2025, 6, 15, 12, 0, 0)
+    result = normalize_datetime(naive, utc=True)
+    # Result must contain UTC offset
+    assert "+00:00" in result or "Z" in result
+
+
+def test_normalize_json_dump_file_object():
+    """normalize_json_dump() must write to a file object."""
+    import io
+    from scripts.core.normalize import normalize_json_dump
+
+    buf = io.StringIO()
+    normalize_json_dump({"key": "value"}, buf)
+    content = buf.getvalue()
+    assert '"key"' in content
+    assert "value" in content
+
+
+def test_setup_reproducible_env_verbose():
+    """setup_reproducible_env(verbose=True) must print confirmation."""
+    import io
+    from scripts.core.normalize import setup_reproducible_env
+    import contextlib
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        for k in ("LC_ALL", "LANG", "PYTHONIOENCODING"):
+            os.environ.pop(k, None)
+        setup_reproducible_env(seed=99, verbose=True)
+    output = buf.getvalue()
+    assert "normalize" in output.lower() or "seed=" in output
+
+
+def test_print_limitations():
+    """print_limitations() must print the LIMITATIONS string."""
+    import io
+    from scripts.core.normalize import print_limitations
+    import contextlib
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        print_limitations()
+    output = buf.getvalue()
+    assert "LIMITATION" in output or "byte" in output.lower()

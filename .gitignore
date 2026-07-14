@@ -309,3 +309,9 @@ PAT.md
 # scripts/core/data_warning_notifier.py. Operators may inspect/delete freely;
 # must never enter git history.
 data_warnings.jsonl
+
+# papers/finai_methodology/ — 本地 arXiv 草稿，不入仓 (comprehensive-audit 2026-07-14)
+papers/finai_methodology/
+papers/us_esg_financing/AUDIT*.md
+papers/us_esg_financing/REFINED_DESIGN.md
+

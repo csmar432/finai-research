@@ -4,10 +4,7 @@
 > 实际数字由 `python scripts/count_mcp.py` 自动扫描 `mcp_servers/user_*` 目录后写入
 > `.docs-cache/MCP_COUNT.txt`。新增/删除 MCP 目录后，跑一次该脚本即可让所有引用保持准确。
 >
-> **最新审计 (2026-07-04)**：[CI 覆盖治理审计](.archive/audit/audit-2026-07-04.md) —
-> 4 P0 / 2 P1 / 1 P2 全部完成；剩余 PR-6 推覆盖率至 60%+。
-> **Audit guard 状态**：[`scripts/audit_guard.py`](scripts/audit_guard.py) 17 checks，
-> 包括 YAML 解析、phantom dep 检测、PyPI 依赖存在性。
+> **CI 状态**：PR-1 ~ PR-7 全部 merge，16/16 CI 全绿（`3165d09`）。
 
 > 经济金融领域 AI 研究助手。生成论文草稿，集成 MCP 数据获取、因果推断、LaTeX 排版和 AI 辅助 review。
 >

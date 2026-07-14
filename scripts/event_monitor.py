@@ -823,6 +823,7 @@ def _run_demo_pipeline(topic: str, output_dir: str, event: ResearchEvent) -> dic
         cmd,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         cwd=str(Path(__file__).parent.parent),
     )
     if proc.returncode != 0:
@@ -1643,7 +1644,9 @@ def _daemonize(log_file: str, pid_file: str):
             _os.dup2(f.fileno(), 1)
             _os.dup2(f.fileno(), 2)
     else:
-        devnull = open("/dev/null", "r")
+        # audit-2026-07-14 comprehensive-audit: /dev/null is Unix-only.
+        # On Windows use os.devnull (NUL or NUL:).
+        devnull = open(os.devnull, "r")
         _os.dup2(devnull.fileno(), 1)
         _os.dup2(devnull.fileno(), 2)
 

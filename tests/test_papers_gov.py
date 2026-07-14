@@ -33,10 +33,19 @@ def test_no_demo_tex_files():
             )
 
 
-def test_refined_design_preserved():
-    """REFINED_DESIGN.md（真实设计稿）应保留。"""
-    refined = PAPERS / "us_esg_financing" / "REFINED_DESIGN.md"
-    assert refined.exists(), "us_esg_financing/REFINED_DESIGN.md 是真实设计稿，不应删"
+def test_refined_design_gitignored():
+    """REFINED_DESIGN.md must be in .gitignore (local-only, not tracked).
+
+    comprehensive-audit-2026-07-14: REFINED_DESIGN.md was removed from git history
+    because it contains sensitive research design details (variable definitions,
+    sample construction logic). It is now a local-only file protected by
+    .gitignore entry 'papers/us_esg_financing/REFINED_DESIGN.md'.
+    """
+    gitignore = (PROJECT_ROOT / ".gitignore").read_text()
+    assert "REFINED_DESIGN.md" in gitignore, (
+        "papers/us_esg_financing/REFINED_DESIGN.md is in .gitignore — "
+        "sensitive research design must not be tracked"
+    )
 
 
 def test_papers_gitignored():

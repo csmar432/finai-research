@@ -500,7 +500,7 @@ def create_runner(
         runner = create_runner(SandboxTier.MICROVM)
     """
     if tier == SandboxTier.MICROVM:
-        api_key = kwargs.get("api_key") or __import__("os").get("E2B_API_KEY")
+        api_key = kwargs.pop("api_key", None) or __import__("os").get("E2B_API_KEY")
         if api_key:
             return E2BRunner(api_key=api_key, **kwargs)
         else:

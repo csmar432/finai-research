@@ -10,14 +10,14 @@
 | 分类 | 数量 | 说明 |
 |------|------|------|
 | 🚀 Entry Points (`scripts/*.py`) | 104 | 顶级入口脚本（含 CLI） |
-| 📦 Core Modules (`scripts/core/`) | 104 | 核心库（被其他模块导入）|
+| 📦 Core Modules (`scripts/core/`) | 105 | 核心库（被其他模块导入）|
 | 📊 Research Framework (`scripts/research_framework/`) | 56 | 计量方法模块 |
 | 🧭 Research Directions (`scripts/research_directions/`) | 15 | 研究方向领域 |
-| 🧪 Tests (`tests/`) | 421 | 测试文件 |
+| 🧪 Tests (`tests/`) | 441 | 测试文件 |
 | 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
-| **合计（仅 Python 文件）** | **700** | 不含 MCP / docs / tests fixtures |
+| **合计（仅 Python 文件）** | **721** | 不含 MCP / docs / tests fixtures |
 
-> 自动生成于 2026-07-13
+> 自动生成于 2026-07-14
 ---
 
 ## 一、Entry Points · 用户入口
@@ -216,4 +216,4 @@ report_*.py           # 报告生成（小写下划线）
 
 ---
 
-*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-07-13（自动对账）
+*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-07-14（自动对账）
