@@ -35,6 +35,7 @@ class TestLoadData:
         assert len(df) >= 1
 
     def test_parquet_load(self, tmp_path):
+        pytest.importorskip("pyarrow")
         path = tmp_path / "data.parquet"
         df_orig = pd.DataFrame({"x": [1, 2, 3], "y": [4, 5, 6]})
         df_orig.to_parquet(path)
