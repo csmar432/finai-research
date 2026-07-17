@@ -53,8 +53,13 @@ class TestDataclasses:
 
 class TestFallbackChain:
     def test_init(self, dc):
-        chain = dc.FallbackChain(chain_name="data_fetch")
+        chain = dc.FallbackChain(chain_name="stock_info")
         assert chain is not None
+
+    def test_init_invalid_raises(self, dc):
+        import pytest
+        with pytest.raises(ValueError, match="Unknown chain"):
+            dc.FallbackChain(chain_name="data_fetch")  # invalid chain name
 
 
 class TestDataCache:

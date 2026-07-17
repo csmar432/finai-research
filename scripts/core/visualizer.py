@@ -704,7 +704,16 @@ class WorkflowVisualizer:
     .resizer{{width:4px;cursor:col-resize;background:var(--border);transition:background 0.15s;flex-shrink:0;}}
     .resizer:hover,.resizer.active{{background:var(--accent);}}
 
-    .detail-section{{border-radius:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);}}
+    .detail-section{{border-radius:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);transition:all 0.2s;}}
+    .detail-section:hover{{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,0.08);}}
+    .detail-section-header{{display:flex;align-items:center;gap:8px;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--border);}}
+    .collapsible{{cursor:pointer;user-select:none;}}
+    .collapsible::before{{content:"\25b8 ";transition:transform 0.2s;display:inline-block;}}
+    .collapsible.open::before{{transform:rotate(90deg);}}
+    .trace-item{{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}}
+    .trace-item:last-child{{border-bottom:none;}}
+    .error-box{{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:10px 12px;margin-top:8px;}}
+    .error-box pre{{font-size:10px;color:#dc2626;white-space:pre-wrap;word-break:break-all;margin:0;}}
     .code-block{{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto;color:var(--text);line-height:1.55;}}
 
     .badge{{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}}
@@ -999,6 +1008,13 @@ const glowMerge = defs.select("#glow-filter").append("feMerge");
 glowMerge.append("feMergeNode").attr("in","coloredBlur");
 glowMerge.append("feMergeNode").attr("in","SourceGraphic");
 
+// Glass gradient (top-to-bottom white fade)
+const glassGrad = defs.append("linearGradient").attr("id","glass-grad")
+    .attr("x1","0%").attr("y1","0%").attr("x2","0%").attr("y2","100%");
+glassGrad.append("stop").attr("offset","0%").attr("stop-color","rgba(255,255,255,0.18)").attr("stop-opacity","1");
+glassGrad.append("stop").attr("offset","55%").attr("stop-color","rgba(255,255,255,0.04)").attr("stop-opacity","1");
+glassGrad.append("stop").attr("offset","100%").attr("stop-color","rgba(255,255,255,0.00)").attr("stop-opacity","1");
+
 // Arrow marker
 defs.append("marker").attr("id","arr")
     .attr("viewBox","0 -5 10 10").attr("refX",7).attr("refY",0)
@@ -1014,6 +1030,20 @@ defs.append("marker").attr("id","arr-active")
 const zoom = d3.zoom().scaleExtent([0.1, 4]).on("zoom", e => {{ g.attr("transform", e.transform); updateMinimap(); }});
 svg.call(zoom);
 const g = svg.append("g");
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function progressArc(d) {{
+    const r = 14, cx = 24, cy = 56;
+    const frac = Math.min((d.duration_ms || 0) / Math.max(d.duration_ms || 1, 1), 1);
+    if (frac <= 0) return `M ${cx},${cy} m 0,0`;
+    const a = frac * 2 * Math.PI;
+    return `M ${cx},${cy} L ${cx + r * Math.sin(a)},${cy - r * Math.cos(a)}`;
+}}
+
+function statusLabel(s) {{
+    const map = {{"":"待执行","pending":"待执行","running":"运行中","approved":"已批准","completed":"已完成","error":"失败","max_iterations":"达到上限"}};
+    return map[s] || s || "待执行";
+}}
 
 // ── Layout Computation ────────────────────────────────────────────────────────
 function computeLayout() {{
@@ -1063,12 +1093,18 @@ LINKS.forEach(l => {{
         d = `M${{s.x}},${{s.y}} C${{s.x}},${{my}} ${{t.x}},${{my}} ${{t.x}},${{t.y}}`;
     }}
 
-    edgeG.append("path").attr("class", "link-edge")
+    const ep = edgeG.append("path").attr("class", "link-edge")
         .attr("d", d).attr("stroke", l.color || "var(--border)")
         .attr("stroke-width", l.style === "dashed" ? 1.5 : 2)
-        .attr("stroke-dasharray", l.style === "dashed" ? "6,4" : "none")
+        .attr("stroke-dasharray", l.style === "dashed" ? "6,4" : "8,5")
         .attr("marker-end", "url(#arr)")
         .attr("data-from", l.source).attr("data-to", l.target);
+    // Animated flowing dots along edge
+    ep.append("animate")
+        .attr("attributeName", "stroke-dashoffset")
+        .attr("from", "0").attr("to", "-26")
+        .attr("dur", "1.2s").attr("repeatCount", "indefinite")
+        .attr("fill", "freeze");
 }});
 
 // ── Draw Nodes ────────────────────────────────────────────────────────────────
@@ -1082,59 +1118,69 @@ const els = nodeG.selectAll(".node-grp").data(NODES).enter()
     .on("mouseenter", (e, d) => showTooltip(e, d))
     .on("mouseleave", hideTooltip);
 
+// Glassmorphism: outer status glow ring
+els.append("rect").attr("width", NW + 10).attr("height", NH + 10)
+    .attr("x", -5).attr("y", -5).attr("rx", 19).attr("fill", "none")
+    .attr("stroke", d => statusColor(d.status)).attr("stroke-width", 2.5)
+    .attr("opacity", d => d.status === "pending" ? 0.25 : 0.9)
+    .attr("filter", "url(#drop-shadow)");
+
 // Card shadow
 els.append("rect").attr("class", "node-card").attr("width", NW).attr("height", NH)
     .attr("rx", 14).attr("fill", d => d.color).attr("filter", "url(#drop-shadow)");
 
-// Top white gradient strip
-els.append("rect").attr("width", NW).attr("height", 5).attr("rx", 14)
-    .attr("fill", "rgba(255,255,255,0.22)");
+// Glass overlay (top-half gradient for depth)
+els.append("rect").attr("width", NW).attr("height", NH)
+    .attr("rx", 14).attr("fill", "url(#glass-grad)").attr("pointer-events", "none");
 
 // Icon
-els.append("text").attr("x", 14).attr("y", 26).attr("font-size", "16px").text(d => typeIcon(d.type));
+els.append("text").attr("x", 14).attr("y", 26).attr("font-size", "18px").text(d => typeIcon(d.type));
 
 // Label
-els.append("text").attr("x", 42).attr("y", 20).attr("text-anchor", "start")
+els.append("text").attr("x", 42).attr("y", 19).attr("text-anchor", "start")
     .attr("font-size", "12px").attr("font-weight", "700").attr("fill", "white")
     .text(d => d.label.length > 14 ? d.label.slice(0, 13) + "…" : d.label);
 
 // Node ID subtitle
-els.append("text").attr("x", 42).attr("y", 35).attr("text-anchor", "start")
-    .attr("font-size", "9px").attr("fill", "rgba(255,255,255,0.6)")
+els.append("text").attr("x", 42).attr("y", 34).attr("text-anchor", "start")
+    .attr("font-size", "8.5px").attr("fill", "rgba(255,255,255,0.55)")
     .text(d => d.id.length > 16 ? d.id.slice(0, 15) + "…" : d.id);
 
-// Status indicator dot
-els.append("circle").attr("cx", NW - 14).attr("cy", 14).attr("r", 5)
-    .attr("fill", d => statusColor(d.status));
+// Status badge (top-right pill)
+els.append("rect").attr("x", NW - 56).attr("y", 3).attr("width", 48).attr("height", 16).attr("rx", 8)
+    .attr("fill", d => statusColor(d.status)).attr("opacity", 0.9);
+els.append("text").attr("x", NW - 32).attr("y", 14).attr("text-anchor", "middle")
+    .attr("font-size", "8px").attr("font-weight", "600").attr("fill", "white")
+    .text(d => statusLabel(d.status));
 
-// Running: pulse ring
-els.filter(d => d.status === "运行中")
-    .append("circle").attr("cx", NW/2).attr("cy", NH/2).attr("r", NH/2 + 4)
-    .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.5)").attr("stroke-width", 2)
+// Running: animated pulse ring
+els.filter(d => d.status === "\u8fd0\u884c\u4e2d")
+    .append("circle").attr("cx", NW/2).attr("cy", NH/2).attr("r", NH/2 + 6)
+    .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.45)").attr("stroke-width", 2)
     .attr("class", "pulse-ring");
 
-// Duration label (bottom center)
-els.append("text").attr("x", NW/2).attr("y", NH - 11).attr("text-anchor", "middle")
-    .attr("font-size", "10px").attr("font-family", "'JetBrains Mono',monospace")
-    .attr("fill", "rgba(255,255,255,0.9)").text(d => d.duration_str || "–");
+// Duration (bottom center)
+els.append("text").attr("x", NW/2).attr("y", NH - 12).attr("text-anchor", "middle")
+    .attr("font-size", "9.5px").attr("font-family", "'JetBrains Mono',monospace")
+    .attr("fill", "rgba(255,255,255,0.92)").text(d => d.duration_str || "\u2013");
 
-// Token badge (bottom-left corner)
+// Token badge (bottom-left)
 els.filter(d => d.tokens_used > 0)
-    .append("rect").attr("x", 6).attr("y", NH - 22).attr("width", 44).attr("height", 14).attr("rx", 7)
-        .attr("fill", "rgba(0,0,0,0.22)");
+    .append("rect").attr("x", 5).attr("y", NH - 23).attr("width", 48).attr("height", 15).attr("rx", 8)
+        .attr("fill", "rgba(0,0,0,0.28)");
 els.filter(d => d.tokens_used > 0)
-    .append("text").attr("x", 28).attr("y", NH - 12).attr("text-anchor", "middle")
-        .attr("font-size", "9px").attr("font-family", "'JetBrains Mono',monospace")
-        .attr("fill", "rgba(255,255,255,0.8)").text(d => d.tokens_str);
+    .append("text").attr("x", 29).attr("y", NH - 12).attr("text-anchor", "middle")
+        .attr("font-size", "8.5px").attr("font-family", "'JetBrains Mono',monospace")
+        .attr("fill", "rgba(255,255,255,0.82)").text(d => d.tokens_str);
 
-// LLM model badge (top-right)
+// LLM model badge (top-left)
 els.filter(d => d.model)
-    .append("rect").attr("x", NW - 70).attr("y", 4).attr("width", 62).attr("height", 14).attr("rx", 5)
-        .attr("fill", "rgba(0,0,0,0.2)");
+    .append("rect").attr("x", 4).attr("y", 3).attr("width", 62).attr("height", 16).attr("rx", 8)
+        .attr("fill", "rgba(0,0,0,0.28)");
 els.filter(d => d.model)
-    .append("text").attr("x", NW - 39).attr("y", 14).attr("text-anchor", "middle")
-        .attr("font-size", "8px").attr("font-family", "'JetBrains Mono',monospace")
-        .attr("fill", "rgba(255,255,255,0.75)").text(d => (d.model || "").slice(0, 8));
+    .append("text").attr("x", 35).attr("y", 14).attr("text-anchor", "middle")
+        .attr("font-size", "7.5px").attr("font-family", "'JetBrains Mono',monospace")
+        .attr("fill", "rgba(255,255,255,0.7)").text(d => (d.model || "").slice(0, 7));attr("fill", "rgba(255,255,255,0.75)").text(d => (d.model || "").slice(0, 8));
 
 // ── Minimap ───────────────────────────────────────────────────────────────────
 function updateMinimap() {{

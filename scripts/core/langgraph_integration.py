@@ -303,7 +303,7 @@ class LiteCompiledGraph:
         state.setdefault("stage_outputs", {})
         state.setdefault("error", None)
 
-        checkpoint_id = f"chk_{uuid.uuid4().hex[:8]}"
+        checkpoint_id = f"chk_{_uuid.uuid4().hex[:8]}"
         current_node = self.graph.entry_point
         visited: set[str] = set()
         max_iter = 100

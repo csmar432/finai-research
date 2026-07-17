@@ -808,10 +808,12 @@ class AgentOrchestrator:
             # ── HITL Gate ─────────────────────────────────────────────────
             if step.hitl_gate:
                 # Build enriched gate content with parliament verdict
+                # Note: 'result' is not yet defined here (agent hasn't run yet);
+                # use context (accumulated stage results) instead of result.output
                 gate_content = {
                     "context": agent_context,
                     "result_preview": str(context)[:500],
-                    "stage_result": result.output,
+                    "stage_result": context.get(f"{step.stage.value}_result"),
                 }
                 if hasattr(self, "_pending_parliament_verdict"):
                     gate_content["parliament_verdict"] = self._pending_parliament_verdict

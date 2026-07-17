@@ -34,8 +34,6 @@ import pandas as pd
 
 warnings.filterwarnings("ignore")
 
-_log = logging.getLogger("data_fetcher")
-
 # ─── Single source of truth imports ───────────────────────────────────────────
 from scripts.research_framework.base import DataSource, ProvenanceTracker
 from scripts.core.provenance import ProvenanceChain
@@ -68,6 +66,7 @@ class CircuitBreaker:
                 return True
             else:
                 self.failures[service] = 0
+                self.last_failure.pop(service, None)
         return False
 
     def record_success(self, service: str):
@@ -800,7 +799,6 @@ class ProxyVariableBuilder:
                 field,
                 record.get("source", DataSource.SIMULATED),
                 detail=f"[merged] {record.get('source_detail', '')}",
-                is_simulated=record.get("is_simulated", False),
             )
             if record.get("is_simulated"):
                 parent_tracker.flag_simulated(field, record.get("note", ""))
@@ -973,14 +971,11 @@ class CachedDataFetcher(DataFetcher):
 
     @property
     def nl_router(self):
-        """延迟初始化自然语言路由。"""
-        if self._nl_router is None:
-            try:
-                from scripts.core.nl_router import NLRouter
-                self._nl_router = NLRouter(verbose=self.verbose)
-            except Exception as exc:
-                _log.warning(f"[CachedDataFetcher] NL Router init failed: {exc}")
-        return self._nl_router
+        """自然语言路由（nl_router.py 暂不可用）。"""
+        return None
+
+    def nl_query(self, query: str) -> dict | None:
+        raise NotImplementedError("NL Router not yet available")
 
     # ── Cache-first fetch ─────────────────────────────────────────────────
 
@@ -1002,9 +997,10 @@ class CachedDataFetcher(DataFetcher):
         if cache is None:
             # 无缓存，降级到原有 call_mcp_tool
             result = call_mcp_tool(server, tool, args)
-            if result and result.success and result.data:
-                return result.data
-            return None
+            if hasattr(result, 'success') and hasattr(result, 'data'):
+                if result.success: return result.data
+                return None
+            return result  # 直接返回数据
 
         ttl = ttl_seconds if ttl_seconds is not None else self.cache_ttl
 
@@ -1023,11 +1019,15 @@ class CachedDataFetcher(DataFetcher):
         _log.debug(f"[CachedDataFetcher] CACHE MISS: {server}/{tool} → fetching")
         try:
             result = call_mcp_tool(server, tool, args)
-            # call_mcp_tool returns MCPResult, not dict — extract actual data
-            if result is None or not result.success:
-                _log.warning(f"[CachedDataFetcher] MCP call failed: {result.error if result else 'None'}")
+            # call_mcp_tool returns the actual data (not MCPResult when using llm_gateway)
+            data = result
+            if hasattr(result, 'success') and hasattr(result, 'data'):
+                if not result.success:
+                    _log.warning(f"[CachedDataFetcher] MCP call failed: {result.error if result else 'None'}")
+                    return None
+                data = result.data
+            elif result is None:
                 return None
-            data = result.data if hasattr(result, 'data') else result
             if data is not None:
                 cache.set(server, tool, args, data, source=f"{server}:{tool}")
                 _log.info(f"[CachedDataFetcher] FETCHED & CACHED: {server}/{tool}")
@@ -1142,6 +1142,12 @@ class CachedDataFetcher(DataFetcher):
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                     })
                     return data
+                fallback_log.append({
+                    "tier": tier_name,
+                    "status": "returned_none",
+                    "server": tier.server,
+                    "tool": tier.tool,
+                })
                 _log.warning(f"[CachedDataFetcher] {tier_name} returned None — trying next tier")
             except MCPCallError as exc:
                 fallback_log.append({
@@ -1165,37 +1171,6 @@ class CachedDataFetcher(DataFetcher):
             f"[CachedDataFetcher] All fallback tiers exhausted for chain '{chain_name}'"
         )
         return None
-
-    # ── 自然语言查询 ───────────────────────────────────────────────────
-
-    def nl_query(self, query: str) -> dict | None:
-        """
-        自然语言查询 → 自动路由到 MCP 工具。
-
-        Parameters
-        ----------
-        query : str
-            自然语言查询，例如 "Get CPI for China from 2010 to 2023"。
-
-        Returns
-        -------
-        dict | None
-        """
-        router = self.nl_router
-        if router is None:
-            _log.error("[CachedDataFetcher] NL Router not available")
-            return None
-
-        try:
-            result = router.route(query)
-            if result.plans:
-                _log.info(
-                    f"[CachedDataFetcher] NL Query routed to {len(result.plans)} step(s)"
-                )
-            return result.to_dict()
-        except Exception as exc:
-            _log.error(f"[CachedDataFetcher] NL Query failed: {exc}")
-            return None
 
     # ── 缓存管理 ───────────────────────────────────────────────────────
 

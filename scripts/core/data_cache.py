@@ -202,7 +202,12 @@ class FallbackChain:
 
     def __init__(self, chain_name: str | None = None):
         self._chain: list[FallbackTier] = []
-        if chain_name and chain_name in self.DEFAULT_CHAINS:
+        if chain_name:
+            if chain_name not in self.DEFAULT_CHAINS:
+                raise ValueError(
+                    f"Unknown chain_name '{chain_name}'. "
+                    f"Available: {list(self.DEFAULT_CHAINS.keys())}"
+                )
             self._chain = sorted(self.DEFAULT_CHAINS[chain_name])
 
     def add_tier(self, tier: FallbackTier) -> "FallbackChain":

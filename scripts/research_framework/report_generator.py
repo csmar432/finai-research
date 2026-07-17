@@ -73,7 +73,6 @@ ZH_EN = {
     "references":     "参考文献",
     "appendix":      "附录",
     "notes":         "注释",
-    "source":        "数据来源",
     # Table elements
     "variable":       "变量",
     "mean":          "均值",
@@ -89,9 +88,11 @@ ZH_EN = {
     "r_squared":     "R²",
     "firm_fe":       "公司固定效应",
     "year_fe":       "年度固定效应",
-    "notes":         "注释",
     # Model terms
     "did":           "双重差分项",
+    "treatment":     "处理变量",
+    "post":          "政策后",
+    "constant":      "常数项",
     "treatment":     "处理变量",
     "post":          "政策后",
     "constant":      "常数项",
@@ -168,7 +169,6 @@ class TableFormatter:
             """Wrap simulated values in red."""
             return f"\\textcolor{{red}}{{{s}}}"
 
-        1 + len(y_labels)
         col_spec = "l" + "c" * len(y_labels)
 
         lines = [
@@ -304,6 +304,28 @@ class TableFormatter:
 
 
 # ─────────────────────────────────────────
+# BIBTEX FALLBACK HELPER
+# ─────────────────────────────────────────
+def _fallback_bibtex(ref: dict) -> str:
+    """Generate a minimal BibTeX entry from a reference dict missing the 'bibtex' key."""
+    if not isinstance(ref, dict):
+        raise ValueError(f"Expected dict for reference, got {type(ref).__name__}")
+    entry_type = ref.get("type", "misc").lower()
+    key = ref.get("key") or ref.get("id") or ref.get("citation_key", "unknown")
+    fields = {
+        "author": ref.get("author", "Unknown Author"),
+        "title":  ref.get("title", "Untitled"),
+        "year":   ref.get("year", "n.d."),
+        "journal": ref.get("journal", ""),
+        "volume": ref.get("volume", ""),
+        "pages":  ref.get("pages", ""),
+        "doi":    ref.get("doi", ""),
+    }
+    field_str = "\n  ".join(f"{k} = {{{v}}}" for k, v in fields.items() if v)
+    return f"@{entry_type}{{{key},\n  {field_str}\n}}"
+
+
+# ─────────────────────────────────────────
 # MAIN REPORT GENERATOR
 # ─────────────────────────────────────────
 class ReportGenerator:
@@ -332,6 +354,7 @@ class ReportGenerator:
         self._sections: list[dict] = []
         self._tables: list[dict] = []
         self._figures: list[dict] = []
+        self._equations: list[dict] = []
         self._metadata: dict = {
             "title_en": "", "title_zh": "",
             "author": "", "date": datetime.now().strftime("%Y-%m-%d"),
@@ -387,6 +410,19 @@ class ReportGenerator:
             "width": width,
         })
 
+    def add_equation(
+        self,
+        latex: str,
+        label: str = "",
+        caption: str = "",
+    ):
+        """Add a numbered equation to the report."""
+        self._equations.append({
+            "latex": latex,
+            "label": label,
+            "caption": caption,
+        })
+
     # ─────────────────────────────────────
     # LATEX GENERATION
     # ─────────────────────────────────────
@@ -403,15 +439,16 @@ class ReportGenerator:
                  else self._metadata["title_en"])
         abstract = (self._metadata["abstract_zh"] if self.language == "zh"
                    else self._metadata["abstract_en"])
-        (self._metadata.get("keywords_zh", [])
+        keywords = (self._metadata.get("keywords_zh", [])
                     if self.language == "zh"
                     else self._metadata.get("keywords_en", []))
+        _ = keywords  # placeholder for future keyword rendering
 
         # Journal template system: use article as the base class for standalone generation.
         # When submitting to a specific journal, replace the .cls file:
         #   JF/JFE → jf.cls / jfe.cls,  RFS → rfs.cls,
         #   管理世界/经济研究/金融研究 → ctexart.cls
-        self._metadata.get("journal", "") or ""
+        journal = self._metadata.get("journal", "") or ""
         doc_class = "article"   # standalone-safe default
 
         lines = [
@@ -467,13 +504,33 @@ class ReportGenerator:
                     if isinstance(v, dict) and v.get("source") == DataSource.SIMULATED
                 }
                 latex = TableFormatter.did_to_latex(
-                    [tbl["data"]], [f"({i+1})" for i in range(1)],
+                    [tbl["data"]], [f"({i+1})" for i in range(len([tbl["data"]]))],
                     list(tbl["data"].get("all_coefs", {}).keys())[:6],
                     title=cap, label=tbl["label"], notes=tbl["notes"],
                     add_fallback_warning=bool(sim_vars),  # 有模拟数据时显示警告
                     simulated_vars=sim_vars,
                 )
                 lines.append(latex)
+            elif isinstance(tbl["data"], pd.DataFrame):
+                # Descriptive stats DataFrame
+                latex = TableFormatter.descriptive_to_latex(
+                    tbl["data"],
+                    title=cap,
+                    label=tbl["label"],
+                )
+                lines.append(latex)
+            lines.append("")
+
+        # Equations
+        for eq in self._equations:
+            lines.append("\\begin{equation}")
+            lines.append(eq["latex"])
+            if eq["label"]:
+                lines.append(f"\\label{{{eq['label']}}}")
+            lines.append("\\end{equation}")
+            if eq["caption"]:
+                cap = (eq["caption"])
+                lines.append(f"% {cap}")
             lines.append("")
 
         # Figures
@@ -600,6 +657,16 @@ class ReportGenerator:
         for tbl in self._tables:
             self._add_docx_table(doc, tbl)
 
+        # Equations
+        for eq in self._equations:
+            cap = eq.get("caption", "")
+            if cap:
+                p = doc.add_paragraph()
+                p.add_run(cap).italic = True
+            p = doc.add_paragraph()
+            run = p.add_run(eq["latex"])
+            run.font.name = "Times New Roman"
+
         # Figures
         for fig in self._figures:
             cap = (fig["caption_zh"] if self.language == "zh" else fig["caption_en"])
@@ -641,11 +708,12 @@ class ReportGenerator:
             rows_data = []
             for var, v in coefs.items():
                 sig = v.get("sig", "")
+                pval = v.get("pval", v.get("p_value", v.get("pvalue", "N/A")))
                 rows_data.append([
                     var,
                     f"{v['coef']:.4f}{sig}",
                     f"({v['se']:.4f})",
-                    f"{v['pval']:.4f}",
+                    f"{pval:.4f}" if isinstance(pval, (int, float)) else str(pval),
                 ])
             df = pd.DataFrame(rows_data, columns=["Variable", "Coef", "SE", "p-value"])
         elif isinstance(data, str):
@@ -789,6 +857,7 @@ class ReportGenerator:
             "n_sections": len(self._sections),
             "n_tables": len(self._tables),
             "n_figures": len(self._figures),
+            "n_equations": len(self._equations),
             "provenance_summary": self.tracker.summary() if self.tracker else {},
         }
         if extra:
@@ -913,7 +982,7 @@ class ReportGenerator:
         if references:
             bib_path = out_dir / "references.bib"
             bib_entries = "\n\n".join(
-                r if isinstance(r, str) else r.get("bibtex", str(r))
+                r if isinstance(r, str) else r.get("bibtex") or _fallback_bibtex(r)
                 for r in references
             )
             bib_path.write_text(bib_entries, encoding="utf-8")
@@ -935,8 +1004,12 @@ class ReportGenerator:
 
         template = get_template(journal)
         if template is None:
-            _rg_log.warning("Unknown journal %r, using xelatex directly", journal)
+            _rg_log.warning("Unknown journal %r, trying JFE fallback", journal)
             template = get_template("JFE")  # fallback to JFE
+            if template is None:
+                _rg_log.warning("JFE fallback also failed; compiling with xelatex directly")
+                # Return tex_path so the caller can compile manually
+                return tex_path
 
         # Auto-detect best backend (tectonic优先 → xelatex → pdflatex)
         # 不再硬编码 xelatex（tectonic 已安装且中文支持更好）
