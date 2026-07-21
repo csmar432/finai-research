@@ -190,7 +190,6 @@ def _t_cdf(t: float, df: int) -> float:
         from scipy import stats as _stats
         return float(_stats.t.cdf(t, df))
     except Exception:
-        import math
         x = df / (df + t * t)
         return 1 - 0.5 * _beta_inc(df / 2, 0.5, x)
 
@@ -211,7 +210,6 @@ def _beta_inc(a: float, b: float, x: float) -> float:
         from scipy import special as _spec
         return float(_spec.betainc(a, b, x))
     except Exception:
-        import math
         import warnings
         warnings.warn(
             "scipy not available; _beta_inc falling back to hand-coded continued "

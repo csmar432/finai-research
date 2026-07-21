@@ -40,7 +40,6 @@ from __future__ import annotations
 import json
 import os
 import random
-import sys
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any

@@ -626,7 +626,6 @@ class AShareVariableFetcher:
                 # akshare doesn't support date range for margin detail directly
                 # Build monthly samples as approximation
                 rows = []
-                import re
                 y_start, m_start = int(start_date[:4]), int(start_date[4:6])
                 y_end, m_end = int(end_date[:4]), int(end_date[4:6])
                 y, m = y_start, m_start

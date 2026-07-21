@@ -615,11 +615,7 @@ class ReportGenerator:
             return None
 
         from docx import Document as DocxDocument
-        from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
         from docx.enum.text import WD_ALIGN_PARAGRAPH
-        from docx.oxml import OxmlElement
-        from docx.oxml.ns import qn
-        from docx.shared import Cm, Inches, Pt, RGBColor
 
         doc = DocxDocument()
         self._apply_docx_styles(doc)

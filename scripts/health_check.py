@@ -22,16 +22,12 @@ health_check.py — 论文-研报工作流 · 系统健康检查 v2.0
 
 from __future__ import annotations
 
-import asyncio
 import concurrent.futures
 import importlib
 import json
 import os
-import shutil
 import subprocess
 import sys
-import tempfile
-import threading
 import time
 import urllib.request
 import urllib.error
@@ -39,7 +35,6 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 # ── Load .env before any other module reads environment variables ─────────────
 def _find_project_root() -> Path:

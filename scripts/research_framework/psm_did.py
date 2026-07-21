@@ -28,7 +28,6 @@ from typing import Literal
 
 import numpy as np
 import pandas as pd
-from scipy.spatial import KDTree
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 import statsmodels.api as sm

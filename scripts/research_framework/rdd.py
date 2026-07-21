@@ -485,7 +485,6 @@ def _bandwidth_msed(
 
     穷举网格搜索，直接最小化 MSE。
     """
-    from scipy import stats
 
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -565,7 +564,6 @@ def _bandwidth_cct(
     近似 CCT (rdrobust) 的 MSE 带宽逻辑。
     基于左右分别偏差-方差分解。
     """
-    from scipy import stats
 
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)

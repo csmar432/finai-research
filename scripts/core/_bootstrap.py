@@ -14,7 +14,6 @@ Import this module FIRST in any entry-point script that lives in ``scripts/`` or
 """
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 

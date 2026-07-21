@@ -19,7 +19,6 @@ PlotStyle API 集成：
 
 from __future__ import annotations
 
-import math
 import re
 import logging
 from dataclasses import dataclass, field

@@ -24,9 +24,7 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import logging
-import math
 import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -692,7 +690,6 @@ class FinancialChartFactory:
         """Plot Regression Discontinuity Design scatter with fitted lines."""
         import matplotlib.pyplot as plt
         import seaborn as sns
-        from scipy import stats
 
         fig, ax = self._new_fig(figsize)
 

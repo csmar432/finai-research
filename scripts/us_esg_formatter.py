@@ -690,7 +690,6 @@ if HAS_DOCX:
           - text^{sup} → text + 上标 sup
           - 希腊字母 \\beta \\alpha 等 → unicode
         """
-        import re
 
         # 希腊字母映射（最常见）
         GREEK = {

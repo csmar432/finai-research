@@ -21,7 +21,6 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Any, Optional
 
 import pandas as pd
 

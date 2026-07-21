@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import sys
 import re
-import math
 from pathlib import Path
 from PIL import Image
 try:

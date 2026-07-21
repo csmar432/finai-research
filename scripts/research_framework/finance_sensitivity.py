@@ -35,8 +35,6 @@ from __future__ import annotations
 import logging
 import warnings
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -779,7 +777,6 @@ class ContagionTest:
         -------
         dict
         """
-        from scipy import stats
 
         returns = np.asarray(returns, dtype=float)
         T, n = returns.shape

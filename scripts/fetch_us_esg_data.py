@@ -7,7 +7,6 @@ P0 修复 2026-06-28: MCP yfinance 失败时 fallback，避免 P0 数据获取
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import numpy as np

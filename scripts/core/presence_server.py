@@ -209,7 +209,6 @@ if __name__ == "__main__":
         print(f"Active users: {users}")
 
         # Subscribe and receive events
-        import asyncio
         event_count = 0
         async for data in server.subscribe("paper_001"):
             print(f"SSE event: {data.strip()}")

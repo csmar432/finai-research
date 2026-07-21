@@ -1840,7 +1840,6 @@ class AgentPipeline:
                 "Orchestrator crashed: %s", exc, exc_info=True
             )
             # Build a minimal failure result so callers always get a valid AgentPipelineResult
-            from scripts.core.autonomy_loop import PipelineResult
             _fake_stage = type("FakeStageResult", (), {"output": None, "status": "failed", "error": str(exc)})()
             orchestrator_result = type("FakeResult", (), {
                 "success": False,

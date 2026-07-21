@@ -13,10 +13,8 @@ MCP Server Schema vs Handler 验证工具。
 from __future__ import annotations
 
 import argparse
-import inspect
 import json
 import re
-import sys
 from pathlib import Path
 from typing import Any
 

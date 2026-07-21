@@ -92,7 +92,6 @@ try:
         EvaluationResult,
         ModelSwitch,
     )
-    from scripts.empirical_result import EmpiricalResult, EmpiricalTable
     HAS_DEPENDENCIES = True
 except ImportError as e:
     _log.warning(f"部分模块导入失败: {e}，使用模拟模式")

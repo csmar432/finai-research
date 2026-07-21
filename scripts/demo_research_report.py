@@ -22,7 +22,6 @@ import argparse
 import logging
 import subprocess
 import sys
-import textwrap
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional

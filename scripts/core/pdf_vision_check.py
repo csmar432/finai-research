@@ -18,13 +18,10 @@ Usage:
 
 from __future__ import annotations
 
-import io
 import json
 import logging
-import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 __all__ = [
     "PDFVisionIssue",

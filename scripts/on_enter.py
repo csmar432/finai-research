@@ -19,7 +19,6 @@ import json
 import os
 import subprocess
 import sys
-import time
 from datetime import datetime, timedelta, date
 from pathlib import Path
 

@@ -1058,7 +1058,6 @@ def run_dynamic_panel_diagnostics(
     DynamicPanelDiagnostics
         含 AR(1)、AR(2)、Sargan、Hansen 统计量及诊断解读。
     """
-    from scipy import stats
 
     df_sub = df.dropna(subset=[y_var] + x_vars + [entity_var, time_var]).copy()
     n_obs = len(df_sub)

@@ -33,7 +33,6 @@ import json
 import logging
 _log = logging.getLogger("universal_data_fetcher")
 import sys
-import time
 import warnings
 from dataclasses import dataclass, field
 from datetime import datetime

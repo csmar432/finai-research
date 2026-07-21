@@ -793,7 +793,6 @@ def check_10_llm_reviewer_stable_model() -> CheckResult:
 
 def _check_reproducibility_layer() -> CheckResult:
     """T3 audit 2026-07-12: verify normalize.py exists with required exports."""
-    import ast, sys
     root = Path(__file__).parent.parent
     norm_path = root / "scripts" / "core" / "normalize.py"
     if not norm_path.exists():

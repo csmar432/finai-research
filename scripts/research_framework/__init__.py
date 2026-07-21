@@ -393,7 +393,6 @@ from .data_source_candidates import (
     CandidateRegistryResult,
     build_registry,
 )
-from .design_doc import DesignDocVersioning, DesignSnapshot, new_versioning
 from .negative_result_handler import (
     NegativeResultHandler,
     NegativeResultVerdict,

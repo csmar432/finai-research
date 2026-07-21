@@ -35,7 +35,6 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Callable
 
@@ -375,7 +374,6 @@ class CrossMarketAnalyzer:
         Returns:
             相关性矩阵（dict of dict）
         """
-        import math
         from datetime import datetime as dt
 
         end_d = end_date or dt.now().strftime("%Y-%m-%d")
@@ -538,7 +536,6 @@ class CrossMarketAnalyzer:
         当一个市场的极端收益与另一个市场的滞后收益相关时，
         识别为传染事件。
         """
-        import math
         contagion_events = []
 
         markets = list(returns_data.keys())

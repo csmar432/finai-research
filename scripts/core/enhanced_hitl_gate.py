@@ -17,12 +17,9 @@
 from __future__ import annotations
 
 import json
-import sqlite3
-import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any
 
 from scripts.core.hitl_gate import ApprovalRecord, GateState, HITLGate

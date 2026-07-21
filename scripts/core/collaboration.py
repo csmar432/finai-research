@@ -29,7 +29,6 @@ __all__ = [
     "CollaborationClient",
 ]
 
-import asyncio
 import json
 import time
 import uuid

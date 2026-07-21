@@ -28,16 +28,11 @@ __all__ = [
     "ModelRouter",
 ]
 
-import json
 import logging
 import os
-import time
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from typing import Any, Callable
 
-import requests
 
 logger = logging.getLogger(__name__)
 

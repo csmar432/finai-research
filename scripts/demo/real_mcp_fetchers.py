@@ -23,7 +23,6 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from pathlib import Path
 
 USER_AGENT = "FinAI-Research-Demo/1.0 (research@example.com)"
 
