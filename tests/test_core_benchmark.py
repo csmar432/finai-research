@@ -102,7 +102,4 @@ class TestValidationSummary:
 
 class TestModuleLevel:
     def test_main_exists(self):
-        try:
-            assert callable(bn.main)
-        except Exception:
-            pass
+        assert callable(bn.main)

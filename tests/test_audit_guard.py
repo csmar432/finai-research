@@ -84,52 +84,40 @@ class TestAuditFunctions:
     """Test the 15 check_* functions for existence and basic invocation."""
 
     def test_check_1_pypi_package_exists(self):
-        try:
-            if hasattr(ag, "check_1_pypi_package_exists"):
-                r = ag.check_1_pypi_package_exists()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_10_llm_reviewer_stable_model(self):
-        try:
-            if hasattr(ag, "check_10_llm_reviewer_stable_model"):
-                r = ag.check_10_llm_reviewer_stable_model()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_11_omit_longtail_not_growing(self):
-        try:
-            if hasattr(ag, "check_11_omit_longtail_not_growing"):
-                r = ag.check_11_omit_longtail_not_growing()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_12_fail_under_floor(self):
-        try:
-            if hasattr(ag, "check_12_fail_under_floor"):
-                r = ag.check_12_fail_under_floor()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_13_workflow_yaml_unquoted_colons(self):
-        try:
-            if hasattr(ag, "check_13_workflow_yaml_unquoted_colons"):
-                r = ag.check_13_workflow_yaml_unquoted_colons()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_14_diff_in_diff2_phantom_dep(self):
-        try:
-            if hasattr(ag, "check_14_diff_in_diff2_phantom_dep"):
-                r = ag.check_14_diff_in_diff2_phantom_dep()
-                assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_15_pypi_deps_exist(self):
         # audit-2026-07-21: this test serial-visits PyPI 30 times.
@@ -143,13 +131,10 @@ class TestAuditFunctions:
         mock_resp.__exit__ = lambda s, *a: False
         mock_resp.status = 200
 
-        try:
-            with patch("urllib.request.urlopen", return_value=mock_resp):
-                if hasattr(ag, "check_15_pypi_deps_exist"):
-                    r = ag.check_15_pypi_deps_exist()
-                    assert isinstance(r, ag.CheckResult)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_check_25_data_warning_notifier_wiring(self):
         """T13 audit 2026-07-12: ensure check_25 is wired into the CHECKS

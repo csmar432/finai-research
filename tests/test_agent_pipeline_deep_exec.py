@@ -151,10 +151,10 @@ class TestAgentPipelineBasics:
         try:
             pipeline = AgentPipeline()
             # This may try to init LLMGateway; skip if it fails
-            try:
-                gw = pipeline.gateway
-            except Exception:
-                pass  # OK if LLM not configured
+            # audit-2026-07-21: try/except/Exception:pass converted to xfail
+            pytest.xfail(
+                reason="no real assertion",
+            )
         except Exception:
             pass
 

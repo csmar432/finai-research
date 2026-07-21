@@ -256,7 +256,7 @@ class TestModuleFunctions:
         for name in ["fetch_arxiv_papers", "fetch_web_papers", "trace_citations"]:
             fn = getattr(mod, name, None)
             if fn is None: continue
-            try:
-                r = fn("test", max_results=2)
-            except Exception:
-                pass
+            # audit-2026-07-21: try/except/Exception:pass converted to xfail
+            pytest.xfail(
+                reason="no real assertion",
+            )

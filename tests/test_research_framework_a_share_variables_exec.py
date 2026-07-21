@@ -81,10 +81,10 @@ class TestFunctions:
     def test_call_mcp_tool(self):
         fn = getattr(mod, "_call_mcp_tool", None)
         if fn is None: pytest.skip("not present")
-        try:
-            r = fn("user-tushare", "get_daily_quote", {"ts_code": "000001.SZ"}, retries=0)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestAllClasses:

@@ -362,10 +362,10 @@ class TestFitTwoModels:
 
     def test_single_observation(self):
         df = pd.DataFrame({"X": [1.0], "M": [0.5], "Y": [0.3]})
-        try:
-            _fit_two_models(df, "X", "M", "Y")
-        except Exception:
-            pass  # Insufficient data for regression
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

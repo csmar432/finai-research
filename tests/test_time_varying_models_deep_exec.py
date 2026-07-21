@@ -282,25 +282,25 @@ class TestTVPVARPostEdge:
             lambda *a, **kw: (_ for _ in ()).throw(ImportError)
             if a and a[0] == "matplotlib.pyplot" else None,
         )
-        try:
-            t.plot_irf()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_plot_irf_empty_irf_tv(self, tmp_path):
         t = TVPVAR(p=1)
         t._result = TVPVARResult(y_vars=["a"], n_periods=10, irf_time_varying={})
-        try:
-            t.plot_irf(save_path=tmp_path / "irf.pdf")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_plot_coefficients_no_result(self):
         t = TVPVAR(p=1)
-        try:
-            t.plot_coefficients()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -405,17 +405,17 @@ class TestDCCGARCHPostEdge:
 
     def test_plot_correlation_no_result(self):
         d = DCCGARCH()
-        try:
-            d.plot_correlation()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_plot_heatmap_no_result(self):
         d = DCCGARCH()
-        try:
-            d.plot_heatmap()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

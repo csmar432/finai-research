@@ -66,10 +66,7 @@ class TestStreamingConfig:
 
 class TestBaseAgent:
     def test_methods_exist(self):
-        try:
-            for name in dir(st.BaseAgent):
-                if not name.startswith("_"):
-                    attr = getattr(st.BaseAgent, name, None)
-                    assert attr is not None
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

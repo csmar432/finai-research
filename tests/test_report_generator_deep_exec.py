@@ -865,11 +865,10 @@ class TestGeneratePaper:
             "robustness": "Robustness text",
             "conclusion": "Conclusion text",
         }
-        try:
-            gen.generate_paper(topic="Test", outline=outline, regressions={},
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_generate_paper_dict_section_with_title_and_content(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
@@ -877,11 +876,10 @@ class TestGeneratePaper:
             "abstract": "A",
             "intro": {"title": "Custom Intro", "content": "Body text"},
         }
-        try:
-            gen.generate_paper(topic="T", outline=outline, regressions={},
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_generate_paper_chinese_journal_sets_language_zh(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
@@ -910,32 +908,29 @@ class TestGeneratePaper:
                 "n_obs": 500, "r_squared": 0.2,
             }
         }
-        try:
-            gen.generate_paper(topic="T", outline={}, regressions=regressions,
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_generate_paper_with_regression_dataframe(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
         df = pd.DataFrame({"var": {"mean": 0.05, "std": 0.02}})
         regressions = {"descriptive": df}
-        try:
-            gen.generate_paper(topic="T", outline={}, regressions=regressions,
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_generate_paper_with_regression_raw_latex(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
         regressions = {
             "custom_table": r"\begin{table}\centering\caption{Custom}\end{table}"
         }
-        try:
-            gen.generate_paper(topic="T", outline={}, regressions=regressions,
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_generate_paper_with_bibtex_references(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
@@ -956,11 +951,10 @@ class TestGeneratePaper:
             "keywords_en": ["ESG", "Innovation", "DID"],
             "keywords_zh": ["ESG", "创新", "DID"],
         }
-        try:
-            gen.generate_paper(topic="T", outline=outline, regressions={},
-                               references=[], journal="JFE")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1008,16 +1002,10 @@ class TestGeneratePaperWithData:
     def test_generate_paper_accepts_data_dataframe(self, tmp_path):
         gen = ReportGenerator(output_dir=tmp_path)
         df = pd.DataFrame({"year": [2020, 2021], "roa": [0.05, 0.06]})
-        try:
-            gen.generate_paper(
-                topic="T", outline={},
-                data=df,
-                regressions={},
-                references=[],
-                journal="JFE",
-            )
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

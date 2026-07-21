@@ -28,13 +28,10 @@ class TestGateResult:
 
 class TestBaseGate:
     def test_methods(self):
-        try:
-            for name in dir(eg.BaseGate):
-                if not name.startswith("_"):
-                    attr = getattr(eg.BaseGate, name, None)
-                    assert attr is not None
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestFeasibilityGate:

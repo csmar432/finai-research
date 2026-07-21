@@ -99,11 +99,10 @@ class TestFunctions:
     def test_download_from_arxiv(self):
         fn = getattr(mod, "download_from_arxiv", None)
         if fn is None: pytest.skip("not present")
-        try:
-            r = fn("2301.12345")
-            # Should at least return dict (even on failure)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestAllDefExists:
@@ -123,55 +122,28 @@ class TestCliCommands:
     def test_cmd_download(self):
         fn = getattr(mod, "cmd_download", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_summarize(self):
         fn = getattr(mod, "cmd_summarize", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_ask(self):
         fn = getattr(mod, "cmd_ask", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_read(self):
         fn = getattr(mod, "cmd_read", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_compare(self):
         fn = getattr(mod, "cmd_compare", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_notes(self):
         fn = getattr(mod, "cmd_notes", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_cmd_list(self):
         fn = getattr(mod, "cmd_list", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
+        assert callable(fn)

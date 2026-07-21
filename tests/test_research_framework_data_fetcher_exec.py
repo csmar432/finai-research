@@ -135,19 +135,18 @@ class TestClasses:
     def test_call_mcp_tool(self):
         fn = getattr(mod, "call_mcp_tool", None)
         if fn is None: pytest.skip("not present")
-        try:
-            # Safe — likely to fail; just verify it runs
-            r = fn("user-tushare", "get_daily_quote", {"ts_code": "000001.SZ"})
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_call_mcp(self):
         fn = getattr(mod, "_call_mcp", None)
         if fn is None: pytest.skip("not present")
-        try:
-            r = fn("user-tushare", "get_daily_quote", {"ts_code": "000001.SZ"}, timeout=0.1)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestAllClasses:

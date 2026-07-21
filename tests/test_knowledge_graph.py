@@ -152,17 +152,13 @@ class TestModuleLevel:
         assert callable(kg.main)
 
     def test_fetch_arxiv_papers(self):
-        try:
-            if hasattr(kg, "fetch_arxiv_papers"):
-                fn = kg.fetch_arxiv_papers
-                assert callable(fn)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_fetch_web_papers(self):
-        try:
-            if hasattr(kg, "fetch_web_papers"):
-                fn = kg.fetch_web_papers
-                assert callable(fn)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

@@ -172,10 +172,10 @@ class TestKalmanFilter:
         R = np.eye(k) * 0.001
         a1 = np.zeros(k)
         P1 = np.eye(k)
-        try:
-            _kalman_filter_tvp(y, Z, T_mat, H, R, a1, P1)
-        except Exception:
-            pass  # may still fail; just exercise the path
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestSimulationSmoother:
@@ -420,10 +420,10 @@ class TestTVPVAR:
             tvp.fit(Y, method="kalman_ml")
         except Exception:
             pytest.skip("fit not available")
-        try:
-            tvp.plot_irf(save_path=tmp_path / "irf.pdf")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_plot_coefficients(self, tmp_path):
         Y = _make_tvp_data(T=120, n=2)
@@ -432,10 +432,10 @@ class TestTVPVAR:
             tvp.fit(Y, method="kalman_ml")
         except Exception:
             pytest.skip("fit not available")
-        try:
-            tvp.plot_coefficients(save_path=tmp_path / "coef.pdf")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -626,10 +626,10 @@ class TestDCCGARCH:
             d.fit(rd)
         except Exception:
             pytest.skip("fit not available")
-        try:
-            d.plot_correlation(save_path=tmp_path / "corr.pdf")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_plot_heatmap(self, tmp_path):
         rd = _make_returns(T=300, n=2)
@@ -638,7 +638,7 @@ class TestDCCGARCH:
             d.fit(rd)
         except Exception:
             pytest.skip("fit not available")
-        try:
-            d.plot_heatmap(save_path=tmp_path / "heatmap.pdf")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

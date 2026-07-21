@@ -82,13 +82,6 @@ class TestPatternValidator:
 
 class TestModuleLevel:
     def test_create_sandbox_runner_exists(self):
-        try:
-            assert callable(sb.create_sandbox_runner)
-        except Exception:
-            pass
-
+        assert callable(sb.create_sandbox_runner)
     def test_main_exists(self):
-        try:
-            assert callable(sb.main)
-        except Exception:
-            pass
+        assert callable(sb.main)

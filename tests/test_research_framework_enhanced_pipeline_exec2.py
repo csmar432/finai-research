@@ -91,12 +91,7 @@ class TestCliMain:
     def test_callable(self):
         fn = getattr(mod, "_cli_main", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
-
+        assert callable(fn)
 class TestAllMethods:
     def test_all_methods(self, tmp_path):
         cls = getattr(mod, "EnhancedPipeline", None)

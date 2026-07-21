@@ -286,10 +286,10 @@ class TestDeeperHelpers:
     def test_print_canvas_hint(self):
         fn = getattr(mod, "_print_canvas_hint", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn("test_stage")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_build_wf_payload_basic(self):
         fn = getattr(mod, "_build_wf_payload", None)
@@ -335,10 +335,10 @@ class TestConfigDataclasses:
     def test_result_dataclass(self):
         cls = getattr(mod, "AgentPipelineResult", None)
         if cls is None: pytest.skip("not present")
-        try:
-            r = cls()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_interaction_result_fields(self):
         cls = getattr(mod, "InteractionResult", None)

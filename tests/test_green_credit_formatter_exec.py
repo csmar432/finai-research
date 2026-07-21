@@ -101,10 +101,10 @@ class TestMdToDocx:
         # Simulate ImportError for docx
         out = tmp_path / "out.docx"
         monkeypatch.setitem(sys.modules, "docx", None)
-        try:
-            md_to_docx_python("# Hello", out)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestMdToHtmlBridge:

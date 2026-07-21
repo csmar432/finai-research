@@ -92,7 +92,4 @@ class TestModuleExports:
             pass
 
     def test_module_has_callable_tool(self):
-        try:
-            assert callable(t.Tool)
-        except Exception:
-            pass
+        assert callable(t.Tool)

@@ -667,11 +667,10 @@ class TestPlotHelpers:
             m.fit(df, "time", "event", ["x1", "x2"])
         except Exception:
             pytest.skip("fit not available")
-        try:
-            fig = m.plot_baseline_hazard(save_path=tmp_path / "bh.pdf")
-            # Either figure or None if baseline_hazard unavailable
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_cox_plot_predicted_survival(self, tmp_path):
         df = _make_survival_df(n=80)
@@ -680,14 +679,10 @@ class TestPlotHelpers:
             m.fit(df, "time", "event", ["x1", "x2"])
         except Exception:
             pytest.skip("fit not available")
-        try:
-            fig = m.plot_predicted_survival(
-                df,
-                groups={"Treated": df["did"] == 1, "Control": df["did"] == 0},
-                save_path=tmp_path / "pred.pdf",
-            )
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_km_plot(self, tmp_path):
         df = _make_survival_df(n=80)
@@ -701,14 +696,10 @@ class TestPlotHelpers:
     def test_km_plot_grouped(self, tmp_path):
         df = _make_survival_df(n=80)
         km = KaplanMeier()
-        try:
-            fig = km.plot(
-                save_path=tmp_path / "km_grouped.pdf",
-                group_var="did", df=df,
-                duration="time", event="event",
-            )
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_nelson_aalen_plot(self, tmp_path):
         df = _make_survival_df(n=80)

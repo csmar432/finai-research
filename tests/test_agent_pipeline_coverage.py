@@ -210,7 +210,7 @@ class TestPureFunctions:
     def test_save_wf_json_fallback(self, tmp_path):
         fn = getattr(mod, "_save_wf_json_fallback", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn({"key": "value"})
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

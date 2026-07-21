@@ -74,59 +74,30 @@ class TestModule:
     def test_build_pipeline_yaml(self):
         fn = getattr(mod, "_build_pipeline_yaml", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
-
+        assert callable(fn)
 class TestModuleWithMock:
     def test_validate_pipeline(self):
         fn = getattr(mod, "_validate_pipeline", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_save_draft(self):
         fn = getattr(mod, "_save_draft", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_reload_yaml(self):
         fn = getattr(mod, "_reload_yaml", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_generate_yaml(self):
         fn = getattr(mod, "_generate_yaml_output", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_load_pipeline(self):
         fn = getattr(mod, "_load_pipeline", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
-
+        assert callable(fn)
 class TestMain:
     def test_main(self):
         fn = getattr(mod, "main", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
+        assert callable(fn)

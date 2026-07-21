@@ -151,10 +151,10 @@ class TestRunAgentPipeline:
         monkeypatch.setattr(rr, "_call_agent_safely", lambda *a, **kw: None)
         monkeypatch.setattr(rr, "_push_wf_state", lambda *a, **kw: None)
         # Just ensure it doesn't crash
-        try:
-            run_agent_pipeline("Test Topic")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestCallAgentSafely:
@@ -209,7 +209,7 @@ class TestMain:
         monkeypatch.setattr("sys.argv", ["run_research.py"])
         # Make consume_loop a no-op
         monkeypatch.setattr(rr, "consume_loop", lambda **kw: None)
-        try:
-            main()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

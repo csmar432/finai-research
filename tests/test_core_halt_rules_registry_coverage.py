@@ -66,10 +66,10 @@ class TestSafeEval:
     def test_safe_eval_reject_name(self):
         fn = getattr(mod, "_safe_eval", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn("__import__('os')")
-        except (ValueError, Exception):
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestRuleViolation:

@@ -146,10 +146,10 @@ class TestRegistryFunctions:
     def test_get_validator(self):
         fn = getattr(mod, "get_validator", None)
         if fn is None: pytest.skip("not present")
-        try:
-            r = fn("test_validator")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestProvinceDataValidator:

@@ -171,10 +171,10 @@ class TestEmpiricalAgentSerialization:
 class TestEmpiricalAgentPipeline:
     def test_run_full_pipeline_no_data(self, minimal_agent):
         """run_full_pipeline on agent without data — may skip or fail gracefully."""
-        try:
-            minimal_agent.run_full_pipeline()
-        except (ValueError, AttributeError, RuntimeError):
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_run_full_pipeline_with_data(self, panel_data):
         """run_full_pipeline with small data — may take long; set timeout."""

@@ -169,10 +169,10 @@ class TestModuleHelpers:
             pass
 
     def test_reset_observer(self):
-        try:
-            obs.reset_observer()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_wrap_llm_gateway(self):
         try:
@@ -219,7 +219,7 @@ class TestOptionalTracers:
             pytest.skip("OtelSpan (needs opentelemetry)")
 
     def test_get_langsmith_tracer_helper(self):
-        try:
-            t = obs._get_langsmith_tracer()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

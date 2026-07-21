@@ -41,10 +41,10 @@ class TestCointegrationResult:
             assert obj is not None
         except TypeError:
             # No defaults — try empty
-            try:
-                obj = cls()
-            except Exception:
-                pass
+            # audit-2026-07-21: try/except/Exception:pass converted to xfail
+            pytest.xfail(
+                reason="no real assertion",
+            )
 
 
 class TestPanelECM:

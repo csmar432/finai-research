@@ -126,18 +126,9 @@ class TestTimeSeriesDecomposer:
 
 class TestModuleFunctions:
     def test_main_exists(self):
-        try:
-            assert callable(main)
-        except Exception:
-            pass
-
+        assert callable(main)
     def test_run_explorer_app_exists(self):
-        try:
-            assert callable(run_explorer_app)
-        except Exception:
-            pass
-
-
+        assert callable(run_explorer_app)
 # ─── DIDEventStudyExplorer extended ──────────────────────────────────
 
 class TestDIDExplorerGetPeriods:

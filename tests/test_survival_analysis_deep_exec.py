@@ -677,13 +677,10 @@ class TestSurvivalSuiteExpanded:
             "x1": [],
         })
         suite = SurvivalSuite()
-        try:
-            results = suite.run_all(
-                df.astype(object).assign(**{}),
-                duration="time", event="event", X=["x1"],
-            )
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
         # Should not crash; results may be empty
 
     def test_run_all_with_save_dir(self, tmp_path):
@@ -755,10 +752,10 @@ class TestSurvivalEdgeCases:
             "x1": [0.1, 0.2, 0.3],
         })
         m = CoxPHModel()
-        try:
-            m.fit(df, duration="time", event="event", X=["x1"])
-        except Exception:
-            pass  # Should handle gracefully
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_kaplan_meier_missing_duration(self):
         df = pd.DataFrame({
@@ -770,10 +767,10 @@ class TestSurvivalEdgeCases:
         km = KaplanMeier()
         # Missing column → dropna drops all rows → n_obs = 0
         # This raises KeyError since the column doesn't exist
-        try:
-            result = km.fit(df_miss, duration="time", event="event")
-        except KeyError:
-            pass  # Expected: missing column raises KeyError
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_nelson_aalen_missing_event(self):
         df = pd.DataFrame({
@@ -782,10 +779,10 @@ class TestSurvivalEdgeCases:
         })
         na = NelsonAalen()
         df_miss = df.drop(columns=["event"])
-        try:
-            result = na.fit(df_miss, duration="time", event="event")
-        except KeyError:
-            pass  # Expected: missing column raises KeyError
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_concordance_all_ties_in_pred(self):
         """All predicted values equal → C ≈ 0.5."""

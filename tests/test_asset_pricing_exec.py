@@ -78,10 +78,10 @@ class TestValidate:
 class TestBuildPanel:
     def test_minimal_data(self, d):
         data = {"prices": pd.DataFrame({"A": [1, 2, 3]})}
-        try:
-            result = d.build_panel(data)
-        except (KeyError, ValueError, TypeError, RuntimeError, DataSourceError):
-            pass  # acceptable on minimal stub data
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestFetchData:
@@ -118,10 +118,10 @@ class TestRunRegressions:
 class TestHelperMethods:
     def test_normalize_returns(self, d):
         if hasattr(d, "_normalize_returns"):
-            try:
-                r = d._normalize_returns(None, "test")
-            except Exception:
-                pass
+            # audit-2026-07-21: try/except/Exception:pass converted to xfail
+            pytest.xfail(
+                reason="no real assertion",
+            )
 
     def test_add_constant(self, d):
         if hasattr(d, "_add_constant"):
@@ -134,7 +134,7 @@ class TestHelperMethods:
         if hasattr(d, "_ols_svd"):
             X = np.array([[1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
             y = np.array([5.0, 6.0, 7.0])
-            try:
-                coef, resid = d._ols_svd(X, y)
-            except Exception:
-                pass
+            # audit-2026-07-21: try/except/Exception:pass converted to xfail
+            pytest.xfail(
+                reason="no real assertion",
+            )

@@ -240,15 +240,8 @@ class TestModuleFunctions:
     def test_factor_model_summary(self):
         fn = getattr(mod, "factor_model_summary", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
-
+        assert callable(fn)
     def test_load_fama_french_factors(self):
         fn = getattr(mod, "load_fama_french_factors", None)
         if fn is None: pytest.skip("not present")
-        try:
-            assert callable(fn)
-        except Exception:
-            pass
+        assert callable(fn)

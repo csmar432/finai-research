@@ -179,15 +179,15 @@ class TestStyleHelpers:
         fn = getattr(mod, "set_header_style", None)
         if fn is None: pytest.skip("not present")
         # Requires Document cell object — skip if not feasible
-        try:
-            fn(None, "test")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_set_cell_text(self):
         fn = getattr(mod, "set_cell_text", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn(None, "test")
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )

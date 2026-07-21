@@ -34,22 +34,16 @@ class TestHonestDidSimplified:
         se = 0.1
         m = 0.5
         delta_grid = np.array([0.0, 0.1, 0.2])
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                result = _honest_did_simplified(coef, se, m, delta_grid)
-                assert "coef" in result or "ci_bounds" in result or isinstance(result, dict)
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_zero_coef(self):
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                result = _honest_did_simplified(0.0, 0.1, 0.5, np.array([0.1]))
-                assert result is not None
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_warns(self):
         with pytest.warns(UserWarning):

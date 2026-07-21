@@ -93,10 +93,10 @@ class TestGARCHModel:
     def test_bad_type(self):
         cls = getattr(mod, "GARCHModel", None)
         if cls is None: pytest.skip("not present")
-        try:
-            obj = cls("UNKNOWN", p=1, q=1)
-        except (ValueError, Exception):
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_fit(self):
         cls = getattr(mod, "GARCHModel", None)

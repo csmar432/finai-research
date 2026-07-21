@@ -36,31 +36,12 @@ class TestDataGenerators:
     """Test that data generator functions are importable and called."""
 
     def test_generate_did_data_exists(self):
-        try:
-            assert callable(be.generate_did_data)
-        except Exception:
-            pass
-
+        assert callable(be.generate_did_data)
     def test_generate_staggered_did_data_exists(self):
-        try:
-            assert callable(be.generate_staggered_did_data)
-        except Exception:
-            pass
-
+        assert callable(be.generate_staggered_did_data)
     def test_generate_sdid_data_exists(self):
-        try:
-            assert callable(be.generate_sdid_data)
-        except Exception:
-            pass
-
+        assert callable(be.generate_sdid_data)
     def test_generate_ife_data_exists(self):
-        try:
-            assert callable(be.generate_ife_data)
-        except Exception:
-            pass
-
+        assert callable(be.generate_ife_data)
     def test_generate_cce_data_exists(self):
-        try:
-            assert callable(be.generate_cce_data)
-        except Exception:
-            pass
+        assert callable(be.generate_cce_data)

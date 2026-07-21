@@ -110,10 +110,10 @@ class TestAssertRealData:
 
     def test_passes_with_provenance_kwarg(self):
         df = pd.DataFrame({"a": [1, 2, 3]})
-        try:
-            audit.assert_real_data(df, context="test", provenance="manual")
-        except (TypeError, audit.MockDataError):
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_rejects_known_sentinel(self):
         df = pd.DataFrame({"y_MOCK_RANDOM": [0.1, 0.2, 0.3]})
@@ -143,11 +143,10 @@ class TestAuditDIDCall:
             return x * 2
 
         df = pd.DataFrame({"a": [1, 2, 3]})
-        try:
-            result = my_func(df)
-            # Should return either the value or wrapped result
-        except audit.MockDataError:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 # ─── Installation helpers ───────────────────────────────────────────────────

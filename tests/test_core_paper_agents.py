@@ -35,13 +35,10 @@ class TestAgentConfig:
 
 class TestBaseAgent:
     def test_class_methods(self):
-        try:
-            for name in dir(pa.BaseAgent):
-                if not name.startswith("_"):
-                    attr = getattr(pa.BaseAgent, name, None)
-                    assert attr is not None
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestContentRefinementAgent:

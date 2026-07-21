@@ -191,18 +191,18 @@ class TestGlobalFunctions:
     def test_reset_observer(self):
         fn = getattr(mod, "reset_observer", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
     def test_auto_instrument(self):
         fn = getattr(mod, "auto_instrument", None)
         if fn is None: pytest.skip("not present")
-        try:
-            fn()
-        except Exception:
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestAllClasses:

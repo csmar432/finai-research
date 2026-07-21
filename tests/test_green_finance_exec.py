@@ -70,10 +70,10 @@ class TestValidate:
 
 class TestBuildPanel:
     def test_minimal_data(self, d):
-        try:
-            d.build_panel({"esg": pd.DataFrame({"a": [1]})})
-        except (KeyError, ValueError, TypeError, AttributeError, RuntimeError, DataSourceError):
-            pass
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        pytest.xfail(
+            reason="no real assertion",
+        )
 
 
 class TestFetchData:
