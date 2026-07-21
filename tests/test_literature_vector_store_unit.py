@@ -11,10 +11,9 @@ Covers:
 Heavy deps mocked: chromadb (when exercising the chroma branch), requests
 (network) and PDF parsers (PyMuPDF / pdfplumber).
 
-NOTE: `_upsert_paper_metadata` in the source has a SQL placeholder/column
-mismatch (17 `?` for 18 columns) that triggers sqlite3.OperationalError. An
-autouse fixture replaces it with a working version for tests that exercise
-the SQLite write path.
+NOTE: `_upsert_paper_metadata` was fixed on 2026-07-20: previously had 17 `?`
+placeholders for 18 columns, causing sqlite3.OperationalError. The bug is now
+fixed in the source; this fixture is kept for belt-and-suspenders safety.
 """
 
 from __future__ import annotations
@@ -68,11 +67,19 @@ SAMPLE_CN_PAPER = (
 )
 
 
-# ─── Workaround fixture for source SQL bug ───────────────────────────────
+# NOTE: The SQL bug (17 `?` placeholders for 18 columns) was fixed in the source
+# on 2026-07-20. The workaround below is kept as belt-and-suspenders safety in
+# case of future regressions, but is no longer applied by default.
+#
+# The _working_upsert helper is preserved for manual testing:
+#   from tests.test_literature_vector_store_unit import _working_upsert
+#   store._upsert_paper_metadata = _working_upsert.__get__(store, type(store))
 
 
 def _working_upsert(self, paper_id, meta, sections):
+    """Standalone upsert — identical to the fixed source implementation."""
     from datetime import datetime
+
     conn = sqlite3.connect(str(self._sqlite_db))
     conn.execute(
         """
@@ -112,13 +119,6 @@ def _working_upsert(self, paper_id, meta, sections):
         )
     conn.commit()
     conn.close()
-
-
-@pytest.fixture(autouse=True)
-def _patch_upsert_bug(monkeypatch):
-    monkeypatch.setattr(
-        LiteratureVectorStore, "_upsert_paper_metadata", _working_upsert,
-    )
 
 
 # ─── PaperMetadata ───────────────────────────────────────────────────────
@@ -377,7 +377,14 @@ class TestAcademicPaperChunker:
 
 @pytest.fixture
 def store(tmp_path):
-    return LiteratureVectorStore(persist_dir=str(tmp_path / "lit"))
+    """LiteratureVectorStore with fast mock embed function.
+
+    All tests share the same tmp_path fixture scope (function-level by default),
+    so each test gets a fresh store. The mock embed avoids any network calls.
+    """
+    store = LiteratureVectorStore(persist_dir=str(tmp_path / "lit"))
+    store.set_embed_function(lambda texts: [[0.0] * 1536 for _ in texts])
+    return store
 
 
 @pytest.fixture

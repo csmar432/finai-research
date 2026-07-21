@@ -395,10 +395,10 @@ class LiteratureVectorStore:
         if self._embed_fn:
             return self._embed_fn(texts)
 
-        # Fallback: 使用 OpenAI ada-002 或随机向量
+        # Fallback: 使用 OpenAI API
         try:
             import os, requests
-            api_key = os.getenv("OPENAI_API_KEY", os.getenv("DEEPSEEK_API_KEY", ""))
+            api_key = os.getenv("OPENAI_API_KEY", "")
             if api_key:
                 return self._openai_embed(texts, api_key)
         except Exception:  # noqa: S110
@@ -782,7 +782,7 @@ class LiteratureVectorStore:
             (paper_id, title, journal, year, authors, keywords, methods, topics,
              added_at, updated_at, section_count, chunk_count, arxiv_id, doi, url,
              local_path, citations, abstract)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             paper_id,
             meta.get("title", ""),
