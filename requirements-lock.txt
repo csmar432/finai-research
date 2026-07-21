@@ -87,7 +87,7 @@ pandas==3.0.3
     #   statsmodels
 patsy==1.0.2
     # via statsmodels
-pillow==12.2.0
+pillow==12.3.0
     # via matplotlib
 pluggy==1.6.0
     # via
