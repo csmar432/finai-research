@@ -12,10 +12,8 @@ Covers:
 """
 from __future__ import annotations
 
-import io
 import json
 import sys
-import contextlib
 from pathlib import Path
 
 import pytest
@@ -28,8 +26,6 @@ from scripts.research_framework.design_doc import (
     DesignDocVersioning,
     DesignSnapshot,
     new_versioning,
-    MATERIAL_FIELDS,
-    TRACKED_FIELDS,
 )
 
 

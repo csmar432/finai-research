@@ -26,9 +26,6 @@ try:
         record_random_seed,
         get_random_seeds,
         DiDEstimationResult,
-        _test_parallel_trends,
-        _bacon_decomposition,
-        _honest_did_simplified,
         _build_honest_did_interpretation,
         EstimatorUnavailableError,
     )

@@ -104,7 +104,6 @@ class TestPaperReader:
     def test_method_signatures(self):
         cls = getattr(mod, "PaperReader", None)
         if cls is None: pytest.skip("not present")
-        import inspect
         for method in ["download", "read", "summarize", "ask", "compare"]:
             if hasattr(cls, method):
                 fn = getattr(cls, method)

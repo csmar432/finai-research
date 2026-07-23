@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    from scripts.research_directions import BaseResearchDirection, get_registry
+    from scripts.research_directions import get_registry
 except Exception as _exc:
     pytest.skip(f"research_directions not importable: {_exc}", allow_module_level=True)
 

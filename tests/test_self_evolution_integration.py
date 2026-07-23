@@ -1,9 +1,7 @@
 """Integration tests for SelfEvolutionEngine hot-path."""
-import pytest
 import tempfile
-import json
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from scripts.core.self_evolution import SelfEvolutionEngine, EvolutionEvent
 

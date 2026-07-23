@@ -15,7 +15,6 @@ if str(ROOT) not in sys.path:
 
 try:
     import pandas as pd
-    import numpy as np
     from scripts.quantitative_factor_library import (
         FactorLibrary, EventStudy, EventStudyResult,
     )

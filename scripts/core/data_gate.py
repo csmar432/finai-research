@@ -87,7 +87,6 @@ class DataGateResult:
 
 class RealDataError(Exception):
     """数据未就绪时尝试进入写作阶段抛出。"""
-    pass
 
 
 # ─── Data Gate ─────────────────────────────────────────────────────────────────

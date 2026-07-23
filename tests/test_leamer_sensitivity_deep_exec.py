@@ -24,7 +24,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-import pytest
 import numpy as np
 import pandas as pd
 
@@ -588,11 +587,7 @@ class TestModuleExports:
 
     def test_all_includes_leamer_sensitivity(self):
         from scripts.research_framework.leamer_sensitivity import (
-            LeamerSensitivity, LeamerResult,
-            EbersteinMagnacSensitivity, BoundingResult,
-            OlleyPakesEstimator, LevinsohnPetrinEstimator,
-            ContagionTest, SpilloverIndex,
-            CreditRiskSensitivity, test_ar2,
+            LeamerSensitivity, test_ar2,
             DynamicPanelDiagnostics,
         )
         assert LeamerSensitivity is not None

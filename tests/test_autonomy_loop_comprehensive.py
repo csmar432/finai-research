@@ -5,9 +5,7 @@ ExecutionResult, FigureEvaluation, AutonomyLoopResult.
 All tests use mocking — no real sandbox, VLM, or model access needed.
 """
 import pytest
-import re
-import inspect
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import sys
 import os
 

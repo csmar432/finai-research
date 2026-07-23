@@ -7,7 +7,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 
 from scripts.core.orchestrator import (
     AgentOrchestrator,
@@ -426,7 +426,6 @@ class TestPipelineExecution:
         mock_gateway = MagicMock()
         orch = AgentOrchestrator(gateway=mock_gateway)
 
-        from scripts.core.agents.base import AgentResult
 
         mock_result = PipelineResult(
             pipeline_name="test",
@@ -446,7 +445,7 @@ class TestPipelineExecution:
 
 class TestPipelineResult:
     def test_pipeline_result_has_all_fields(self):
-        from scripts.core.agents.base import AgentResult
+        pass
 
         result = PipelineResult(
             pipeline_name="test",

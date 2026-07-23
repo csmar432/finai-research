@@ -17,7 +17,6 @@ try:
     import numpy as np
     from scripts.research_rag import (
         Chunk,
-        RetrievalResult,
         Embedder,
         BM25Searcher,
         FAISS_AVAILABLE,

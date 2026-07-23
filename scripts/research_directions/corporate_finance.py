@@ -36,7 +36,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd

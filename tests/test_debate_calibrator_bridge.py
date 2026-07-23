@@ -242,7 +242,7 @@ class TestRecordDebateBiases(unittest.TestCase):
 
     def test_records_bias_for_unresolved_issues(self):
         """Method calls db.record_review when unresolved issues exist."""
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         dv = _make_dummy_debate_verdict()
         bridge = DebateCalibratorBridge(llm_gateway=None, db_path=":memory:")
@@ -341,7 +341,7 @@ class TestJournalSpecificCalibration(unittest.TestCase):
 
     def test_standardization_method_used(self):
         """Bridge calls calibrator with standardization method."""
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         bridge = DebateCalibratorBridge(
             llm_gateway=None,

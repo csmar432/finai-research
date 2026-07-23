@@ -1059,7 +1059,6 @@ def check_parallel_trend(
                     interaction_pvals[col] = float(model.pvalues[idx])
             except Exception as exc:
                 logger.warning(f"Event-study coefficient extraction failed (col={col}): {exc}")
-                pass
 
         # 整理结果
         pre_coefs = []
@@ -1301,7 +1300,6 @@ def check_placebo(
                 placebo_coefs.append(fake_coef)
             except Exception as exc:
                 logger.warning(f"Placebo simulation {sim_i} failed: {exc}")
-                pass
 
         if not placebo_pvalues:
             return {

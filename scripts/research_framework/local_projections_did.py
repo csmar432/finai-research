@@ -37,7 +37,7 @@ from __future__ import annotations
 
 import logging
 import warnings
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -390,7 +390,7 @@ def _wild_cluster_bootstrap_lp(
         含 ci_lower / ci_upper / pval / n_bootstrap。
     """
     try:
-        from scipy import stats
+        pass
     except ImportError:
         return {"ci_lower": np.nan, "ci_upper": np.nan, "pval": np.nan}
 

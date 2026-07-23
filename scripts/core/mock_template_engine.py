@@ -38,7 +38,6 @@ logger = __import__("logging").getLogger(__name__)
 
 class MockTemplateEngineError(Exception):
     """MockTemplateEngine 内部错误（不应该发生）。"""
-    pass
 
 
 # ─── Task Types ────────────────────────────────────────────────────────────────

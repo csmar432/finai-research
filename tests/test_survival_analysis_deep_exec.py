@@ -81,17 +81,13 @@ try:
         CompetingRisks,
         TimeVaryingCovariates,
         SurvivalSuite,
-        _significance_mark,
-        _load_lifelines,
         _partial_log_likelihood,
         _cox_gradient_hessian,
-        _fit_cox_newton_raphson,
         _fit_cox_minimize,
         _concordance_index,
         _log_rank_test,
         _breslow_test,
         _manual_cox_fit,
-        _significance_mark,
     )
 except Exception as exc:
     pytest.skip(f"survival_analysis not importable: {exc}", allow_module_level=True)

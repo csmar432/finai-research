@@ -1,7 +1,7 @@
 """Unit tests for scripts/core/halt_rules_registry.py."""
 from __future__ import annotations
 
-import ast, re, sys
+import sys
 from pathlib import Path
 
 import pytest

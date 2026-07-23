@@ -36,9 +36,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from scripts.core.normalize import (
     setup_reproducible_env,
-    normalize_path,
-    normalize_json_dumps,
-    normalize_datetime,
     normalize_random_seed,
     normalize_line_endings,
 )

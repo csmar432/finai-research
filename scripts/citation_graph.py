@@ -36,6 +36,17 @@ try:
 except ImportError:
     _REQUESTS_AVAILABLE = False
 
+# P5-6 audit-2026-07-23: 模块级 Session
+if _REQUESTS_AVAILABLE:
+    try:
+        from requests.adapters import HTTPAdapter as _HTTPAdapter
+        _SESSION = requests.Session()
+        _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+        _SESSION.mount("http://", _adapter)
+        _SESSION.mount("https://", _adapter)
+    except Exception:   # noqa: S110
+        _SESSION = requests
+
 # ── 配置 ────────────────────────────────────────────────────────────────────
 
 SS_API_BASE = "https://api.semanticscholar.org/graph/v1"
@@ -163,7 +174,7 @@ def _ss_get(path: str, params: dict | None = None) -> dict | None:
         headers = {**SS_HEADERS}
         if SS_API_KEY:
             headers["x-api-key"] = SS_API_KEY
-        resp = requests.get(
+        resp = _SESSION.get(
             f"{SS_API_BASE}{path}",
             params=params,
             headers=headers,
@@ -186,7 +197,7 @@ def _oa_search(query: str, limit: int = 10) -> list[dict]:
     if not _REQUESTS_AVAILABLE:
         return []
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             f"{OPENALEX_BASE}/works",
             params={
                 "search": query,

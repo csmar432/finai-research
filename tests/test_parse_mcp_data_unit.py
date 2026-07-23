@@ -1,7 +1,6 @@
 """Unit tests for scripts/parse_mcp_data.py."""
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 

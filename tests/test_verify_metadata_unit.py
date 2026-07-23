@@ -7,7 +7,6 @@ import sys
 from contextlib import redirect_stdout
 from pathlib import Path
 
-import pytest
 
 SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "verify_metadata.py"
 SCRIPTS_DIR = SCRIPT.parent
@@ -17,7 +16,7 @@ def _run_with_base(mcp_root: Path) -> str:
     """Import verify_metadata, patch `base`, exec the body, capture stdout."""
     sys.path.insert(0, str(SCRIPTS_DIR))
     try:
-        import verify_metadata as vm
+        pass
         # Run body — monkey-patch the iterdir lookup by patching `base`
         # to point at our tmp_path.  Note: the script body reads `base` once
         # via the module-level name so patching the attribute should work.

@@ -8,7 +8,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import time
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from scripts.core.hitl_gate import (
     HITLGate,

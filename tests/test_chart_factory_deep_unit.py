@@ -7,7 +7,6 @@ ChartRecord, ChartRegistry, and constants.
 
 from __future__ import annotations
 
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -22,11 +21,8 @@ if str(ROOT) not in sys.path:
 try:
     from scripts.core.chart_factory import (
         AdvancedChartFactory,
-        ChartRecord,
         ChartRegistry,
         _apply_style,
-        CB_PALETTE,
-        CHART_TYPES,
     )
 except Exception as _exc:
     pytest.skip(f"chart_factory not importable: {_exc}", allow_module_level=True)
@@ -289,7 +285,7 @@ class TestSunburstMethod:
     def test_sunburst_returns_path(self):
         """sunburst() returns a Path."""
         try:
-            import squarify
+            pass
         except ImportError:
             pytest.skip("squarify not available")
 

@@ -8,7 +8,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 import pytest
-from dataclasses import fields
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -321,7 +320,7 @@ class TestSaveWfJsonFallback:
         if fn is None:
             pytest.skip("not present")
         try:
-            import tempfile, json
+            import tempfile
             payload = {"topic": "t", "nodes": [], "edges": []}
             with tempfile.TemporaryDirectory() as tmp:
                 fn(payload)

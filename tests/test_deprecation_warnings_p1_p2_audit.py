@@ -16,7 +16,6 @@ import warnings
 
 import numpy as np
 import pandas as pd
-import pytest
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -27,7 +26,6 @@ import pytest
 def test_mediation_module_emits_deprecation_warning():
     """Importing scripts.research_framework.mediation must emit DeprecationWarning."""
     import importlib
-    import scripts.research_framework
 
     # Force re-import (cached otherwise)
     mod_name = "scripts.research_framework.mediation"

@@ -191,7 +191,7 @@ jobs:
         #   - signal.pause() 不支持 → event_monitor.py 使用 polling loop
         #   - os.fork 不支持 → sandbox.py 使用 subprocess
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]   # P5-2 audit-2026-07-23
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

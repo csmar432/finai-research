@@ -13,7 +13,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts import literature_download as ld
     from scripts.literature_download import (
         PaperRecord,
         _normalize_arxiv_id,
@@ -26,7 +25,6 @@ try:
         search_openalex,
         download_batch,
         search_and_download,
-        main,
     )
 except Exception as e:
     pytest.skip(f"literature_download not importable: {e}", allow_module_level=True)

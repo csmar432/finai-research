@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -25,7 +24,6 @@ try:
         update_status,
         generate_submission_package,
         PaperSubmitter,
-        main,
         TRACK_FILE,
     )
 except Exception as e:

@@ -81,7 +81,6 @@ _DATA_SOURCE_MOCK_VALUES = [
 
 class MockDataError(Exception):
     """检测到使用模拟数据时抛出（禁止在正式 DID 分析中使用）。"""
-    pass
 
 
 # ─── Audit Result ──────────────────────────────────────────────────────────────

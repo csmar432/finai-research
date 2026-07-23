@@ -240,7 +240,6 @@ class AdvancedChartFactory:
             output_name: 输出文件名（不含后缀）
         """
         try:
-            import matplotlib
             import matplotlib.pyplot as plt
             from matplotlib.sankey import Sankey
         except ImportError:

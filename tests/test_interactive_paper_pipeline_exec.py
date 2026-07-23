@@ -19,16 +19,12 @@ try:
         ask_user,
         confirm_proceed,
         get_llm_response,
-        call_deepseek,
         _generate_mock_response,
         step1_topic_selection,
         step2_outline_generation,
         step3_chapter_writing,
         step4_data_analysis,
-        _run_empirical_analysis,
-        _run_empirical_analysis_with_config,
         step5_finalize,
-        main,
     )
 except Exception as e:
     pytest.skip(f"interactive_paper_pipeline not importable: {e}", allow_module_level=True)
@@ -153,7 +149,6 @@ class TestCallDeepseek:
     @pytest.mark.skip(reason="Behavior differs between local (loads .env.local) and CI (no .env). Skip.")
     def test_no_key(self):
         """No API key, should raise RuntimeError. Skipped - env dependent."""
-        pass
 
 
 class TestSteps:

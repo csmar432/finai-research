@@ -5,15 +5,11 @@ Vuong 模型选择检验 + Clarke 检验。
 
 from __future__ import annotations
 
-import numpy as np
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.vuong_test import (
-        VuongTest, VuongResult, ClarkeTest, ClarkeTestEN,
-        vuong_did_vs_rdd, vuong_different_controls, vuong_different_samples,
-        vuong_linear_vs_logit,
+        VuongTest, VuongResult,
     )
     assert VuongTest is not None
     assert VuongResult is not None

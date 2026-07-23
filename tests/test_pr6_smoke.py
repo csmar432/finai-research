@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
@@ -19,7 +18,6 @@ def test_pr1_progressive_clarifier_import():
         ProgressiveClarifier,
         ClarificationStage,
         ResearchProfile,
-        VariableCandidate,
     )
     assert ProgressiveClarifier is not None
     assert ClarificationStage.QUESTION_TYPE.value == "question_type"
@@ -78,7 +76,6 @@ def test_pr3_airouter_has_mock_fallback():
 
 
 def test_pr4_latex_auto_detect():
-    import shutil
     from scripts.journal_template import JournalTemplate
 
     jt = JournalTemplate.__new__(JournalTemplate)

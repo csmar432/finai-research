@@ -14,7 +14,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    import numpy as np
     import pandas as pd
     from scripts.research_directions.corporate_finance import CorporateFinanceDirection
 except Exception as exc:

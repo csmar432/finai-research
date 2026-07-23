@@ -753,7 +753,6 @@ def _local_linear_regression(
     dict
         含 coef, se, fitted values, residuals, df_residual.
     """
-    import statsmodels.api as sm
 
     x_c = (df_sub[x_var] - cutoff).values.astype(float)
     y = df_sub[y_var].values.astype(float)

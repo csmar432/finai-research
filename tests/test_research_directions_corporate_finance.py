@@ -31,12 +31,10 @@ class TestModule:
 
     def test_fetch_data_signature(self):
         if hasattr(mod, "fetch_data"):
-            import inspect
             assert callable(mod.fetch_data)
 
     def test_build_panel_signature(self):
         if hasattr(mod, "build_panel"):
-            import inspect
             assert callable(mod.build_panel)
 
 

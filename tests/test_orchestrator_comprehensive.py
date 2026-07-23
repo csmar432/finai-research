@@ -119,8 +119,7 @@ class TestPipelineResult:
 
     def test_pipeline_result_creation(self):
         """PipelineResult can be created."""
-        from scripts.core.orchestrator import PipelineResult, PipelineStage
-        from scripts.core.agents.base import AgentResult
+        from scripts.core.orchestrator import PipelineResult
 
         result = PipelineResult(
             pipeline_name="test_pipeline",
@@ -516,7 +515,6 @@ class TestRepr:
     def test_repr_shows_agent_count(self):
         """__repr__ includes agent count."""
         from scripts.core.orchestrator import AgentOrchestrator
-        from scripts.core.agents.base import AgentConfig, BaseAgent
 
         mock_gateway = MagicMock()
         mock_gateway.register_agent = MagicMock()

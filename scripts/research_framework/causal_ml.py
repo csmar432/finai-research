@@ -65,7 +65,7 @@ warnings.filterwarnings("ignore")
 
 _ECONML_AVAILABLE = False
 try:
-    from econml.dml import CausalForestDML, LinearDML
+    from econml.dml import CausalForestDML
 
     _ECONML_AVAILABLE = True
     _log.info("[CausalML] econml detected — using native CausalForestDML")

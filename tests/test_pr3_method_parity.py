@@ -8,7 +8,6 @@ import pandas as pd
 import pytest
 
 from scripts.research_framework.exact_permutation import (
-    ExactPermutationResult,
     _enumerate_multinomial_labels,
     exact_permutation_test,
 )

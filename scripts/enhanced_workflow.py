@@ -46,30 +46,21 @@ try:
     from scripts.core.analyst import (
         AIParliament,
         AIParliamentHITLIntegration,
-        MemberType,
     )
     from scripts.core.analyst import (
-        AnalystType,
         EnhancedEarningsQualityAnalyst,
         EnhancedFinancialAnalyst,
         EnhancedValuationAnalyst,
-        ParallelAnalystOrchestrator,
     )
     from scripts.core.citation_verifier import (
-        CitationContextResult,
-        CitationIntentResult,
         CitationVerifier,
-        EnhancedCitationResult,
     )
     from scripts.core.halt_rules_registry import (
         HaltRuleChecker,
         HaltRuleRegistry,
-        RuleSeverity,
     )
     from scripts.core.self_evolution import (
         SelfEvolutionAutoTrigger,
-        SelfEvolutionEngine,
-        SessionEvolutionIntegration,
     )
     ENHANCED_MODULES_AVAILABLE = True
 except ImportError as e:

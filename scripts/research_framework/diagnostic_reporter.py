@@ -17,7 +17,6 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum
 
-import numpy as np
 import pandas as pd
 
 __all__ = [

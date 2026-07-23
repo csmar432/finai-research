@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import logging
 import warnings
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -436,7 +436,7 @@ class OaxacaBlinderDecomposition:
         use_burnham : 是否用 Burnham (1991) 权重（避免"任意分组"问题）
         """
         try:
-            import statsmodels.api as sm
+            pass
         except ImportError:
             _log.warning("[OB] statsmodels not installed — using numpy OLS")
 

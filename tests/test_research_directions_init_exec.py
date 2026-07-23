@@ -12,14 +12,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    from scripts.research_directions import BaseResearchDirection as _BD
+    pass
     # Re-import core classes from __init__
-    from scripts.research_directions import (
-        LiteratureParser, ResearchGapScorer, MethodologyStep,
-        MethodologyChain, ResearchDirection, DirectionRegistry,
-        BaseResearchDirection, get_registry, DirectionFactory,
-        DirectionRecommender,
-    )
     mod = sys.modules["scripts.research_directions"]
 except Exception as _exc:
     pytest.skip(f"research_directions not importable: {_exc}", allow_module_level=True)
@@ -217,7 +211,6 @@ class TestBaseResearchDirection:
         cls = getattr(mod, "BaseResearchDirection", None)
         if cls is None: pytest.skip("not present")
         # Verify abstract methods
-        import inspect
         for m in ["fetch_data", "build_panel", "run_pipeline"]:
             if hasattr(cls, m):
                 fn = getattr(cls, m)

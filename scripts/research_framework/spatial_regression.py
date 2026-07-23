@@ -821,7 +821,7 @@ class SpatialDurbinModel:
         SpatialEstimationResult
         """
         try:
-            from scipy import optimize, stats
+            from scipy import stats
         except ImportError:
             _log.error("[SDM] scipy not installed")
             return self._empty_result()

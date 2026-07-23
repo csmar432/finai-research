@@ -39,6 +39,16 @@ logger = logging.getLogger(__name__)
 
 # ─── 可选依赖 ──────────────────────────────────────────────────────────────
 
+# P5-6 audit-2026-07-23: 模块级 shared Session — keep-alive + 连接池复用
+try:
+    import requests as _requests_mod
+    from requests.adapters import HTTPAdapter as _HTTPAdapter
+    _SESSION = _requests_mod.Session()
+    _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+    _SESSION.mount("https://", _adapter)
+except Exception:   # noqa: S110
+    _SESSION = _requests_mod if "_requests_mod" in dir() else None  # type: ignore[assignment]  # fallback
+
 try:
     import chromadb
     from chromadb.config import Settings as ChromaSettings
@@ -393,7 +403,7 @@ class LiteratureVectorStore:
 
         # Fallback: 使用 OpenAI API
         try:
-            import os, requests
+            import os
             api_key = os.getenv("OPENAI_API_KEY", "")
             if api_key:
                 return self._openai_embed(texts, api_key)
@@ -407,13 +417,13 @@ class LiteratureVectorStore:
 
     def _openai_embed(self, texts: list[str], api_key: str) -> list[list[float]]:
         """通过 OpenAI API 获取 embedding。"""
-        import requests
+        # P5-6 audit-2026-07-23: 复用模块级 _SESSION（keep-alive + 连接池）
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         embeddings = []
         for i in range(0, len(texts), 100):
             batch = texts[i:i + 100]
             payload = {"model": "text-embedding-3-small", "input": [t[:8000] for t in batch]}
-            r = requests.post(
+            r = _SESSION.post(
                 "https://api.openai.com/v1/embeddings",
                 headers=headers, json=payload, timeout=30,
             )

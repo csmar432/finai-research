@@ -478,7 +478,7 @@ class TestEmbedFunctions:
         monkeypatch.setenv("OPENAI_API_KEY", "fake-key")
         s = LiteratureVectorStore(persist_dir=str(tmp_path / "e3"))
         s._embed_fn = None
-        with patch("requests.post", side_effect=Exception("network down")):
+        with patch("scripts.core.literature_vector_store._SESSION.post", side_effect=Exception("network down")):
             out = s._embed_texts(["a"])
         assert isinstance(out, list)
         assert len(out) == 1
@@ -494,7 +494,7 @@ class TestOpenAIEmbed:
             ]
         }
         fake.raise_for_status = MagicMock()
-        with patch("requests.post", return_value=fake) as m:
+        with patch("scripts.core.literature_vector_store._SESSION.post", return_value=fake) as m:
             out = store._openai_embed(["a", "b"], api_key="fake")
         assert out == [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
         assert m.called
@@ -508,7 +508,7 @@ class TestOpenAIEmbed:
             "data": [{"embedding": [0.3] * 4} for _ in range(50)]}})
         for r in (r1, r2, r3):
             r.raise_for_status = MagicMock()
-        with patch("requests.post", side_effect=[r1, r2, r3]) as m:
+        with patch("scripts.core.literature_vector_store._SESSION.post", side_effect=[r1, r2, r3]) as m:
             out = store._openai_embed([f"t{i}" for i in range(250)], api_key="k")
         assert len(out) == 250
         assert m.call_count == 3

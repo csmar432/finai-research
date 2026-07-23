@@ -703,7 +703,7 @@ class TestModernDiDEdgeCases:
 
     def test_parallel_trends_no_pre_periods(self):
         """parallel_trends_test() handles no pre-periods gracefully."""
-        from scripts.research_framework.modern_did import ModernDiDEngine, _test_parallel_trends
+        from scripts.research_framework.modern_did import _test_parallel_trends
 
         # All treated from start
         df = pd.DataFrame({

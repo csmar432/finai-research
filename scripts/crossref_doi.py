@@ -19,6 +19,11 @@ from dataclasses import dataclass
 
 import requests
 
+# P5-6 audit-2026-07-23: 模块级 Session
+from requests.adapters import HTTPAdapter as _HTTPAdapter
+_SESSION = requests.Session()
+_SESSION.mount("https://", _HTTPAdapter(pool_connections=10, pool_maxsize=10))
+
 _log = logging.getLogger(__name__)
 
 API_BASE = "https://api.crossref.org/works"
@@ -100,7 +105,7 @@ class CrossRefClient:
         self._rate_limit()
 
         try:
-            resp = requests.get(url, headers=headers, timeout=15)
+            resp = _SESSION.get(url, headers=headers, timeout=15)
             if resp.status_code == 404:
                 _log.warning("[CrossRef] DOI not found: %s", doi)
                 return None

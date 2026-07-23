@@ -41,7 +41,6 @@ try:
         _ate_ci,
         _propensity_score,
         _rosenbaum_bounds,
-        _ECONML_AVAILABLE,
     )
 except Exception as exc:
     pytest.skip(f"causal_ml not importable: {exc}", allow_module_level=True)

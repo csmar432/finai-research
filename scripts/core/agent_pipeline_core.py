@@ -36,7 +36,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Any
 
 __all__ = [
     "PipelineStage",
@@ -421,7 +421,6 @@ class AgentOrchestratorPipeline:
         """
         try:
             from scripts.core.orchestrator import AgentOrchestrator, PipelineStep
-            from scripts.core.agents.base import AgentResult
 
             # ── Build single-step pipeline for this stage only ──────────────────
             # Map PipelineStage → orchestrator agent name

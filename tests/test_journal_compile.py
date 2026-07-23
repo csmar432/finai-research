@@ -91,7 +91,6 @@ class TestCompileMethod:
     def test_compile_multiple_passes(self, tmp_path):
         """compile() must run the engine at least twice (for cross-refs, ToC)."""
         from unittest.mock import patch, MagicMock
-        import shutil
         template = self._make_template()
 
         tex_file = tmp_path / "test.tex"

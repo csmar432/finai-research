@@ -14,10 +14,8 @@ Run:
 from __future__ import annotations
 
 import json
-import tempfile
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -31,7 +29,6 @@ try:
     from scripts.research_framework.report_generator import (
         ReportGenerator,
         TableFormatter,
-        _latex_escape,
         ZH_EN,
         EN_TEXT,
         PROVENANCE_LATEX_MACROS,

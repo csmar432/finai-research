@@ -446,7 +446,7 @@ class CheckpointedEnhancedPipeline:
         if not getattr(self, "enable_checkpoint", True):
             return None
         try:
-            from scripts.core.hitl_gate import HITLGate, GateState
+            from scripts.core.hitl_gate import HITLGate
             gate = HITLGate()
             record = gate.hold(stage=stage_name, content=content, question=question)
             return {

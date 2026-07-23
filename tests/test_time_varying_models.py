@@ -5,13 +5,11 @@
 
 from __future__ import annotations
 
-import numpy as np
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.time_varying_models import (
-        TVPVAR, DCCGARCH, DCCGARCHResult, Path, Any,
+        TVPVAR, DCCGARCH,
     )
     assert TVPVAR is not None
     assert DCCGARCH is not None

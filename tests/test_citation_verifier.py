@@ -1,5 +1,4 @@
 """CitationVerifier 单元测试"""
-import pytest
 from scripts.core.citation_verifier import CitationVerifier, CitationCheckResult
 
 

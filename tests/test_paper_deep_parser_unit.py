@@ -16,7 +16,7 @@ import json
 import sys
 import types
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
@@ -362,7 +362,6 @@ def _install_pytesseract_mock(monkeypatch, *, text="OCR TEXT"):
 
 
 def _install_pil_mock(monkeypatch):
-    import io
     try:
         from PIL import Image  # noqa: F401
     except Exception:

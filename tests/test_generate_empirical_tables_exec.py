@@ -5,7 +5,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -15,17 +14,10 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts import generate_empirical_tables as get_
     from scripts.generate_empirical_tables import (
         load_tariff_data,
         _generate_mock_panel,
         _generate_mock_did,
-        generate_descriptive_stats,
-        generate_core_regression,
-        generate_did_regression,
-        generate_heterogeneity,
-        generate_mediation,
-        generate_robustness,
         generate_all_tables,
         load_tables_from_files,
     )

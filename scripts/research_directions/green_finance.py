@@ -502,7 +502,6 @@ class GreenFinanceDirection(BaseResearchDirection):
         rows = []
         for dep in dep_vars_available:
             try:
-                import statsmodels.api as sm
                 import statsmodels.formula.api as smf
 
                 if "treat" in df.columns and "post" in df.columns:

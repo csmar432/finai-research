@@ -11,7 +11,7 @@ sys.path.insert(0, str(project_root))
 import pytest
 import numpy as np
 import pandas as pd
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 
 
 # ─── NumPy _NoValue singleton unification (pytest-cov workaround) ────────────

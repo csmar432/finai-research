@@ -143,7 +143,7 @@ class TestCrossRefClientGetMetadataMocked:
                 "page": "10-20",
             }
         }
-        with patch("scripts.crossref_doi.requests.get", return_value=mock_response):
+        with patch("scripts.crossref_doi._SESSION.get", return_value=mock_response):
             result = c.get_metadata_by_doi("10.1234/test")
         assert result is not None
         assert result.doi == "10.1234/test"

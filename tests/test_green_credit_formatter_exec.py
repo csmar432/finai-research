@@ -13,7 +13,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts import green_credit_formatter as gcf
     from scripts.green_credit_formatter import (
         LATEX_TEMPLATE,
         md_to_latex,

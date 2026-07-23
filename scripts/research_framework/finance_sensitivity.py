@@ -1085,7 +1085,6 @@ class CreditRiskSensitivity:
         """
         try:
             import statsmodels.api as sm
-            from scipy import stats as scipy_stats
         except ImportError:
             _log.error("[CreditRiskSensitivity] Required package missing")
             return {"error": "statsmodels or scipy required"}

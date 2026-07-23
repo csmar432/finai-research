@@ -142,7 +142,6 @@ class TestTemplateHelpers:
 class TestIntegrationWithBase:
     def test_multilang_integrates_with_base(self):
         # Verify the multilang templates work with the base template system
-        from scripts.research_framework.journal_templates_multilang import get_template
         from scripts.journal_template import get_all_templates, get_template as get_base
         all_t = get_all_templates()
         assert "JPE" in all_t

@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -12,7 +12,6 @@ from scripts.core.planner import (
     KEYWORD_PATTERNS,
     REGEX_PATTERNS,
     ResearchPlanner,
-    Task,
     TaskStatus,
     TaskType,
 )
@@ -160,7 +159,6 @@ class TestSuggestTools:
 
     def test_tool_selector_has_select_and_report_methods(self):
         from scripts.core.tool_selector import ToolSelector
-        from scripts.core.memory import ResearchMemory
         from unittest.mock import MagicMock
         # Use spec=True to avoid initializing ResearchMemory (which triggers DB init)
         mock_mem = MagicMock(spec=True)

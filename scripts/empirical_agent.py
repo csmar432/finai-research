@@ -76,8 +76,6 @@ _log.setLevel(logging.INFO)
 
 try:
     from scripts.econometrics import (
-        DIDRegression,
-        OLSRegression,
         vif_test,
     )
     from scripts.empirical_advisor import (

@@ -327,7 +327,6 @@ class InternationalFinanceDirection(BaseResearchDirection):
     def _run_var_erpt(self, df: "pd.DataFrame") -> dict:
         """VAR model for exchange rate pass-through estimation."""
         try:
-            import statsmodels.api as sm
             from statsmodels.tsa.api import VAR
 
             erpt_vars = [c for c in ["delta_exchange_rate", "cpi", "import_price"]
@@ -374,8 +373,7 @@ class InternationalFinanceDirection(BaseResearchDirection):
         """Diebold-Yilmaz spillover index for global factor contagion."""
         try:
             # Use GARCH-in-mean for volatility spillover
-            import arch.bootstrap as bs
-            import arch.data.sp500 as spdata
+            pass
 
             # Identify numeric return columns
             return_cols = [

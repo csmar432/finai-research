@@ -35,7 +35,7 @@ from typing import Any, TypeVar, get_type_hints
 from pydantic import BaseModel, Field
 
 try:
-    from pydantic import ConfigDict
+    pass
 except ImportError:  # pragma: no cover
     pass  # type: ignore[assignment,no-redef]
 

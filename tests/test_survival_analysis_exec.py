@@ -76,7 +76,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    import scripts.research_framework.survival_analysis as mod
     from scripts.research_framework.survival_analysis import (
         CompetingRisks,
         CoxPHModel,

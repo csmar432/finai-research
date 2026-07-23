@@ -4,7 +4,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-import pytest
 
 
 class TestLatexLintInit:
@@ -85,7 +84,7 @@ class TestLatexLintBrokenFile:
 
     def test_orphan_ref_detected(self, broken_latex_tex):
         """Orphan \\ref{} is detected."""
-        from scripts.core.latex_lint import LatexLintChecker, Severity
+        from scripts.core.latex_lint import LatexLintChecker
 
         checker = LatexLintChecker(broken_latex_tex)
         issues = checker.check_all()
@@ -112,7 +111,7 @@ class TestLatexLintBrokenFile:
 
     def test_figure_missing_caption_detected(self, broken_latex_tex):
         """Figure without \\caption is detected as WARNING."""
-        from scripts.core.latex_lint import LatexLintChecker, Severity
+        from scripts.core.latex_lint import LatexLintChecker
 
         checker = LatexLintChecker(broken_latex_tex)
         issues = checker.check_all()
@@ -125,7 +124,7 @@ class TestLatexLintBrokenFile:
 
     def test_duplicate_label_detected(self, tmp_path):
         """Duplicate \\label{} keys are detected."""
-        from scripts.core.latex_lint import LatexLintChecker, Severity
+        from scripts.core.latex_lint import LatexLintChecker
 
         content = r"""\documentclass{article}
 \begin{document}
@@ -168,7 +167,7 @@ class TestLatexLintMathMode:
 
     def test_unmatched_inline_math_detected(self, math_latex_tex):
         """Unmatched inline $ math is detected."""
-        from scripts.core.latex_lint import LatexLintChecker, Severity
+        from scripts.core.latex_lint import LatexLintChecker
 
         checker = LatexLintChecker(math_latex_tex)
         issues = checker.check_all()
@@ -186,7 +185,7 @@ class TestLatexLintCitation:
 
     def test_orphan_cite_detected(self, tmp_path):
         """Orphan \\cite{} without BibTeX entry is detected."""
-        from scripts.core.latex_lint import LatexLintChecker, Severity
+        from scripts.core.latex_lint import LatexLintChecker
 
         # Create tex without cite first
         content = r"""\documentclass{article}

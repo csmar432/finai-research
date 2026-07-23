@@ -12,7 +12,6 @@ reduce pre-trend test power. These tests assert:
 
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 

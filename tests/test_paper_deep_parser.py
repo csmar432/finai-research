@@ -1,7 +1,5 @@
 """Tests for paper_deep_parser.py — PDF deep parsing engine."""
 
-import pytest
-import json
 
 
 # ─── Enums ───────────────────────────────────────────────────────────────

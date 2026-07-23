@@ -1,7 +1,6 @@
 """Tests for scripts/core/paths.py — Project root resolution."""
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 

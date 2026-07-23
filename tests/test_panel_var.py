@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import numpy as np
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.panel_var import (
-        PanelVAR, PanelVARResult, Path, Any,
+        PanelVAR, PanelVARResult,
     )
     assert PanelVAR is not None
     assert PanelVARResult is not None

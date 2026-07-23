@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from scripts.exceptions import DataSourceError
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:

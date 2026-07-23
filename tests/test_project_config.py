@@ -4,7 +4,6 @@ Tests for ProjectConfig — scripts/core/project_config.py
 
 import pytest
 import json
-import tempfile
 from pathlib import Path
 
 import sys

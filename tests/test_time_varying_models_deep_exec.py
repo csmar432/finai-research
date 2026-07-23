@@ -18,7 +18,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    import scripts.research_framework.time_varying_models as mod
     from scripts.research_framework.time_varying_models import (
         DCCGARCH,
         DCCGARCHResult,
@@ -31,11 +30,8 @@ try:
         _ensure_array,
         _fit_garch11,
         _garch11_neg_ll,
-        _irf_from_companion,
         _irf_from_var,
-        _kalman_filter_tvp,
         _sig_mark,
-        _simulation_smoother_tvp,
     )
 except Exception as e:
     pytest.skip(f"time_varying_models not importable: {e}", allow_module_level=True)

@@ -24,7 +24,6 @@ try:
         ClarkeTest,
         VuongResult,
         VuongTest,
-        vuong_different_controls,
         vuong_different_samples,
     )
     from scripts.research_framework.vuong_kob import (
@@ -33,9 +32,6 @@ try:
         OaxacaBlinderDecomposition,
         OaxacaResult,
         _clarke_test,
-        credit_gap_decomposition,
-        investment_decomposition,
-        wage_decomposition,
     )
 except Exception as e:
     pytest.skip(f"vuong_test not importable: {e}", allow_module_level=True)

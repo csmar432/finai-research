@@ -10,7 +10,7 @@ sys.path.insert(0, str(project_root))
 import json
 import math
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from scripts.core.reviewer_calibration import (
     CalibrationDataset,

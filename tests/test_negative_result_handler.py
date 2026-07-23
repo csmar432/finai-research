@@ -6,7 +6,6 @@ from scripts.research_framework.negative_result_handler import (
     SIG_NULL,
     SIG_STRONG,
     SIG_WEAK,
-    NegativeResultHandler,
     NegativeResultVerdict,
     assess_result,
     classify_significance,

@@ -8,7 +8,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
 
 LLM_REVIEWER = Path(__file__).resolve().parent.parent / "scripts" / "core" / "llm_reviewer.py"
 

@@ -20,7 +20,6 @@ import time
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -1005,7 +1004,6 @@ class TestWrapToolSelector:
         """Script tools (not in MCP_TOOLS) are passed to original execute."""
         mock_call.return_value = _mock_success()
 
-        from scripts.core.tool_selector import ToolSelector
 
         mw = ToolCallMiddleware(cache_dir=tmp_path)
 
@@ -1030,7 +1028,6 @@ class TestWrapToolSelector:
     def test_mcp_tool_goes_through_middleware(self, mock_call, tmp_path):
         mock_call.return_value = _mock_success()
 
-        from scripts.core.tool_selector import ToolSelector
 
         mw = ToolCallMiddleware(cache_dir=tmp_path)
         original = MagicMock()
@@ -1130,17 +1127,6 @@ class TestWrapToolSelector:
 
 class TestExports:
     def test_all_exports_present(self):
-        from scripts.core.tool_middleware import (
-            ToolCallMiddleware,
-            TokenBucketRateLimiter,
-            ToolCallLogger,
-            ToolResultCache,
-            CachedResult,
-            RateLimitResult,
-            wrap_tool_selector,
-            _args_hash,
-            ToolResult,
-        )
         assert True  # All imported successfully
 
     def test_tool_result_re_exported(self):

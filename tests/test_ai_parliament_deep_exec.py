@@ -17,11 +17,7 @@ try:
     from scripts.core.ai_parliament import (
         _resolve_model, MemberType, MemberConfig,
         DebateRound, RebuttalRound, Verdict,
-        BaseMemberAgent, ChairAgent, EngineeringMemberAgent,
-        FinanceMemberAgent, MemberMethodologyAgent,
-        MemberStatisticsAgent, MemberWritingAgent,
-        AIParliament, AIParliamentHITLIntegration,
-        MEMBER_CONFIGS,
+        AIParliament, AIParliamentHITLIntegration, MEMBER_CONFIGS,
     )
 except Exception as exc:
     pytest.skip(f"ai_parliament not importable: {exc}", allow_module_level=True)

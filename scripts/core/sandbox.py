@@ -1103,7 +1103,7 @@ def create_sandbox_runner(
     if tier == "microvm":
         # E2B microVM 模式（有 API key）
         try:
-            from scripts.core.sandbox_runner import E2BRunner, SandboxTier
+            from scripts.core.sandbox_runner import E2BRunner
             e2b_api = api_key or __import__("os").get("E2B_API_KEY")
             if e2b_api:
                 return E2BRunner(

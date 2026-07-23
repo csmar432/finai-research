@@ -1029,7 +1029,7 @@ def _wild_cluster_bootstrap(
         含 bootstrap p 值和置信区间。
     """
     try:
-        from scipy import stats
+        pass
     except ImportError:
         return {"pval": np.nan, "ci_lower": np.nan, "ci_upper": np.nan}
 

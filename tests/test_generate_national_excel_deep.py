@@ -93,7 +93,6 @@ class TestMain:
     def test_main_safe(self):
         fn = getattr(mod, "main", None)
         if fn is None: pytest.skip("not present")
-        import inspect
         assert callable(fn)
 
 

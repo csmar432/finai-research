@@ -36,7 +36,6 @@ from typing import Any
 from scripts.core.progressive_clarifier import (
     ResearchProfile,
     VariableCandidate,
-    VariableSet,
 )
 
 logger = logging.getLogger(__name__)

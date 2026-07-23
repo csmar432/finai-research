@@ -46,10 +46,18 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
-import pandas as pd
+# P5-6 audit-2026-07-23: 模块级 Session,keep-alive
+try:
+    import requests
+    from requests.adapters import HTTPAdapter as _HTTPAdapter
+    _SESSION = requests.Session()
+    _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+    _SESSION.mount("https://", _adapter)
+except Exception:   # noqa: S110
+    _SESSION = None
+
 
 _log = logging.getLogger(__name__)
 
@@ -70,14 +78,12 @@ class LiteratureParser:
         """Parse paper by ArXiv ID using Context7 MCP."""
         # Use context7 MCP to get full text, then extract sections
         # Returns: {"title", "authors", "year", "methodology", "sample_size", "key_findings", "limitations"}
-        pass
 
     def parse_doi(self, doi: str) -> dict:
         """Parse paper by DOI using CrossRef API."""
-        import requests
-
         try:
-            resp = requests.get(
+            # P5-6 audit-2026-07-23: 复用模块级 Session
+            resp = _SESSION.get(
                 f"https://api.crossref.org/works/{doi}",
                 headers={"Accept": "application/json"},
                 timeout=10,
@@ -816,7 +822,6 @@ class BaseResearchDirection(ABC):
             }
         """
         import pandas as pd
-        import numpy as np
 
         issues: list[str] = []
         warnings: list[str] = []

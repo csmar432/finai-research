@@ -15,26 +15,14 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts.research_framework import pipeline as pl
     from scripts.research_framework.pipeline import (
         check_dof,
         extract,
         fmt_coef,
-        _demean_for_fe,
         _two_way_within,
-        run_did,
         did_to_latex,
-        add_docx_table,
-        add_docx_figure,
         _parse_args,
         _build_demo_panel,
-        _generate_tables,
-        _generate_word_doc,
-        _run_full_pipeline,
-        _run_design_mode,
-        _run_review_mode,
-        _main_dispatch,
-        main,
     )
 except Exception as e:
     pytest.skip(f"pipeline not importable: {e}", allow_module_level=True)

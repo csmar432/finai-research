@@ -17,7 +17,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts.core import chart_factory as cf
     from scripts.core.chart_factory import (
         ChartRecord,
         ACADEMIC_STYLE,

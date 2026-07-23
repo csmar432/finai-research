@@ -238,7 +238,7 @@ class FintechInnovationDirection(BaseResearchDirection):
             4. Heterogeneity: large vs. small cap, sell-side vs. buy-side
         """
         try:
-            from scripts.econometrics_extended import DIDRegression, MediationAnalysis
+            from scripts.econometrics_extended import MediationAnalysis
             from scripts.econometrics import OLSRegression
 
             df = panel.get("df")

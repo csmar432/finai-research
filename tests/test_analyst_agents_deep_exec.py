@@ -17,12 +17,11 @@ try:
     from scripts.core.analyst_agents import (
         AnalystType, AnalystConfig, AnalystResult, CompositeAnalysis,
         DupontDecomposition, EnhancedFinancialAnalyst,
-        DCFScenario, EnhancedValuationAnalyst,
-        AccrualsAnalysis, EnhancedEarningsQualityAnalyst,
+        DCFScenario, AccrualsAnalysis,
         BaseAnalystAgent, EnhancedFundamentalFinancialAgent,
         EnhancedValuationAgent, EnhancedEarningsQualityAgent,
-        EnhancedMarketAnalyst, EnhancedCompetitiveAnalyst, EnhancedRiskAnalyst,
-        AnalystFactory, ParallelAnalystOrchestrator,
+        EnhancedMarketAnalyst, EnhancedCompetitiveAnalyst,
+        EnhancedRiskAnalyst, AnalystFactory,
     )
 except Exception as exc:
     pytest.skip(f"analyst_agents not importable: {exc}", allow_module_level=True)

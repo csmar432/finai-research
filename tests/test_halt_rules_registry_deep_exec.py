@@ -5,11 +5,8 @@ Tests dataclasses, pure helpers, class init, and core logic paths.
 """
 
 import ast
-import operator as op
-import re
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 

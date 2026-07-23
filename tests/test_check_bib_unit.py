@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import textwrap
-from pathlib import Path
 
 from scripts.check_bib import (
     extract_bib_keys,

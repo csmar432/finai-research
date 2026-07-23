@@ -134,7 +134,6 @@ class CancellationToken:
 
 class AgentCancelledError(Exception):
     """Raised when an agent run() is cancelled via CancellationToken."""
-    pass
 
 
 # ─── BaseAgent ─────────────────────────────────────────────────────────────────

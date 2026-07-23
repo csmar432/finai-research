@@ -174,7 +174,6 @@ def save_json(obj: Any, path: str | Path, indent: int = 2):
 # ─────────────────────────────────────────────────────────────────────────────
 class MCPCallError(Exception):
     """Raised when an MCP call fails after all retries."""
-    pass
 
 
 def _call_mcp(server: str, tool: str, args: dict, timeout: float = 30.0) -> Any:

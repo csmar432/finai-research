@@ -6,7 +6,6 @@ PR-8J: Tests for scripts/research_framework/panel_var.py (665 stmts).
 from __future__ import annotations
 
 import sys
-import inspect
 from pathlib import Path
 
 import pytest

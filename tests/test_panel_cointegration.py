@@ -2,15 +2,11 @@
 
 from __future__ import annotations
 
-import numpy as np
-import pandas as pd
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.panel_cointegration import (
         PanelCointegrationTest, CointegrationResult,
-        CrossSectionalDependence, ECMResult,
     )
     assert PanelCointegrationTest is not None
     assert CointegrationResult is not None

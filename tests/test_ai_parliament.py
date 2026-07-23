@@ -1,9 +1,8 @@
 """Tests for scripts/core/ai_parliament.py"""
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 from scripts.core.ai_parliament import (
-    MemberType, MemberConfig, DebateRound, RebuttalRound, Verdict, AIParliament,
-    AIParliamentHITLIntegration,
+    MemberType, DebateRound, RebuttalRound, Verdict, AIParliament, AIParliamentHITLIntegration,
 )
 
 

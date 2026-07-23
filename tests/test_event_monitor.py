@@ -4,7 +4,7 @@ Tests for EventMonitor — scripts/event_monitor.py
 Run with: pytest tests/test_event_monitor.py -v --tb=short
 """
 
-import sys, os
+import sys
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -341,7 +341,6 @@ class TestTriggerResearchPipeline:
     @pytest.fixture(autouse=True)
     def clean_dedup_state(self):
         """Clear dedup state before each test to prevent cross-test pollution."""
-        import shutil
         _DEDUP_STATE.unlink(missing_ok=True)
         yield
         _DEDUP_STATE.unlink(missing_ok=True)

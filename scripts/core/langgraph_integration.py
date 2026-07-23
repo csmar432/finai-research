@@ -42,7 +42,7 @@ import uuid as _uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, TypedDict, Callable, Protocol
+from typing import Any, TypedDict, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,6 @@ __all__ = [
 def is_langgraph_available() -> bool:
     """检测 LangGraph 是否已安装。"""
     try:
-        import langgraph
         return True
     except ImportError:
         return False

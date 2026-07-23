@@ -1,6 +1,5 @@
 """Tests for scripts/core/self_evolution.py"""
 import pytest
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch

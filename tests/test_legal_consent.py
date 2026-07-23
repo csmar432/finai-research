@@ -48,7 +48,6 @@ def test_legal_consent_has_disclaimer():
 @pytest.mark.parametrize("server", OPTIN_SERVERS)
 def test_optin_server_has_legal_disclaimer_in_header(server):
     """3 个 opt-in 服务器的 server.py 头部必须含法律声明。"""
-    from pathlib import Path
     path = PROJECT_ROOT / "mcp_servers" / server / "server.py"
     assert path.exists(), f"{server}/server.py 不存在"
     content = path.read_text()

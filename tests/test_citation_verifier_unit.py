@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -36,7 +36,6 @@ try:
         SEMANTIC_SCHOLAR_API,
         CitationCheckResult,
         CitationVerifier,
-        main,
     )
 except Exception as _exc:  # pragma: no cover
     pytest.skip(f"citation_verifier not importable: {_exc}", allow_module_level=True)

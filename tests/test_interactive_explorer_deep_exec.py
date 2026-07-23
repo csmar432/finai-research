@@ -14,8 +14,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    import numpy as np
-    import pandas as pd
     from scripts.core.interactive_explorer import (
         DIDEventStudyConfig, PanelFEConfig, DiagnosticsConfig,
         DIDEventStudyExplorer, PanelFEVisualizer,

@@ -37,7 +37,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
 
-import numpy as np
 
 
 class OperationType(str, Enum):

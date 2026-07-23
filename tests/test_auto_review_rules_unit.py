@@ -31,7 +31,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -1050,7 +1049,6 @@ class TestPatchingBehavior:
 def test_cli_demo():
     """The __main__ block prints output; not exercised as a unit test."""
     # AutoReviewRules print demo, manually verified by running the file.
-    pass
 
 
 @pytest.mark.skip(reason="integration: requires real yaml files under config/halt_rules/")
@@ -1070,4 +1068,3 @@ def test_load_all_real_yaml_files():
 @pytest.mark.skip(reason="integration: depends on real-world optional NLP features")
 def test_score_real_paper():
     """Score a realistic empirical paper draft."""
-    pass

@@ -4,14 +4,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import json
-import os
-import sqlite3
-import tempfile
 import time
 import unittest.mock
 from collections import deque
-from unittest.mock import patch
 
 import pytest
 

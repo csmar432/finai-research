@@ -1,7 +1,6 @@
 """Tests for scripts/core/data_cache.py"""
 import sys
 from pathlib import Path
-import json
 import time
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -30,7 +29,7 @@ class TestDataCacheBasics:
         from scripts.core.data_cache import DataCache
 
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -57,7 +56,7 @@ class TestDataCacheBasics:
     def test_cache_get_same_args_different_order(self, tmp_path):
         """get() key is order-invariant for dict args."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -84,7 +83,7 @@ class TestDataCacheBasics:
     def test_cache_get_different_args_miss(self, tmp_path):
         """Different args produce cache miss."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -109,7 +108,7 @@ class TestDataCacheBasics:
     def test_cache_stats(self, tmp_path):
         """stats() returns expected structure."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -125,7 +124,7 @@ class TestDataCacheBasics:
     def test_cache_invalidate(self, tmp_path):
         """invalidate() removes a specific entry."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -159,7 +158,7 @@ class TestDataCacheBasics:
     def test_cache_invalidate_not_found(self, tmp_path):
         """invalidate() returns False when entry not found."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -180,7 +179,7 @@ class TestDataCacheTTL:
     def test_cache_ttl_expired(self, tmp_path):
         """get() returns None for expired entry."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -219,7 +218,7 @@ class TestDataCacheTTL:
     def test_cache_custom_ttl(self, tmp_path):
         """set() respects per-call TTL via get()."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -250,7 +249,7 @@ class TestDataCachePrune:
     def test_cache_prune_expired(self, tmp_path):
         """prune_expired() removes old entries."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 
@@ -440,7 +439,7 @@ class TestDataCacheEdgeCases:
     def test_cache_context_manager(self, tmp_path):
         """DataCache works as context manager."""
         try:
-            import duckdb
+            pass
         except ImportError:
             pytest.skip("duckdb not installed")
 

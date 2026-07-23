@@ -1,5 +1,4 @@
 """AI Router 单元测试（无需真实API调用）"""
-import pytest
 from scripts.ai_router import Task, ModelKey, _TASK_ROUTING
 
 

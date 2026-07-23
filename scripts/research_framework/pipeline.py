@@ -214,8 +214,7 @@ def add_docx_table(doc, caption, coefs, all_vars):
     """Add a REAL python-docx Table — not image, not text."""
     try:
         from docx.enum.table import WD_TABLE_ALIGNMENT
-        from docx.enum.text import WD_ALIGN_PARAGRAPH
-        from docx.shared import Inches, Pt
+        from docx.shared import Pt
     except ImportError:
         print("  ⚠ python-docx not installed — skipping Word tables")
         return
@@ -251,7 +250,7 @@ def add_docx_figure(doc, img_path, caption):
     """Add a figure image to the Word document."""
     try:
         from docx.enum.text import WD_ALIGN_PARAGRAPH
-        from docx.shared import Inches, Pt
+        from docx.shared import Inches
     except ImportError:
         return
     if not Path(img_path).exists(): return

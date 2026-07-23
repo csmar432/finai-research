@@ -9,7 +9,6 @@ import pytest
 
 from scripts.core.variable_redundancy import (
     VariableRedundancyResolver,
-    RedundancyReport,
 )
 from scripts.core.data_gate import (
     DataGate,
@@ -20,7 +19,6 @@ from scripts.core.data_gate import (
 from scripts.core.progressive_clarifier import (
     ResearchProfile,
     VariableCandidate,
-    VariableSet,
 )
 
 

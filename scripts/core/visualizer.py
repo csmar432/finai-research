@@ -1743,7 +1743,7 @@ def create_tracked_chart(
     """
     import uuid
 
-    from scripts.core.provenance import ProvenanceTracker, get_tracker
+    from scripts.core.provenance import get_tracker
 
     chart_id = f"chart_{uuid.uuid4().hex[:8]}"
 

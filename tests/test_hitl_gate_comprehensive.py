@@ -7,7 +7,6 @@ All tests use a temporary DB path — no real files created.
 import pytest
 import time
 import threading
-from unittest.mock import MagicMock, patch
 import sys
 import os
 
@@ -66,7 +65,7 @@ class TestApprovalRecord:
 
     def test_approval_record_with_content(self):
         """ApprovalRecord stores content dict."""
-        from scripts.core.hitl_gate import ApprovalRecord, GateState
+        from scripts.core.hitl_gate import ApprovalRecord
         content = {"outline": {"chapters": 7}, "metadata": {"author": "test"}}
         rec = ApprovalRecord(gate_id="test_002", stage="writing", content=content)
         assert rec.content == content

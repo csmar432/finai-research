@@ -19,8 +19,7 @@ try:
     from scripts.research_framework.data_fetcher import (
         CircuitBreaker, DataProbeResult, DataFallbackEngine,
         save_df, save_json, MCPCallError,
-        _call_mcp, call_mcp_tool, DataFetcher,
-        ProxyVariableBuilder, CachedDataFetcher,
+        DataFetcher, ProxyVariableBuilder, CachedDataFetcher,
         _circuit_breaker,
     )
 except Exception as exc:

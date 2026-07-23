@@ -3,8 +3,6 @@ Tests for HaltRulesRegistry — scripts/core/halt_rules_registry.py
 """
 
 import pytest
-import json
-import tempfile
 from pathlib import Path
 
 import sys

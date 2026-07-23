@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import numpy as np
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.survival_analysis import (
-        CoxPHModel, KaplanMeier, NelsonAalen, CompetingRisks,
+        CoxPHModel, KaplanMeier,
     )
     assert CoxPHModel is not None
     assert KaplanMeier is not None

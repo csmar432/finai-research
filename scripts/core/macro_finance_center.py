@@ -39,7 +39,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from enum import Enum
-from typing import Any, Callable, TypedDict
+from typing import Any, Callable
 
 import requests
 

@@ -18,7 +18,7 @@ import time as _time
 from pathlib import Path
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 # ── Module under test ──────────────────────────────────────────────────────────
 

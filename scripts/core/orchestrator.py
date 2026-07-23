@@ -1031,7 +1031,7 @@ class AgentOrchestrator:
             Full pipeline result.
         """
         try:
-            from scripts.core.checkpoint import CheckpointManager, PipelineCheckpoint
+            from scripts.core.checkpoint import CheckpointManager
         except ImportError:
             # Fallback: plain run without checkpointing
             return self.run_pipeline(

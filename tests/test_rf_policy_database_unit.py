@@ -6,7 +6,6 @@ without requiring the default JSON file to exist (we monkey-patch the path).
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 

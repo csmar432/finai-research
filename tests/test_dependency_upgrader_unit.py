@@ -104,19 +104,19 @@ class TestGetLatestVersion:
         mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"info": {"version": "2.0.0"}}
-        with mock.patch.object(du.requests, "get", return_value=mock_response):
+        with mock.patch.object(du._SESSION, "get", return_value=mock_response):
             assert du.get_latest_version("foo") == "2.0.0"
 
     def test_returns_none_on_non_200(self, du, monkeypatch):
         mock_response = mock.Mock()
         mock_response.status_code = 404
-        with mock.patch.object(du.requests, "get", return_value=mock_response):
+        with mock.patch.object(du._SESSION, "get", return_value=mock_response):
             assert du.get_latest_version("foo") is None
 
     def test_returns_none_on_exception(self, du, monkeypatch):
         def raise_exc(*a, **kw):
             raise Exception("nope")
-        with mock.patch.object(du.requests, "get", side_effect=raise_exc):
+        with mock.patch.object(du._SESSION, "get", side_effect=raise_exc):
             assert du.get_latest_version("foo") is None
 
 
@@ -125,7 +125,7 @@ class TestCheckSecurity:
         mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"vulns": [{"id": "CVE-2023-001"}]}
-        with mock.patch.object(du.requests, "post", return_value=mock_response):
+        with mock.patch.object(du._SESSION, "post", return_value=mock_response):
             vulns = du.check_security("foo", "1.0.0")
             assert vulns == [{"id": "CVE-2023-001"}]
 
@@ -133,17 +133,17 @@ class TestCheckSecurity:
         mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"vulns": []}
-        with mock.patch.object(du.requests, "post", return_value=mock_response):
+        with mock.patch.object(du._SESSION, "post", return_value=mock_response):
             assert du.check_security("foo", "1.0.0") == []
 
     def test_returns_empty_on_exception(self, du, monkeypatch):
-        with mock.patch.object(du.requests, "post", side_effect=Exception):
+        with mock.patch.object(du._SESSION, "post", side_effect=Exception):
             assert du.check_security("foo", "1.0.0") == []
 
     def test_returns_empty_on_non_200(self, du, monkeypatch):
         mock_response = mock.Mock()
         mock_response.status_code = 500
-        with mock.patch.object(du.requests, "post", return_value=mock_response):
+        with mock.patch.object(du._SESSION, "post", return_value=mock_response):
             assert du.check_security("foo", "1.0.0") == []
 
 

@@ -12,11 +12,9 @@ Unit tests for the LangGraph bridge integration:
 
 from __future__ import annotations
 
-import argparse
 import sys
 from pathlib import Path
 
-import pytest
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -168,7 +166,7 @@ class TestAgentPipelineIntegration:
 
     def test_agent_pipeline_langgraph_init_kwarg_works(self):
         """AgentPipeline(use_langgraph=True) must not raise."""
-        from scripts.agent_pipeline import AgentPipeline, _LG_BRIDGE_AVAILABLE
+        from scripts.agent_pipeline import AgentPipeline
         # Must not raise, even if bridge is unavailable
         pipeline = AgentPipeline(use_langgraph=False)
         assert pipeline is not None
@@ -176,7 +174,6 @@ class TestAgentPipelineIntegration:
     def test_agent_pipeline_run_method_respects_flag(self):
         """AgentPipeline.run() must call run_research_pipeline when _use_langgraph=True."""
         from scripts.agent_pipeline import AgentPipeline
-        import inspect
 
         # Just verify run() exists and is callable
         assert hasattr(AgentPipeline, "run")

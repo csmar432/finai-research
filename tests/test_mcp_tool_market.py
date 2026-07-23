@@ -5,10 +5,7 @@ with scripts/core/tool_selector.py.
 
 import json
 import sys
-import tempfile
-import io
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -19,12 +16,6 @@ from scripts.core.mcp_tool_market import (
     MCPToolRegistry,
     ToolMetadata,
     get_default_registry,
-    _default_registry,
-    CATEGORY_RULES,
-    TAG_KEYWORDS,
-    _quality_score,
-    _assign_category,
-    _build_tags,
 )
 from scripts.core.tool_selector import ToolSelector
 from scripts.core.memory import ResearchMemory

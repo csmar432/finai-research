@@ -55,7 +55,6 @@ class TestProvenanceRag:
         assert hasattr(modules["provenance_rag"], "ProvenanceRAG")
 
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["provenance_rag"])
                if hasattr(getattr(modules["provenance_rag"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 2
@@ -63,7 +62,6 @@ class TestProvenanceRag:
 
 class TestAgentPipelineCore:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["agent_pipeline_core"])
                if hasattr(getattr(modules["agent_pipeline_core"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 4
@@ -75,7 +73,6 @@ class TestAgentPipelineCore:
 
 class TestAutonomyLoop:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["autonomy_loop"])
                if hasattr(getattr(modules["autonomy_loop"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 4
@@ -86,7 +83,6 @@ class TestAutonomyLoop:
 
 class TestVisualGraphEditor:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["visual_graph_editor"])
                if hasattr(getattr(modules["visual_graph_editor"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 2
@@ -100,7 +96,6 @@ class TestVisualGraphEditor:
 
 class TestCheckpoint:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["checkpoint"])
                if hasattr(getattr(modules["checkpoint"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 2
@@ -108,7 +103,6 @@ class TestCheckpoint:
 
 class TestTools:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["tools"])
                if hasattr(getattr(modules["tools"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 2
@@ -116,7 +110,6 @@ class TestTools:
 
 class TestVisualizer:
     def test_has_dataclasses(self, modules):
-        import dataclasses
         dcs = [n for n in dir(modules["visualizer"])
                if hasattr(getattr(modules["visualizer"], n, None), '__dataclass_fields__')]
         assert len(dcs) >= 3

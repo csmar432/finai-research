@@ -34,7 +34,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,7 @@ _embedder: Any = None
 _embed_model: Any = None
 
 try:
-    import chromadb
+    pass
 
     _chroma_available = True
 except ImportError:

@@ -12,12 +12,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 try:
-    from scripts.research_directions import (
-        asset_pricing, corporate_finance, carbon_economics,
-        digital_finance, green_finance, behavioral_finance,
-        esg_finance, fintech_innovation, international_finance,
-        macro_finance, political_economy_finance, real_estate_finance,
-    )
     from scripts.research_directions import BaseResearchDirection, get_registry
 except Exception as _exc:
     pytest.skip(f"research_directions not importable: {_exc}", allow_module_level=True)
@@ -98,7 +92,6 @@ class TestAllDirectionValidate:
     @pytest.mark.parametrize("slug", SLUGS)
     def test_validate(self, slug):
         import pandas as pd
-        import numpy as np
         try:
             reg = get_registry()()
             d = reg.get(slug)

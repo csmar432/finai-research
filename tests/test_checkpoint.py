@@ -4,10 +4,6 @@ These tests verify the save/load/restore cycle and the atomic-write guarantee
 using a temporary directory — no external services required.
 """
 
-import json
-import tempfile
-import shutil
-from pathlib import Path
 
 import pytest
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import pytest
 import time
-from datetime import datetime
 
 from scripts.core.macro_event_bus import (
     MacroEventBus,

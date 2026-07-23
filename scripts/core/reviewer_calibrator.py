@@ -1181,7 +1181,7 @@ class BiasHistoryDB:
                         journal: str | None = None,
                         limit: int = 100) -> list[dict]:
         """获取偏见趋势数据。"""
-        import sqlite3, json
+        import sqlite3
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -1206,7 +1206,7 @@ class BiasHistoryDB:
 
     def get_bias_summary(self) -> dict:
         """获取偏见汇总统计。"""
-        import sqlite3, statistics
+        import sqlite3
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 

@@ -424,7 +424,7 @@ class AssetPricingDirection(BaseResearchDirection):
         import pandas as pd
 
         try:
-            from scipy import stats as scipy_stats
+            pass
         except ImportError:
             log.warning("scipy not available; factor regression disabled")
             return {"status": "error", "error": "scipy required for factor regressions"}
@@ -1043,7 +1043,6 @@ class AssetPricingDirection(BaseResearchDirection):
         """
         import numpy as np
         import pandas as pd
-        from scipy import stats as scipy_stats
 
         avail_factors = [f for f in ["MKT", "SMB", "HML", "RMW", "CMA", "WML", "ESG", "CARBON"]
                          if f in df.columns]

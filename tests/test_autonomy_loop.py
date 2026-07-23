@@ -8,7 +8,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import pytest
 from unittest.mock import MagicMock, patch
-import asyncio
 
 from scripts.core.autonomy_loop import (
     AutonomyLoop,
@@ -609,7 +608,7 @@ class TestFigureGeneratorMethods:
     """Test FigureGenerator plotting methods."""
 
     def test_ensure_output_dir_creates(self):
-        import tempfile, os
+        import tempfile
         gen = FigureGenerator(output_dir=tempfile.gettempdir())
         # Should not raise
         assert gen.output_dir == tempfile.gettempdir()
@@ -617,7 +616,6 @@ class TestFigureGeneratorMethods:
     def test_generate_did_plot_accepts_valid_data(self):
         """generate_did_plot should produce a valid file path for valid data."""
         import tempfile
-        import os
         gen = FigureGenerator(output_dir=tempfile.gettempdir())
         pre_treatment = {"treated": [0.1, 0.2], "control": [0.0, 0.1]}
         post_treatment = {"treated": [1.1, 1.2], "control": [0.9, 1.0]}

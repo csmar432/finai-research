@@ -19,17 +19,14 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import (
     Any,
     Callable,
-    Generic,
-    Literal,
     Protocol,
     TypeVar,
-    overload,
 )
 
 logger = logging.getLogger(__name__)
@@ -738,7 +735,7 @@ class StockPriceValidator:
         self, ts_code: str, records: list[StockPriceRecord], report: FinancialValidationReport
     ):
         """Detect missing trading days based on a 5-day calendar week."""
-        from datetime import datetime, timedelta
+        from datetime import datetime
 
         dates = [datetime.strptime(r.date, "%Y-%m-%d") for r in records]
         for i in range(1, len(dates)):
@@ -1305,7 +1302,7 @@ class DataFreshnessValidator:
         if not records:
             return report
 
-        from datetime import datetime, timedelta
+        from datetime import datetime
 
         ref = datetime.strptime(self.config.ref_date, "%Y-%m-%d")
         date_field = self.config.date_field

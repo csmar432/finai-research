@@ -267,7 +267,7 @@ class TestDeeperHelpers:
         fn = getattr(mod, "_save_wf_json_fallback", None)
         if fn is None: pytest.skip("not present")
         try:
-            import tempfile, json
+            import tempfile
             with tempfile.TemporaryDirectory() as tmp:
                 payload = {"test": 1}
                 fn(payload)

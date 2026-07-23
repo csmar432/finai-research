@@ -15,13 +15,9 @@ if str(ROOT) not in sys.path:
 
 try:
     from scripts.core.observability import (
-        LangSmithTracer, _get_langsmith_tracer, StructuredLogger,
-        OTelTracer, OtelSpan, MetricsCollector,
-        EvaluationResult, EvaluationReport, LLMasJudge, Span,
-        AgentObserver, PipelineObserver,
-        wrap_llm_gateway, wrap_tool_selector, get_observer,
-        reset_observer, wrap_orchestrator, auto_instrument,
-        _LOG_LEVELS,
+        StructuredLogger, EvaluationResult, EvaluationReport,
+        Span, AgentObserver, PipelineObserver,
+        get_observer, reset_observer, _LOG_LEVELS,
     )
 except Exception as exc:
     pytest.skip(f"observability not importable: {exc}", allow_module_level=True)

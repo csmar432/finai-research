@@ -40,7 +40,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.core.planner import Task, TaskStatus, TaskType
+from scripts.core.planner import Task, TaskType
 from scripts.core.tool_selector import (  # noqa: E402
     CostTier,
     ToolCapability,

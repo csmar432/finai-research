@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import threading
 import time
-import uuid
 
 import pytest
 
@@ -27,22 +26,16 @@ from scripts.core.agent_state import (
     AgentState,
     AgentStateManager,
     AgentStatus,
-    CostRecord,
     ErrorClassifier,
     ErrorType,
     Event,
     EventBus,
     EventType,
     HITLManager,
-    HITLRequest,
     CostTracker,
-    agent_state_manager,
-    cost_tracker,
     get_fleet_status,
     get_total_cost,
-    hitl_manager,
     record_api_call,
-    _get_shared_eventbus,
 )
 
 

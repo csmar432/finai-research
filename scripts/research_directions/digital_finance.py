@@ -18,7 +18,6 @@ import logging
 import os
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
 from scripts.research_directions import (
@@ -441,7 +440,6 @@ class DigitalFinanceDirection(BaseResearchDirection):
         _log.info("Running panel regressions on %d observations", len(panel))
 
         try:
-            from linearmodels.panel import PanelOLS
             has_linearmodels = True
         except ImportError:
             has_linearmodels = False

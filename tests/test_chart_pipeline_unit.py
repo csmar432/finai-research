@@ -27,7 +27,6 @@ import asyncio
 import json
 import sys
 import subprocess
-import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 

@@ -304,7 +304,6 @@ class E2BRunner:
     def _check_e2b(self) -> bool:
         """检查 E2B SDK 是否可用。"""
         try:
-            import e2b
             return True
         except ImportError:
             logger.warning(

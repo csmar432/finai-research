@@ -11,7 +11,6 @@ with pooled reference beta* (E + C = Gap, exactly additive).
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 
 # ─── Module import smoke ──────────────────────────────────────────────
@@ -20,8 +19,7 @@ import pytest
 def test_vuong_kob_module_imports():
     from scripts.research_framework.vuong_kob import (
         VuongTest, VuongResult, KOBDecomposition, KOBResult,
-        OaxacaBlinderDecomposition, OaxacaResult, _clarke_test,
-        wage_decomposition,
+        OaxacaBlinderDecomposition, OaxacaResult,
     )
     assert VuongTest is not None
     assert VuongResult is not None

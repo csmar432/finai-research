@@ -1,7 +1,6 @@
 """Tests for scripts/core/presence_server.py"""
 
 import pytest
-import asyncio
 
 
 class TestPresenceServer:

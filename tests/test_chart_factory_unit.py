@@ -1,7 +1,6 @@
 """Tests for scripts/core/chart_factory.py — ChartRegistry and dataclasses."""
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 from pathlib import Path
@@ -211,7 +210,7 @@ class TestApplyStyle:
     def test_apply_style_with_matplotlib(self):
         """_apply_style must not raise when matplotlib is available."""
         try:
-            import matplotlib
+            pass
         except ImportError:
             return  # skip if matplotlib not available
         import matplotlib.pyplot as plt
@@ -342,7 +341,6 @@ class TestChartRegistryExtended:
 
     def test_registry_default_path_created(self):
         """Registry must create parent directory for default path."""
-        import os
         registry = ChartRegistry()
         # The default path should have its parent directory created
         assert registry._path.parent.exists()
@@ -562,7 +560,6 @@ class TestAdvancedChartFactoryBasics:
 
     def test_output_dir_created(self):
         """output_dir must be created on init."""
-        import os
         with tempfile.TemporaryDirectory() as tmpdir:
             new_dir = Path(tmpdir) / "new_figures"
             factory = AdvancedChartFactory(output_dir=new_dir)

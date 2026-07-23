@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -23,7 +22,6 @@ try:
         _pop_queue,
         build_initial_payload,
         update_node_status,
-        run_agent_pipeline,
         _call_agent_safely,
         consume_loop,
         main,

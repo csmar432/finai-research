@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from scripts.econometrics import (
     DIDRegression,

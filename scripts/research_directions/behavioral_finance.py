@@ -237,7 +237,6 @@ class BehavioralFinanceDirection(BaseResearchDirection):
     def _run_sentiment_regressions(self, df: pd.DataFrame) -> dict:
         """Internal sentiment regression logic."""
         try:
-            import numpy as np
             import statsmodels.api as sm
 
             # Detect columns

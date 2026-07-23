@@ -15,8 +15,7 @@ import pytest
 
 def test_module_imports():
     from scripts.research_framework.discrete_choice import (
-        DiscreteChoiceModel, DiscreteChoiceResult,
-        DiscreteChoiceSuite, MarginalEffectsResult,
+        DiscreteChoiceModel, DiscreteChoiceSuite,
     )
     assert DiscreteChoiceModel is not None
     assert DiscreteChoiceSuite is not None

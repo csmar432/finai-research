@@ -19,7 +19,6 @@
 from __future__ import annotations
 
 import asyncio
-import base64
 import json
 import os
 import sys
@@ -27,7 +26,6 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 SCRIPT_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(SCRIPT_DIR))
@@ -89,7 +87,7 @@ def _dashboard_url() -> str:
 
 async def _get_browser():
     try:
-        from playwright.async_api import async_playwright, Browser, Page
+        from playwright.async_api import async_playwright
     except ImportError:
         print("  [SKIP] playwright 未安装: pip install playwright && playwright install chromium")
         return None, None
@@ -255,7 +253,7 @@ async def _test_axe_wcag(page, url: str) -> TestResult:
     name = "WCAG 合规 (axe-core)"
     t0 = time.perf_counter()
     try:
-        from playwright.async_api import Error as PWError
+        pass
 
         await page.goto(url, wait_until="networkidle", timeout=20000)
         await page.add_script_tag(
@@ -367,7 +365,6 @@ async def run_dashboard_tests(
 
             # Trace recording
             if trace_dir:
-                from playwright.async_api import tracing
                 await page.context.tracing.start_chunk(
                     title=f"{test_fn.__name__}_{uuid.uuid4().hex[:6]}"
                 )

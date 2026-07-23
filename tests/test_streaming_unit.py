@@ -39,7 +39,6 @@ try:
         StreamingConfig,
         create_sse_response,
         StreamingPipeline,
-        stream_to_httpx,
     )
 except Exception as _exc:
     pytest.skip(f"streaming not importable: {_exc}", allow_module_level=True)

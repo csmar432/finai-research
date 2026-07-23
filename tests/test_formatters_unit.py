@@ -3,9 +3,7 @@ from __future__ import annotations
 
 import math
 from pathlib import Path
-from unittest import mock
 
-import pytest
 
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 sys_path_inserted = False

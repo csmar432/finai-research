@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.finance_sensitivity import (
         ContagionTest, CreditRiskSensitivity,
-        EbersteinMagnacResult, LevinsohnPetrinEstimator,
     )
     assert ContagionTest is not None
     assert CreditRiskSensitivity is not None

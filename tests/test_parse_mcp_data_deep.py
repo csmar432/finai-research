@@ -40,7 +40,6 @@ class TestParse:
                     try:
                         r = fn("")
                         # Don't assert exact type
-                        pass
                     except Exception:
                         pass
                     break

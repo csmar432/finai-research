@@ -18,7 +18,6 @@ Extends tests/test_volatility_models_exec.py with coverage of:
 from __future__ import annotations
 
 import sys
-import os
 from pathlib import Path
 
 import pytest

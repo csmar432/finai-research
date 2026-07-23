@@ -1,6 +1,5 @@
 """Integration tests for scripts/core/provenance.py"""
 
-import pytest
 from scripts.core.provenance import (
     ProvenanceChain,
     ProvenanceNode,

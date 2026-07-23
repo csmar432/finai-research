@@ -13,7 +13,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    from scripts import pipeline_checkpoint as pc
     from scripts.pipeline_checkpoint import (
         c,
         Stage,
@@ -22,7 +21,6 @@ try:
         InteractivePipelineCheckpoint,
         RED,
         GREEN,
-        YELLOW,
         CYAN,
     )
 except Exception as e:

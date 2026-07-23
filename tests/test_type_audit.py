@@ -15,13 +15,10 @@ from __future__ import annotations
 
 import ast
 import compileall
-import os
 import py_compile
 import sys
 from pathlib import Path
-from typing import Any
 
-import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 CORE_DIR = PROJECT_ROOT / "scripts" / "core"

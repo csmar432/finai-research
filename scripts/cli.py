@@ -354,7 +354,7 @@ def doctor_cmd(argv: list[str] | None = None) -> int:
 
     # 1. 项目根解析
     try:
-        from scripts.core.paths import resolve_project_root, env_path, find_env_file
+        from scripts.core.paths import resolve_project_root, find_env_file
 
         root = resolve_project_root()
         print(f"📁 项目根目录: {root}")

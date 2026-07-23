@@ -124,7 +124,7 @@ class TestAuditFunctions:
         # In network-restricted envs (CI sandbox, no-proxy), each request
         # can take 5s+ and the cumulative time exceeds 10s pytest-timeout.
         # Mock urllib to avoid real network calls.
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock
 
         mock_resp = MagicMock()
         mock_resp.__enter__ = lambda s: s

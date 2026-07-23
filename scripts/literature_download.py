@@ -45,6 +45,18 @@ try:
 except ImportError:
     _REQUESTS_AVAILABLE = False
 
+# P5-6 audit-2026-07-23: 模块级共享 Session — keep-alive + pool 复用
+# pool_connections/pool_maxsize=10 与 audit 建议一致
+if _REQUESTS_AVAILABLE:
+    try:
+        from requests.adapters import HTTPAdapter as _HTTPAdapter
+        _SESSION = requests.Session()
+        _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+        _SESSION.mount("http://", _adapter)
+        _SESSION.mount("https://", _adapter)
+    except Exception:   # noqa: S110
+        _SESSION = requests  # fallback: 直接调用 requests.get/post（无 keep-alive）
+
 # ── 配置 ──────────────────────────────────────────────────────────────────────
 
 ATOMS_NS = "http://www.w3.org/2005/Atom"
@@ -212,7 +224,7 @@ def search_arxiv(query: str, max_results: int = 20, start: int = 0) -> list[dict
     }
     try:
         import xml.etree.ElementTree as ET
-        resp = requests.get(_ARXIV_BASE, params=params, timeout=30,
+        resp = _SESSION.get(_ARXIV_BASE, params=params, timeout=30,
                             headers={"User-Agent": _ARXIV_UA})
         resp.raise_for_status()
         root = ET.fromstring(resp.content)
@@ -252,7 +264,7 @@ def download_arxiv_pdf(arxiv_id: str, output_dir: str = "papers/arxiv") -> Paper
 
     pdf_url = f"https://arxiv.org/pdf/{clean_id}.pdf"
     try:
-        resp = requests.get(pdf_url, timeout=60, headers={"User-Agent": _ARXIV_UA}, stream=True)
+        resp = _SESSION.get(pdf_url, timeout=60, headers={"User-Agent": _ARXIV_UA}, stream=True)
         resp.raise_for_status()
         data = b"".join(resp.iter_content(chunk_size=8192))
         if len(data) < _MIN_PDF_BYTES:
@@ -284,7 +296,7 @@ def search_semantic(query: str, limit: int = 20) -> list[dict]:
         return []
     _rate_limit(server="semantic_scholar")
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             f"{_SS_BASE}/paper/search",
             params={
                 "query": query,
@@ -312,7 +324,7 @@ def get_semantic_details(paper_id: str) -> dict | None:
         return None
     _rate_limit(server="semantic_scholar")
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             f"{_SS_BASE}/paper/{paper_id}",
             params={
                 "fields": "paperId,title,authors,year,venue,citationCount,externalIds,abstract,tldr,openAccessPdf",
@@ -336,7 +348,7 @@ def search_openalex(query: str, limit: int = 20) -> list[dict]:
     if not _REQUESTS_AVAILABLE:
         return []
     try:
-        resp = requests.get(
+        resp = _SESSION.get(
             f"{_OA_BASE}/works",
             params={
                 "search": query,
@@ -410,7 +422,7 @@ def download_batch(
             _rate_limit(delay, server="openalex")
             dest = Path(output_dir) / f"{record.paper_id.replace('/','_')}.pdf"
             try:
-                resp = requests.get(paper["pdf_url"], timeout=60, stream=True)
+                resp = _SESSION.get(paper["pdf_url"], timeout=60, stream=True)
                 resp.raise_for_status()
                 data = b"".join(resp.iter_content(8192))
                 if len(data) >= _MIN_PDF_BYTES:

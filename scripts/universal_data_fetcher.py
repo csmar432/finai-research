@@ -38,15 +38,27 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
-import numpy as np
 import pandas as pd
 
 # 修复 yfinance 在某些环境下的 SSL/TLS 问题（必须在 yfinance 导入前设置）
 import os as _os
 _os.environ.setdefault("YFINANCE_USE_CURL_CFFI", "false")
 _os.environ.setdefault("HTTPX_DISABLE_CURL", "true")
+
+# P5-6 audit-2026-07-23: 模块级共享 Session — HTTP keep-alive + 连接池复用
+# pool_connections=10 / pool_maxsize=10 与原 audit 建议一致; UA 集中定义便于维护
+import requests as _requests_mod
+from requests.adapters import HTTPAdapter as _HTTPAdapter
+try:
+    _SHARED_SESSION = _requests_mod.Session()
+    _SHARED_SESSION.headers.update({"User-Agent": "FinResearch-Agent/1.0"})
+    _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+    _SHARED_SESSION.mount("http://", _adapter)
+    _SHARED_SESSION.mount("https://", _adapter)
+except Exception:   # noqa: S110
+    _SHARED_SESSION = _requests_mod  # fallback: 仍可调用 requests.get（无连接池复用）
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(
@@ -404,11 +416,11 @@ class AStockFinancialFetcher(DataFetcher):
     def try_http(self, stock: str = "", **kwargs) -> tuple[bool, Any, str]:
         """Layer 3: 直接HTTP请求到东方财富"""
         try:
-            import requests
             code_num = stock.replace(".SH", "").replace(".SZ", "").replace(".BJ", "")
             exchange = "sh" if stock.endswith(".SH") else "sz"
             url = f"https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={1 if exchange=='sh' else 0}.{code_num}&fields1=f1,f2,f3,f4,f5&fields2=f51,f52,f53,f54,f55,f56&klt=101&fqt=1&beg=20150101&end=20251231"
-            resp = requests.get(url, timeout=10)
+            # P5-6 audit-2026-07-23: 使用 _SHARED_SESSION 复用 keep-alive 连接
+            resp = _SHARED_SESSION.get(url, timeout=10)
             if resp.status_code == 200:
                 data = resp.json()
                 if data.get("data") and data["data"].get("klines"):
@@ -486,10 +498,10 @@ class MacroDataFetcher(DataFetcher):
 
         # Attempt 2: requests library (more robust HTTP client)
         try:
-            import requests as _req
+            # P5-6 audit-2026-07-23: 复用模块级 Session 共享 keep-alive
             url = (f"https://api.worldbank.org/v2/country/CN/indicator/{code}"
                    f"?format=json&per_page=100")
-            r = _req.get(url, headers={"User-Agent": "FinResearch-Agent/1.0"}, timeout=15)
+            r = _SHARED_SESSION.get(url, timeout=15)
             if r.status_code == 200:
                 data = r.json()
                 if isinstance(data, list) and len(data) > 1 and data[1]:
@@ -510,10 +522,9 @@ class EntityListFetcher(DataFetcher):
     def try_http(self, **kwargs) -> tuple[bool, Any, str]:
         """Layer 3: BIS Entity List官网"""
         try:
-            import requests
             # BIS Entity List JSON格式
             url = "https://www.bis.doc.gov/entity-list/downloads/current.csv"
-            resp = requests.get(url, timeout=15, headers={"User-Agent": "FinResearch-Agent/1.0"})
+            resp = _SHARED_SESSION.get(url, timeout=15)
             if resp.status_code == 200:
                 from io import StringIO
                 df = pd.read_csv(StringIO(resp.text))
@@ -524,7 +535,7 @@ class EntityListFetcher(DataFetcher):
         # 备用：Federal Register RSS
         try:
             url = "https://www.federalregister.gov/api/v1/documents.rss?conditions[agency_id]=13&conditions[doc_types][]=RULE&conditions[signing_date][gte]=2018-01-01"
-            resp = requests.get(url, timeout=10)
+            resp = _SHARED_SESSION.get(url, timeout=10)
             if resp.status_code == 200:
                 return True, {"source": "federal_register_rss", "content": resp.text[:5000]}, ""
         except Exception:  # noqa: S110
@@ -553,11 +564,10 @@ class PatentDataFetcher(DataFetcher):
     def try_http(self, company_name: str = "", **kwargs) -> tuple[bool, Any, str]:
         """Layer 3: CNIPA国家知识产权局公开接口"""
         try:
-            import requests
             # CNIPA专利检索接口
             search_url = "http://cpquery.cponline.cnipa.gov.cn/searchs/search-word.jsp"
             params = {"searchkey": company_name, "page": 1, "num": 50}
-            resp = requests.post(search_url, data=params, timeout=15)
+            resp = _SHARED_SESSION.post(search_url, data=params, timeout=15)
             if resp.status_code == 200:
                 return True, {"source": "cnipa", "content": resp.text[:5000]}, ""
         except Exception:  # noqa: S110

@@ -16,7 +16,6 @@ try:
         OutputFormat,
         VizNode,
         VizEdge,
-        create_tracked_chart,
     )
 except Exception as _exc:
     pytest.skip(f"visualizer not importable: {_exc}", allow_module_level=True)
@@ -414,7 +413,6 @@ class TestBuildFromSteps:
     def test_build_from_empty_steps(self):
         """build_from_steps() with empty list creates input/output nodes."""
         from scripts.core.visualizer import WorkflowVisualizer
-        from scripts.core.orchestrator import PipelineStage
 
         class DummyStep:
             pass
@@ -517,7 +515,6 @@ class TestOverlayTrace:
     def test_overlay_trace_empty_result(self):
         """overlay_trace() handles empty trace gracefully."""
         from scripts.core.visualizer import WorkflowVisualizer
-        from scripts.core.orchestrator import PipelineResult, PipelineStage
 
         class DummyResult:
             trace = []

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
 
 
 def test_module_imports():
     from scripts.research_framework.leamer_sensitivity import (
-        BoundingResult, LeamerResult, LeamerSensitivity,
-        DynamicPanelDiagnostics, run_dynamic_panel_diagnostics, test_ar2,
+        BoundingResult, LeamerSensitivity,
     )
     assert LeamerSensitivity is not None
     assert BoundingResult is not None

@@ -7,7 +7,6 @@ All tests use synthetic data — no real API calls.
 
 from __future__ import annotations
 
-import json
 import tempfile
 import threading
 import time

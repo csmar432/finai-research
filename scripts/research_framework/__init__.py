@@ -385,34 +385,6 @@ from .vuong_test import (
 )
 
 # W1-W4 gates (design doc / data checker / negative result / ref validator / manuscript quality)
-from .data_source_candidates import (
-    DataSourceCandidate,
-    CandidateScore,
-    SourceAvailability,
-    DataSourceCandidateRegistry,
-    CandidateRegistryResult,
-    build_registry,
-)
-from .negative_result_handler import (
-    NegativeResultHandler,
-    NegativeResultVerdict,
-    RequiredAction,
-    assess_result,
-)
-from .reference_validator import (
-    ReferenceValidator,
-    ReferenceReport,
-    ReferenceEntry,
-    RefIssue,
-    validate_references,
-)
-from .manuscript_quality_gate import (
-    ManuscriptQualityGate,
-    QualityReport,
-    QualityIssue,
-    SectionStat,
-    check_manuscript,
-)
 
 # ─────────────────────────────────────────────────────────────────────────────
 __all__ = [

@@ -44,7 +44,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from scripts.ai_router import _TASK_ROUTING, AI, ModelKey
+from scripts.ai_router import _TASK_ROUTING, ModelKey
 from scripts.ai_router import Task as RouterTask
 from scripts.core.memory import Operation, ResearchMemory
 

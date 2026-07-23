@@ -72,7 +72,6 @@ def test_check_13_detects_unquoted_name_with_colon(tmp_path: Path):
     function (which is hardcoded to scan .github/). We replicate the logic
     inline so we can inject bad YAML.
     """
-    import yaml
 
     fake_wf = tmp_path / "fake.yml"
     fake_wf.write_text(

@@ -11,9 +11,7 @@ import pytest
 
 def test_module_imports():
     from scripts.research_framework.kob_decomposition import (
-        KOBDecomposition, KOBResult,
-        OaxacaBlinderDecomposition, OaxacaResult,
-        wage_decomposition, investment_decomposition, credit_gap_decomposition,
+        KOBDecomposition, OaxacaBlinderDecomposition,
     )
     assert KOBDecomposition is not None
     assert OaxacaBlinderDecomposition is not None

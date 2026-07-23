@@ -13,12 +13,9 @@ from __future__ import annotations
 import time
 
 import pandas as pd
-import pytest
 
 from scripts.ai_router import CacheManager as ResponseCache
 from scripts.literature_download import (
-    _ARXIV_BUCKET,
-    _OPENALEX_BUCKET,
     _SS_BUCKET,
     _rate_limit,
 )

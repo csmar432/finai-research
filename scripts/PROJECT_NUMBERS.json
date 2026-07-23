@@ -1,7 +1,7 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-07-13",
+  "last_verified": "2026-07-24",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
@@ -48,13 +48,15 @@
     ]
   },
   "econometrics": {
-    "total_method_modules": 52,
+    "total_method_modules": 55,
     "test_coverage": {
-      "modules_with_tests": 52,
-      "modules_total": 52,
-      "percent": 100.0
+      "modules_with_tests": 54,
+      "modules_total": 55,
+      "percent": 98.18
     },
-    "zero_test_modules": [],
+    "zero_test_modules": [
+      "exact_permutation"
+    ],
     "note": "Smoke tests for all 47 modules committed 2026-06-27. Some modules still need deeper numerical tests."
   },
   "skills": {
@@ -102,8 +104,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 415,
-    "test_functions": 8030,
+    "test_files": 653,
+    "test_functions": 12620,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 28,
     "ci_coverage_target": 60,

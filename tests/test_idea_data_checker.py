@@ -3,9 +3,7 @@
 No external services or API calls required (all MCP/URL checks are mocked).
 """
 
-from pathlib import Path
 
-import pytest
 
 from scripts.idea_data_checker import (
     DataSourceAvailability,

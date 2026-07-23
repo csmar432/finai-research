@@ -29,7 +29,6 @@ def compose_cfg():
 
 def test_no_sys_exit_noop_healthcheck(compose_cfg):
     """确保没有任何 healthcheck 是 sys.exit(0) no-op。"""
-    import shlex
     bad = []
     for name, svc in compose_cfg.get("services", {}).items():
         h = svc.get("healthcheck")

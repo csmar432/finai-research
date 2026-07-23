@@ -9,7 +9,6 @@ import json
 import sys
 from pathlib import Path
 
-import pytest
 
 # 把 scripts/ 加进 sys.path（项目用 sys.path hack，非标准 layout）
 SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"

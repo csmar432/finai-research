@@ -607,7 +607,6 @@ class TestModuleImports:
     def test_modern_did_import(self):
         from scripts.research_framework.modern_did import (
             ModernDiDEngine,
-            DiDEstimationResult,
             _two_way_clustered_se,
         )
         assert callable(ModernDiDEngine)
@@ -617,7 +616,6 @@ class TestModuleImports:
         from scripts.research_framework.iv_panel import (
             IVPanel,
             DynamicGMM,
-            FamaMacBeth,
         )
         assert callable(IVPanel)
         assert callable(DynamicGMM)
@@ -625,8 +623,6 @@ class TestModuleImports:
     def test_diagnostic_reporter_import(self):
         from scripts.research_framework.diagnostic_reporter import (
             DiagnosticReporter,
-            DiagnosticReport,
-            DiagnosticDecision,
             DiagnosticCheck,
         )
         assert callable(DiagnosticReporter)

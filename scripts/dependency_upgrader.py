@@ -22,6 +22,12 @@ from typing import NamedTuple
 
 import requests
 
+# P5-6 audit-2026-07-23: 模块级 Session，keep-alive + 连接池复用
+from requests.adapters import HTTPAdapter as _HTTPAdapter
+_SESSION = requests.Session()
+_SESSION.mount("https://", _HTTPAdapter(pool_connections=10, pool_maxsize=10))
+_SESSION.mount("http://", _HTTPAdapter(pool_connections=10, pool_maxsize=10))
+
 
 class Dependency(NamedTuple):
     name: str
@@ -57,7 +63,7 @@ def parse_requirements(path: str = "requirements.txt") -> list[Dependency]:
 def get_latest_version(pkg: str) -> str | None:
     """Get the latest stable version of a package from PyPI."""
     try:
-        r = requests.get(f"https://pypi.org/pypi/{pkg}/json", timeout=5)
+        r = _SESSION.get(f"https://pypi.org/pypi/{pkg}/json", timeout=5)
         if r.status_code == 200:
             return r.json()["info"]["version"]
     except Exception as e:
@@ -79,7 +85,7 @@ def is_outdated(current: str, latest: str) -> bool:
 def check_security(pkg: str, version: str) -> list[dict]:
     """Check for known vulnerabilities via OSV API."""
     try:
-        r = requests.post(
+        r = _SESSION.post(
             "https://api.osv.dev/v1/query",
             json={"package": {"name": pkg, "ecosystem": "PyPI"}, "version": version},
             timeout=5,

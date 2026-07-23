@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -15,7 +15,7 @@ from scripts.core.tool_selector import (
     ToolSelection,
     ToolSelector,
 )
-from scripts.core.planner import Task, TaskType, TaskStatus
+from scripts.core.planner import Task, TaskType
 
 # Module-level dicts from tool_selector.py
 from scripts.core import tool_selector as _ts_module

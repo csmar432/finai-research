@@ -4,8 +4,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import json
-import tempfile
 import time
 from unittest.mock import MagicMock, patch
 
@@ -410,7 +408,7 @@ class TestTopologicalOrder:
         self,
         full_mocked_session,
     ):
-        from scripts.core.planner import Task, TaskType, TaskStatus
+        from scripts.core.planner import Task, TaskType
 
         task_a = Task("A", "Task A", TaskType.ANALYSIS)
         task_b = Task("B", "Task B", TaskType.ANALYSIS, dependencies=["A"])
@@ -454,7 +452,7 @@ class TestDependenciesReady:
     """Test _dependencies_ready."""
 
     def test_dependencies_ready_no_deps(self, full_mocked_session):
-        from scripts.core.planner import Task, TaskType, TaskStatus
+        from scripts.core.planner import Task, TaskType
 
         task = Task("t1", "Task", TaskType.ANALYSIS)
         result = full_mocked_session._dependencies_ready(task, [])

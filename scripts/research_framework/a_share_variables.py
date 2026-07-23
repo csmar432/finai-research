@@ -43,13 +43,23 @@ from __future__ import annotations
 import json as _json
 import logging
 import warnings
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
 
-import numpy as np
 import pandas as pd
+
+# P5-6 audit-2026-07-23: 模块级 Session
+try:
+    import requests
+    from requests.adapters import HTTPAdapter as _HTTPAdapter
+    _SESSION = requests.Session()
+    _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+    _SESSION.mount("http://", _adapter)
+    _SESSION.mount("https://", _adapter)
+except Exception:   # noqa: S110
+    _SESSION = None
 
 warnings.filterwarnings("ignore")
 
@@ -313,8 +323,8 @@ def _call_mcp_tool(server: str, tool: str, params: dict, retries: int = 2) -> An
 def _call_mcp_tool_via_http(server: str, tool: str, params: dict, base_url: str = "http://localhost:8001") -> Any | None:
     """Call MCP tool via local HTTP gateway. Falls back gracefully."""
     try:
-        import requests
-        resp = requests.post(
+        # P5-6 audit-2026-07-23: 复用模块级 _SESSION（若未启用则退化到 requests）
+        resp = _SESSION.post(
             f"{base_url}/call",
             json={"server": server, "tool": tool, "params": params},
             timeout=10,
@@ -1149,12 +1159,12 @@ class AShareVariableFetcher:
         if not ts_code:
             return None
         try:
-            import requests
             # Sina MSCI ESG API
             code = ts_code.replace(".SH", "").replace(".SZ", "").replace("SH", "sh").replace("SZ", "sz")
             url = f"https://hq.sinajs.cn/list={code}"
             headers = {"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
-            resp = requests.get(url, headers=headers, timeout=5)
+            # P5-6 audit-2026-07-23: 复用模块级 _SESSION
+            resp = _SESSION.get(url, headers=headers, timeout=5)
             if resp.status_code != 200:
                 return None
             return pd.DataFrame([{

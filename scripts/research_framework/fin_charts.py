@@ -435,7 +435,6 @@ class FinancialChartFactory:
         Shows treated vs control group trends around policy implementation.
         Essential for DID validity assessment.
         """
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         fig, ax = self._new_fig(figsize)
@@ -476,7 +475,6 @@ class FinancialChartFactory:
         Shows DID coefficient with 95% CI for each robustness test.
         Baseline coefficient is highlighted.
         """
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         # Normalize input to DataFrame
@@ -531,7 +529,6 @@ class FinancialChartFactory:
         """
         Plot Fama-French factor (or custom) returns over time.
         """
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         if factor_cols is None:
@@ -688,7 +685,6 @@ class FinancialChartFactory:
         figsize: tuple[float, float] = (8, 5),
     ) -> "plt.Figure":
         """Plot Regression Discontinuity Design scatter with fitted lines."""
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         fig, ax = self._new_fig(figsize)
@@ -734,7 +730,6 @@ class FinancialChartFactory:
         figsize: tuple[float, float] = (8, 5),
     ) -> "plt.Figure":
         """Plot cumulative treatment effect (CAR) with confidence interval."""
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         fig, ax = self._new_fig(figsize)
@@ -776,7 +771,6 @@ class FinancialChartFactory:
         figsize: tuple[float, float] = (6, 4),
     ) -> "plt.Figure":
         """Plot placebo test coefficient distribution."""
-        import matplotlib.pyplot as plt
         import seaborn as sns
         from scipy import stats
 
@@ -815,7 +809,6 @@ class FinancialChartFactory:
         figsize: tuple[float, float] = (9, 5),
     ) -> "plt.Figure":
         """Plot synthetic control: treated vs synthetic counterfactual."""
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         fig, ax = self._new_fig(figsize)
@@ -899,7 +892,6 @@ class FinancialChartFactory:
         figsize: tuple[float, float] = (9, 4.5),
     ) -> "plt.Figure":
         """Generic time series plot with optional grouping."""
-        import matplotlib.pyplot as plt
         import seaborn as sns
 
         fig, ax = self._new_fig(figsize)

@@ -1669,7 +1669,6 @@ class CompetingRisks:
     ) -> SurvivalResult:
         """使用 lifelines 竞争风险。"""
         try:
-            from lifelines import KaplanMeierFitter, NelsonAalenFitter
             from lifelines.fitters.coxph_fitter import CoxPHFitter
         except ImportError:
             raise ImportError("lifelines not available for Fine-Gray")

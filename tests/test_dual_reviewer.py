@@ -1,7 +1,6 @@
 """Tests for scripts/core/dual_reviewer.py"""
 
 import unittest.mock as mock
-from unittest.mock import MagicMock
 
 import pytest
 

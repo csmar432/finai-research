@@ -28,7 +28,6 @@ if str(ROOT) not in sys.path:
 
 
 try:
-    import scripts.research_framework.time_varying_models as mod
     from scripts.research_framework.time_varying_models import (
         DCCGARCH,
         DCCGARCHResult,

@@ -15,7 +15,6 @@ if str(ROOT) not in sys.path:
 try:
     from scripts.research_framework.base import (
         DataSource,
-        DataProvenance,
         ProvenanceTracker,
         fmt_coef,
         stars_for_stars,

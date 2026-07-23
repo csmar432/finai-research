@@ -6,7 +6,6 @@ parallel_trends_test, table generation.  Target: 30+ tests.
 
 from __future__ import annotations
 
-import warnings
 
 import matplotlib
 import numpy as np

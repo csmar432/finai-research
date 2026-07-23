@@ -1,6 +1,5 @@
 """Unit tests for scripts/core/memory.py"""
 
-import json
 import os
 import tempfile
 import time
@@ -863,7 +862,6 @@ class TestResearchMemoryConstants:
         """Test _write_lock is an RLock."""
         mem = ResearchMemory(session_id="lock_test", db_path=":memory:")
         assert hasattr(mem, "_write_lock")
-        import threading
 
         assert type(mem._write_lock).__name__ == "RLock"
 

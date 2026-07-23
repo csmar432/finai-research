@@ -1,6 +1,5 @@
 """Tests for prisma_compliance.py — PRISMA 2020 systematic review engine."""
 
-import pytest
 
 
 # ─── PRISMAStage ──────────────────────────────────────────────────────────
@@ -21,7 +20,7 @@ def test_prisma_stage_status_enum():
 # ─── SearchStrategy ──────────────────────────────────────────────────────
 
 def test_search_strategy_creation():
-    from scripts.research_framework.prisma_compliance import SearchStrategy, PRISMAStage
+    from scripts.research_framework.prisma_compliance import SearchStrategy
 
     s = SearchStrategy(
         strategy_id="s1",
@@ -39,7 +38,7 @@ def test_search_strategy_creation():
 
 
 def test_search_strategy_to_dict():
-    from scripts.research_framework.prisma_compliance import SearchStrategy, PRISMAStage
+    from scripts.research_framework.prisma_compliance import SearchStrategy
 
     s = SearchStrategy(
         strategy_id="s2",
@@ -142,7 +141,7 @@ def test_pico_extract():
 # ─── ROBAssessment ────────────────────────────────────────────────────────
 
 def test_rob_assessment():
-    from scripts.research_framework.prisma_compliance import ROBAssessment, GRADEQuality
+    from scripts.research_framework.prisma_compliance import ROBAssessment
 
     rob = ROBAssessment(
         paper_id="rob1",
@@ -192,7 +191,7 @@ def test_prisma_flowchart_empty():
 
 
 def test_prisma_flowchart_search_strategies():
-    from scripts.research_framework.prisma_compliance import PRISMAFlowchart, SearchStrategy, PRISMAStage
+    from scripts.research_framework.prisma_compliance import PRISMAFlowchart, SearchStrategy
 
     fc = PRISMAFlowchart()
     fc.add_search_strategy(SearchStrategy(
@@ -209,7 +208,7 @@ def test_prisma_flowchart_search_strategies():
 
 
 def test_prisma_flowchart_screening():
-    from scripts.research_framework.prisma_compliance import PRISMAFlowchart, ScreeningRecord
+    from scripts.research_framework.prisma_compliance import PRISMAFlowchart
 
     fc = PRISMAFlowchart()
     fc.set_fulltext_screened(100)
@@ -272,7 +271,7 @@ def test_prisma_report_empty():
 
 def test_prisma_report_with_pico():
     from scripts.research_framework.prisma_compliance import (
-        PRISMAFlowchart, PRISMAReport, PICOExtract, ROBAssessment, SearchStrategy
+        PRISMAFlowchart, PRISMAReport, PICOExtract, SearchStrategy
     )
 
     fc = PRISMAFlowchart()

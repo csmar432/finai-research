@@ -1,5 +1,4 @@
 """HaltRulesRegistry 单元测试"""
-import pytest
 from scripts.core.halt_rules_registry import HaltRulesRegistry
 
 

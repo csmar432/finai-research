@@ -8,7 +8,6 @@ _state_lock, _server_start_time, _current_data.
 from __future__ import annotations
 
 import inspect
-import json
 import sys
 import threading
 from pathlib import Path

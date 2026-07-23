@@ -1,7 +1,6 @@
 """Tests for vuong_kob, leamer_sensitivity, diagnostic_reporter modules."""
 
 import numpy as np
-import pytest
 
 rng = np.random.default_rng(42)
 
@@ -456,7 +455,7 @@ def test_diagnostic_reporter_auto_decide():
 
 
 def test_diagnostic_reporter_chain():
-    from scripts.research_framework.diagnostic_reporter import DiagnosticReporter, DiagnosticDecision
+    from scripts.research_framework.diagnostic_reporter import DiagnosticReporter
 
     rep = (
         DiagnosticReporter("OLS Baseline")

@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import math
-import statistics
 import tempfile
 import os
 
@@ -18,7 +16,6 @@ from scripts.core.reviewer_calibrator import (
     BiasType,
     BiasInstance,
     BiasReport,
-    CalibrationResult,
 )
 
 

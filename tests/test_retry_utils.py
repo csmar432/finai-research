@@ -2,14 +2,12 @@
 from __future__ import annotations
 
 import time
-from unittest.mock import patch
 
 import pytest
 
 from scripts.retry_utils import (
     retry_api_call,
     retry_with_backoff,
-    DEFAULT_RETRY_EXCEPTIONS,
     _TENACITY_AVAILABLE,
 )
 

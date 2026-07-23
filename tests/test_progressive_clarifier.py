@@ -19,10 +19,7 @@ import pytest
 from scripts.core.progressive_clarifier import (
     ProgressiveClarifier,
     ClarificationStage,
-    ClarificationState,
     ResearchProfile,
-    VariableSet,
-    VariableCandidate,
 )
 
 

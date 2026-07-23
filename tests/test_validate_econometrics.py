@@ -1,7 +1,5 @@
 """Tests for scripts/validate_econometrics.py"""
 import pytest
-import tempfile
-from pathlib import Path
 
 class TestFDRCorrection:
     def test_bh_correction_basic(self):

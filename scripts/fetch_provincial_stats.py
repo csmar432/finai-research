@@ -40,6 +40,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import requests
+
+# P5-6 audit-2026-07-23: 模块级 Session — keep-alive 与连接池复用
+from requests.adapters import HTTPAdapter as _HTTPAdapter
+try:
+    _SESSION = requests.Session()
+    _adapter = _HTTPAdapter(pool_connections=10, pool_maxsize=10)
+    _SESSION.mount("http://", _adapter)
+    _SESSION.mount("https://", _adapter)
+except Exception:   # noqa: S110
+    _SESSION = requests
+
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 _log = logging.getLogger("fetch_provincial_stats")
@@ -253,10 +265,10 @@ def fetch_bulletin_content(url: str) -> str | None:
 
     # Fallback: requests — 先尝试 SSL 验证，失败后降级
     try:
-        import requests
         try:
             # 优先使用 SSL 验证（安全）
-            resp = requests.get(
+            # P5-6 audit-2026-07-23: 复用模块级 _SESSION（keep-alive + 连接池）
+            resp = _SESSION.get(
                 url,
                 headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"},
                 timeout=15, verify=True, allow_redirects=True,
@@ -273,7 +285,7 @@ def fetch_bulletin_content(url: str) -> str | None:
             _log.debug(f"SSL verification failed, retrying without: {ssl_err}")
             import urllib3
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-            resp = requests.get(  # nosec B501
+            resp = _SESSION.get(  # nosec B501
                 url,
                 headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"},
                 timeout=15, verify=False, allow_redirects=True,
@@ -318,7 +330,6 @@ def fetch_bulletin_content(url: str) -> str | None:
             _log.warning(
                 f"silent except in fallback decode path (insecure SSL retry): {type(exc).__name__}: {exc}"
             )
-            pass
     except Exception as e:
         _log.debug(f"urllib failed for {url}: {e}")
 

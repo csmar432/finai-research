@@ -1,7 +1,7 @@
 """Unit tests for scripts/core/time_travel.py."""
 from __future__ import annotations
 
-import sys, time
+import sys
 from pathlib import Path
 
 import pytest

@@ -1,7 +1,7 @@
 """Unit tests for scripts/core/reflector.py."""
 from __future__ import annotations
 
-import sys, time
+import sys
 from pathlib import Path
 
 import pytest
@@ -206,7 +206,6 @@ class TestEvaluate:
         mock_memory = type("M", (), {"get_context": lambda s, limit=10: []})()
         r = ref.ResearchReflector(mock_memory)
         from scripts.core.planner import Task, TaskType
-        from scripts.core.memory import ContextUnit
         t = Task(id="t1", task_type=TaskType.DATA_FETCH, description="fetch stock data")
         result = {"df": [1, 2], "price": 100.0, "roe": 15.0}
         eval_result = r.evaluate(t, result, [])

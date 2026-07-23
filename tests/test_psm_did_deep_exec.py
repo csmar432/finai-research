@@ -10,7 +10,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
-from sklearn.metrics import roc_auc_score
 
 from scripts.research_framework.psm_did import (
     PSMDID,

@@ -3,7 +3,6 @@
 import unittest.mock as mock
 from unittest.mock import MagicMock
 
-import pytest
 
 from scripts.core.reviewer_pipeline import (
     ReviewerPipeline,

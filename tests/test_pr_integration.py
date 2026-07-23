@@ -132,7 +132,6 @@ def test_no_nora_identifiers_in_core_modules():
     在模块 docstring 中说明重命名历史）。
     """
     import ast
-    import re
 
     forbidden_identifiers = {
         "NoraOrchestrator", "NoraState", "NoraStage",

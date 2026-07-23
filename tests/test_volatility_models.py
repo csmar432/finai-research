@@ -18,8 +18,7 @@ import pytest
 def test_module_imports():
     """模块必须能 import。"""
     from scripts.research_framework.volatility_models import (
-        GARCHModel, HARModel, Path, RealizedGARCH,
-        garch_fit, realized_volatility_from_prices,
+        GARCHModel, HARModel,
     )
     assert GARCHModel is not None
     assert HARModel is not None

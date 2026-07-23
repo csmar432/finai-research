@@ -2,7 +2,6 @@
 Tests for ReportGenerator — scripts/research_framework/report_generator.py
 """
 
-import pytest
 import tempfile
 import json
 from pathlib import Path

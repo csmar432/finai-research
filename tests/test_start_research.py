@@ -24,7 +24,6 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 # Project root on sys.path so `import scripts.start_research` works
 _PROJECT_ROOT = Path(__file__).parent.parent.resolve()

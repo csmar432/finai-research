@@ -419,13 +419,11 @@ class HaltRulesRegistry:
                             f"silent except in _check_data_freshness (regex match float cast): "
                             f"{type(exc).__name__}: {exc}"
                         )
-                        pass
             except re.error as exc:
                 _logger().warning(
                     f"silent except in _check_data_freshness (regex compile): "
                     f"{type(exc).__name__}: {exc}"
                 )
-                pass
 
         if violations:
             return False, "; ".join(violations)
@@ -884,7 +882,6 @@ class HaltRulesRegistry:
                         _logger().warning(
                             f"silent except in _check_data_freshness (release_after_period): {type(exc).__name__}: {exc}"
                         )
-                        pass
 
         if violations:
             return False, "; ".join(violations)
@@ -921,7 +918,6 @@ class HaltRulesRegistry:
                         f"silent except in _check_data_freshness (date parse): "
                         f"{type(exc).__name__}: {exc}"
                     )
-                    pass
 
         if violations:
             return False, "; ".join(violations)
@@ -1721,7 +1717,6 @@ class HaltRulesRegistry:
                         f"silent except in _extract_field (float cast for {field_name}={key!r}): "
                         f"{type(exc).__name__}: {exc}"
                     )
-                    pass
         return None
 
 
