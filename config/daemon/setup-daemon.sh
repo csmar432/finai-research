@@ -20,6 +20,13 @@
 
 set -euo pipefail
 
+# ── Bail out on Windows (this script is bash only) ────────────────────────────
+if [ "$(uname)" == "MINGW"* ] || [ "$(uname)" == "CYGWIN"* ] || [ "$OS" == "Windows_NT" ]; then
+    echo "ERROR: setup-daemon.sh is bash-only. On Windows, use:"
+    echo "  powershell -ExecutionPolicy Bypass -File scripts/install_service.ps1 -Action Install"
+    exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 VENV_PYTHON="${PROJECT_ROOT}/.venv/bin/python3"
@@ -175,9 +182,13 @@ echo ""
 echo "  [Cron] Added to crontab (runs 08:00, 13:30, 20:00 daily):"
 echo "    crontab -l | grep FinAI"
 echo ""
-echo "  [Daemon] Running in background:"
-echo "    .venv/bin/python scripts/event_monitor.py --daemon --auto-trigger --macro-scheduler \\"
-echo "      --log-file logs/monitor.log"
+echo "  [Daemon] Running in background (use OS service manager, do NOT use --daemon directly):"
+echo "    Linux:   sudo systemctl start finai-event-monitor  # installed by: bash setup-daemon.sh linux"
+echo "    macOS:   launchctl load ~/Library/LaunchAgents/com.finai.research-workflow.event-monitor.plist"
+echo "    Windows: powershell scripts/install_service.ps1 -Action Install  # uses Task Scheduler"
+echo ""
+echo "  Note: scripts/event_monitor.py --daemon is Unix-only (os.fork())."
+echo "  On Windows, run via Task Scheduler / NSSM, not the --daemon flag."
 echo ""
 echo "  [Check status] View pending approvals:"
 echo "    .venv/bin/python scripts/event_monitor.py --list-pending"

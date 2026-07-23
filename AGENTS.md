@@ -123,10 +123,11 @@ papers/                     # 2 demo papers (sample data)
 
 - **macOS / Linux**: fully supported. CI matrix includes both.
 - **Windows**: most features work. Known limitations:
-  - `event_monitor.py --daemon` (uses `os.fork`) → not supported; use polling
-    mode (`--interval 300`) instead.
-  - `keychain_setup.py` (mac-specific) → use `scripts/keychain_manager.py`
-    instead.
+ - `event_monitor.py --daemon` (uses `os.fork`) → **not supported on Windows**.
+   Use `scripts/install_service.ps1 -Action Install` (Task Scheduler wrapper) instead.
+   Polling mode (`--interval 300`) works on all platforms.
+ - `keychain_setup.py` (mac-specific) → use `scripts/keychain_manager.py`
+   instead.
 - **Python**: 3.10, 3.11, 3.12, 3.13 all supported. Some `asyncio.get_event_loop()`
   calls emit DeprecationWarning on 3.10+ (harmless but adds noise).
 

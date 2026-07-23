@@ -104,6 +104,104 @@ def fetch_mcp_tushare_financial_batch(symbols: list, report_type: str = "balance
     return {"success": results, "failed": errors}
 
 
+def fetch_mcp_stock_data(symbols: list) -> dict:
+    """Fallback: 通过 user-stock-data MCP (akshare) 获取单只股票数据。
+
+    当 Tushare token 不可用时，作为第二层 fallback。
+    Returns:
+        {"success": {sym: {...}}, "failed": {sym: "reason"}}
+    """
+    results = {}
+    errors = {}
+    try:
+        from scripts.core.llm_gateway import call_mcp_tool
+    except Exception:
+        return {"success": results, "failed": {sym: "llm_gateway unavailable" for sym in symbols}}
+
+    for sym in symbols:
+        try:
+            result = call_mcp_tool(
+                server="user-stock-data",
+                tool="get_stock_financial",
+                arguments={"ts_code": sym, "report_type": "balance"},
+            )
+            if result and isinstance(result, dict) and result.get("data"):
+                results[sym] = {"source": DataSource.MCP_STOCK_DATA, "data": result["data"], "ticker": sym}
+            else:
+                errors[sym] = "stock_data: empty response"
+        except Exception as e:
+            errors[sym] = f"stock_data: {e}"
+        time.sleep(0.2)
+    return {"success": results, "failed": errors}
+
+
+def fetch_multiple_stocks(symbols: list, *, allow_user_approved_mock: bool = False) -> dict:
+    """多源批量获取股票财务数据，带 3 层 fallback。
+
+    数据源优先级：
+      1. user-tushare MCP（A 股财务数据）
+      2. user-stock-data MCP（akshare，A 股个股数据）
+      3. 用户显式批准下的 mock 数据（仅当 allow_user_approved_mock=True）
+
+    Args:
+        symbols: A 股代码列表（6 位，如 "600519"）。
+        allow_user_approved_mock: 必须为 True 才允许 fallback 到 mock 数据。
+                                  否则 mock 不会被调用，failed 会保留。
+
+    Returns:
+        {"success": {sym: {"source": ..., "data": ..., "ticker": ...}},
+         "failed":  {sym: "reason"}}
+    """
+    all_results = {}
+    all_errors = {}
+
+    # Layer 1: tushare
+    layer1 = fetch_mcp_tushare_financial_batch(symbols, report_type="balance")
+    all_results.update(layer1["success"])
+    failed_after_1 = set(layer1["failed"].keys())
+
+    # Layer 2: stock_data (akshare) — only for symbols that failed in layer 1
+    if failed_after_1:
+        layer2 = fetch_mcp_stock_data(list(failed_after_1))
+        all_results.update(layer2["success"])
+        failed_after_2 = set(layer2["failed"].keys())
+    else:
+        failed_after_2 = set()
+
+    # Layer 3: mock (only with explicit user approval)
+    if failed_after_2 and allow_user_approved_mock:
+        for sym in failed_after_2:
+            all_results[sym] = {
+                "source": DataSource.MOCK_DATA,
+                "data": _mock_stock_balance(sym),
+                "ticker": sym,
+            }
+        failed_after_2 = set()
+
+    # Anything still failed
+    for sym in failed_after_2:
+        all_errors[sym] = "all sources exhausted (tushare + stock_data)"
+
+    return {"success": all_results, "failed": all_errors}
+
+
+def _mock_stock_balance(symbol: str) -> dict:
+    """Generate a single mock balance-sheet record for fallback demo.
+
+    Returns a dict in the same shape as `fetch_mcp_tushare_financial` data.
+    Values are placeholders; real publication data MUST come from CSMAR/Wind.
+    """
+    np.random.seed(hash(symbol) % (2**32))
+    total_assets = float(np.random.uniform(1e9, 1e11))
+    return {
+        "ts_code": symbol,
+        "total_assets": total_assets,
+        "short_borrow": total_assets * np.random.uniform(0.05, 0.20),
+        "long_borrow": total_assets * np.random.uniform(0.02, 0.10),
+        "_mock": True,
+    }
+
+
 # ════════════════════════════════════════════════════════════════════
 # Step 2: 交叉验证——从已发表论文获取基准结果
 # ════════════════════════════════════════════════════════════════════
@@ -320,8 +418,12 @@ def generate_mock_panel_data(n_firms: int = 200, n_years: int = 13,
 # Step 5: 完整数据管道
 # ════════════════════════════════════════════════════════════════════
 
-def run_pipeline():
-    """完整数据获取+构建流程"""
+def run_pipeline(allow_user_approved_mock: bool = False):
+    """完整数据获取+构建流程
+
+    Args:
+        allow_user_approved_mock: 是否允许使用 mock 数据兜底（仅在 CLI 显式 --allow-mock 时为 True）。
+    """
     print("=" * 60)
     print("绿色信贷实证研究数据管道")
     print(f"运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -366,7 +468,7 @@ def run_pipeline():
 
     all_symbols = heavy_polluting_symbols + clean_symbols
 
-    mcp_data = fetch_multiple_stocks(all_symbols)
+    mcp_data = fetch_multiple_stocks(all_symbols, allow_user_approved_mock=allow_user_approved_mock)
     mcp_success_count = len(mcp_data["success"])
     mcp_fail_count = len(mcp_data["failed"])
 
@@ -510,7 +612,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.stage in ("mcp", "all"):
-        results, panel_df = run_pipeline()
+        results, panel_df = run_pipeline(allow_user_approved_mock=args.allow_mock)
 
     if args.stage in ("build", "all"):
 
