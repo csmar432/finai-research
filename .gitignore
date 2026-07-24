@@ -340,4 +340,19 @@ projects/*
 !projects/.gitkeep
 # 嵌套 git 目录 (.papers_git 是 paper versioning 子模块)
 .papers_git/
+# Audit reports (internal, should be in docs/audit/)
+_audit_reports/
+# Canvas interactive files (user-generated artifacts)
+canvases/
+# Session state (not source code)
+output/.nora_session/
+output/.clarify_session/
+# CI artifacts
+pytest-cs-*-log/
+coverage-unified/
+.coverage_ci
+mypy-log/
+# MCP server __pycache__ (43 servers × multiple versions)
+mcp_servers/*/__pycache__/
+mcp_servers/*/*/__pycache__/
 
