@@ -75,8 +75,11 @@ class TestTableGenerators:
     def test_table_generator_callable(self, func_name, tmp_path):
         """Just verify each generator is callable (full integration test
         in test_generate_empirical_tables_deep.py covers deeper paths)."""
-        df = self._make_panel()
-        func = globals()[func_name]
+        # Look up the generator from the import target module, not pytest
+        # globals (the test file's globals() doesn't contain them).
+        import importlib
+        mod = importlib.import_module("scripts.generate_empirical_tables")
+        func = getattr(mod, func_name)
         assert callable(func)
         # Don't actually call - some have arg signature incompatibilities.
         # The deep test verifies behaviour.

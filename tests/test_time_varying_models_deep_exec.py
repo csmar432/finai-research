@@ -271,14 +271,14 @@ class TestTVPVARPostEdge:
         assert latex == ""
 
     def test_plot_irf_matplotlib_absent(self, monkeypatch):
-        t = TVPVAR(p=1)
-        t._result = TVPVARResult(y_vars=["a"], n_periods=10)
-        monkeypatch.setattr(
-            "builtins.__import__",
-            lambda *a, **kw: (_ for _ in ()).throw(ImportError)
-            if a and a[0] == "matplotlib.pyplot" else None,
-        )
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
+        # audit-2026-07-21: try/except/Exception:pass converted to xfail.
+        # The previous version also patched ``builtins.__import__`` globally
+        # (raising ImportError for matplotlib.pyplot), which leaked into other
+        # tests when running under pytest-xdist — the worker would crash with
+        # ``assert not crashitem`` because every numpy/pandas import after
+        # this test routed through the stubbed ``__import__``. So we now
+        # declare xfail immediately and skip the monkeypatch entirely
+        # (xfail ``reason="no real assertion"`` covers the audit purpose).
         pytest.xfail(
             reason="no real assertion",
         )

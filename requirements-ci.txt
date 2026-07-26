@@ -19,15 +19,28 @@
 # =====================================================================
 
 # Core data + plotting
-numpy>=1.26.0
+# audit-2026-07-26: pin numpy<2 (linearmodels 6.x is built against numpy 1.x
+# ABI; running linearmodels on numpy 2.x yields "numpy.dtype size changed"
+# collect errors in 40+ test files). We choose numpy<2 over upgrading
+# linearmodels because (a) linearmodels 7.x hasn't landed on PyPI yet,
+# (b) pandas 2.x has stable numpy 1.x support, (c) matplotlib 3.9.x is
+# already a no-op for numpy 2.x anyway.
+numpy>=1.26.0,<2.0
 pandas>=2.0.0
 scipy>=1.13.0
 statsmodels>=0.14.0
 scikit-learn>=1.4.0
 linearmodels>=6.0.0
 networkx>=3.2.0
-matplotlib>=3.8.0
+# matplotlib pinned to <3.10 because matplotlib 3.10+ requires numpy>=2.0
+# (see matplotlib 3.10 release notes). With numpy<2 we need matplotlib<3.10.
+matplotlib>=3.8.0,<3.10
 seaborn>=0.13.0
+# tenacity required by data_fetcher.py / retry_utils.py — scripts/ imports
+# it unconditionally at module top, so even though `retry_utils.py` is
+# "optional" semantically, the module-level import fails if missing.
+# Mirrors pyproject.toml `dependencies` entry.
+tenacity>=8.2.0,<10.0
 
 # Config / LLM stubs
 requests>=2.31.0
@@ -41,6 +54,14 @@ tiktoken>=0.7.0
 tabulate>=0.9.0
 openpyxl>=3.1.0
 psutil>=5.9.0
+# duckdb is required by scripts/core/data_cache.py for the persistent
+# cache layer. Without it, data_cache silently degrades to no-op and
+# 6 tests in tests/test_data_cache.py fail. Pin to pyproject.toml range.
+duckdb>=0.9.0,<2.0
+# docx is required by tests/test_generate_docx_tables_unit.py for the
+# docx table generation tests. The script itself conditionally imports,
+# but the test imports docx directly.
+python-docx>=1.0.0
 
 # Test runner
 pytest>=7.4.0

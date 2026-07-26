@@ -21,7 +21,17 @@ import sys
 import time
 from pathlib import Path
 
-import streamlit as st
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:  # pragma: no cover
+    # Streamlit is a heavyweight UI dependency. Allow unit tests that only
+    # exercise the pure-Python constants (PAPER_STAGES / ANALYST_AGENTS /
+    # ALL_AGENT_NAMES / etc.) to import this module without pulling in the
+    # streamlit runtime. Real ``streamlit run`` invocation still requires
+    # ``pip install streamlit``.
+    st = None  # type: ignore[assignment]
+    _HAS_STREAMLIT = False
 import yaml
 
 # ─── Path setup ────────────────────────────────────────────────────────────────

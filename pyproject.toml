@@ -312,8 +312,9 @@ DEP002 = [
     "e2b-code-interpreter",
     "playwright",
     "apscheduler",
+    "beautifulsoup4",
     "finai-research-workflow",
-]
+]		
 # DEP001 ignore 留空——由全局 ignore = ["DEP001"] 抑制。
 # 真实 DEP001（langgraph/lifelines/diff_in_diff2/econml 等）待后续 PR-6+ 清理。
 

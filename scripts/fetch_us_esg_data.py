@@ -10,7 +10,16 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import yfinance as yf
+
+# yfinance is optional for module-level import: tests in tests/test_fetch_us_esg_data_unit.py
+# only exercise the pure-Python constants (ENERGY_TICKERS, SECTOR_MAP, etc.) which
+# don't need yfinance at all. Real data fetching still requires `pip install yfinance`.
+try:
+    import yfinance as yf
+    _HAS_YFINANCE = True
+except ImportError:  # pragma: no cover
+    yf = None  # type: ignore[assignment]
+    _HAS_YFINANCE = False
 
 # 16 个能源公司（与 us_esg_regression.py 的 ENERGY_TICKERS 对齐）
 ENERGY_TICKERS = [
