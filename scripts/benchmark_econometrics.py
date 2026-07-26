@@ -624,7 +624,7 @@ def test_did_2x2(seed: int = 42) -> BenchmarkResult:
         result = engine.did_2x2()
         proj_estimate = result.coef
         proj_se = result.se
-    except Exception as e:
+    except Exception:
         import traceback
         traceback.print_exc()
         proj_estimate = ref["coef"]  # fallback
@@ -695,7 +695,7 @@ def test_cs_did(seed: int = 42) -> BenchmarkResult:
         proj_estimate = result.coef
         proj_se = result.se
         estimator_used = result.estimator
-    except Exception as e:
+    except Exception:
         proj_estimate = ref["coef"]
         proj_se = ref["se"]
         estimator_used = "fallback"
@@ -765,7 +765,7 @@ def test_sdid(seed: int = 42) -> BenchmarkResult:
         result = engine.inference(method="bootstrap", B=499, seed=seed)
         proj_estimate = result.att
         proj_se = result.se
-    except Exception as e:
+    except Exception:
         proj_estimate = ref["att"]
         proj_se = ref["se"]
 
@@ -822,7 +822,7 @@ def test_ife(seed: int = 42) -> BenchmarkResult:
         proj_se = float(result.se[1]) if len(result.se) > 1 else float(result.se[0])
         proj_sigma2 = float(result.idiosyncratic_var)
         proj_r2 = float(result.r_squared) if result.r_squared else np.nan
-    except Exception as e:
+    except Exception:
         import traceback
         traceback.print_exc()
         proj_estimate = ref["beta"]
@@ -884,7 +884,7 @@ def test_cce(seed: int = 42) -> BenchmarkResult:
         result = engine.fit(X, robust=True)
         proj_estimate = result.beta[0] if len(result.beta) > 0 else 0.0
         proj_se = result.se[0] if len(result.se) > 0 else 0.0
-    except Exception as e:
+    except Exception:
         proj_estimate = ref["beta"][0]
         proj_se = ref["se"][0]
 
@@ -1008,7 +1008,7 @@ def main() -> None:
             status = "PASS" if result.passed else "FAIL"
             print(f"  [{name:15}] {status}  (MAD={result.max_abs_diff:.4f}, "
                   f"t={result.elapsed_ms:.1f}ms)")
-        except Exception as e:
+        except Exception:
             print(f"  [{name:15}] ERROR  {e}")
             results.append(BenchmarkResult(
                 method=name,

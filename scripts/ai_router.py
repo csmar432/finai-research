@@ -1261,7 +1261,19 @@ class AIRouter:
         self._lazy_init()
 
         # Step 1：确定任务类型
-        actual_task = task if task else self.classifier.classify(user_input)
+        # 兼容传入 str (e.g. "paper_cn") 或 None — 自动转 enum
+        if task is None:
+            actual_task = self.classifier.classify(user_input)
+        elif isinstance(task, Task):
+            actual_task = task
+        elif isinstance(task, str) and task:
+            # 字符串 — 尝试按值匹配
+            try:
+                actual_task = Task(task)
+            except ValueError:
+                actual_task = self.classifier.classify(user_input)
+        else:
+            actual_task = self.classifier.classify(user_input)
 
         # Step 2：获取模型优先级列表
         if model:

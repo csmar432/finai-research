@@ -24,7 +24,7 @@ class TestDetectPlatform:
     def test_returns_string(self, ip):
         result = ip._detect_platform()
         assert isinstance(result, str)
-        assert result in ("cursor", "claude_code", "vscode", "unknown", "web")
+        assert result in ("cursor", "claude_code", "vscode", "unknown", "web", "generic")
 
     def test_returns_known_platform(self, ip):
         result = ip._detect_platform()
