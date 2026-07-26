@@ -192,6 +192,16 @@ jobs:
         #   - os.fork 不支持 → sandbox.py 使用 subprocess
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]   # P5-2 audit-2026-07-23
+        # P6-10 audit-2026-07-26: exclude windows-latest × python-3.13 because
+        # the actions/setup-python@v7 + pip resolver combo fails to find a
+        # matplotlib wheel for win_amd64 + cp313 (matrix ci #648 windows-3.13
+        # produced a 429-byte log = "no matching distribution found", taking
+        # the whole cross-platform smoke subset red). win-3.10/3.11/3.12 all
+        # work, as do ubuntu/macos on every supported Python. This drops the
+        # matrix from 12 to 11 cells, all of which actually run.
+        exclude:
+          - os: windows-latest
+            python-version: "3.13"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
