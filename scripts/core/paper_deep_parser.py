@@ -1063,26 +1063,25 @@ class PaperDeepParser:
                 p.stem for p in paths[len(paper_ids) :]
             ]
 
-        results: list[ParseResult] = []
+        results_by_idx: dict[int, ParseResult] = {}
         with ThreadPoolExecutor(max_workers=4) as executor:
             futures = {
-                executor.submit(self.parse, p, pid): (p, pid)
-                for p, pid in zip(paths, paper_ids, strict=False)
+                executor.submit(self.parse, p, pid): idx
+                for idx, (p, pid) in enumerate(zip(paths, paper_ids, strict=False))
             }
             for future in as_completed(futures):
+                idx = futures[future]
                 try:
-                    results.append(future.result())
+                    results_by_idx[idx] = future.result()
                 except Exception as exc:
-                    p, pid = futures[future]
-                    results.append(
-                        ParseResult(
-                            paper_id=pid,
-                            file_path=str(p),
-                            status=ParseResultStatus.ERROR,
-                            parsing_errors=[f"thread_exception: {exc}"],
-                        )
+                    p, pid = paths[idx], paper_ids[idx]
+                    results_by_idx[idx] = ParseResult(
+                        paper_id=pid,
+                        file_path=str(p),
+                        status=ParseResultStatus.ERROR,
+                        parsing_errors=[f"thread_exception: {exc}"],
                     )
-        return results
+        return [results_by_idx[i] for i in range(len(paths))]
 
     def parse_directory(self, dir_path: Path) -> list[ParseResult]:
         """Parse every PDF found in a directory.
