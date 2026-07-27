@@ -1,7 +1,7 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-07-24",
+  "last_verified": "2026-07-26",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {

@@ -21,6 +21,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import cast, Callable, Match, Any
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -106,7 +107,9 @@ def _has_hardcoded_secrets() -> tuple[bool, list[str]]:
 
 
 def run_check(
-    check_id: str, desc: str, rel_path: str | None, content_check=None, special: str | None = None
+    check_id: str, desc: str, rel_path: str | None,
+    content_check: "Callable[[str], bool | Match[str]] | None" = None,  # type: ignore[assignment]
+    special: str | None = None,
 ) -> tuple[bool, str]:
     """Run a single check, return (passed, evidence)."""
     # Special: S2 hardcoded secrets scan (no file)
@@ -118,6 +121,7 @@ def run_check(
 
     # Special: directory with "any non-empty" semantics
     if special == "any":
+        assert rel_path is not None
         p = ROOT / rel_path
         if p.is_dir() and any(p.iterdir()):
             return True, f"{rel_path} is non-empty directory"
@@ -131,6 +135,7 @@ def run_check(
     # Default: file content check
     if rel_path is None:
         return False, "no path"
+    rel_path = cast(str, rel_path)
     path = ROOT / rel_path
     if not path.exists():
         return False, f"{rel_path} not found"
@@ -160,27 +165,30 @@ def main() -> int:
     failed = []
     for check in CHECKS:
         cid, desc, *rest = check
-        rel_path, content_check, special = None, None, None
-        if len(rest) == 1 and isinstance(rest[0], str):
-            # (path,)
-            rel_path = rest[0]
-        elif len(rest) == 1 and rest[0] is None:
-            # S2 special: no path
-            pass
-        elif len(rest) == 1:
-            # callable
-            rel_path, content_check = None, rest[0]
-        elif len(rest) == 2:
-            # (path, callable) or (path, None, special) or (path, "keyword")
-            first, second = rest[0], rest[1]
-            if isinstance(second, str) and second in ("any", "test_count_50"):
-                rel_path, special = first, second
+        # Unpack with explicit casts to satisfy mypy
+        _rest = cast(list[Any], list(rest))
+        _cid = cast(str, cid)
+        _desc = cast(str, desc)
+        rel_path: str | None = None
+        content_check: "Callable[[str], bool | Match[str]] | None" = None  # type: ignore[assignment]
+        special: str | None = None
+        if len(_rest) == 1:
+            if _rest[0] is None:
+                pass  # S2 special: no path
+            elif isinstance(_rest[0], str):
+                rel_path = _rest[0]
             else:
-                rel_path, content_check = first, second
-        elif len(rest) == 3:
-            rel_path, content_check, special = rest[0], rest[1], rest[2]
+                content_check = _rest[0]  # type: ignore[assignment]
+        elif len(_rest) == 2:
+            first, second = _rest[0], _rest[1]
+            if isinstance(second, str):
+                rel_path, special = cast(str, first), second
+            else:
+                rel_path, content_check = cast(str, first), second  # type: ignore[assignment]
+        elif len(_rest) == 3:
+            rel_path, content_check, special = cast(str, _rest[0]), _rest[1], _rest[2]  # type: ignore[assignment]
 
-        ok, evidence = run_check(cid, desc, rel_path, content_check, special)
+        ok, evidence = run_check(_cid, _desc, rel_path, content_check, special)
         icon = "✅" if ok else "❌"
         print(f"  [{cid}] {icon} {desc}")
         print(f"        → {evidence}")
