@@ -1,10 +1,8 @@
 # 知乎发布项目说明 · FinResearch Agent
 
-## GitHub 项目描述（一句话）
+## GitHub 项目描述（一句话，学术化中文）
 
-> **End-to-end AI research pipeline for economics & finance: 43 data sources · 47 causal inference methods · 30 journal templates · from idea to submission-ready LaTeX draft.**
-
-（GitHub Repo Settings → 填入 Description + Topics 即可）
+> **面向经济金融领域的端到端 AI 学术研究工作流，集成多源数据获取、因果推断与可投稿论文自动生成，加速研究者从想法到草稿的全流程。**
 
 ---
 
@@ -60,20 +58,12 @@ research-tool
 （可直接粘贴到 GitHub → Repo Settings → "About" 框）
 
 ```
-FinResearch Agent 是一个端到端 AI 研究工作流，专为经济金融学者设计。
-
-核心功能：
-• 43 个数据源（A 股 / 美股 / 宏观 / 学术文献）
-• 47 种因果识别方法（DID / IV / RDD / PSM / GMM / 合成控制等）
-• 30 个期刊模板（JF / JFE / RFS / 经济研究 / 金融研究等）
-• 8 步研究流水线，每步强制人工确认
-• 完整数据溯源（provenance tracking）
+FinResearch Agent 是一个面向经济金融领域的端到端 AI 学术研究工作流，旨在将研究者从文献检索、数据获取、实证分析与论文排版的重复劳动中解放出来，使其将精力集中于 idea 生成与识别策略设计等核心工作。该工作流集成了 43 个数据源服务器，覆盖 A 股、美股、全球宏观与学术文献等主要数据类型；实现了 47 种因果推断方法，包括标准双重差分、Bacon 分解、Callaway-Sant'Anna (2021)、工具变量法、断点回归、面板门槛模型、合成控制与合成双重差分等主流及前沿计量方法；支持 JF、JFE、RFS 等英文顶刊与《经济研究》《金融研究》等中文顶刊的 LaTeX 模板，可直接输出符合投稿规范的论文草稿。整个流程包含 8 个标准化阶段，每阶段设置强制人工确认点（Human-in-the-Loop），确保研究者始终把控研究方向；同时内置完整的数据溯源模块，每次数据获取均记录来源、时间戳与 API 版本，杜绝静默造数。研究者以一句话描述研究方向，即可启动完整流水线，依次完成文献综述、研究想法生成、新颖性验证、实证设计、数据获取、回归分析与论文写作。⚠️ AI 生成的草稿必须经研究者独立审阅后方可投稿，工具定位为加速研究流程而非替代研究者本人。
 
 快速开始：
   pip install "finai-research-workflow[extras]"
   finai-pipeline --topic "碳排放权交易对企业绿色创新的影响"
 
-⚠️ AI 生成的草稿必须经研究者审阅后方可投稿。
 License: MIT | Python 3.10+
 ```
 
