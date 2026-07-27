@@ -28,7 +28,7 @@ class TestDetectPlatform:
 
     def test_returns_known_platform(self, ip):
         result = ip._detect_platform()
-        known = {"cursor", "claude_code", "vscode", "unknown", "web", "other"}
+        known = {"cursor", "claude_code", "vscode", "unknown", "web", "generic"}
         assert result in known
 
 
