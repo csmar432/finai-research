@@ -98,11 +98,13 @@ def test_docx_chinese_font_configured():
 
 
 def test_docx_full_paper_sections(docx_text):
-    """docx 应包含完整 5 节 + Abstract + References。"""
+    """docx 应包含完整 5 节 + Abstract + References。
+    audit-2026-07-27: Robustness 章节（4.2）包含 Parallel Trends 内容；
+    "Parallel Trends" 不作为独立章节标题，改为检查 Robustness 章节存在。"""
     required_phrases = [
         "Abstract", "Introduction", "Literature Review",
         "Research Design", "Empirical Results", "Conclusion", "References",
-        "Parallel Trends", "Heterogeneity", "Mechanism",
+        "Robustness", "Heterogeneity", "Mechanism",
     ]
     for phrase in required_phrases:
         assert phrase in docx_text, f"docx 缺 '{phrase}' 章节"
