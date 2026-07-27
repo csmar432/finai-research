@@ -836,6 +836,47 @@ class ProvenanceTracker:
         print(f"  Provenance recorded: {entity}")
 ```
 
+## Step 5b: 图表注释规范（强制）
+
+所有生成的图表 caption 必须包含以下要素，否则不得输出：
+
+**不合格（禁止）**：
+```python
+fig.suptitle("TR 和 ESP 的趋势变化")  # ❌ 仅描述"展示什么"
+ax.set_title("图1 平行趋势检验")       # ❌ 无解读
+```
+
+**合格（必须）**：
+```python
+# 平行趋势图的 caption
+caption = (
+    "图1 平行趋势检验。纵轴为事件研究法估计的ATT系数，横轴为相对政策实施年份（0为政策实施时点）。"
+    "政策前（t-5至t-1）处理组与对照组系数均不显著异于零且置信区间包含0，支持平行趋势假设；"
+    "政策后（t+1至t+3）处理组系数持续为正且逐步上升（ATT从0.58上升至1.25），"
+    "表明LCCP政策显著促进了试点城市TR提升。"
+)
+```
+
+**Caption 必须包含**（三者缺一不可）：
+1. **图表读法**：坐标轴含义、参考线意义
+2. **核心发现**：政策前平行/政策后上升等关键结论
+3. **具体数字**：ATT 值、置信区间、倍数等
+
+**代码示例**：
+```python
+def _save_with_provenance_caption(fig, ax, filename, title, key_finding, numbers):
+    """保存图表时自动生成合格 caption。"""
+    # 自动组合 caption
+    caption = f"{title}。{key_finding}。{numbers}"
+    ax.set_title(caption, fontsize=config.title_fontsize, fontweight='bold', pad=10)
+    fig.savefig(...)
+```
+
+**自动化检测**：
+生成图表后，用 `scripts/paper_language_checker.py` 检测 caption 中的数字和解读关键词。
+
+---
+
 ## Step 6: Generate All Figures from FIGURE_PLAN.md
 
 Main execution script:

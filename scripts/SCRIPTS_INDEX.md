@@ -46,7 +46,8 @@
 || `paper_versioning.py` | `python scripts/paper_versioning.py` | Git 风格的论文版本控制 |
 || `paper_visualizer.py` | `python scripts/paper_visualizer.py` | 架构图 / 结果可视化生成 |
 || `paper_reader.py` | `python scripts/paper_reader.py` | 论文下载 / 摘要 / 问答（支持 arXiv / Semantic Scholar） |
-|| `generate_docx_tables.py` | `python scripts/generate_docx_tables.py` | LaTeX/Markdown 表格 → Word 格式转换 |
+||| `paper_language_checker.py` | `python scripts/paper_language_checker.py paper.tex` | 论文 AI 味 / 底气 / 表格引导句自动化检测 |
+| `generate_docx_tables.py` | `python scripts/generate_docx_tables.py` | LaTeX/Markdown 表格 → Word 格式转换 |
 || `generate_empirical_tables.py` | `python scripts/generate_empirical_tables.py` | 从回归结果生成规范三线表格（LaTeX/HTML/MD） |
 
 ### 1.3 实证分析

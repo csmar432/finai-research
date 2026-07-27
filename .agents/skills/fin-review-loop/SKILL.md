@@ -25,6 +25,9 @@ tags: [paper, review, adversarial, quality]
 | 文献覆盖 (Literature Coverage) | 15% | >= 5.0 |
 | 写作清晰 (Writing Clarity) | 15% | >= 5.0 |
 | 学术影响 (Academic Impact) | 10% | >= 5.0 |
+> 其中"写作清晰"维度必须包含 AI 味检测：全文不得出现 AI 典型句式
+> （详见 docs/writing-guide/ANTI_AI_WRITING_GUIDE.md），
+> 结论段必须包含底气要素（具体数字/经济规模/机制描述/对比发现之一）。
 
 ## 评审难度级别
 

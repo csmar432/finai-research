@@ -9,7 +9,7 @@
 ```
 Phase A: 正文写作    → fin-paper-draft（生成各章节 .tex）
 Phase B: 图表生成    → fin-paper-figure（生成 figures/）
-Phase C: 一致性检查  → 图表/表格/公式编号对齐
+Phase C: 一致性检查  → 图表/表格/公式编号对齐 + 语言质量检查
 Phase D: 对抗性Review → fin-review-loop（循环直到通过）
 Phase E: LaTeX编译   → fin-paper-convert
 Phase F: 投稿前检查  → fin-submit-check
@@ -17,9 +17,25 @@ Phase F: 投稿前检查  → fin-submit-check
 
 ### 版本管理
 
-- `VERSION_MANIFEST.md` — 版本日志
-- `CHAPTER_STATUS.md` — 各章节状态
+- `VERSION_MANIFEST.md` — 版本日志（含语言质量维度）
+- `CHAPTER_STATUS.md` — 各章节状态（含语言质量检查字段）
 - `CONSISTENCY_CHECK.md` — 一致性检查报告
+
+### 语言质量检查（Phase C 新增）
+
+每章节完成后，必须执行语言质量检查：
+
+```bash
+python scripts/paper_language_checker.py draft_v1/xxx.tex
+```
+
+检查项：
+- AI 味关键词：全文 0 次
+- 底气指数：结论段满足 ≥1 项（具体数字/经济规模/机制描述/对比发现）
+- 表格引导句：每表前后 ≥3 句
+- 图表注释：每图 ≥1 句解读
+
+**语言质量检查不通过的章节，不得进入 Review 环节。**
 
 ### Checkpoint 控制
 
