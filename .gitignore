@@ -314,6 +314,17 @@ papers/finai_methodology/
 papers/us_esg_financing/AUDIT*.md
 papers/us_esg_financing/REFINED_DESIGN.md
 
+# ── Internal audit / check reports (不推送到公开仓库, 2026-07-28) ─────────────
+# 审计报告、bib 检查报告等仅供本地/内部使用, 与线上用户无关, 不入仓。
+bib_check_report.md
+bib_check_report*.md
+docs/audit/
+.archive/audit/
+AUDIT_*.md
+COMPREHENSIVE_AUDIT_*.md
+*_AUDIT_REPORT.md
+*_audit_report.md
+
 # ── audit-2026-07-21: 27 个未追踪文件 (.gitignore 缺口) ──────────────────
 # 覆盖率临时文件 (pytest --cov-report=json / 调试)
 core_cov.json
