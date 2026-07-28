@@ -325,6 +325,9 @@ COMPREHENSIVE_AUDIT_*.md
 *_AUDIT_REPORT.md
 *_audit_report.md
 
+# 知乎 / 营销发布物料 (仅本地, 不入公开仓库)
+docs/zhihu-publish/
+
 # ── audit-2026-07-21: 27 个未追踪文件 (.gitignore 缺口) ──────────────────
 # 覆盖率临时文件 (pytest --cov-report=json / 调试)
 core_cov.json
