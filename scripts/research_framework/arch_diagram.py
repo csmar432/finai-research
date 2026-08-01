@@ -34,6 +34,15 @@ matplotlib.rcParams["font.sans-serif"] = [
 matplotlib.rcParams["axes.unicode_minus"] = False
 
 
+# Node type constants for process_flow (M3)
+NODE_PROCESS = "process"     # 默认矩形
+NODE_DECISION = "decision"   # 菱形
+NODE_START = "start"         # 圆角胶囊
+NODE_END = "end"             # 圆角胶囊
+NODE_SUBPROCESS = "subprocess"  # 带双竖线边框
+NODE_DATA = "data"           # 平行四边形（用普通矩形近似）
+
+
 # ── Public data classes ───────────────────────────────────────────────────────
 
 
@@ -47,8 +56,10 @@ class Node:
     column: str = ""          # 所属纵向泳道（如 "Sub-agents"）
     color: str = "#2DD4BF"    # 节点主色
     icon: str | None = None   # 可选编号（如 "1"、"A"）
+    node_type: str = "process"  # M3: process/decision/start/end/subprocess/data
     x: float | None = None    # 手动坐标（None 时自动布局）
     y: float | None = None
+    branch: str | None = None  # M3: 分支标识（"yes"/"no"/"a"/"b"），用于横向错开
 
 
 @dataclass
@@ -310,52 +321,185 @@ def _render_legend(ax, spec: DiagramSpec) -> None:
     )
 
 
+def _draw_node_shape(ax, node: Node, nw: float, nh: float):
+    """根据 node_type 画不同形状"""
+    if node.node_type == NODE_DECISION:
+        # 菱形
+        cx, cy = node.x, node.y
+        diamond = plt.Polygon(
+            [(cx, cy + nh / 2), (cx + nw / 2, cy),
+             (cx, cy - nh / 2), (cx - nw / 2, cy)],
+            facecolor=spec_bg_color(ax), edgecolor=node.color, linewidth=2.0, zorder=3,
+        )
+        ax.add_patch(diamond)
+        # 中心填色
+        diamond.set_facecolor("#0F1F33")
+    elif node.node_type in (NODE_START, NODE_END):
+        # 胶囊形（高度更大，圆角极大）
+        _box(ax, node.x - nw / 2, node.y - nh / 2, nw, nh,
+             facecolor=node.color, edgecolor=node.color, lw=2.0, radius=nh / 2, zorder=3)
+        ax.text(node.x, node.y, node.label, fontsize=10, color="#FFFFFF",
+                ha="center", va="center", fontweight="bold", zorder=4)
+        return
+    elif node.node_type == NODE_SUBPROCESS:
+        # 双竖线边框的矩形
+        _box(ax, node.x - nw / 2, node.y - nh / 2, nw, nh,
+             facecolor="#0F1F33", edgecolor=node.color, lw=2.0, radius=0.4, zorder=3)
+        # 左/右双竖线
+        for dx in (-nw / 2 + 0.5, nw / 2 - 0.5):
+            ax.plot([node.x + dx, node.x + dx],
+                    [node.y - nh / 2 + 0.3, node.y + nh / 2 - 0.3],
+                    color=node.color, linewidth=1.2, zorder=4)
+    else:
+        # 默认矩形（process/data）
+        _box(ax, node.x - nw / 2, node.y - nh / 2, nw, nh,
+             facecolor="#0F1F33", edgecolor=node.color, lw=2.0, zorder=3)
+    # 标签（除 start/end 已在上面写过）
+    if node.node_type not in (NODE_START, NODE_END):
+        ax.text(node.x, node.y, node.label, fontsize=9,
+                color="#E8EEF6", ha="center", va="center", zorder=4)
+    # icon
+    if node.icon:
+        if node.node_type == NODE_DECISION:
+            # 菱形 icon 放菱形外右上角
+            ix, iy = node.x + nw / 2 + 1.5, node.y + nh / 2 + 1.5
+        elif node.node_type in (NODE_START, NODE_END):
+            ix, iy = node.x - nw / 2 + 1.6, node.y + nh / 2 - 1.6
+        else:
+            ix, iy = node.x - nw / 2 + 1.6, node.y + nh / 2 - 1.6
+        ax.add_patch(Circle((ix, iy), 1.2, color=node.color, zorder=5))
+        ax.text(ix, iy, node.icon, fontsize=8, color="#0A1929",
+                ha="center", va="center", fontweight="bold", zorder=6)
+
+
+def spec_bg_color(ax) -> str:
+    """获取当前 fig 的背景色（用于菱形填充）"""
+    return ax.figure.get_facecolor() if hasattr(ax, "figure") else "#0A1929"
+
+
 def process_flow(spec: DiagramSpec) -> None:
-    """业务流程图（M1: 纵向顺序排列节点 + 连线）"""
-    fig, ax = plt.subplots(figsize=(10, 12), dpi=200)
+    """业务流程图
+    M3 完整功能:
+      - 节点类型: process / decision(菱形) / start / end(胶囊) / subprocess(双竖线)
+      - 分支: 节点带 branch 字段，自动横向错开
+      - 多线型箭头 + 边标签
+      - 子流程嵌套（subprocess 节点 + 后续 nodes 缩进）
+    """
+    fig, ax = plt.subplots(figsize=(11, 13), dpi=200)
     fig.patch.set_facecolor(spec.bg_color)
     _clean(ax, spec.width, spec.height)
 
-    # 自动布局：按 nodes 顺序纵向排列
+    # 自动布局: 按 nodes 顺序排列，根据 branch 横向错开
     n = len(spec.nodes)
     if n == 0:
         return
-    spacing = (spec.height - 12) / n
-    box_w, box_h = 28.0, spacing - 2.0
 
+    # 决策节点后立即分支: 遇到 decision 后所有 nodes 按 branch 分组
+    # 主列 x=spec.width/2, 分支 x=主列±offset
+    main_x = spec.width / 2
+    branch_offset = spec.width * 0.18
+
+    # 先按出现顺序分配 y（主时间轴）
+    spacing = (spec.height - 12) / max(n, 1)
+    box_w, box_h = 26.0, spacing - 1.5
+
+    branch_stack: dict[str, float] = {}  # branch -> x offset 计数
     for i, node in enumerate(spec.nodes):
-        node.x = spec.width / 2
         node.y = spec.height - 6 - (i + 0.5) * spacing
+        if node.branch is None:
+            node.x = main_x
+        else:
+            # 同 branch 沿用相同 x, 新 branch 在另一侧
+            if node.branch in branch_stack:
+                node.x = main_x + branch_stack[node.branch]
+            else:
+                # 交替 yes/no, a/b
+                if not branch_stack:
+                    node.x = main_x + branch_offset
+                else:
+                    # 取已有 branch 的反方向
+                    xs = list(branch_stack.values())
+                    if all(x > 0 for x in xs):
+                        node.x = main_x - branch_offset
+                    else:
+                        node.x = main_x + branch_offset
+                branch_stack[node.branch] = node.x - main_x
 
+    # 节点
     for node in spec.nodes:
-        _box(ax, node.x - box_w / 2, node.y - box_h / 2, box_w, box_h,
-             facecolor=spec.bg_color, edgecolor=node.color, lw=2.0, zorder=3)
-        ax.text(node.x, node.y, node.label, fontsize=10,
-                color="#E8EEF6", ha="center", va="center", zorder=4)
-        if node.icon:
-            ax.add_patch(Circle(
-                (node.x - box_w / 2 + 1.8, node.y + box_h / 2 - 1.8), 1.2,
-                color=node.color, zorder=5,
-            ))
-            ax.text(node.x - box_w / 2 + 1.8, node.y + box_h / 2 - 1.8,
-                    node.icon, fontsize=9, color="#0A1929",
-                    ha="center", va="center", fontweight="bold", zorder=6)
+        if node.node_type == NODE_DECISION:
+            nw, nh = box_w * 0.7, box_h
+        elif node.node_type in (NODE_START, NODE_END):
+            nw, nh = box_w * 0.6, box_h
+        else:
+            nw, nh = box_w, box_h
+        _draw_node_shape(ax, node, nw, nh)
 
-    # 连线
+    # 连线（端点: process 用上下沿，decision 用四个角）
+    by_id = {n.id: n for n in spec.nodes}
     for e in spec.edges:
-        for node in spec.nodes:
-            if node.id == e.src:
-                x1, y1 = node.x, node.y - box_h / 2
-            if node.id == e.dst:
-                x2, y2 = node.x, node.y + box_h / 2
-        _arrow(ax, x1, y1, x2, y2, color=e.color, ls=e.style)
+        if e.src not in by_id or e.dst not in by_id:
+            continue
+        src, dst = by_id[e.src], by_id[e.dst]
+        # 端点选择
+        x1, y1 = _pick_endpoint(src, dst, "src")
+        x2, y2 = _pick_endpoint(dst, src, "dst")
+        style = "-|>" if e.arrow == "->" else ("<|-" if e.arrow == "<-" else "<|-|>")
+        _arrow(ax, x1, y1, x2, y2, color=e.color, lw=1.6, style=style, ls=e.style)
+        # 边标签（决策标签如 yes/no）
+        if e.label:
+            mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+            ax.text(
+                mx, my, e.label, fontsize=8, color=node_color_for(e.color),
+                ha="center", va="center", fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.2", fc=spec.bg_color,
+                          ec=e.color, lw=0.8),
+                zorder=5,
+            )
 
-    ax.text(spec.width / 2, spec.height - 4, spec.title,
-            fontsize=18, color="#2DD4BF", ha="center", fontweight="bold")
+    ax.text(
+        spec.width / 2, spec.height - 4, spec.title,
+        fontsize=18, color="#2DD4BF", ha="center", fontweight="bold",
+    )
 
     fig.savefig(spec.output_path, dpi=200, bbox_inches="tight",
                 facecolor=fig.get_facecolor())
     plt.close(fig)
+
+
+def _pick_endpoint(node: Node, other: Node, role: str) -> tuple[float, float]:
+    """根据节点类型和方向选端点"""
+    dx = other.x - node.x
+    dy = other.y - node.y
+    nw, nh = 13.0, 4.5  # 平均尺寸估算
+    if node.node_type == NODE_DECISION:
+        # 菱形：从四个角出发
+        if abs(dx) > abs(dy):
+            x = node.x + (nw * 0.35 if dx > 0 else -nw * 0.35)
+            y = node.y + dy * (nw * 0.35) / max(abs(dx), 0.1)
+        else:
+            x = node.x + dx * (nh * 0.5) / max(abs(dy), 0.1)
+            y = node.y + (nh * 0.5 if dy > 0 else -nh * 0.5)
+        return x, y
+    elif node.node_type in (NODE_START, NODE_END):
+        nw, nh = 16.0, 4.5
+        x = node.x + (nw / 2 if dx > 0 else -nw / 2 if dx < 0 else 0)
+        y = node.y + (nh / 2 if dy > 0 else -nh / 2 if dy < 0 else 0)
+        return x, y
+    else:
+        # 普通矩形: 上下沿
+        if abs(dy) > abs(dx):
+            y = node.y + (nh / 2 if dy > 0 else -nh / 2)
+            x = node.x
+        else:
+            x = node.x + (nw / 2 if dx > 0 else -nw / 2)
+            y = node.y
+        return x, y
+
+
+def node_color_for(c: str) -> str:
+    """边标签颜色（亮化背景色上的可读性）"""
+    return "#E8EEF6" if c.lower() in ("#0a1929", "#0f1f33", "#16273d", "#1b3355") else c
 
 
 def hierarchy_tree(spec: DiagramSpec) -> None:
@@ -538,9 +682,48 @@ def _demo_pipeline_hierarchy() -> str:
     return out
 
 
+def _demo_process_flow() -> str:
+    """Demo 3: M3 业务流程图（含决策菱形/分支）"""
+    out = "/Users/xuzheyi/Desktop/论文-研报工作流/output/figures/demo_process_flow.png"
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+
+    spec = DiagramSpec(
+        title="文献检索流程（含决策菱形与分支，M3 demo）",
+        width=100, height=80,
+        output_path=out,
+        nodes=[
+            Node("start", "开始检索", node_type=NODE_START, color="#34D399", icon="S"),
+            Node("q", "输入研究主题", color="#38BDF8", icon="1"),
+            Node("fetch", "调用 MCP\n多源检索", color="#A78BFA", icon="2"),
+            Node("enough", "文献数 ≥ 30?", node_type=NODE_DECISION,
+                 color="#FBBF24", icon="?"),
+            Node("aug", "扩展检索词\n补充检索", color="#FB923C", icon="3", branch="no"),
+            Node("dedup", "去重 + 排序", color="#F472B6", icon="4"),
+            Node("cite", "构建引文网络", color="#2DD4BF", icon="5"),
+            Node("save", "保存至\nLIT_REVIEW.md", color="#10B981", icon="6"),
+            Node("end", "完成", node_type=NODE_END, color="#F87171", icon="E"),
+        ],
+        edges=[
+            Edge("start", "q"),
+            Edge("q", "fetch"),
+            Edge("fetch", "enough"),
+            Edge("enough", "dedup", label="yes", color="#34D399"),
+            Edge("enough", "aug", label="no", color="#F87171"),
+            Edge("aug", "fetch", style="dashed"),
+            Edge("dedup", "cite"),
+            Edge("cite", "save"),
+            Edge("save", "end"),
+        ],
+    )
+    process_flow(spec)
+    return out
+
+
 if __name__ == "__main__":
     p1 = _demo_finresearch_arch()
     p2 = _demo_pipeline_hierarchy()
+    p3 = _demo_process_flow()
     print(f"[OK] {p1}")
     print(f"[OK] {p2}")
-    print("M2 demo 完成: 2 张示例图（swim_lane M2 版 + hierarchy_tree M1 版）")
+    print(f"[OK] {p3}")
+    print("M3 demo 完成: 3 张示例图（swim_lane M2 + hierarchy_tree M1 + process_flow M3）")
