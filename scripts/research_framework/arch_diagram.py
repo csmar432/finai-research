@@ -502,57 +502,289 @@ def node_color_for(c: str) -> str:
     return "#E8EEF6" if c.lower() in ("#0a1929", "#0f1f33", "#16273d", "#1b3355") else c
 
 
-def hierarchy_tree(spec: DiagramSpec) -> None:
-    """层次结构图（M1: 树状，每层水平居中排列）"""
+def hierarchy_tree(spec: DiagramSpec, style: str = "tree") -> None:
+    """层次结构图
+    M4 完整功能:
+      style="tree": 标准树状（父节点居中，子节点均匀排列）
+      style="consort": CONSORT 流程图（根→两臂→逐级 drop-out/排除）
+      style="org": 组织架构图（顶层居中，逐层扩展）
+    """
+    if style == "consort":
+        _hierarchy_consort(spec)
+    elif style == "org":
+        _hierarchy_org(spec)
+    else:
+        _hierarchy_tree_default(spec)
+
+
+def _hierarchy_tree_default(spec: DiagramSpec) -> None:
+    """标准树状层次图（M1 版升级: 任意父子边，自动按层归类）"""
     fig, ax = plt.subplots(figsize=(13, 8), dpi=200)
     fig.patch.set_facecolor(spec.bg_color)
     _clean(ax, spec.width, spec.height)
 
-    # 自动布局: 按 layer 分组
-    by_layer: dict[str, list[Node]] = {}
-    for node in spec.nodes:
-        by_layer.setdefault(node.layer, []).append(node)
-    layers_sorted = sorted(by_layer.keys())
+    # 拓扑层级: BFS 从入度为 0 的节点开始
+    in_degree = {n.id: 0 for n in spec.nodes}
+    children: dict[str, list[str]] = {n.id: [] for n in spec.nodes}
+    roots: list[str] = []
+    for e in spec.edges:
+        if e.src in children and e.dst in children:
+            children[e.src].append(e.dst)
+            in_degree[e.dst] += 1
+    for n in spec.nodes:
+        if in_degree[n.id] == 0:
+            roots.append(n.id)
 
-    n_levels = max(len(layers_sorted), 1)
-    spacing = (spec.height - 12) / n_levels
+    # BFS 算层
+    layer_of: dict[str, int] = {}
+    queue: list[tuple[str, int]] = [(r, 0) for r in roots]
+    while queue:
+        node_id, lvl = queue.pop(0)
+        layer_of[node_id] = lvl
+        for c in children[node_id]:
+            queue.append((c, lvl + 1))
 
-    for li, layer_name in enumerate(layers_sorted):
-        nodes = by_layer[layer_name]
+    # 按层分组
+    by_layer: dict[int, list[Node]] = {}
+    for n in spec.nodes:
+        lvl = layer_of.get(n.id, 0)
+        by_layer.setdefault(lvl, []).append(n)
+
+    n_levels = max(by_layer.keys()) + 1 if by_layer else 1
+    spacing = (spec.height - 12) / max(n_levels, 1)
+
+    # 自动布局: 每层节点均匀排列
+    for lvl in sorted(by_layer.keys()):
+        nodes = by_layer[lvl]
         m = len(nodes)
-        if m == 0:
-            continue
         box_w = min(20.0, (spec.width - 10) / m - 2.0)
-        total_w = m * box_w + (m - 1) * 4
+        total_w = m * box_w + max(m - 1, 0) * 4
         x_start = (spec.width - total_w) / 2 + box_w / 2
         for ni, node in enumerate(nodes):
             node.x = x_start + ni * (box_w + 4)
-            node.y = spec.height - 6 - (li + 0.5) * spacing
+            node.y = spec.height - 6 - (lvl + 0.5) * spacing
 
     # 节点
     for node in spec.nodes:
         box_w = 18.0
         box_h = spacing - 2.0
         _box(ax, node.x - box_w / 2, node.y - box_h / 2, box_w, box_h,
-             facecolor=spec.bg_color, edgecolor=node.color, lw=2.0, zorder=3)
+             facecolor="#0F1F33", edgecolor=node.color, lw=2.0, zorder=3)
         ax.text(node.x, node.y, node.label, fontsize=9,
                 color="#E8EEF6", ha="center", va="center", zorder=4)
 
-    # 连线（parent 用 layer 隐含关系：上一层 → 下一层，按顺序连接）
-    # M1 简化：用 edges 配置
+    # 连线: 父子连线，从父底中央 → 子顶中央
     by_id = {n.id: (n.x, n.y) for n in spec.nodes}
     for e in spec.edges:
         if e.src not in by_id or e.dst not in by_id:
             continue
         x1, y1 = by_id[e.src]
         x2, y2 = by_id[e.dst]
-        # 父子线：从源节点底部到目标节点顶部
-        _arrow(ax, x1, y1 - 3, x2, y2 + 3, color=e.color, ls=e.style)
+        _arrow(ax, x1, y1 - 3, x2, y2 + 3, color=e.color, lw=1.6, ls=e.style)
 
     # 层标签
-    for li, layer_name in enumerate(layers_sorted):
-        ax.text(2, spec.height - 6 - (li + 0.5) * spacing, layer_name,
+    for lvl in sorted(by_layer.keys()):
+        ax.text(2, spec.height - 6 - (lvl + 0.5) * spacing, f"L{lvl}",
                 fontsize=10, color="#8FA3B8", va="center", fontweight="bold")
+
+    ax.text(spec.width / 2, spec.height - 4, spec.title,
+            fontsize=18, color="#2DD4BF", ha="center", fontweight="bold")
+
+    fig.savefig(spec.output_path, dpi=200, bbox_inches="tight",
+                facecolor=fig.get_facecolor())
+    plt.close(fig)
+
+
+def _hierarchy_consort(spec: DiagramSpec) -> None:
+    """CONSORT 流程图（干预组 vs 对照组，左右两臂）"""
+    fig, ax = plt.subplots(figsize=(14, 9), dpi=200)
+    fig.patch.set_facecolor(spec.bg_color)
+    _clean(ax, spec.width, spec.height)
+
+    # CONSORT 假设: 第 1 层是入组总样本（居中）
+    # 第 2 层: 左臂（干预）/右臂（对照）
+    # 第 3 层: 各臂下：分析样本 / 排除原因
+    by_layer: dict[int, list[Node]] = {}
+    for n in spec.nodes:
+        by_layer.setdefault(n.layer, []).append(n)
+
+    layers_sorted = sorted(by_layer.keys())
+    n_levels = len(layers_sorted)
+    spacing = (spec.height - 14) / max(n_levels, 1)
+
+    # 第 1 层（入组）: 居中
+    if 0 in by_layer:
+        n0 = by_layer[0][0]
+        n0.x = spec.width / 2
+        n0.y = spec.height - 6 - 0.5 * spacing
+
+    # 第 2 层（随机分组）: 居中一个节点 + 左干预 / 右对照
+    if 1 in by_layer:
+        arm_x_left = spec.width * 0.25
+        arm_x_right = spec.width * 0.75
+        # 找到 column="left"/"right" 的节点，剩余居中
+        left_candidates = [n for n in by_layer[1] if n.column == "left"]
+        right_candidates = [n for n in by_layer[1] if n.column == "right"]
+        center_candidates = [n for n in by_layer[1]
+                             if n.column not in ("left", "right")]
+        for n in left_candidates:
+            n.x = arm_x_left
+            n.y = spec.height - 6 - 1.5 * spacing
+        for n in right_candidates:
+            n.x = arm_x_right
+            n.y = spec.height - 6 - 1.5 * spacing
+        for n in center_candidates:
+            n.x = spec.width / 2
+            n.y = spec.height - 6 - 1.5 * spacing
+
+    # 第 3 层起（分析/排除）: 各自居中于左右两臂
+    for lvl in layers_sorted[2:]:
+        if 1 in by_layer and len(by_layer[1]) >= 2:
+            parent_x_left = by_layer[1][0].x
+            parent_x_right = by_layer[1][1].x
+        else:
+            parent_x_left = spec.width * 0.25
+            parent_x_right = spec.width * 0.75
+        nodes = by_layer[lvl]
+        # 按 layer/column 字段分组到左右臂
+        left_nodes = [n for n in nodes if n.column != "right"]
+        right_nodes = [n for n in nodes if n.column == "right"]
+        # 若未指定 column，按数量均分
+        if not right_nodes and left_nodes and len(left_nodes) > len(nodes) / 2:
+            half = len(nodes) // 2
+            left_nodes = nodes[:half]
+            right_nodes = nodes[half:]
+        for node in left_nodes:
+            node.x = parent_x_left
+            node.y = spec.height - 6 - (lvl + 0.5) * spacing
+        for node in right_nodes:
+            node.x = parent_x_right
+            node.y = spec.height - 6 - (lvl + 0.5) * spacing
+
+    # 节点绘制
+    for node in spec.nodes:
+        nw = 26.0
+        nh = spacing - 2.5
+        _box(ax, node.x - nw / 2, node.y - nh / 2, nw, nh,
+             facecolor="#0F1F33", edgecolor=node.color, lw=2.2, zorder=3)
+        ax.text(node.x, node.y, node.label, fontsize=9,
+                color="#E8EEF6", ha="center", va="center", zorder=4)
+
+    # 连线: 父子 + 横线 drop-out
+    by_id = {n.id: (n.x, n.y) for n in spec.nodes}
+    for e in spec.edges:
+        if e.src not in by_id or e.dst not in by_id:
+            continue
+        x1, y1 = by_id[e.src]
+        x2, y2 = by_id[e.dst]
+        _arrow(ax, x1, y1 - 3, x2, y2 + 3, color=e.color, lw=1.6, ls=e.style)
+
+    # 臂标签
+    if 1 in by_layer and len(by_layer[1]) >= 2:
+        for node in by_layer[1][:2]:
+            lbl = "干预组" if node.x < spec.width / 2 else "对照组"
+            ax.text(node.x, node.y + spacing / 2 + 1, lbl,
+                    fontsize=11, color=node.color, ha="center",
+                    fontweight="bold")
+
+    ax.text(spec.width / 2, spec.height - 4, spec.title,
+            fontsize=18, color="#2DD4BF", ha="center", fontweight="bold")
+
+    fig.savefig(spec.output_path, dpi=200, bbox_inches="tight",
+                facecolor=fig.get_facecolor())
+    plt.close(fig)
+
+
+def _hierarchy_org(spec: DiagramSpec) -> None:
+    """组织架构图（顶层居中，逐层扩展，子节点均匀分布）"""
+    fig, ax = plt.subplots(figsize=(14, 8.5), dpi=200)
+    fig.patch.set_facecolor(spec.bg_color)
+    _clean(ax, spec.width, spec.height)
+
+    # 拓扑层级
+    in_degree = {n.id: 0 for n in spec.nodes}
+    children: dict[str, list[str]] = {n.id: [] for n in spec.nodes}
+    roots: list[str] = []
+    for e in spec.edges:
+        if e.src in children and e.dst in children:
+            children[e.src].append(e.dst)
+            in_degree[e.dst] += 1
+    for n in spec.nodes:
+        if in_degree[n.id] == 0:
+            roots.append(n.id)
+
+    layer_of: dict[str, int] = {}
+    queue: list[tuple[str, int]] = [(r, 0) for r in roots]
+    while queue:
+        node_id, lvl = queue.pop(0)
+        layer_of[node_id] = lvl
+        for c in children[node_id]:
+            queue.append((c, lvl + 1))
+
+    by_layer: dict[int, list[Node]] = {}
+    for n in spec.nodes:
+        lvl = layer_of.get(n.id, 0)
+        by_layer.setdefault(lvl, []).append(n)
+
+    n_levels = max(by_layer.keys()) + 1 if by_layer else 1
+    spacing = (spec.height - 12) / max(n_levels, 1)
+
+    # 顶层居中单节点（若是 org chart 第 0 层应有 1 个 CEO）
+    for lvl in sorted(by_layer.keys()):
+        nodes = by_layer[lvl]
+        m = len(nodes)
+        nw = min(22.0, (spec.width - 10) / m - 2.0)
+        total_w = m * nw + max(m - 1, 0) * 3
+        x_start = (spec.width - total_w) / 2 + nw / 2
+        for ni, node in enumerate(nodes):
+            node.x = x_start + ni * (nw + 3)
+            node.y = spec.height - 6 - (lvl + 0.5) * spacing
+
+    # 节点绘制
+    for node in spec.nodes:
+        nw = 20.0
+        nh = spacing - 2.5
+        _box(ax, node.x - nw / 2, node.y - nh / 2, nw, nh,
+             facecolor="#0F1F33", edgecolor=node.color, lw=2.0, zorder=3)
+        ax.text(node.x, node.y, node.label, fontsize=10,
+                color="#E8EEF6", ha="center", va="center",
+                fontweight="bold", zorder=4)
+
+    # 连线: 父子线，含中间竖线+横线（org chart 风格）
+    by_id = {n.id: (n.x, n.y) for n in spec.nodes}
+    # 先按父分组
+    by_parent: dict[str, list[str]] = {}
+    for e in spec.edges:
+        if e.src in by_id and e.dst in by_id:
+            by_parent.setdefault(e.src, []).append(e.dst)
+
+    for parent_id, child_ids in by_parent.items():
+        if parent_id not in by_id:
+            continue
+        px, py = by_parent_pos = by_id[parent_id]
+        child_xs = [by_id[c][0] for c in child_ids if c in by_id]
+        if not child_xs:
+            continue
+        # 父节点底部 → 父节点下方水平线
+        h_line_y = py - 3
+        ax.plot([px, px], [h_line_y, h_line_y - 1],
+                color="#8FA3B8", linewidth=1.4, zorder=2)
+        # 水平线
+        ax.plot([min(child_xs), max(child_xs)], [h_line_y - 1, h_line_y - 1],
+                color="#8FA3B8", linewidth=1.4, zorder=2)
+        # 每个子节点垂直连线
+        for c in child_ids:
+            if c not in by_id:
+                continue
+            cx, cy = by_id[c]
+            ax.plot([cx, cx], [h_line_y - 1, cy + 3],
+                    color="#8FA3B8", linewidth=1.4, zorder=2)
+            # 箭头
+            ax.add_patch(FancyArrowPatch(
+                (cx, cy + 3), (cx, cy + 3.1),
+                arrowstyle="-|>", mutation_scale=10,
+                color="#8FA3B8", linewidth=1.4, zorder=3,
+            ))
 
     ax.text(spec.width / 2, spec.height - 4, spec.title,
             fontsize=18, color="#2DD4BF", ha="center", fontweight="bold")
@@ -682,6 +914,73 @@ def _demo_pipeline_hierarchy() -> str:
     return out
 
 
+def _demo_consort() -> str:
+    """Demo 4: M4 CONSORT 流程图（干预/对照 + drop-out）"""
+    out = "/Users/xuzheyi/Desktop/论文-研报工作流/output/figures/demo_consort.png"
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+
+    spec = DiagramSpec(
+        title="样本筛选与分组 CONSORT 流程图（M4 demo）",
+        width=100, height=80,
+        output_path=out,
+        nodes=[
+            Node("enroll", "入组总样本\nN = 5,820",
+                 layer=0, color="#2DD4BF"),
+            Node("rand", "随机分组", layer=1, color="#A78BFA"),
+            Node("trt", "干预组\nn = 2,910",
+                 layer=1, column="left", color="#34D399"),
+            Node("ctl", "对照组\nn = 2,910",
+                 layer=1, column="right", color="#FB923C"),
+            Node("trt_ex", "排除：\n数据缺失 (n=128)\n非A股 (n=42)",
+                 layer=2, column="left", color="#F87171"),
+            Node("trt_an", "分析样本\nn = 2,740",
+                 layer=2, column="left", color="#34D399"),
+            Node("ctl_ex", "排除：\n数据缺失 (n=131)\n非A股 (n=39)",
+                 layer=2, column="right", color="#F87171"),
+            Node("ctl_an", "分析样本\nn = 2,740",
+                 layer=2, column="right", color="#34D399"),
+        ],
+        edges=[
+            Edge("enroll", "rand"),
+            Edge("rand", "trt"), Edge("rand", "ctl"),
+            Edge("trt", "trt_ex"), Edge("trt", "trt_an"),
+            Edge("ctl", "ctl_ex"), Edge("ctl", "ctl_an"),
+        ],
+    )
+    hierarchy_tree(spec, style="consort")
+    return out
+
+
+def _demo_org_chart() -> str:
+    """Demo 5: M4 组织架构图（树状 + 中间横线）"""
+    out = "/Users/xuzheyi/Desktop/论文-研报工作流/output/figures/demo_org_chart.png"
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+
+    spec = DiagramSpec(
+        title="FinResearch Agent · 模块组织架构（M4 demo）",
+        width=100, height=80,
+        output_path=out,
+        nodes=[
+            Node("root", "FinResearch Agent", color="#F5B700"),
+            Node("core", "Core Layer\n87 modules", color="#2DD4BF"),
+            Node("rf", "Research Framework\n47 methods", color="#34D399"),
+            Node("mcp", "MCP ×43", color="#A78BFA"),
+            Node("lit", "Literature Pipeline", color="#38BDF8"),
+            Node("data", "Data Fetcher", color="#FB923C"),
+            Node("paper", "Paper Generator", color="#F472B6"),
+            Node("skill", "Skill Registry\n17 skills", color="#A78BFA"),
+            Node("hl", "HitL Checkpoint", color="#FBBF24"),
+        ],
+        edges=[
+            Edge("root", "core"), Edge("root", "rf"), Edge("root", "mcp"),
+            Edge("core", "skill"), Edge("core", "hl"),
+            Edge("rf", "lit"), Edge("rf", "data"), Edge("rf", "paper"),
+        ],
+    )
+    hierarchy_tree(spec, style="org")
+    return out
+
+
 def _demo_process_flow() -> str:
     """Demo 3: M3 业务流程图（含决策菱形/分支）"""
     out = "/Users/xuzheyi/Desktop/论文-研报工作流/output/figures/demo_process_flow.png"
@@ -723,7 +1022,16 @@ if __name__ == "__main__":
     p1 = _demo_finresearch_arch()
     p2 = _demo_pipeline_hierarchy()
     p3 = _demo_process_flow()
+    p4 = _demo_consort()
+    p5 = _demo_org_chart()
     print(f"[OK] {p1}")
     print(f"[OK] {p2}")
     print(f"[OK] {p3}")
-    print("M3 demo 完成: 3 张示例图（swim_lane M2 + hierarchy_tree M1 + process_flow M3）")
+    print(f"[OK] {p4}")
+    print(f"[OK] {p5}")
+    print("M4 demo 完成: 5 张示例图")
+    print("  - swim_lane (M2)")
+    print("  - hierarchy_tree default (M4 升级: 任意父子边)")
+    print("  - process_flow (M3)")
+    print("  - hierarchy_tree consort (M4)")
+    print("  - hierarchy_tree org (M4)")
