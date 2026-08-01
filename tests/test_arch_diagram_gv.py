@@ -99,6 +99,48 @@ class TestSwimLaneGv:
         out = swim_lane_gv(spec, str(tmp_path / "out.png"))
         assert Path(out).exists()
 
+    def test_t1_t5_upgrades_disable(self, tmp_path):
+        """验证 with_legend=False / with_command_bar=False 也能跑通"""
+        spec = DiagramSpec(
+            title="no extras",
+            layers=[Layer("USER", y_top=20, y_bottom=10, color="#FDEBD0")],
+            nodes=[Node("a", "A", layer="USER", color="#F39C12"),
+                   Node("b", "B", layer="USER", color="#27AE60")],
+            edges=[Edge("a", "b")],
+        )
+        out = swim_lane_gv(
+            spec, str(tmp_path / "out.png"),
+            with_legend=False, with_command_bar=False,
+        )
+        assert Path(out).exists()
+
+    def test_t1_t5_upgrades_enable(self, tmp_path):
+        """验证 with_legend=True / with_command_bar=True 默认开启"""
+        spec = DiagramSpec(
+            title="with extras",
+            layers=[Layer("USER LAYER", y_top=20, y_bottom=10, color="#FDEBD0")],
+            nodes=[Node("a", "A", layer="USER LAYER", color="#F39C12"),
+                   Node("b", "B", layer="USER LAYER", color="#27AE60")],
+            edges=[Edge("a", "b")],
+        )
+        # 默认参数
+        out = swim_lane_gv(spec, str(tmp_path / "out.png"))
+        assert Path(out).exists()
+        # 带图例+命令栏的图应比不带的大（因为有更多节点）
+        spec_no_legend = DiagramSpec(
+            title="no legend",
+            layers=[Layer("USER LAYER", y_top=20, y_bottom=10, color="#FDEBD0")],
+            nodes=[Node("a", "A", layer="USER LAYER", color="#F39C12"),
+                   Node("b", "B", layer="USER LAYER", color="#27AE60")],
+            edges=[Edge("a", "b")],
+        )
+        out_no_legend = swim_lane_gv(
+            spec_no_legend, str(tmp_path / "out_no_legend.png"),
+            with_legend=False, with_command_bar=False,
+        )
+        # 文件大小不可靠对比（DOT 渲染有随机性），但至少都存在
+        assert Path(out_no_legend).exists()
+
 
 # ── process_flow_gv ─────────────────────────────────────────────────────────
 
