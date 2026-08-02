@@ -257,6 +257,7 @@ output/                           # 输出目录
 | `fin-brief-generator` | 生成 `FIN_BRIEF.md` |
 | `fin-ref-paper` | BibTeX 参考文献管理 |
 | `fin-viz-launch` | 自然语言 → 学术图表 |
+| `fin-arch-diagram` | 架构/流程/层次图（PPT 用，graphviz 后端） |
 
 ---
 
@@ -351,6 +352,7 @@ Skill: fin-full-pipeline
 - `Skill: fin-paper-writing` — 论文写作编排
 - `Skill: fin-paper-draft` — 正文生成（LaTeX）
 - `Skill: fin-paper-figure` — 图表生成
+- `Skill: fin-arch-diagram` — 架构/流程/层次图（PPT 用，graphviz 后端）
 - `Skill: fin-review-loop` — 对抗性 review
 - `Skill: fin-data-acquisition` — MCP 数据获取
 - `Skill: fin-brief-generator` — 生成 FIN_BRIEF.md

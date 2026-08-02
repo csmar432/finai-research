@@ -807,6 +807,8 @@ class AgentPipelineConfig:
     llm_use_cache: bool = True
     # Research direction branch (None = general academic paper)
     direction: str | None = None  # "green_finance", "digital_finance", "carbon_economics", etc.
+    # Auto-generate architecture diagrams for PPT use (default off)
+    auto_arch_diagrams: bool = False
 
 
 # ─── Direction Result ──────────────────────────────────────────────────────────
@@ -854,6 +856,8 @@ class AgentPipelineResult:
     auto_review_reports: dict[str, dict] = field(default_factory=dict)
     # 自动生成的 DID 诊断图表路径列表
     did_chart_paths: list = field(default_factory=list)
+    # 自动生成的架构图路径列表（PPT 用, 仅当 config.auto_arch_diagrams=True）
+    arch_diagram_paths: list = field(default_factory=list)
     # 是否因 LLM 不可用而降级到 MockTemplateEngine（pipeline 已执行但产出物为 mock）
     llm_fallback_used: bool = False
     llm_status: str = ""
@@ -1959,6 +1963,18 @@ class AgentPipeline:
             output_dir=did_charts_dir,
         )
 
+        # ── P1b: Auto-generate architecture diagrams (PPT use, opt-in) ────────
+        # Only when config.auto_arch_diagrams=True (set via --auto-arch flag).
+        # Best-effort: 失败不阻塞流水线.
+        if getattr(self.config, "auto_arch_diagrams", False):
+            arch_dir = Path(str(self.config.output_dir or "output")) / "arch_diagrams"
+            arch_dir.mkdir(parents=True, exist_ok=True)
+            result.arch_diagram_paths = self._auto_generate_arch_diagrams(
+                topic=self.config.topic,
+                outline=getattr(result, "outline", None),
+                output_dir=arch_dir,
+            )
+
         if PipelineStage.WRITING in orchestrator_result.stage_results:
             result.writing = orchestrator_result.stage_results[PipelineStage.WRITING].output
             self._save_stage_checkpoint("writing", {"writing": result.writing})
@@ -2078,6 +2094,81 @@ class AgentPipeline:
             _log_w.warning("[_auto_generate_did_charts] Chart auto-generation failed: %s", e)
 
         return chart_paths
+
+    def _auto_generate_arch_diagrams(
+        self,
+        topic: str | None = None,
+        outline: dict | None = None,
+        output_dir: Path | None = None,
+    ) -> list[Path]:
+        """Generate architecture/flow/hierarchy diagrams for PPT use.
+
+        Best-effort: 失败不阻塞流水线.
+        仅当 config.auto_arch_diagrams=True 时由 PLOTTING 阶段调用.
+
+        默认输出 5 张参考 demo 图, 路径在 output_dir/arch_diagrams/.
+        """
+        arch_paths: list[Path] = []
+
+        # 检查开关
+        if not getattr(self.config, "auto_arch_diagrams", False):
+            return arch_paths
+
+        try:
+            from scripts.research_framework.arch_diagram_demos import (
+                demo_arch_finresearch_gv,
+                demo_hierarchy_pipeline_gv,
+                demo_process_flow_gv,
+                demo_consort_gv,
+                demo_org_chart_gv,
+            )
+        except ImportError as ex:
+            _log_w = __import__("logging").getLogger("agent_pipeline")
+            _log_w.debug("[_auto_generate_arch_diagrams] arch_diagram_demos not available: %s", ex)
+            return arch_paths
+
+        try:
+            if output_dir is None:
+                out_dir = Path("output/arch_diagrams")
+            else:
+                out_dir = Path(output_dir) / "arch_diagrams"
+            out_dir.mkdir(parents=True, exist_ok=True)
+
+            # 生成 5 张 demo 图, 改输出路径到 arch_diagrams/
+            import functools
+            import shutil
+            demos = [
+                ("arch_finresearch", demo_arch_finresearch_gv),
+                ("hierarchy_pipeline", demo_hierarchy_pipeline_gv),
+                ("process_flow", demo_process_flow_gv),
+                ("consort", demo_consort_gv),
+                ("org_chart", demo_org_chart_gv),
+            ]
+
+            for name, func in demos:
+                try:
+                    src_path = Path(func())
+                    # 重命名为 arch_<topic>_<name>.png
+                    suffix = topic[:30].replace("/", "_") if topic else "default"
+                    dst_path = out_dir / f"arch_{suffix}_{name}.png"
+                    shutil.copy2(src_path, dst_path)
+                    arch_paths.append(dst_path)
+                except Exception as ex:
+                    _log_w = __import__("logging").getLogger("agent_pipeline")
+                    _log_w.debug("[_auto_generate_arch_diagrams] %s failed: %s", name, ex)
+
+            if arch_paths:
+                _log_i = __import__("logging").getLogger("agent_pipeline")
+                _log_i.info(
+                    "[_auto_generate_arch_diagrams] Generated %d arch diagrams: %s",
+                    len(arch_paths),
+                    [str(p) for p in arch_paths],
+                )
+        except Exception as ex:
+            _log_w = __import__("logging").getLogger("agent_pipeline")
+            _log_w.warning("[_auto_generate_arch_diagrams] Arch diagram generation failed: %s", ex)
+
+        return arch_paths
 
     # ── P0-1: End-to-end PDF generation ────────────────────────────────────
         # Collect writing content for paper generation
@@ -2947,6 +3038,16 @@ Examples:
         action="store_true",
         help="跳过启动时的健康检查（已通过 finai-doctor 验证时使用）。",
     )
+    parser.add_argument(
+        "--auto-arch",
+        action="store_true",
+        help=(
+            "Auto-generate architecture/flow/hierarchy diagrams for PPT use after PLOTTING stage. "
+            "Output goes to <output-dir>/arch_diagrams/. "
+            "Default off (opt-in, best-effort, never blocks pipeline). "
+            "Requires graphviz (brew install graphviz + pip install graphviz) for highest quality."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -3000,6 +3101,8 @@ Examples:
     config.strict_llm = bool(args.strict_llm)
     if args.skip_health:
         config.skip_health = True
+    # v2.3 (2026-08-02): --auto-arch 启用 PLOTTING 阶段后的架构图自动生成
+    config.auto_arch_diagrams = bool(args.auto_arch)
     output_dir = args.output_dir or "output/papers/"
 
     pipeline = AgentPipeline(config=config, use_langgraph=args.langgraph)

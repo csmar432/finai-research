@@ -76,6 +76,7 @@
 || `run_research.py` | `python scripts/run_research.py` | 队列消费者 + 可视化服务器启动器 |
 || `event_monitor.py` | `python scripts/event_monitor.py` | 宏观事件监控（NFP / CPI / FOMC 自动触发研究） |
 || `fin-viz-launcher.py` | `python scripts/fin-viz-launcher.py` | 自然语言图表生成启动器 |
+| `arch_diagram_demos.py` | `python scripts/research_framework/arch_diagram_demos.py` | 生成 5 张架构图 demo（graphviz 后端，浅色风格） |
 
 ### 1.6 文献与引用
 
