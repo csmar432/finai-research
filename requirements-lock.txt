@@ -105,7 +105,7 @@ numpy==2.5.0 ; python_full_version >= '3.12'
     #   scipy
     #   seaborn
     #   statsmodels
-openai==1.109.1
+openai==2.52.0
     # via finai-research-workflow (pyproject.toml)
 packaging==26.2
     # via

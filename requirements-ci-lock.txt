@@ -168,7 +168,7 @@ numpy==2.5.1 ; python_full_version >= '3.13'
     #   scipy
     #   seaborn
     #   statsmodels
-openai==1.109.1
+openai==2.52.0
     # via -r requirements-ci.txt
 openpyxl==3.1.5
     # via -r requirements-ci.txt
