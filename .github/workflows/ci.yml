@@ -329,37 +329,22 @@ jobs:
           path: coverage-data/unified
 
       - name: Set up Python
+        if: needs.test.result == 'success'
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
       - name: Install coverage reporter
+        if: needs.test.result == 'success'
         run: pip install coverage[toml]
       - name: Combine coverage reports
         id: combine
+        if: needs.test.result == 'success'
         run: |
           set -x
-          ls -la coverage-data/ || true
-          # Build coverage combine command from available artifacts
-          COV_FILES=""
-          if [ -f "coverage-data/unified/.coverage" ]; then
-            COV_FILES="coverage-data/unified/.coverage"
-          fi
-          echo "Combining: $COV_FILES"
-          if [ -n "$COV_FILES" ]; then
-            coverage combine --keep $COV_FILES
-            # Aggregate coverage: scripts/ is 60K+ lines, tests cover targeted modules.
-            # P3-audit-2026-07-04: Threshold history 6 → 10 → 15 → 22 → 30 → 25 (PR-1).
-            # PR-4 added test-full (full-deps smoke) which raised baseline to ~27%.
-            # PR-6 adds tests/test_module_imports.py (auto-imports every module
-            # under scripts/) which further raises coverage by ~3-5pp by
-            # executing module-level code (constants, dataclasses, registry
-            # assignments) that was previously never run in CI.
-            # The clean Python 3.12 audit run measured 58.2%; retain a small
-            # cross-platform margin while moving the gate toward 60%.
-            coverage report -m --fail-under=55
-          else
-            echo "No coverage data available — skipping combine"
-          fi
+          test -s "coverage-data/unified/.coverage"
+          coverage combine --keep coverage-data/unified/.coverage
+          # Coverage is a required quality gate, not an optional report.
+          coverage report -m --fail-under=55
       - name: Upload to Codecov
         if: needs.test.result == 'success'
         uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
@@ -438,14 +423,11 @@ jobs:
         id: mypy_base
         if: github.event_name == 'pull_request'
         run: |
-          BASE_REF="origin/${{ github.base_ref }}"
+          BASE_BRANCH="${{ github.base_ref }}"
+          BASE_REF="origin/$BASE_BRANCH"
           echo "## mypy output (BASE: $BASE_REF)" >> $GITHUB_STEP_SUMMARY
-          git fetch --depth=1 origin "$BASE_REF" || true
-          git worktree add /tmp/base "$BASE_REF" 2>/dev/null || {
-            echo "::warning::could not checkout base, will only check absolute count"
-            echo "base_total=-1" >> $GITHUB_OUTPUT
-            exit 0
-          }
+          git fetch --depth=1 origin "$BASE_BRANCH"
+          git worktree add /tmp/base "$BASE_REF"
           cd /tmp/base
           pip install --no-deps -e . >/dev/null 2>&1 || true
           mypy scripts/ \
@@ -476,10 +458,8 @@ jobs:
         id: mypy_diff
         if: github.event_name == 'pull_request'
         run: |
-          if [ ! -f mypy-head.log ] || [ ! -f /tmp/mypy-base.log ]; then
-            echo "::warning::missing log files, skipping diff check"
-            exit 0
-          fi
+          test -f mypy-head.log
+          test -f /tmp/mypy-base.log
           # Each mypy error line: scripts/foo.py:10: error: ... [code]
           # Use a stable normalized form: file:line
           NORMALIZE='s/:[0-9]*: error:.*//'
@@ -489,21 +469,17 @@ jobs:
               <(sed -E "$NORMALIZE" mypy-head.log | sort -u) \
             | grep '^>' | wc -l | tr -d ' '
           )
-          # PR-7A: mypy non-determinism in CI (runner numpy 1.26.x vs local 1.26.4 vs mypy
-          # flag ordering) reports "phantom" NEW errors at lines unrelated to this PR
-          # (e.g. options_iv_surface.py:583). Audit doc 2026-07-04 §3 documents this.
-          # Temporarily downgrade to informational only; revert in PR-7B with normalized
-          # error-code-only comparison.
           echo "new_errors=$NEW_ERRORS" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## mypy PR-blocking result (PR-7A: informational only)" >> $GITHUB_STEP_SUMMARY
+          echo "## mypy changed-line regression gate" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           HEAD_TOTAL=$(grep -c "error:" mypy-head.log || echo 0)
           BASE_TOTAL=$(grep -c "error:" /tmp/mypy-base.log || echo 0)
           echo "- HEAD total: $HEAD_TOTAL" >> $GITHUB_STEP_SUMMARY
           echo "- BASE total: $BASE_TOTAL" >> $GITHUB_STEP_SUMMARY
           echo "- **NEW errors introduced by this PR: $NEW_ERRORS**" >> $GITHUB_STEP_SUMMARY
-          # PR-7A: informational only (no exit 1) — see comment above
+          # The baseline diff remains informational because line shifts can
+          # create false positives. The changed-line gate below is blocking.
           if [ "$NEW_ERRORS" -gt 0 ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "New errors (file:line):" >> $GITHUB_STEP_SUMMARY
@@ -517,11 +493,44 @@ jobs:
             | head -50 >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "::warning::This PR shows $NEW_ERRORS 'new' mypy errors (PR-7A: informational, may be mypy non-determinism). Re-verify manually." >> $GITHUB_STEP_SUMMARY
+            echo "::warning::Baseline comparison found $NEW_ERRORS changed error locations; changed-line validation is authoritative." >> $GITHUB_STEP_SUMMARY
           else
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "OK: no new mypy errors compared to base. ✅" >> $GITHUB_STEP_SUMMARY
           fi
+          python - <<'PY'
+          import re
+          import subprocess
+          import sys
+
+          diff = subprocess.check_output(
+              ["git", "diff", "--unified=0", "origin/${{ github.base_ref }}...HEAD", "--", "*.py"],
+              text=True,
+          )
+          changed = set()
+          path = None
+          for line in diff.splitlines():
+              if line.startswith("+++ b/"):
+                  path = line[6:]
+              elif line.startswith("@@") and path:
+                  match = re.search(r"\+(\d+)(?:,(\d+))?", line)
+                  if match:
+                      start = int(match.group(1))
+                      count = int(match.group(2) or 1)
+                      changed.update((path, start + offset) for offset in range(count))
+
+          introduced = []
+          for line in open("mypy-head.log", encoding="utf-8"):
+              match = re.match(r"^(scripts/[^:]+\.py):(\d+): error:", line)
+              if match and (match.group(1), int(match.group(2))) in changed:
+                  introduced.append(line.rstrip())
+
+          if introduced:
+              print("::error::mypy errors occur on lines changed by this PR:")
+              print("\n".join(introduced[:50]))
+              sys.exit(1)
+          print("OK: no mypy errors on changed Python lines")
+          PY
       - name: Upload mypy log
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -597,4 +606,3 @@ jobs:
               except ImportError:
                   print(f'SKIP: {mod} (optional, not installed)')
           "
-        continue-on-error: true  # optional heavy deps may be missing
