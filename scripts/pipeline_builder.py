@@ -141,7 +141,7 @@ def _step_id() -> str:
 
 def _build_pipeline_yaml() -> dict:
     """Build the YAML dict for the current pipeline."""
-    st.session_state.pb_pipeline_name.strip() or "my_pipeline"
+    name = st.session_state.pb_pipeline_name.strip() or "my_pipeline"
     desc = st.session_state.pb_pipeline_desc.strip() or "自定义流水线"
 
     steps_yaml = []
@@ -159,7 +159,7 @@ def _build_pipeline_yaml() -> dict:
         steps_yaml.append(entry)
 
     return {
-        "name": desc,
+        "name": name,
         "description": desc,
         "mode": "sequential",
         "steps": steps_yaml,

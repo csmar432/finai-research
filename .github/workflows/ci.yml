@@ -343,14 +343,14 @@ jobs:
           test -s "coverage-data/unified/.coverage"
           coverage combine --keep coverage-data/unified/.coverage
           # Coverage is a required quality gate, not an optional report.
-          coverage report -m --fail-under=55
-      - name: Critical research path coverage (>=75%)
+          coverage report -m --fail-under=60
+      - name: Critical research path coverage (>=80%)
         if: needs.test.result == 'success'
         run: |
           set -euo pipefail
           include=$(grep -v '^#' .github/coverage-critical-paths.txt | paste -sd, -)
           test -n "$include"
-          coverage report -m --include="$include" --fail-under=75
+          coverage report -m --include="$include" --fail-under=80
       - name: Upload to Codecov
         if: needs.test.result == 'success'
         uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4

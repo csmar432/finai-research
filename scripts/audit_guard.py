@@ -40,6 +40,11 @@ from typing import Callable
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# When invoked as ``python scripts/audit_guard.py``, Python puts ``scripts/``
+# ahead of the repository root.  Put the root first so package imports cannot
+# accidentally resolve sibling modules as top-level stdlib names.
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 
 @dataclass
@@ -508,7 +513,7 @@ def check_12_fail_under_floor() -> CheckResult:
     """Audit claim (audit-2026-07-04 P0-1): 'fail-under is repeatedly lowered
     (6 -> 3 -> 15 -> 25)'.
 
-    Defense: enforce the current CI floor (55%) so a future edit cannot
+    Defense: enforce the current CI floor (60%) so a future edit cannot
     silently lower the coverage gate. Raise this constant with the workflow
     when the measured coverage reaches the next milestone.
 
@@ -521,25 +526,25 @@ def check_12_fail_under_floor() -> CheckResult:
     import re
     matches = re.findall(r"fail[-_]under=(\d+)", text)
     if not matches:
-        return CheckResult(False, "no fail-under directive", ">=55", [])
+        return CheckResult(False, "no fail-under directive", ">=60", [])
     vals = [int(x) for x in matches]
     min_v = min(vals)
     evidence = [
         f"  fail-under values found: {vals}",
         f"  minimum: {min_v}",
-        "  required floor: 55% (current CI gate; next milestone: 60%)",
+        "  required floor: 60% (current CI gate; next milestone: 65%)",
     ]
-    if min_v >= 55:
+    if min_v >= 60:
         return CheckResult(
             passed=True,
             actual=f"min={min_v}",
-            expected=">=55 (current CI gate)",
+            expected=">=60 (current CI gate)",
             evidence=evidence,
         )
     return CheckResult(
         passed=False,
         actual=f"min={min_v}",
-        expected=">=55",
+        expected=">=60",
         evidence=evidence,
     )
 
@@ -1700,7 +1705,7 @@ CHECKS: list[AuditCheck] = [
     AuditCheck(
         12,
         "CI fail-under floor",
-        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=55; next milestone 60%)",
+        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=60; next milestone 65%)",
         check_12_fail_under_floor,
     ),
     AuditCheck(

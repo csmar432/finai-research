@@ -117,6 +117,33 @@ def load_data() -> dict:
         return json.load(f)
 
 
+def ranking_record(row) -> dict:
+    """Normalize legacy list rows and current dict rows from ranking tables."""
+    if isinstance(row, dict):
+        return row
+    if isinstance(row, (list, tuple)):
+        values = list(row)
+        return {
+            "rank": values[0] if len(values) > 0 else "—",
+            "province": values[1] if len(values) > 1 else "—",
+            "value": values[2] if len(values) > 2 else "—",
+            "note": values[3] if len(values) > 3 else "",
+        }
+    return {"rank": "—", "province": "—", "value": "—", "note": ""}
+
+
+def series_values(province: dict, name: str) -> dict:
+    """Return a time-series mapping across legacy and current data shapes."""
+    raw = province.get("time_series", {})
+    if not isinstance(raw, dict):
+        return {}
+    series = raw.get(name, {})
+    if isinstance(series, dict):
+        values = series.get("data", series)
+        return values if isinstance(values, dict) else {}
+    return {}
+
+
 # ── Sheet 1: 数据总览 ─────────────────────────────────────────────────────────
 
 def sheet_overview(wb, national):
@@ -203,7 +230,8 @@ def sheet_overview(wb, national):
     for table_id, tdata in rankings.items():
         rows_data = tdata.get("data", [])
         cells = [tdata.get("title", table_id)]
-        for r in rows_data[:5]:
+        for raw_row in rows_data[:5]:
+            r = ranking_record(raw_row)
             cells.append(f"{r['province']} {r['value']}")
         for col, val in enumerate(cells, 1):
             data_cell(ws, row, col, val, bold=(col == 1))
@@ -220,7 +248,8 @@ def sheet_gdp(wb, national):
     set_col_width(ws, [(1, 8), (2, 12), (3, 16), (4, 12), (5, 30)])
 
     gdpr = national["ranking_tables"]["GDP_2024"]["data"]
-    for i, r in enumerate(gdpr):
+    for i, raw_row in enumerate(gdpr):
+        r = ranking_record(raw_row)
         fill = "E2EFDA" if i == 0 else ("DEEAF1" if i < 3 else "")
         data_cell(ws, 3 + i, 1, r["rank"], fill_hex=fill, bold=True, align="center")
         data_cell(ws, 3 + i, 2, r["province"], fill_hex=fill, bold=(i == 0))
@@ -235,7 +264,7 @@ def sheet_gdp(wb, national):
     hdr_row(ws, row, ["年份", "GDP(亿元)", "同比增速(%)", "说明"], "375623")
     set_col_width(ws, [(1, 10), (2, 16), (3, 14), (4, 30)])
 
-    hubei_ts = national["provinces"]["湖北"]["time_series"]["GDP"]["data"]
+    hubei_ts = series_values(national["provinces"]["湖北"], "GDP")
     years = sorted(hubei_ts.keys(), key=lambda y: int(y))
     prev = None
     for i, y in enumerate(years):
@@ -265,7 +294,7 @@ def sheet_gdp(wb, national):
     lookup = {}
     for prov_name in ["广东", "江苏", "浙江", "山东", "湖北"]:
         prov = national["provinces"].get(prov_name, {})
-        ts = prov.get("time_series", {}).get("GDP", {}).get("data", {})
+        ts = series_values(prov, "GDP")
         lookup[prov_name] = ts
 
     cross_row = row + 1
@@ -291,7 +320,8 @@ def sheet_rd(wb, national):
 
     # R&D经费排名
     rd_rank = national["ranking_tables"].get("RD经费_2024", {}).get("data", [])
-    for i, r in enumerate(rd_rank):
+    for i, raw_row in enumerate(rd_rank):
+        r = ranking_record(raw_row)
         fill = "E2EFDA" if i == 0 else ("FFF2CC" if i < 3 else "")
         data_cell(ws, 3 + i, 1, r["rank"], fill_hex=fill, bold=True, align="center")
         data_cell(ws, 3 + i, 2, r["province"], fill_hex=fill, bold=(i == 0))
@@ -306,7 +336,8 @@ def sheet_rd(wb, national):
     hdr_row(ws, row, ["排名", "省份", "R&D强度(%)", "超过全国均值(2.69%)", "说明"], "375623")
 
     rd_int = national["ranking_tables"].get("RD强度_2024", {}).get("data", [])
-    for i, r in enumerate(rd_int):
+    for i, raw_row in enumerate(rd_int):
+        r = ranking_record(raw_row)
         fill = "E2EFDA" if r["value"] > 3 else ""
         note = r.get("note", "")
         data_cell(ws, row + 1 + i, 1, r["rank"], fill_hex=fill, bold=True, align="center")
@@ -321,7 +352,7 @@ def sheet_rd(wb, national):
     row += 1
     hdr_row(ws, row, ["年份", "R&D经费(亿元)", "同比增速(%)", "说明"], "404040")
 
-    hubei_ts = national["provinces"]["湖北"]["time_series"]["R&D经费"]["data"]
+    hubei_ts = series_values(national["provinces"]["湖北"], "R&D经费")
     years = sorted(hubei_ts.keys(), key=lambda y: int(y))
     prev = None
     for i, y in enumerate(years):
@@ -345,7 +376,8 @@ def sheet_tech_ent(wb, national):
     set_col_width(ws, [(1, 8), (2, 12), (3, 18), (4, 28), (5, 20)])
 
     ent_rank = national["ranking_tables"].get("高新技术企业_2024", {}).get("data", [])
-    for i, r in enumerate(ent_rank):
+    for i, raw_row in enumerate(ent_rank):
+        r = ranking_record(raw_row)
         fill = "E2EFDA" if i == 0 else ""
         data_cell(ws, 3 + i, 1, r["rank"], fill_hex=fill, bold=True, align="center")
         data_cell(ws, 3 + i, 2, r["province"], fill_hex=fill, bold=(i == 0))
@@ -364,7 +396,8 @@ def sheet_tech(wb, national):
     set_col_width(ws, [(1, 8), (2, 12), (3, 16), (4, 10), (5, 24)])
 
     tech_rank = national["ranking_tables"].get("技术合同_2024", {}).get("data", [])
-    for i, r in enumerate(tech_rank):
+    for i, raw_row in enumerate(tech_rank):
+        r = ranking_record(raw_row)
         fill = "E2EFDA" if i == 0 else ""
         data_cell(ws, 3 + i, 1, r["rank"], fill_hex=fill, bold=True, align="center")
         data_cell(ws, 3 + i, 2, r["province"], fill_hex=fill, bold=(i == 0))
@@ -378,7 +411,7 @@ def sheet_tech(wb, national):
     row += 1
     hdr_row(ws, row, ["年份", "成交额(亿元)", "同比增速(%)", "数据来源"], "375623")
 
-    hubei_ts = national["provinces"]["湖北"]["time_series"]["技术合同成交额"]["data"]
+    hubei_ts = series_values(national["provinces"]["湖北"], "技术合同成交额")
     years = sorted(hubei_ts.keys(), key=lambda y: int(y))
     prev = None
     for i, y in enumerate(years):
@@ -460,7 +493,7 @@ def sheet_edu(wb, national):
     row += 1
     hdr_row(ws, row, ["年份", "在校生(万人)", "同比增速(%)", "说明"], "375623")
 
-    hubei_ts = national["provinces"]["湖北"]["time_series"]["本专科在校生"]["data"]
+    hubei_ts = series_values(national["provinces"]["湖北"], "本专科在校生")
     years = sorted(hubei_ts.keys(), key=lambda y: int(y))
     prev = None
     for i, y in enumerate(years):
@@ -482,12 +515,14 @@ def sheet_hubei_ts(wb, national):
 
     hubei = national["provinces"]["湖北"]
     ts_map = hubei.get("time_series", {})
+    if not isinstance(ts_map, dict):
+        ts_map = {}
 
     row = 2
     for series_name, series_data in ts_map.items():
         unit = series_data.get("unit", "")
         source = series_data.get("source", "")
-        data = series_data.get("data", {})
+        data = series_data.get("data", {}) if isinstance(series_data, dict) else {}
 
         # Series header
         ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=8)
@@ -532,7 +567,7 @@ def sheet_quality(wb, national):
     hdr_row(ws, 2, ["省份", "核查状态", "GDP排名", "已收录类别数", "时间序列(条)", "说明"], "C00000")
     set_col_width(ws, [(1, 12), (2, 12), (3, 10), (4, 14), (5, 16), (6, 40)])
 
-    vs = national["verification_status"]
+    vs = national.get("verification_status", {})
     provinces = national["provinces"]
     row = 3
     for prov_name in sorted(provinces.keys(),
@@ -545,7 +580,11 @@ def sheet_quality(wb, national):
         cat_count = len(cats)
 
         fill = VERIF_COLORS.get(verif, "")
-        verif_label = {"full": "A类(已核查)", "partial": "B类(部分核查)", "minimal": "C类(最少)"}[verif]
+        verif_label = {
+            "full": "A类(已核查)",
+            "partial": "B类(部分核查)",
+            "minimal": "C类(最少)",
+        }.get(verif, "C类(最少)")
 
         note = ""
         if verif == "full":
@@ -577,6 +616,7 @@ def sheet_quality(wb, national):
     )
     total_ts = sum(
         sum(len(s.get("data", {})) for s in prov.get("time_series", {}).values())
+        if isinstance(prov.get("time_series", {}), dict) else 0
         for prov in provinces.values()
     )
     ranking_count = len(national.get("ranking_tables", {}))

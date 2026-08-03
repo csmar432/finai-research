@@ -409,6 +409,9 @@ def compare_papers_with_ai(arxiv_ids: list[str], question: str) -> str:
     """对比多篇论文。"""
     sys.path.insert(0, str(SCRIPT_DIR))
     from scripts.ai_router import Task
+    from scripts.core.llm_gateway import LLMGateway
+
+    gateway = LLMGateway(memory=None, use_cache=True)
 
     papers_content = []
     for aid in arxiv_ids:

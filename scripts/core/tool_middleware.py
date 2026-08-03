@@ -241,7 +241,10 @@ class ToolCallLogger:
 
     def _get_handle(self):
         """Get or create the daily log file handle."""
-        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        # File rotation follows the host's local calendar day, matching the
+        # documented filename contract and making daily logs predictable for
+        # operators.  Individual event timestamps remain UTC below.
+        today = datetime.now().strftime("%Y-%m-%d")
         if self._fh is None or self._day != today:
             if self._fh is not None:
                 try:

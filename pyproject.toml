@@ -456,7 +456,7 @@ filterwarnings = [
 ]
 # Minimum coverage to pass CI
 # Set lower than production target to allow incremental improvement
-# 目标是 80%, 当前 CI 阈值 55% (在 ci.yml 中；达到 60% 后再提升)
+# 目标是 80%, 当前 CI 阈值 60% (在 ci.yml 中；达到 65% 后再提升)
 minversion = "7.0"
 
 # ── Coverage configuration ─────────────────────────────────────────────
