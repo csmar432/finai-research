@@ -1,6 +1,6 @@
 # dependabot.yml — audit-2026-07-04 PR-4 / P1-8
 # Daily scan for security updates + weekly for GitHub Actions.
-# PR limit: 5 per month (default) to avoid PR flooding.
+# PR limit: five open updates per ecosystem to avoid PR flooding.
 version: 2
 updates:
   # ── pip (Python dependencies) ──────────────────────────────────────────
@@ -19,11 +19,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # pydantic pins its companion package exactly; updating the transitive
+    # lock entry alone creates an uninstallable Dependabot PR.
+    ignore:
+      - dependency-name: "pydantic-core"
     # Auto-rebase to keep PRs in sync with main.
     rebase-strategy: "auto"
     labels:
       - "dependencies"
-      - "automated"
 
   # ── GitHub Actions ────────────────────────────────────────────────────
   - package-ecosystem: "github-actions"
@@ -37,7 +40,6 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
-      - "automated"
 
   # ── Docker (only if Dockerfiles use external base images) ─────────────
   - package-ecosystem: "docker"
@@ -51,4 +53,3 @@ updates:
     labels:
       - "dependencies"
       - "docker"
-      - "automated"
