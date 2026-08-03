@@ -1,7 +1,4 @@
-"""Mock 数据默认禁用测试。
-
-回归测试：确保以下 5 个 mock 服务器默认模式下调用被拒绝。
-"""
+"""Mock 数据默认禁用与确认边界测试。"""
 
 from __future__ import annotations
 
@@ -15,7 +12,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
-# 受 mock 拦截保护的 5 个服务器
+# 代表性 mock 服务器；全量守卫数量由 test_default_mode_blocks_all_guarded_servers 校验
 PROTECTED_SERVERS = [
     ("user_nber_wp", "handle_search"),
     ("user_bea_data", "handle_gdp"),
@@ -71,9 +68,21 @@ def test_confirm_mode_works_as_before():
     assert result is None, "confirm 模式含批准词应通过"
 
 
+@pytest.mark.parametrize("context", ["yesterday", "okayish", "confirmation pending"])
+def test_confirm_mode_does_not_accept_approval_substrings(context):
+    """Unrelated English words must not authorize mock data."""
+    from mcp_servers.mcp_mock_helper import check_mock_permission
+
+    os.environ["MCP_MOCK_MODE"] = "confirm"
+    result = check_mock_permission(
+        {}, "handle_search", "user-nber-wp", request_context=context
+    )
+    assert result is not None, f"{context!r} must not authorize mock data"
+
+
 @pytest.mark.parametrize("server_name,tool_name", PROTECTED_SERVERS)
-def test_all_5_mock_servers_protected(server_name, tool_name):
-    """所有 5 个 mock server 的 handler 必须调用 check_mock_permission。
+def test_representative_mock_servers_protected(server_name, tool_name):
+    """代表性 mock server 必须调用 check_mock_permission。
 
     防止未来回归：有人删除 mock 拦截。
     """
@@ -117,11 +126,19 @@ def test_macro_datas_handlers_all_protected():
     assert checks >= 5, f"应至少 5 次 check_mock_permission 调用，实际 {checks}"
 
 
-def test_default_mode_blocks_all_5_servers():
-    """默认模式下调用 5 个 server 的任意 handler 都会被拦截。"""
+def test_default_mode_blocks_all_guarded_servers():
+    """默认模式下所有接入统一守卫的 server 都会被拦截。"""
     from mcp_servers.mcp_mock_helper import check_mock_permission
 
-    for server_name, tool_name in PROTECTED_SERVERS:
+    protected = []
+    for server_py in sorted(Path("mcp_servers").glob("user_*/server.py")):
+        text = server_py.read_text()
+        if "check_mock_permission" not in text:
+            continue
+        protected.append((server_py.parent.name, "regression_probe"))
+
+    assert len(protected) >= 17, f"expected at least 17 guarded servers, found {len(protected)}"
+    for server_name, tool_name in protected:
         result = check_mock_permission({}, tool_name, server_name.replace("_", "-"))
         assert result is not None, (
             f"{server_name}.{tool_name} 默认模式应被拦截，但通过了"

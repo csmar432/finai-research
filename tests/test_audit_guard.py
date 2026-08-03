@@ -90,34 +90,24 @@ class TestAuditFunctions:
         )
 
     def test_check_10_llm_reviewer_stable_model(self):
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
-        pytest.xfail(
-            reason="no real assertion",
-        )
+        result = ag.check_10_llm_reviewer_stable_model()
+        assert result.passed, result.evidence
 
     def test_check_11_omit_longtail_not_growing(self):
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
-        pytest.xfail(
-            reason="no real assertion",
-        )
+        result = ag.check_11_omit_longtail_not_growing()
+        assert result.passed, result.evidence
 
     def test_check_12_fail_under_floor(self):
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
-        pytest.xfail(
-            reason="no real assertion",
-        )
+        result = ag.check_12_fail_under_floor()
+        assert result.passed, result.evidence
 
     def test_check_13_workflow_yaml_unquoted_colons(self):
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
-        pytest.xfail(
-            reason="no real assertion",
-        )
+        result = ag.check_13_workflow_yaml_unquoted_colons()
+        assert result.passed, result.evidence
 
     def test_check_14_diff_in_diff2_phantom_dep(self):
-        # audit-2026-07-21: try/except/Exception:pass converted to xfail
-        pytest.xfail(
-            reason="no real assertion",
-        )
+        result = ag.check_14_diff_in_diff2_phantom_dep()
+        assert result.passed, result.evidence
 
     def test_check_15_pypi_deps_exist(self):
         # audit-2026-07-21: this test serial-visits PyPI 30 times.

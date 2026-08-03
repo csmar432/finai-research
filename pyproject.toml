@@ -456,12 +456,11 @@ filterwarnings = [
 ]
 # Minimum coverage to pass CI
 # Set lower than production target to allow incremental improvement
-# 目标是 80%, 当前 CI 阈值 25% (在 ci.yml 中)
+# 目标是 80%, 当前 CI 阈值 55% (在 ci.yml 中；达到 60% 后再提升)
 minversion = "7.0"
 
 # ── Coverage configuration ─────────────────────────────────────────────
-# 在 CI 中, 3 个 test batch 各自上传 .coverage 文件,
-# 由 coverage job 用 `coverage combine` 合并后上报 Codecov.
+# CI 的统一测试 job 生成 .coverage 文件，由 coverage job 校验并上报 Codecov。
 [tool.coverage.run]
 branch = true
 source = ["scripts"]
