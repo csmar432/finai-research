@@ -423,9 +423,10 @@ jobs:
         id: mypy_base
         if: github.event_name == 'pull_request'
         run: |
-          BASE_REF="origin/${{ github.base_ref }}"
+          BASE_BRANCH="${{ github.base_ref }}"
+          BASE_REF="origin/$BASE_BRANCH"
           echo "## mypy output (BASE: $BASE_REF)" >> $GITHUB_STEP_SUMMARY
-          git fetch --depth=1 origin "$BASE_REF"
+          git fetch --depth=1 origin "$BASE_BRANCH"
           git worktree add /tmp/base "$BASE_REF"
           cd /tmp/base
           pip install --no-deps -e . >/dev/null 2>&1 || true
