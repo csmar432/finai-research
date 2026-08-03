@@ -124,7 +124,7 @@ matplotlib==3.9.4
     # via
     #   -r requirements-ci.txt
     #   seaborn
-mcp==1.29.0
+mcp==2.0.0
     # via -r requirements-ci.txt
 mdurl==0.1.2
     # via markdown-it-py
