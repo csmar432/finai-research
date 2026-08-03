@@ -1,0 +1,16 @@
+# Critical, independently testable research-integrity and econometrics paths.
+# Keep this list explicit: adding a module is a coverage commitment, not a
+# denominator shortcut.
+scripts/core/provenance.py
+scripts/core/data_warning_notifier.py
+scripts/core/hitl_gate.py
+scripts/research_framework/regression_engine.py
+scripts/research_framework/data_validator.py
+scripts/research_framework/reference_validator.py
+scripts/research_framework/rdd.py
+scripts/research_framework/psm_did.py
+scripts/research_framework/synthetic_control.py
+scripts/research_framework/synthetic_did.py
+scripts/research_framework/spatial_regression.py
+scripts/research_framework/survival_analysis.py
+scripts/research_framework/volatility_models.py
