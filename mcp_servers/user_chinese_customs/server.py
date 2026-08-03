@@ -51,10 +51,7 @@ except ImportError:
     HAS_MCP = False
     import asyncio
 
-try:
-    from mcp_servers.mcp_mock_helper import check_mock_permission
-except ImportError:
-    def check_mock_permission(*a, **kw): return None
+from mcp_servers.mcp_mock_helper import check_mock_permission
 
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(__name__)

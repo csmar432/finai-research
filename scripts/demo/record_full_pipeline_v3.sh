@@ -49,7 +49,7 @@ EOF
 }
 
 # === 0. Banner ===
-header "FinAI Research Workflow v0.2.0-alpha — Complete 8-Stage Demo"
+header "FinAI Research Workflow v0.2.0a0 — Complete 8-Stage Demo"
 
 cat <<EOF
 🐍 Python:  $(python3 --version 2>&1)

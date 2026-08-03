@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -36,7 +37,7 @@ from scripts.research_framework.arch_diagram_gv import (
 )
 
 
-OUT_DIR = "/Users/xuzheyi/Desktop/论文-研报工作流/output/figures"
+OUT_DIR = Path(__file__).resolve().parents[2] / "output" / "figures"
 
 
 def demo_arch_finresearch_gv() -> str:

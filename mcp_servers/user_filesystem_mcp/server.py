@@ -561,7 +561,8 @@ async def handle_fs_hash(args: dict) -> list[TextContent]:
 
     try:
         if algo == "md5":
-            h = hashlib.md5()
+            # MD5 is exposed only as a compatibility checksum, never for security.
+            h = hashlib.md5(usedforsecurity=False)
         else:
             h = hashlib.sha256()
 

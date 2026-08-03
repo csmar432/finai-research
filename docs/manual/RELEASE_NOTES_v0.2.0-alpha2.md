@@ -1,7 +1,7 @@
-# v0.2.0-alpha2 — Release Notes (DRAFT)
+# v0.2.0a2 — Release Notes (DRAFT)
 
 > **Status:** Draft, awaiting maintainer sign-off
-> **Target release:** v0.2.0-alpha2 (post-publication patch)
+> **Target release:** v0.2.0a2 (post-publication patch)
 > **Generated:** 2026-07-11 by Cursor audit pipeline
 
 This is a **paper-trails-only patch** (no functional changes) consolidating
@@ -87,7 +87,7 @@ reconciled when the legacy `_legacy_registry.py` is removed (v0.4).
 
 ---
 
-## 🔄 Migration from v0.2.0-alpha (Pre-release) — same version
+## 🔄 Migration from v0.2.0a0 (Pre-release) — same version
 
 No breaking changes. If you previously installed `finai-research-workflow
 == 0.2.0a0`, simply re-run `pip install --upgrade --force-reinstall
@@ -113,7 +113,7 @@ under maintainer supervision, in collaboration with the user
 @csmar432. The full audit trail (commit history, PR list, audit
 documents) is available in `docs/manual/audit/` and GitHub PR history.
 
-Files added since v0.2.0-alpha:
+Files added since v0.2.0a0:
 - `papers/us_esg_financing/AUDIT.md` (10.7 KB)
 - `papers/us_esg_financing/AUDIT_NOTES.md` (7.8 KB)
 - 6 social-media drafts in `docs/manual/social_media/`

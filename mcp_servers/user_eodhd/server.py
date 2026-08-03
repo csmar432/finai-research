@@ -25,11 +25,7 @@ from pathlib import Path
 from typing import Any
 
 # 导入模拟数据确认模块
-try:
-    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
-except ImportError:
-    def check_mock_permission(*a, **kw): return None
-    MOCK_WARNING = ""
+from mcp_servers.mcp_mock_helper import MOCK_WARNING, check_mock_permission
 
 try:
     from fastmcp import FastMCP

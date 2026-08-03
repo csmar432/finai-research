@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finai-research-workflow"
-version = "0.2.0-alpha"
+version = "0.2.0a0"
 description = "经济金融领域 AI 学术研究工作流 — 论文写作（JF/JFE/RFS/经济研究/金融研究）与金融研报生成。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。"
 readme = "README.md"
 license = {text = "MIT"}
@@ -59,6 +59,7 @@ dependencies = [
     # 可视化
     "matplotlib>=3.8.0,<4.0",
     "seaborn>=0.13.0,<1.0",
+    "graphviz>=0.20.0,<1.0",
     # 配置 / LLM 客户端
     "requests>=2.31.0,<3.0",
     "python-dotenv>=1.0.0,<2.0",
@@ -68,18 +69,15 @@ dependencies = [
     "openai>=1.0.0,<2.0",
     "anthropic>=0.30.0,<1.0",
     "tiktoken>=0.7.0,<1.0",
-    # ── 测试套件 (核心, 必装) ──────────────────────────────────
-    # 项目提供 83 个测试, pip install . 后应能直接跑 pytest tests/。
-    # 只有 ruff (linter) 留在 optional [dev]。
-    "pytest>=7.4.0,<10.0",
-    "pytest-asyncio>=0.23.0,<2.0",
-    "pytest-cov>=4.1.0,<8.0",
-    "pytest-timeout>=2.2.0,<3.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "ruff>=0.1.0,<2.0",
+    "pytest>=7.4.0,<10.0",
+    "pytest-asyncio>=0.23.0,<2.0",
+    "pytest-cov>=4.1.0,<8.0",
+    "pytest-timeout>=2.2.0,<3.0",
 ]
 # extras: 装 [dev,extras] 一次拿齐非 Web 功能（数据/绘图/导出/MCP 客户端）。
 # 注意：fastapi/streamlit/uvicorn 会传递依赖 PyJWT，
@@ -94,8 +92,8 @@ extras = [
     "beautifulsoup4>=4.12.0,<5.0",
     "akshare>=1.18.63,<99.0",
     "yfinance>=0.2.0,<99.0",
-    "mcp>=1.0.0,<99.0",
-    "fastmcp>=0.1.0,<99.0",
+    "mcp>=1.0.0,<2.0",
+    "fastmcp>=0.1.0,<4.0",
     "duckdb>=0.9.0,<2.0",
     "openpyxl>=3.1.0,<4.0",
     "tenacity>=8.2.0,<10.0",
@@ -173,7 +171,7 @@ monitor = [
 # ]
 
 all = [
-    "finai-research-workflow[dev,rag,deep-learning,econometrics,knowledge,sandbox,browser,monitor]",
+    "finai-research-workflow[dev,rag,econometrics,knowledge,sandbox,browser,monitor]",
 ]
 
 [project.scripts]

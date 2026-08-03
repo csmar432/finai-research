@@ -20,21 +20,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
       - name: Install CI deps
-        # 用 requirements-ci.txt 而非 pip install -e ".[dev]", install < 30s
+        # 使用由 requirements-ci.txt 生成的锁文件，保证各 job 解析结果一致。
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-ci.txt
+          pip install -r requirements-ci-lock.txt
 
       - name: Install package (no deps)
-        # 装项目包但跳过 dependencies (已被 requirements-ci.txt 装好),
+        # 装项目包但跳过 dependencies (已被 requirements-ci-lock.txt 装好),
         # 避免 pip solver 重复解 20+ 个包导致 timeout
         run: pip install --no-deps -e .
 
@@ -90,17 +90,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pip-audit bandit
+          pip install -r requirements-ci-lock.txt
 
       - name: Security gate (HIGH/CRITICAL blocking)
         run: python3 scripts/ci_security_gate.py
@@ -115,14 +115,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
       - name: Install CI deps + xdist
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-ci.txt
+          pip install -r requirements-ci-lock.txt
           # pytest-xdist for parallel test execution; replaces 3-batch split
           pip install "pytest-xdist>=3.5.0"
           pip install --no-deps -e .
@@ -157,16 +157,20 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ""
           RELAY_API_KEY: ""
+          # Prevent two xdist workers from each spawning a full BLAS thread pool.
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: pytest-unified-log
           path: pytest-unified.log
           retention-days: 7
       - name: Upload coverage data
         if: success()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: coverage-unified
           path: .coverage
@@ -203,14 +207,14 @@ jobs:
           - os: windows-latest
             python-version: "3.13"
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install CI deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-ci.txt
+          pip install -r requirements-ci-lock.txt
           pip install --no-deps -e .
       - name: Cross-platform sanity check
         run: |
@@ -234,7 +238,7 @@ jobs:
           RELAY_API_KEY: ""
       - name: Upload pytest log
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: pytest-cs-${{ matrix.os }}-log
           path: pytest-cs.log
@@ -280,9 +284,9 @@ jobs:
       matrix:
         dockerfile: [Dockerfile, Dockerfile.dashboard, Dockerfile.gateway, Dockerfile.sse]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
       - name: Build (linux/amd64)
         run: |
           echo "Building ${{ matrix.dockerfile }} on linux/amd64"
@@ -307,7 +311,7 @@ jobs:
     needs: [test]
     if: always()
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Skip when any test failed
         if: needs.test.result != 'success'
         run: |
@@ -319,13 +323,13 @@ jobs:
       # This fixes the prior overly-strict condition requiring ALL 3 batches to succeed.
       - name: Download coverage-unified
         if: needs.test.result == 'success'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: coverage-unified
           path: coverage-data/unified
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
       - name: Install coverage reporter
@@ -350,16 +354,15 @@ jobs:
             # under scripts/) which further raises coverage by ~3-5pp by
             # executing module-level code (constants, dataclasses, registry
             # assignments) that was previously never run in CI.
-            # PR-6 target: 28% fail-under, with the long-term 60% target
-            # deferred to PR-8 (deep per-module tests) because writing
-            # 425+ hand-crafted tests is unrealistic within a single PR.
-            coverage report -m --fail-under=28
+            # The clean Python 3.12 audit run measured 58.2%; retain a small
+            # cross-platform margin while moving the gate toward 60%.
+            coverage report -m --fail-under=55
           else
             echo "No coverage data available — skipping combine"
           fi
       - name: Upload to Codecov
         if: needs.test.result == 'success'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./.coverage
@@ -393,17 +396,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
       - name: Install mypy and deps
         run: |
           python -m pip install --upgrade pip
           pip install mypy==1.13.0
-          pip install -r requirements-ci.txt
+          pip install -r requirements-ci-lock.txt
           pip install --no-deps -e .
       - name: Run mypy on HEAD
         id: mypy_head
@@ -521,7 +524,7 @@ jobs:
           fi
       - name: Upload mypy log
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: mypy-log
           path: mypy-head.log
@@ -537,8 +540,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
       - name: "Install full deps (heavy: chromadb/faiss/torch etc.)"

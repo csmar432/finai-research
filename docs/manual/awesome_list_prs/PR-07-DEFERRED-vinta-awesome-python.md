@@ -13,7 +13,7 @@
 
 1. Python-first (>50% of codebase): ✅ Yes (project is 100% Python).
 2. Active (commits within last 12 months): ✅ Yes (commits within last 30 days).
-3. Stable (production-ready): ⚠️ Currently `0.2.0-alpha`. The version string
+3. Stable (production-ready): ⚠️ Currently `0.2.0a0`. The version string
    suggests alpha, which the maintainers' automated check likely flags.
 4. Documented (README + examples): ✅ Yes (README + 17 SKILL.md + CLAUDE.md).
 5. Unique (distinct value, not "yet another X"): ✅ Yes (workflow layer is

@@ -15,7 +15,7 @@
   title     = {{FinAI Research Workflow: An End-to-End AI Agent Pipeline for Economic and Financial Research}},
   year      = {2026},
   month     = jul,
-  version   = {0.2.0-alpha},
+  version   = {0.2.0a0},
   url       = {https://github.com/csmar432/finai-research},
   doi       = {10.5281/zenodo.21262689},
   note      = {43 MCP data sources, 47 econometric methods, 17 AI skills, 30 journal templates}
@@ -28,21 +28,21 @@
 ## 2. APA (7th edition)
 
 ```
-csmar432. (2026). FinAI Research Workflow (Version 0.2.0-alpha) [Computer software].
+csmar432. (2026). FinAI Research Workflow (Version 0.2.0a0) [Computer software].
 https://github.com/csmar432/finai-research
 ```
 
 ## 3. Chicago (Author-Date)
 
 ```
-csmar432. 2026. "FinAI Research Workflow." Version 0.2.0-alpha.
+csmar432. 2026. "FinAI Research Workflow." Version 0.2.0a0.
 https://github.com/csmar432/finai-research.
 ```
 
 ## 4. MLA (9th edition)
 
 ```
-csmar432. "FinAI Research Workflow." Version 0.2.0-alpha, 2026,
+csmar432. "FinAI Research Workflow." Version 0.2.0a0, 2026,
 https://github.com/csmar432/finai-research.
 ```
 
@@ -50,7 +50,7 @@ https://github.com/csmar432/finai-research.
 
 ```
 [1] csmar432, "FinAI Research Workflow: An End-to-End AI Agent Pipeline
-    for Economic and Financial Research," Version 0.2.0-alpha, 2026.
+    for Economic and Financial Research," Version 0.2.0a0, 2026.
     [Online]. Available: https://github.com/csmar432/finai-research
 ```
 
@@ -58,7 +58,7 @@ https://github.com/csmar432/finai-research.
 
 ```
 csmar432. FinAI Research Workflow: An End-to-End AI Agent Pipeline for
-Economic and Financial Research (Version 0.2.0-alpha)[EB/OL]. (2026-07-12).
+Economic and Financial Research (Version 0.2.0a0)[EB/OL]. (2026-07-12).
 https://github.com/csmar432/finai-research.
 ```
 
@@ -80,7 +80,7 @@ https://github.com/csmar432/finai-research.
 
 When citing FinAI in your paper, please include:
 
-1. **Version number** (e.g., `0.2.0-alpha`) — important for reproducibility
+1. **Version number** (e.g., `0.2.0a0`) — important for reproducibility
 2. **GitHub URL** — primary access point
 3. **Commit hash** (optional but recommended) — for exact reproducibility
 4. **Key capabilities used** (in footnote, optional) — e.g.,
@@ -108,7 +108,7 @@ modules in addition to the parent project:
              Goodman-Bacon, dCdH estimators}},
   year   = {2026},
   url    = {https://github.com/csmar432/finai-research/tree/main/scripts/research_framework/modern_did.py},
-  note   = {Part of FinAI Research Workflow v0.2.0-alpha}
+  note   = {Part of FinAI Research Workflow v0.2.0a0}
 }
 ```
 
@@ -140,5 +140,5 @@ copies or substantial portions of the Software.
 | Date | Change |
 |------|--------|
 | 2026-07-12 | A5 fix: DOI placeholder `zenodo.PENDING` → 真实 `10.5281/zenodo.21262689` |
-| 2026-07-12 | 修正版本号 (0.1.0 → 0.2.0-alpha)、月 (jun → jul)、计数 (44/42/44 → 43/47/30)、加 IEEE/GB-T-7714 |
+| 2026-07-12 | 修正版本号 (0.1.0 → 0.2.0a0)、月 (jun → jul)、计数 (44/42/44 → 43/47/30)、加 IEEE/GB-T-7714 |
 | 2026-06-28 | 初版 (4 个引用样式) |

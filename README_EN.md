@@ -96,7 +96,7 @@
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
 - LaTeX compilation · Figures ≥300 DPI · BibTeX · PRISMA compliance
 
-### 🤖 17 AI Skills (Claude Code / Cursor / Copilot)
+### 🤖 18 AI Skills (Claude Code / Cursor / Copilot)
 
 - **Discovery**: `fin-idea-discovery` · `fin-generate-idea` · `fin-novelty-check` · `fin-lit-review`
 - **Design**: `fin-experiment-design` · `fin-data-acquisition`
@@ -105,7 +105,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 653 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
+- ✅ 659 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
@@ -167,7 +167,7 @@ Each step is **independently callable** and **has its own output file** as a sta
 | Test files / functions | **397 / 7,804** | pytest; ~50K LOC tests |
 | Python lines | **~206K scripts + ~98K tests** | |
 | CI jobs | **7 batches × ~40 steps** | lint + 3× smoke + mypy + security + coverage + docker |
-| Coverage | **49.72%** | gate `fail-under=28` (raised from 6 in 2026-06-25 audit), target 60% |
+| Coverage | **58.2%** | gate `fail-under=55`, target 60% |
 
 > Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/finai-research); progressive increase toward 60% target.
 

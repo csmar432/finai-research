@@ -292,6 +292,7 @@ def sync_ssot() -> int:
     if "modules_without_tests" in cov:
         ssot["econometrics"]["zero_test_modules"] = cov["modules_without_tests"]
 
+    ssot["skills"]["total"] = stats["skills"]
     ssot["testing"]["test_files"] = tests["files"]
     ssot["testing"]["test_functions"] = tests["test_functions"]
 
