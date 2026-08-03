@@ -14,7 +14,7 @@ recommendations that would be unsafe or misleading to apply mechanically.
 | P1-2 security gate fail-open | Missing tools, malformed/empty output, unknown vulnerability severity, and scanner errors now block. Full locked dependencies and all `scripts/` + `mcp_servers/` are scanned. CodeQL was added. |
 | P1-4 Actions supply chain | Every third-party Action is pinned to a full commit SHA. Two nonexistent Sigstore Actions were replaced by the official Cosign installer with GitHub OIDC signing and immediate verification. |
 | P1-5 dependency SSOT | CI uses `requirements-ci-lock.txt`; constraints match the package bounds. Runtime test dependencies moved to `dev`; four confirmed-unused full-install dependencies were removed. `pandasql` was retained because an MCP server imports it. |
-| P1-6 coverage gate | A clean full run measured 58.3%; the aggregate gate was raised from 28% to 55%, retaining a small cross-platform margin toward 60%. Critical remediation paths have dedicated regression tests. |
+| P1-6 coverage gate | A clean full run measured 60.0%; the aggregate gate was raised from 55% to 60%, while the critical research-path gate is 80%. The next aggregate milestone is 65%. |
 | P2-1 environment reproducibility | Validation used fresh environments created from universal locks, without modifying the maintainer's existing virtual environment. Python 3.10 and 3.13 boundary installs and smoke tests passed; BLAS threads are bounded in CI to prevent xdist oversubscription. |
 | P2-2/P2-3 policy/version drift | Security support and scanner documentation were corrected; the release version and user-facing references now use canonical PEP 440 `0.2.0a0`. |
 | P2-5 confirmed static security findings | Bandit's four HIGH findings were remediated; the complete scan now reports zero HIGH/CRITICAL findings. |
@@ -39,10 +39,10 @@ recommendations that would be unsafe or misleading to apply mechanically.
 
 ## Verification evidence
 
-- Follow-up clean-environment suite: 12,871 passed, 157 skipped, 83 xfailed,
-  3 xpassed; 58.3% branch coverage. The follow-up also adds exact-word
+- Follow-up clean-environment suite: 12,881 passed, 157 skipped, 82 xfailed,
+  3 xpassed; 60.0% branch coverage. The follow-up also adds exact-word
   mock approval checks and covers all 17 guarded servers.
-- The CI coverage job now separately enforces >=75% on an explicit critical
+- The CI coverage job now separately enforces >=80% on an explicit critical
   research-path list (current local branch coverage: 87.4%); the aggregate
   repository metric remains visible and is not artificially narrowed.
 - The 10 tests that timed out under unconstrained parallel BLAS all passed in a
