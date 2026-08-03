@@ -55,7 +55,7 @@ def render(lines: list[str], w: int = 800, h: int = 600, row_h: int = 18) -> Ima
     font = get_font(14)
 
     max_rows = (h // row_h) - 1
-    d.text((6, 6), "$ bash — FinAI Research Workflow v0.2.0-alpha", font=font, fill="white")
+    d.text((6, 6), "$ bash — FinAI Research Workflow v0.2.0a0", font=font, fill="white")
 
     y = row_h
     for idx, line in enumerate(wrapped[:max_rows]):

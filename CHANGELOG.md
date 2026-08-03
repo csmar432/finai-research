@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/test_synthetic_control_t002_audit.py` (8 tests, T002)
   - `tests/test_us_esg_t003_shortpanel.py` (6 tests + 1 skipped, T003)
 
-## [0.2.0-alpha] - 2026-07-11
+## [0.2.0a0] - 2026-07-11
 
 ### Added
 

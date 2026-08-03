@@ -8,7 +8,7 @@ v2.0 改进：
   - get_fed_interest_rate: 真实调用 FRED public CSV API
   - get_fed_yield_curve: 真实调用 FRED API
   - get_fed_fomc: 真实数据（利率决议日期），声明仍从网络获取
-  - get_fed_beige_book: 真实链接（内容需手动访问）
+  - get_fed_beige_book: 官方档案入口（不推测发布日期或页面地址）
 
 数据源：
   - FRED public CSV API: https://fred.stlouisfed.org/graph/fredgraph.csv
@@ -27,14 +27,6 @@ import warnings
 from datetime import datetime, date, timedelta
 from pathlib import Path
 warnings.filterwarnings("ignore")
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-try:
-    from mcp_mock_helper import check_mock_permission, mock_response, MOCK_WARNING
-except ImportError:
-    def check_mock_permission(*a, **kw): return None
-    def mock_response(data, name, note="", **kw): return json.dumps({"result": data})
-    MOCK_WARNING = ""
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT))
@@ -108,33 +100,20 @@ SERIES_CATALOG = {
     "MANEMP":  {"name": "All Employees Manufacturing",             "unit": "千人", "tenor": "monthly"},
 }
 
-# FOMC会议日期（2025-2026，实际数据，可扩展）
-FOMC_SCHEDULE = {
+# Official decision dates from the Federal Reserve calendar. Rates are never
+# hardcoded: past target ranges are read from FRED DFEDTARL/DFEDTARU below.
+FOMC_DECISION_DATES = {
     2025: [
-        {"date": "2025-01-28", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-01-29", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-01-30", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-03-19", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-05-07", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-06-18", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-07-30", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-09-17", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-11-05", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2025-12-17", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
+        "2025-01-29", "2025-03-19", "2025-05-07", "2025-06-18",
+        "2025-07-30", "2025-09-17", "2025-10-29", "2025-12-10",
     ],
     2026: [
-        {"date": "2026-01-28", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-01-29", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-01-30", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-03-18", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-05-06", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-06-17", "decision": "hold", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-07-29", "decision": "pending", "target": 5.25, "upper": 5.50, "lower": 5.25},
-        {"date": "2026-09-16", "decision": "pending", "target": None,  "upper": None,  "lower": None},
-        {"date": "2026-11-04", "decision": "pending", "target": None,  "upper": None,  "lower": None},
-        {"date": "2026-12-16", "decision": "pending", "target": None,  "upper": None,  "lower": None},
+        "2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17",
+        "2026-07-29", "2026-09-16", "2026-10-28", "2026-12-09",
     ],
 }
+FOMC_CALENDAR_URL = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+FOMC_CALENDAR_VERIFIED = "2026-07-08"
 
 # ── FRED API Functions ────────────────────────────────────────────────────────
 
@@ -165,7 +144,7 @@ def _fetch_fred_csv(series_id: str, start_date: str | None = None,
                         continue
         return records
     except Exception as e:
-        print(f"FRED API error for {series_id}: {e}", flush=True)
+        print(f"FRED API error for {series_id}: {e}", file=sys.stderr, flush=True)
         return []
 
 
@@ -224,9 +203,9 @@ TOOLS = [
     ),
     Tool(
         name="get_fed_beige_book",
-        description="获取美联储褐皮书（Beige Book）元数据。\n\n"
-                    "褐皮书内容需访问: https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm\n"
-                    "本工具返回历年褐皮书发布记录（标题/发布日期/来源链接）。\n\n"
+        description="获取美联储褐皮书（Beige Book）官方档案入口。\n\n"
+                    "褐皮书内容和准确发布日期请访问: https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm\n"
+                    "本工具不生成或推测发布记录。\n\n"
                     "褐皮书：每年发布8次，反映各地区经济状况",
         inputSchema={
             "type": "object",
@@ -257,10 +236,6 @@ TOOLS = [
 # ── Tool Handlers ─────────────────────────────────────────────────────────────
 
 async def handle_interest_rate(args: dict) -> list[TextContent]:
-    check = check_mock_permission(args, "get_fed_interest_rate", "user-fed-data")
-    if check is not None:
-        return check
-
     series_id = args.get("series_id", "DFF")
     start_date = args.get("start_date")
     end_date = args.get("end_date")
@@ -301,10 +276,6 @@ async def handle_interest_rate(args: dict) -> list[TextContent]:
 
 
 async def handle_yield_curve(args: dict) -> list[TextContent]:
-    check = check_mock_permission(args, "get_fed_yield_curve", "user-fed-data")
-    if check is not None:
-        return check
-
     tenors = ["DGS2", "DGS5", "DGS10", "DGS30"]
     tenor_labels = ["2Y", "5Y", "10Y", "30Y"]
     date_str = args.get("date")
@@ -360,71 +331,69 @@ async def handle_yield_curve(args: dict) -> list[TextContent]:
 
 
 async def handle_fomc(args: dict) -> list[TextContent]:
-    check = check_mock_permission(args, "get_fed_fomc", "user-fed-data")
-    if check is not None:
-        return check
-
     year = args.get("year", 2026)
-    schedule = FOMC_SCHEDULE.get(year, [])
-
-    # 标记已过的会议
+    dates = FOMC_DECISION_DATES.get(year, [])
     today = date.today().isoformat()
-    for meeting in schedule:
-        meeting["past"] = meeting["date"] < today
-        if meeting["date"] < today:
-            # 尝试获取真实决议（如果有API Key）
-            if FRED_API_KEY:
-                # 2023年后有实际的利率数据
-                target = _get_series_latest("DFEDTAR")
-                if target:
-                    meeting["target"] = target["value"]
+    start = f"{year - 1}-01-01"
+    end = f"{year}-12-31"
+    lower_by_date = {r["date"]: r["value"] for r in _fetch_fred_csv("DFEDTARL", start, end)}
+    upper_by_date = {r["date"]: r["value"] for r in _fetch_fred_csv("DFEDTARU", start, end)}
+    rate_dates = sorted(lower_by_date.keys() & upper_by_date.keys())
+
+    meetings = []
+    for meeting_date in dates:
+        is_past = meeting_date <= today
+        lower = lower_by_date.get(meeting_date) if is_past else None
+        upper = upper_by_date.get(meeting_date) if is_past else None
+        current_range = (lower, upper) if lower is not None and upper is not None else None
+        previous_date = max((d for d in rate_dates if d < meeting_date), default=None)
+        previous_range = (
+            (lower_by_date[previous_date], upper_by_date[previous_date])
+            if previous_date else None
+        )
+        if not is_past:
+            decision = "pending"
+        elif current_range is None:
+            decision = "unavailable"
+        elif previous_range is None or current_range == previous_range:
+            decision = "hold"
+        elif current_range[1] < previous_range[1]:
+            decision = "cut"
+        else:
+            decision = "hike"
+        meetings.append({
+            "date": meeting_date,
+            "past": is_past,
+            "decision": decision,
+            "lower": lower,
+            "upper": upper,
+            "rate_source": "FRED DFEDTARL/DFEDTARU" if current_range else None,
+        })
 
     result = {
         "_data_source": "Federal Reserve FOMC (federalreserve.gov)",
-        "_is_mock": True,
-        "_mock_note": (
-            "FOMC_SCHEDULE is a hardcoded dictionary of known FOMC meeting dates. "
-            "Real rate decisions require FRED DFEDTAR series for post-meeting data. "
-            "Upcoming meetings (decision=pending) are placeholders."
-        ),
-        "_source_url": f"https://www.federalreserve.gov/monetarypolicy/fomccalendars{year}.htm",
+        "_source_url": FOMC_CALENDAR_URL,
+        "_calendar_verified": FOMC_CALENDAR_VERIFIED,
         "year": year,
-        "meetings": schedule,
-        "upcoming_count": sum(1 for m in schedule if not m.get("past", False)),
-        "past_count": sum(1 for m in schedule if m.get("past", False)),
-        "note": "利率决议数据来自FRED DFEDTAR(目标利率)。FOMC声明和经济预测需访问federalreserve.gov",
+        "meetings": meetings,
+        "upcoming_count": sum(1 for m in meetings if not m["past"]),
+        "past_count": sum(1 for m in meetings if m["past"]),
+        "note": "会议日期来自美联储官方日历；历史目标区间来自 FRED DFEDTARL/DFEDTARU。网络不可用时利率明确标记 unavailable。",
     }
 
     return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
 
 
 async def handle_beige_book(args: dict) -> list[TextContent]:
-    check = check_mock_permission(args, "get_fed_beige_book", "user-fed-data")
-    if check is not None:
-        return check
-
     year = args.get("year", 2026)
-
-    # 褐皮书历史记录
-    bb_releases = []
-    for y in range(2020, 2027):
-        for q, month in [("Q1", "02"), ("Q2", "05"), ("Q3", "08"), ("Q4", "11")]:
-            if y < year or (y == year and q in ["Q1", "Q2"]):
-                release_date = f"{y}-{month}-01"
-                bb_releases.append({
-                    "year": y,
-                    "quarter": q,
-                    "release_date": release_date,
-                    "title": f"Beige Book — {y} {q}",
-                    "source_url": f"https://www.federalreserve.gov/monetarypolicy/beige-book-{y}-{q.lower()}.htm",
-                    "note": "褐皮书全文需访问上述URL，或从FRED获取各地区经济指标",
-                })
 
     result = {
         "_data_source": "Federal Reserve Beige Book",
-        "_note": "褐皮书全文需访问 federalreserve.gov，本工具返回发布元数据",
+        "_source_url": "https://www.federalreserve.gov/monetarypolicy/beige-book-default.htm",
+        "_note": "请从美联储官方档案页选择具体发布日期；本工具不推测发布日期或文章URL。",
         "year": year,
-        "releases": bb_releases[-12:],
+        "releases": [],
+        "status": "official_archive_link",
         "beige_book_overview": (
             "褐皮书(Tealbook)是FOMC会议前2周发布的各地区经济状况报告，"
             "由12个联储银行分别撰写，涵盖经济活动、就业、物价、薪资等方面。"
@@ -436,10 +405,6 @@ async def handle_beige_book(args: dict) -> list[TextContent]:
 
 
 async def handle_nfp_cpi(args: dict) -> list[TextContent]:
-    check = check_mock_permission(args, "get_fed_nfp_cpi", "user-fed-data")
-    if check is not None:
-        return check
-
     start_year = args.get("start_year", 2020)
     end_year = args.get("end_year", 2026)
 

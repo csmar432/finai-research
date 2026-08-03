@@ -59,7 +59,7 @@ def check_online(doi: str, timeout: int = 5) -> bool:
     """Check if DOI resolves via CrossRef API (more reliable than doi.org redirect)."""
     try:
         req = urllib.request.Request(f"https://api.crossref.org/works/{doi}")
-        req.add_header("User-Agent", "FinAI-Research-Workflow/0.2.0-alpha (mailto:research@finai.dev)")
+        req.add_header("User-Agent", "FinAI-Research-Workflow/0.2.0a0 (mailto:research@finai.dev)")
         with urllib.request.urlopen(req, timeout=timeout) as r:
             if r.status == 200:
                 return True

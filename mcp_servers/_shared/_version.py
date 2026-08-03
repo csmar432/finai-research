@@ -1,7 +1,7 @@
 """mcp_servers/_shared/_version.py — Single source of truth for FinAI version.
 
 Shared by all MCP server entry points to avoid hardcoded APP_VERSION drift.
-When pyproject.toml bumps 0.2.0-alpha → 0.3.0, MCP servers auto-read the new
+When pyproject.toml bumps 0.2.0a0 → 0.3.0, MCP servers auto-read the new
 version on next start (no per-server edit required).
 
 Usage:

@@ -653,7 +653,6 @@ def hierarchy_tree_gv(spec, output_path: str, style: str = "tree",
     for n in spec.nodes:
         fillcolor = "white"
         border = n.color if n.color else "#3498DB"
-        label_html = f'<{{{"<BR/>".join(n.label.split(chr(10)))}>}}'
         try:
             g.node(
                 n.id,

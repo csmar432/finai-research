@@ -31,11 +31,7 @@ from pathlib import Path
 warnings.filterwarnings("ignore")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-try:
-    from mcp_servers.mcp_mock_helper import check_mock_permission, MOCK_WARNING
-except ImportError:
-    def check_mock_permission(*a, **kw): return None
-    MOCK_WARNING = ""
+from mcp_servers.mcp_mock_helper import MOCK_WARNING, check_mock_permission
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT))

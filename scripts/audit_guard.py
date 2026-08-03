@@ -1416,7 +1416,7 @@ def check_16_version_drift() -> CheckResult:
             expected="version line present",
             evidence=[],
         )
-    canonical = m.group(1)  # e.g. "0.2.0-alpha"
+    canonical = m.group(1)  # e.g. "0.2.0a0"
 
     # Files to scan for hardcoded version drift
     scan_patterns = [
@@ -1444,7 +1444,7 @@ def check_16_version_drift() -> CheckResult:
             expected="version line present",
             evidence=[],
         )
-    canonical = m.group(1)  # e.g. "0.2.0-alpha"
+    canonical = m.group(1)  # e.g. "0.2.0a0"
 
     # Files to scan for hardcoded version drift
     scan_patterns = [

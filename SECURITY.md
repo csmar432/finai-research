@@ -6,7 +6,8 @@ Only the latest minor version receives security updates.
 
 | Version | Supported          |
 |---------|-------------------|
-| 0.1.x   | :white_check_mark: Latest |
+| 0.2.x (alpha) | :white_check_mark: Latest |
+| 0.1.x         | :x: End of support |
 
 ## Report a Vulnerability
 
@@ -57,7 +58,7 @@ This project aggregates data from ~43 external MCP servers. Each has its own ter
 ### Dependency Security
 
 - **Dependabot** is enabled. It opens PRs for outdated dependencies weekly. Review and merge security patches promptly.
-- **CI security gate** (`scripts/ci_security_gate.py`) runs `pip-audit` and `safety` checks in the CI pipeline. Do not ignore security advisories without justification.
+- **CI security gate** (`scripts/ci_security_gate.py`) runs `pip-audit` and Bandit in the CI pipeline. Missing scanners, invalid scanner output, and vulnerabilities without a severity classification fail closed.
 
 ### Known Limitations
 
@@ -65,7 +66,8 @@ This project aggregates data from ~43 external MCP servers. Each has its own ter
 - **No encryption at rest.** Data fetched from APIs is stored in plain SQLite.
 - **No audit log access control.** Provenance logs are world-readable by default.
 - **Docker**: If you run this project in Docker, review `docker-compose.yml` before deploying. Some services (CNKI, Wanfang) should be disabled for corporate environments.
+- **LLM-generated Python execution** (dynamic tools and figure code) is disabled by default because a child process is not a security sandbox. The compatibility escape hatch (`FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS=1`) must only be used with trusted code inside a disposable, externally isolated environment.
 
 ---
 
-*Last reviewed: 2026-06-25*
+*Last reviewed: 2026-08-03*

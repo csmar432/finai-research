@@ -19,6 +19,7 @@ __all__ = [
 
 import hashlib
 import json
+import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -123,6 +124,13 @@ class DynamicToolManager:
         RegisteredTool
             The newly created and registered tool.
         """
+        if os.environ.get("FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS") != "1":
+            raise RuntimeError(
+                "LLM-generated tools are disabled by default because Python code cannot be "
+                "safely sandboxed in-process. Set FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS=1 only "
+                "inside an already isolated disposable environment."
+            )
+
         # Generate tool code via LLM
         code_prompt = f"""根据以下描述，生成一个 Python 函数。
 
@@ -148,8 +156,9 @@ class DynamicToolManager:
         # Parse tool name from code
         tool_name = self._extract_tool_name(code, description)
 
-        # Compile and validate
-        callable_tool = self._compile_tool(code, tool_name)
+        # Parse only. Function definitions can execute decorators/defaults, so generated
+        # source must never be compiled in the host process.
+        self._validate_dynamic_source(code, tool_name)
 
         # Create metadata
         metadata = ToolMetadata(
@@ -163,7 +172,7 @@ class DynamicToolManager:
         # Register
         registered = RegisteredTool(
             metadata=metadata,
-            callable=callable_tool,
+            callable=self._dynamic_tool_placeholder,
             source_code=code,
         )
 
@@ -261,7 +270,12 @@ class DynamicToolManager:
 
         try:
             if is_llm_generated:
-                output = self._execute_sandboxed(
+                if os.environ.get("FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS") != "1":
+                    raise RuntimeError(
+                        "Execution of LLM-generated tools is disabled. Use an external "
+                        "sandbox, or explicitly opt in with FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS=1."
+                    )
+                output = self._execute_in_subprocess(
                     tool_name, source, inputs, timeout=timeout
                 )
             else:
@@ -312,54 +326,25 @@ class DynamicToolManager:
                 "latency_ms": latency_ms,
             }
 
-    def _execute_sandboxed(
+    def _execute_in_subprocess(
         self, tool_name: str, source_code: str, inputs: dict, timeout: float
     ) -> Any:
         """
-        Execute LLM-generated tool code in an isolated subprocess.
+        Execute explicitly opted-in LLM-generated code in a subprocess.
 
-        Uses a restricted Python interpreter with allowed modules only:
-        - Builtins: math, random, datetime, json, re, statistics, collections, itertools, functools
-        - numpy (safe for data analysis)
-        - pandas (safe for data analysis)
-
-        Blocked: os, sys, subprocess, socket, urllib, requests, open, exec, eval, compile, __import__,
-        and any file/network operations.
+        This is process isolation, not a security sandbox. It is reachable only after the
+        caller sets FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS=1 inside a disposable environment.
         """
         import subprocess
         import sys
         import tempfile
 
-        # ── Whitelist of safe builtins and modules ──────────────────────────────
-        # Note: Python dict literals cannot mix string-comma entries with key:value entries.
-        # We build it programmatically to combine both styles.
-        _safe_builtins_list = [
-            "abs", "all", "any", "bin", "bool", "chr", "dict", "dir", "divmod",
-            "enumerate", "filter", "float", "format", "frozenset", "getattr",
-            "hasattr", "hash", "hex", "int", "isinstance", "issubclass", "iter",
-            "len", "list", "map", "max", "min", "next", "oct", "ord", "pow",
-            "range", "repr", "reversed", "round", "set", "slice", "sorted",
-            "staticmethod", "str", "sum", "super", "tuple", "type", "vars", "zip",
-        ]
-        allowed_builtins = {name: __import__("builtins").__dict__[name]
-                            for name in _safe_builtins_list
-                            if name in __import__("builtins").__dict__}
-        # Safe stdlib modules (imported once, stored in namespace)
-        _safe_modules = {
-            "math": "math", "random": "random", "datetime": "datetime",
-            "json": "json", "re": "re", "statistics": "statistics",
-            "collections": "collections", "itertools": "itertools",
-            "functools": "functools", "operator": "operator",
-            "pathlib": "pathlib", "numpy": "numpy", "pandas": "pandas",
-        }
-        allowed_builtins.update({k: __import__(v) for k, v in _safe_modules.items()})
-
-        # ── Build restricted exec wrapper ──────────────────────────────────────
+        # ── Build subprocess wrapper ───────────────────────────────────────────
         input_json = json.dumps(inputs, default=str, ensure_ascii=False)
         safe_input = (
             f"import json, sys\n"
             f"sys.path.insert(0, '')\n"
-            f"_inputs = json.loads('{input_json}')\n"
+            f"_inputs = json.loads({input_json!r})\n"
             f"{source_code}\n"
             f"_result = json.dumps({tool_name}(**_inputs), default=str, ensure_ascii=False)\n"
         )
@@ -385,7 +370,7 @@ class DynamicToolManager:
             if proc.returncode != 0:
                 error_msg = proc.stderr.strip() or proc.stdout.strip()
                 raise RuntimeError(
-                    f"Sandboxed execution failed (exit={proc.returncode}): {error_msg[:500]}"
+                    f"Dynamic tool execution failed (exit={proc.returncode}): {error_msg[:500]}"
                 )
             # Last line should be the JSON result
             lines = proc.stdout.strip().split("\n")
@@ -395,11 +380,11 @@ class DynamicToolManager:
                     result_line = line.strip()
                     break
             if not result_line:
-                raise RuntimeError("Sandboxed execution produced no output")
+                raise RuntimeError("Dynamic tool execution produced no output")
             try:
                 return json.loads(result_line)
             except json.JSONDecodeError as e:
-                raise RuntimeError(f"Sandboxed execution returned invalid JSON: {e}")
+                raise RuntimeError(f"Dynamic tool execution returned invalid JSON: {e}")
         finally:
             try:
                 Path(temp_path).unlink(missing_ok=True)
@@ -612,63 +597,21 @@ class DynamicToolManager:
 
     # ── Private Helpers ────────────────────────────────────────────
 
-    def _compile_tool(self, code: str, tool_name: str) -> Callable:
-        """Compile tool code and return the callable.
+    @staticmethod
+    def _dynamic_tool_placeholder(**_inputs: Any) -> Any:
+        raise RuntimeError("Dynamic tools must execute through the external sandbox path")
 
-        Uses an isolated namespace with no dangerous builtins for compilation.
-        The actual execution happens in _execute_sandboxed (for LLM-generated tools)
-        or _execute_with_timeout (for static tools).
-        """
-        import builtins
-        import collections
-        import datetime
-        import functools
-        import itertools
-        import json as _json
-        import math
-        import operator
-        import re
-        import statistics
+    @staticmethod
+    def _validate_dynamic_source(code: str, tool_name: str) -> None:
+        import ast
 
-        # Isolated builtins — no file/network/eval/exec/subprocess
-        safe_builtins = {
-            name: getattr(builtins, name)
-            for name in dir(builtins)
-            if name not in (
-                "compile", "eval", "exec", "__import__",
-                "open", "file", "input", "exit", "quit",
-                "breakpoint", "reload", "print",
-            )
-        }
-        safe_builtins.update({
-            "math": math,
-            "json": _json,
-            "re": re,
-            "datetime": datetime,
-            "statistics": statistics,
-            "collections": collections,
-            "itertools": itertools,
-            "functools": functools,
-            "operator": operator,
-            "int": int, "float": float, "str": str, "bool": bool,
-            "list": list, "dict": dict, "tuple": tuple, "set": set,
-            "len": len, "range": range, "enumerate": enumerate,
-            "map": map, "filter": filter, "zip": zip,
-            "sum": sum, "min": min, "max": max, "abs": abs,
-            "sorted": sorted, "reversed": reversed,
-            "any": any, "all": all, "isinstance": isinstance,
-            "getattr": getattr, "hasattr": hasattr, "setattr": setattr,
-        })
-
-        namespace: dict[str, Any] = {"__builtins__": safe_builtins}
-        exec(compile(code, f"<tool:{tool_name}>", "exec"), namespace)
-
-        if tool_name not in namespace:
-            raise ValueError(
-                f"Tool '{tool_name}' not found in compiled code. "
-                "Make sure the function name matches exactly."
-            )
-        return namespace[tool_name]
+        tree = ast.parse(code)
+        if not any(
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == tool_name
+            for node in tree.body
+        ):
+            raise ValueError(f"Tool function '{tool_name}' not found in generated source")
 
     def _extract_tool_name(self, code: str, description: str) -> str:
         """Extract or generate a tool name from code."""
@@ -729,11 +672,11 @@ class DynamicToolManager:
                 code = data.get("source_code", "")
 
                 if code:
-                    callable_tool = self._compile_tool(code, meta_dict["name"])
+                    self._validate_dynamic_source(code, meta_dict["name"])
                     metadata = ToolMetadata(**meta_dict)
                     self._registry[meta_dict["name"]] = RegisteredTool(
                         metadata=metadata,
-                        callable=callable_tool,
+                        callable=self._dynamic_tool_placeholder,
                         source_code=code,
                     )
                     self._versions[meta_dict["name"]] = [metadata]

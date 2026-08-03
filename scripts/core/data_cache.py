@@ -301,6 +301,8 @@ class DataCache:
         self.default_ttl = default_ttl_seconds
         self.verbose = verbose
 
+        # Keep finalization safe if database initialization raises partway through.
+        self._conn = None
         self._conn = self._init_db()
         self._initialized = True
         logger.info(f"[DataCache] Initialized at {self.db_path} (TTL={default_ttl_seconds}s)")
@@ -595,7 +597,7 @@ class DataCache:
 
     def close(self) -> None:
         """关闭 DuckDB 连接。"""
-        if self._conn:
+        if getattr(self, "_conn", None):
             self._conn.close()
             self._conn = None
             logger.info("[DataCache] Closed")

@@ -19,23 +19,21 @@
 # =====================================================================
 
 # Core data + plotting
-# audit-2026-07-26: pin numpy<2 (linearmodels 6.x is built against numpy 1.x
-# ABI; running linearmodels on numpy 2.x yields "numpy.dtype size changed"
-# collect errors in 40+ test files). We choose numpy<2 over upgrading
-# linearmodels because (a) linearmodels 7.x hasn't landed on PyPI yet,
-# (b) pandas 2.x has stable numpy 1.x support, (c) matplotlib 3.9.x is
-# already a no-op for numpy 2.x anyway.
-numpy>=1.26.0,<2.0
-pandas>=2.0.0
-scipy>=1.13.0
-statsmodels>=0.14.0
-scikit-learn>=1.4.0
+# Python 3.10-3.12 retain the validated NumPy 1.x ABI. Python 3.13 has no
+# NumPy 1.26 wheels, so the matrix uses NumPy 2.x with linearmodels 7.x.
+numpy>=1.26.0,<2.0; python_version < "3.13"
+numpy>=2.1.0,<3.0; python_version >= "3.13"
+pandas>=2.0.0,<3.0
+scipy>=1.13.0,<2.0
+statsmodels>=0.14.0,<1.0
+scikit-learn>=1.4.0,<2.0
 linearmodels>=6.0.0
-networkx>=3.2.0
+networkx>=3.2.0,<4.0
 # matplotlib pinned to <3.10 because matplotlib 3.10+ requires numpy>=2.0
 # (see matplotlib 3.10 release notes). With numpy<2 we need matplotlib<3.10.
 matplotlib>=3.8.0,<3.10
-seaborn>=0.13.0
+seaborn>=0.13.0,<1.0
+graphviz>=0.20.0,<1.0
 # tenacity required by data_fetcher.py / retry_utils.py — scripts/ imports
 # it unconditionally at module top, so even though `retry_utils.py` is
 # "optional" semantically, the module-level import fails if missing.
@@ -43,14 +41,14 @@ seaborn>=0.13.0
 tenacity>=8.2.0,<10.0
 
 # Config / LLM stubs
-requests>=2.31.0
-python-dotenv>=1.0.0
-pyyaml>=6.0.0
-pydantic>=2.0.0
-httpx>=0.27.0
-openai>=1.0.0
-anthropic>=0.30.0
-tiktoken>=0.7.0
+requests>=2.31.0,<3.0
+python-dotenv>=1.0.0,<2.0
+pyyaml>=6.0.0,<7.0
+pydantic>=2.0.0,<3.0
+httpx>=0.27.0,<1.0
+openai>=1.0.0,<2.0
+anthropic>=0.30.0,<1.0
+tiktoken>=0.7.0,<1.0
 tabulate>=0.9.0
 openpyxl>=3.1.0
 psutil>=5.9.0
@@ -64,16 +62,17 @@ duckdb>=0.9.0,<2.0
 python-docx>=1.0.0
 
 # Test runner
-pytest>=7.4.0
-pytest-asyncio>=0.23.0
-pytest-cov>=4.1.0
+pytest>=7.4.0,<10.0
+pytest-asyncio>=0.23.0,<2.0
+pytest-cov>=4.1.0,<8.0
 pytest-timeout>=2.2.0
 
 # MCP (P3-audit-2026-07-04: 加入让 test_mcp_servers_import.py 真正跑 import 而非 skip)
 # 之前注释说 "mcp 是 heavyweight"，但实际 mcp 2.1MB，且能让 43 个 server.py 的
 # 1235 stmts 进入 coverage 覆盖。如果后续想瘦身，可以单独砍。
-mcp>=1.0.0
+mcp>=1.0.0,<2.0
 
 # Lint
 ruff>=0.4.0
 pip-audit
+bandit>=1.9.0,<2.0

@@ -45,7 +45,7 @@ def fetch_stars(owner: str, repo: str, timeout: int = 10) -> int | None:
     """Fetch current star count from GitHub API."""
     url = f"https://api.github.com/repos/{owner}/{repo}"
     req = urllib.request.Request(url)
-    req.add_header("User-Agent", "FinAI-Research-Workflow/0.2.0-alpha")
+    req.add_header("User-Agent", "FinAI-Research-Workflow/0.2.0a0")
     req.add_header("Accept", "application/vnd.github+json")
     # Use gh CLI token if available (raises rate limit to 5000/hr)
     gh_token = _get_gh_token()

@@ -761,7 +761,7 @@ def _hierarchy_org(spec: DiagramSpec) -> None:
     for parent_id, child_ids in by_parent.items():
         if parent_id not in by_id:
             continue
-        px, py = by_parent_pos = by_id[parent_id]
+        px, py = by_id[parent_id]
         child_xs = [by_id[c][0] for c in child_ids if c in by_id]
         if not child_xs:
             continue

@@ -52,10 +52,10 @@ class TestCheckPipAudit:
         result = check_pip_audit()
         assert isinstance(result, bool)
 
-    def test_pip_audit_not_installed_returns_false(self, monkeypatch):
+    def test_pip_audit_not_installed_blocks(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: None)
         result = check_pip_audit()
-        assert result is False
+        assert result is True
 
     def test_no_vulns(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/pip-audit")
@@ -101,19 +101,36 @@ class TestCheckPipAudit:
             result = check_pip_audit()
             assert result is True
 
-    def test_invalid_json_returns_false(self, monkeypatch):
+    def test_unclassified_vuln_blocks(self, monkeypatch):
+        monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/pip-audit")
+        vuln_data = {
+            "dependencies": [
+                {"name": "pkg", "version": "1.0", "vulns": [{"id": "CVE-1"}]}
+            ]
+        }
+        with patch("scripts.ci_security_gate.run_cmd") as mock_run:
+            mock_run.return_value = (1, json.dumps(vuln_data), "")
+            assert check_pip_audit() is True
+
+    def test_unexpected_schema_blocks(self, monkeypatch):
+        monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/pip-audit")
+        with patch("scripts.ci_security_gate.run_cmd") as mock_run:
+            mock_run.return_value = (0, "[]", "")
+            assert check_pip_audit() is True
+
+    def test_invalid_json_blocks(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/pip-audit")
         with patch("scripts.ci_security_gate.run_cmd") as mock_run:
             mock_run.return_value = (0, "not json", "")
             result = check_pip_audit()
-            assert result is False
+            assert result is True
 
-    def test_empty_output_returns_false(self, monkeypatch):
+    def test_empty_output_blocks(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/pip-audit")
         with patch("scripts.ci_security_gate.run_cmd") as mock_run:
             mock_run.return_value = (0, "", "")
             result = check_pip_audit()
-            assert result is False
+            assert result is True
 
 
 class TestCheckBandit:
@@ -124,10 +141,10 @@ class TestCheckBandit:
         result = check_bandit()
         assert isinstance(result, bool)
 
-    def test_bandit_not_installed_returns_false(self, monkeypatch):
+    def test_bandit_not_installed_blocks(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: None)
         result = check_bandit()
-        assert result is False
+        assert result is True
 
     def test_no_issues(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/bandit")
@@ -171,9 +188,9 @@ class TestCheckBandit:
             result = check_bandit()
             assert result is True
 
-    def test_invalid_json_returns_false(self, monkeypatch):
+    def test_invalid_json_blocks(self, monkeypatch):
         monkeypatch.setattr("shutil.which", lambda x: "/usr/bin/bandit")
         with patch("scripts.ci_security_gate.run_cmd") as mock_run:
             mock_run.return_value = (0, "not json", "")
             result = check_bandit()
-            assert result is False
+            assert result is True

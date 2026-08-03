@@ -1158,11 +1158,23 @@ class PlottingAgent(BaseAgent):
 
         Returns dict with keys: success (bool), caption (str), files (list), error (str).
         """
+        import os
         import subprocess
 
         if not code or not code.strip():
             return {"success": False, "caption": "", "files": [],
                     "error": "No code provided"}
+        if os.environ.get("FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS") != "1":
+            return {
+                "success": False,
+                "caption": "",
+                "files": [],
+                "error": (
+                    "Execution of LLM-generated figure code is disabled by default. "
+                    "Use an external sandbox, or explicitly opt in with "
+                    "FINAI_ALLOW_UNSAFE_DYNAMIC_TOOLS=1 in a disposable environment."
+                ),
+            }
 
         # Write code to a temp file and execute it
         script_content = f"""
@@ -1171,13 +1183,15 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 {code}
 """
-        import hashlib
-        fig_hash = hashlib.md5(fig_id.encode()).hexdigest()[:8]
-        tmp_script = f"/tmp/plot_{fig_hash}.py"
+        import tempfile
 
+        tmp_script = ""
         try:
-            with open(tmp_script, "w") as f:
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".py", delete=False, encoding="utf-8"
+            ) as f:
                 f.write(script_content)
+                tmp_script = f.name
 
             result = subprocess.run(
                 [sys.executable, tmp_script],
@@ -1216,7 +1230,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
                     "error": f"Execution error: {exc}"}
         finally:
             try:
-                os.unlink(tmp_script)
+                if tmp_script:
+                    os.unlink(tmp_script)
             except Exception:
                 pass
 
@@ -1238,7 +1253,7 @@ ID: {fig_id}
 {spec}
 
 ## 可用数据
-{json.dumps(data, ensure_ascii=False, indent=2) if data else "（无特定数据，需生成模拟示例）"}
+{json.dumps(data, ensure_ascii=False, indent=2) if data else "（无实证数据；只能生成明确标注的概念图，不得编造观测值或统计结果）"}
 
 ## 要求
 1. 使用 matplotlib 或 seaborn

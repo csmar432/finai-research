@@ -308,7 +308,7 @@ def run_action(choice: str) -> bool:
 
 
 def main():
-    os.system("clear" if os.name != "nt" else "cls")
+    print("\033[2J\033[H", end="")
     print_banner()
 
     daemon = _check_daemon()
@@ -325,7 +325,7 @@ def main():
                 continue
             if not run_action(choice):
                 break
-            os.system("clear" if os.name != "nt" else "cls")
+            print("\033[2J\033[H", end="")
             daemon = _check_daemon()
             macro = _get_macro_today()
             print_banner()

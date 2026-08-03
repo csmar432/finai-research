@@ -1,7 +1,7 @@
 # FinAI Research Workflow — Roadmap
 
 > Last updated: 2026-07-09
-> Status: v0.2.0-alpha
+> Status: v0.2.0a0
 
 This document outlines the development roadmap for FinAI Research Workflow.
 星标（Star）和社区反馈会优先影响 roadmap 优先级。

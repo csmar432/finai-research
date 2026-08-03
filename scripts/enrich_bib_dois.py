@@ -30,7 +30,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 CROSSREF_BASE = "https://api.crossref.org/works"
-USER_AGENT = "FinAI-Research-Workflow/0.2.0-alpha (mailto:research@finai.dev)"
+USER_AGENT = "FinAI-Research-Workflow/0.2.0a0 (mailto:research@finai.dev)"
 
 
 def query_crossref(title: str, author: str, year: str, timeout: int = 15) -> str | None:
