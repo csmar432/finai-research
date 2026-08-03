@@ -19,13 +19,10 @@
 # =====================================================================
 
 # Core data + plotting
-# audit-2026-07-26: pin numpy<2 (linearmodels 6.x is built against numpy 1.x
-# ABI; running linearmodels on numpy 2.x yields "numpy.dtype size changed"
-# collect errors in 40+ test files). We choose numpy<2 over upgrading
-# linearmodels because (a) linearmodels 7.x hasn't landed on PyPI yet,
-# (b) pandas 2.x has stable numpy 1.x support, (c) matplotlib 3.9.x is
-# already a no-op for numpy 2.x anyway.
-numpy>=1.26.0,<2.0
+# Python 3.10-3.12 retain the validated NumPy 1.x ABI. Python 3.13 has no
+# NumPy 1.26 wheels, so the matrix uses NumPy 2.x with linearmodels 7.x.
+numpy>=1.26.0,<2.0; python_version < "3.13"
+numpy>=2.1.0,<3.0; python_version >= "3.13"
 pandas>=2.0.0,<3.0
 scipy>=1.13.0,<2.0
 statsmodels>=0.14.0,<1.0

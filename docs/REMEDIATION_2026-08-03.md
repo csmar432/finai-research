@@ -15,7 +15,7 @@ recommendations that would be unsafe or misleading to apply mechanically.
 | P1-4 Actions supply chain | Every third-party Action is pinned to a full commit SHA. Two nonexistent Sigstore Actions were replaced by the official Cosign installer with GitHub OIDC signing and immediate verification. |
 | P1-5 dependency SSOT | CI uses `requirements-ci-lock.txt`; constraints match the package bounds. Runtime test dependencies moved to `dev`; four confirmed-unused full-install dependencies were removed. `pandasql` was retained because an MCP server imports it. |
 | P1-6 coverage gate | A clean full run measured 58.2%; the aggregate gate was raised from 28% to 55%, retaining a small cross-platform margin toward 60%. Critical remediation paths have dedicated regression tests. |
-| P2-1 environment reproducibility | Validation used a fresh Python 3.12 environment created from the lock, without modifying the maintainer's existing virtual environment. BLAS threads are bounded in CI to prevent xdist oversubscription. |
+| P2-1 environment reproducibility | Validation used fresh environments created from universal locks, without modifying the maintainer's existing virtual environment. Python 3.10 and 3.13 boundary installs and smoke tests passed; BLAS threads are bounded in CI to prevent xdist oversubscription. |
 | P2-2/P2-3 policy/version drift | Security support and scanner documentation were corrected; the release version and user-facing references now use canonical PEP 440 `0.2.0a0`. |
 | P2-5 confirmed static security findings | Bandit's four HIGH findings were remediated; the complete scan now reports zero HIGH/CRITICAL findings. |
 
@@ -47,3 +47,5 @@ recommendations that would be unsafe or misleading to apply mechanically.
 - `pip-audit`: 109 locked packages, zero known vulnerabilities.
 - Bandit: 477 findings reviewed by severity, zero HIGH/CRITICAL.
 - Package build and `twine check`: sdist and wheel passed as `0.2.0a0`.
+- Universal CI lock: clean installs and 127-test smoke runs passed on both
+  Python 3.10 and 3.13 (116 passed, 11 skipped per interpreter).

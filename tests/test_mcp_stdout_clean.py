@@ -190,6 +190,8 @@ def test_mcp_healthcheck_script_exists():
     assert "ClientSession" in text or "stdio_client" in text, (
         "mcp_healthcheck.py 未实现 MCP stdio 客户端"
     )
+    assert "asyncio.wait_for" in text
+    assert "asyncio.timeout(" not in text, "asyncio.timeout() 不兼容 Python 3.10"
 
 
 def test_mcp_healthcheck_runs_against_fed_data():

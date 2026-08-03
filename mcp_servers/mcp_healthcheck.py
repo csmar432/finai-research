@@ -51,18 +51,21 @@ async def healthcheck_async(server_dir: Path, timeout: float = 10.0) -> tuple[bo
         cwd=str(server_dir.resolve()),
     )
 
+    async def initialize() -> tuple[bool, str]:
+        async with stdio_client(params) as (read, write):
+            async with ClientSession(read, write) as session:
+                init_result = await session.initialize()
+                server_name = (
+                    init_result.serverInfo.name
+                    if init_result.serverInfo
+                    else "unknown"
+                )
+                return True, f"protocol={init_result.protocolVersion} server={server_name}"
+
     try:
-        async with asyncio.timeout(timeout):
-            async with stdio_client(params) as (read, write):
-                async with ClientSession(read, write) as session:
-                    init_result = await session.initialize()
-                    server_name = (
-                        init_result.serverInfo.name
-                        if init_result.serverInfo
-                        else "unknown"
-                    )
-                    return True, f"protocol={init_result.protocolVersion} server={server_name}"
-    except TimeoutError:
+        # wait_for() preserves Python 3.10 support (unlike the newer context API).
+        return await asyncio.wait_for(initialize(), timeout=timeout)
+    except asyncio.TimeoutError:
         return False, f"超时（{timeout}s）"
     except Exception as e:
         return False, f"{type(e).__name__}: {e}"
