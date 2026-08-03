@@ -42,6 +42,9 @@ recommendations that would be unsafe or misleading to apply mechanically.
 - Follow-up clean-environment suite: 12,871 passed, 157 skipped, 83 xfailed,
   3 xpassed; 58.3% branch coverage. The follow-up also adds exact-word
   mock approval checks and covers all 17 guarded servers.
+- The CI coverage job now separately enforces >=75% on an explicit critical
+  research-path list (current local branch coverage: 87.4%); the aggregate
+  repository metric remains visible and is not artificially narrowed.
 - The 10 tests that timed out under unconstrained parallel BLAS all passed in a
   single-thread rerun; the final CI-equivalent run passed with bounded BLAS.
 - `audit_guard.py`: 25/25 checks passed.
