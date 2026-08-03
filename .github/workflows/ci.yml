@@ -106,7 +106,7 @@ jobs:
         run: python3 scripts/ci_security_gate.py
         continue-on-error: false
 
-  # ── audit-2026-07-04 PR-2: unify 3 test batches into 1 job + xdist ────
+  # ── audit-2026-07-04 PR-2: unified test job + xdist ────────────────
   # P0-6 (3-batch fragile combine) + P0-7 (--maxfail truncation was in each
   # batch) + P0-8 (320 lines of fail-log-handler YAML duplicated). All
   # consolidated here; reusable fail handler in .github/actions/handle-fail/.
@@ -318,9 +318,8 @@ jobs:
           echo "::warning::Skipping coverage upload because test did not succeed:"
           echo "  test: ${{ needs.test.result }}"
 
-      # Explicit per-artifact download (avoids pattern-glob issues in PR runs).
-      # Download each batch only if that batch succeeded; combine whatever is available.
-      # This fixes the prior overly-strict condition requiring ALL 3 batches to succeed.
+      # Download the single unified test artifact explicitly; coverage is only
+      # meaningful when the complete test job succeeded.
       - name: Download coverage-unified
         if: needs.test.result == 'success'
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8

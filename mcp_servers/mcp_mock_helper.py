@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -110,7 +111,20 @@ def check_mock_permission(
     # 检查请求上下文是否含批准关键词
     ctx = request_context or ""
     ctx_lower = ctx.lower()
-    approved = any(kw in ctx_lower for kw in APPROVAL_KEYWORDS)
+    # Match Chinese approval phrases as phrases, but require whole English
+    # words. Otherwise text such as "yesterday" satisfies the one-letter
+    # approval token "y" and silently authorizes mock data.
+    chinese_approved = any(
+        kw in ctx_lower
+        for kw in APPROVAL_KEYWORDS
+        if any("\u4e00" <= ch <= "\u9fff" for ch in kw)
+    )
+    english_approved = any(
+        re.search(rf"(?<![a-z]){re.escape(kw)}(?![a-z])", ctx_lower)
+        for kw in APPROVAL_KEYWORDS
+        if kw.isascii()
+    )
+    approved = chinese_approved or english_approved
 
     if approved:
         return None  # 通过

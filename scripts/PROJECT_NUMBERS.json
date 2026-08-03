@@ -106,7 +106,7 @@
   },
   "testing": {
     "test_files": 659,
-    "test_functions": 12687,
+    "test_functions": 12688,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 55,
     "ci_coverage_target": 60,

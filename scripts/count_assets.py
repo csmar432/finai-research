@@ -28,6 +28,12 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+# Keep the documented ``python scripts/count_assets.py`` entry point
+# independent of the caller's PYTHONPATH.  When Python executes a file by
+# path it puts ``scripts/`` (not the repository root) on sys.path.
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 
 def count_mcp_servers() -> dict[str, int]:
     """统计 MCP server 目录数 + server.py 状态。

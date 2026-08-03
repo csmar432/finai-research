@@ -508,12 +508,9 @@ def check_12_fail_under_floor() -> CheckResult:
     """Audit claim (audit-2026-07-04 P0-1): 'fail-under is repeatedly lowered
     (6 -> 3 -> 15 -> 25)'.
 
-    Defense: enforce a minimum floor on fail-under. The floor is
-    intentionally conservative (=25) at PR-1 time because removing the
-    9 "CI not-imported" omit entries drops the apparent coverage from
-    a padded 25-30% to a real 26-27%. PR-6 will add ~425 real tests to
-    push coverage naturally above 30%, at which point this check's
-    floor should be raised in lockstep.
+    Defense: enforce the current CI floor (55%) so a future edit cannot
+    silently lower the coverage gate. Raise this constant with the workflow
+    when the measured coverage reaches the next milestone.
 
     Audit guard against silent threshold drift downward.
     """
@@ -524,25 +521,25 @@ def check_12_fail_under_floor() -> CheckResult:
     import re
     matches = re.findall(r"fail[-_]under=(\d+)", text)
     if not matches:
-        return CheckResult(False, "no fail-under directive", ">=25", [])
+        return CheckResult(False, "no fail-under directive", ">=55", [])
     vals = [int(x) for x in matches]
     min_v = min(vals)
     evidence = [
         f"  fail-under values found: {vals}",
         f"  minimum: {min_v}",
-        f"  audit-2026-07-04 floor: 25 (PR-1) -> 28 (PR-6 import smoke); 60% deferred to PR-8",
+        "  required floor: 55% (current CI gate; next milestone: 60%)",
     ]
-    if min_v >= 28:
+    if min_v >= 55:
         return CheckResult(
             passed=True,
             actual=f"min={min_v}",
-            expected=">=28 (audit-2026-07-04 floor at PR-6)",
+            expected=">=55 (current CI gate)",
             evidence=evidence,
         )
     return CheckResult(
         passed=False,
         actual=f"min={min_v}",
-        expected=">=28",
+        expected=">=55",
         evidence=evidence,
     )
 
@@ -1703,7 +1700,7 @@ CHECKS: list[AuditCheck] = [
     AuditCheck(
         12,
         "CI fail-under floor",
-        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=28 at PR-6; 60% deferred to PR-8)",
+        "Defense vs. audit-2026-07-04 P0-1 'lower threshold to pass' (floor=55; next milestone 60%)",
         check_12_fail_under_floor,
     ),
     AuditCheck(
