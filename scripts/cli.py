@@ -196,7 +196,13 @@ def pipeline_cmd_wrapper(argv: list[str] | None = None) -> int:
         help="目标期刊",
     )
     parser.add_argument("--langgraph", action="store_true", help="使用 LangGraph 编排")
-    parser.add_argument("--use-hitl", action="store_true", help="启用人工干预检查点")
+    parser.add_argument("--use-hitl", action="store_true", help="启用人工干预检查点（默认 outline/literature/draft）")
+    parser.add_argument(
+        "--hitl-stages",
+        type=str,
+        default=None,
+        help="逗号分隔 HITL 阶段（需同时 --use-hitl）",
+    )
     parser.add_argument("--language", choices=["zh", "en"], default="zh", help="输出语言")
     parser.add_argument("--output-dir", default="./output", help="输出目录")
     parser.add_argument("--novelty-check", action="store_true", help="强制做新颖性检查")
@@ -254,6 +260,8 @@ def pipeline_cmd_wrapper(argv: list[str] | None = None) -> int:
         forwarded.append("--langgraph")
     if args.use_hitl:
         forwarded.append("--use-hitl")
+    if args.hitl_stages:
+        forwarded.extend(["--hitl-stages", args.hitl_stages])
     if args.novelty_check:
         forwarded.append("--novelty-check")
     if args.skip_health:

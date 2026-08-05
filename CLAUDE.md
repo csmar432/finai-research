@@ -60,7 +60,14 @@ pytest tests/ -v
         ↓
 ⑤ 等待研究方向 → 用户描述 → 开始研究
         ↓
-⑥ 推荐入口：python scripts/start_research.py --topic "..."（5 轮渐进式澄清）
+⑥ 推荐路径（两条，勿混用文档死链）：
+     · 新用户澄清：python scripts/start_research.py --topic "..."
+       （锁定 research_profile.json；默认不自动开跑）
+       可选：加 --continue --use-hitl 进入写作流水线
+     · 直接写作：python scripts/agent_pipeline.py --topic "..." [--use-hitl]
+       （--use-hitl 默认停 outline/literature/draft）
+     · HITL：agent_pipeline 的 HITLGate；InteractivePipelineCheckpoint
+       仅供技能/脚本手动 import，不自动挂入主流水线
 ```
 
 **第一步问候是强制要求**，不要跳过。直接开始工作会显得突兀。

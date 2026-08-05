@@ -35,8 +35,13 @@ pip install 'finai-research-workflow[extras]'  # from PyPI
 cp .env.example .env.local
 # Edit .env.local: set DEEPSEEK_API_KEY=sk-...
 
-# 3. Run
-python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+# 3. Run (pick one path)
+# 3a. Clarify first (recommended for new topics; does not auto-run writing)
+python scripts/start_research.py --topic "Carbon trading and green innovation"
+# optional: python scripts/start_research.py --topic "..." --continue --use-hitl
+
+# 3b. Direct writing pipeline
+python scripts/agent_pipeline.py --topic "Carbon trading and green innovation" --use-hitl
 ```
 
 ---
@@ -56,6 +61,8 @@ Stage 8: Review              → scripts/core/llm_reviewer.py
 ```
 
 Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
+`--use-hitl` enables outline/literature/draft gates by default. `InteractivePipelineCheckpoint`
+is for skills/manual import only — not auto-wired into `agent_pipeline`.
 
 ---
 
@@ -64,11 +71,12 @@ Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
 | I want to... | Run this |
 |---|---|
 | Check system health | `python scripts/health_check.py` |
-| Run full pipeline | `python scripts/agent_pipeline.py --topic "..."` |
+| Clarify topic (5 rounds) | `python scripts/start_research.py --topic "..."` |
+| Run full pipeline | `python scripts/agent_pipeline.py --topic "..." --use-hitl` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
 | Run a specific method (DID/IV/RDD/PSM) | `python scripts/research_framework/modern_did.py --help` |
 | List journal templates | `python scripts/journal_template.py --list` |
-| List MCP servers | `python scripts/register_mcp_servers.py --list` |
+| List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
 | Verify project integrity | `python scripts/audit_guard.py` (17/17 checks) |
 
 ---

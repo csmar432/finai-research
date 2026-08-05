@@ -68,7 +68,25 @@ _STAGE_QUESTIONS: dict[ClarificationStage, str] = {
     ClarificationStage.IDENTIFICATION: "你倾向用什么识别策略？\n  1) 双重差分 DID（含 PSM-DID / 现代 DID）\n  2) 工具变量 IV / 2SLS\n  3) 断点回归 RDD\n  4) 倾向得分匹配 PSM\n  5) 面板 GMM / 固定效应\n  6) 局部投影 LP / 事件研究\n  7) 综合运用多种方法（推荐：DID 为主 + 多种稳健性）",
     ClarificationStage.SAMPLE: "样本窗口和范围是什么？\n  例如：\n   - 2010-2022 中国 A 股上市公司\n   - 2015-2020 美国 S&P 500\n   - 2008-2019 中国省级面板\n  （请给出起止年份 + 国家/地区 + 数据粒度：公司/省级/国家级/家庭）",
     ClarificationStage.VARIABLES: "你已经定义好的变量是什么？（如未确定，可以只填因变量，其他留空，我会在文献检索后给候选）\n  - 因变量 Y：\n  - 核心解释变量 X：\n  - 政策/事件虚拟变量：\n  - 至少 3 个控制变量：\n  （说明：文献综述阶段会自动补充更多候选变量，确保稳健性检验时可替换）",
-    ClarificationStage.VENUE: "目标期刊/投稿方向是？\n  1) 中文顶刊：经济研究 / 金融研究 / 管理世界 / 会计研究\n  2) 英文 SSCI：JF / JFE / RFS / JAE / JPE\n  3) 一般 SSCI： Emerging Markets Review / China Economic Review\n  4) 暂无偏好（我会按数据可行性推荐）",
+    ClarificationStage.VENUE: (
+        "目标期刊/投稿方向是？\n"
+        "  1) 中文顶刊（下一问选具体刊名）\n"
+        "  2) 英文顶刊 JF/JFE/RFS/JAE/JPE（下一问选具体刊名）\n"
+        "  3) 一般 SSCI（Emerging Markets Review / China Economic Review）\n"
+        "  4) 暂无偏好（按数据可行性推荐）\n"
+        "也可直接写刊名，如：经济研究 / JF"
+    ),
+}
+
+_VENUE_GROUP_PROMPTS: dict[str, str] = {
+    "zh_top": (
+        "请选择具体中文顶刊：\n"
+        "  1) 经济研究\n  2) 金融研究\n  3) 管理世界\n  4) 会计研究"
+    ),
+    "en_top": (
+        "请选择具体英文顶刊：\n"
+        "  1) JF\n  2) JFE\n  3) RFS\n  4) JAE\n  5) JPE"
+    ),
 }
 
 
@@ -236,19 +254,37 @@ class ProgressiveClarifier:
         self._save_state(state)
         logger.info("Stage %s answered", state.current_stage.value)
 
-    def advance(self, state: ClarificationState) -> ClarificationState:
-        """推进到下一阶段；若已到最后阶段，锁定研究画像。"""
-        if state.is_complete:
-            return state
-
-        # 顺序：QUESTION_TYPE → IDENTIFICATION → SAMPLE → VARIABLES → VENUE → 锁定
-        order = [
+    def _stage_order(self, state: ClarificationState) -> list[ClarificationStage]:
+        """按研究类型动态决定阶段顺序（综述/理论跳过识别策略）。"""
+        qtype = self._normalize_choice(
+            state.answers.get(ClarificationStage.QUESTION_TYPE.value, ""),
+            {
+                "1": "empirical", "2": "review", "3": "theoretical",
+                "实证": "empirical", "综述": "review", "理论": "theoretical",
+            },
+            default="empirical",
+        )
+        if qtype in ("review", "theoretical"):
+            return [
+                ClarificationStage.QUESTION_TYPE,
+                ClarificationStage.SAMPLE,
+                ClarificationStage.VARIABLES,
+                ClarificationStage.VENUE,
+            ]
+        return [
             ClarificationStage.QUESTION_TYPE,
             ClarificationStage.IDENTIFICATION,
             ClarificationStage.SAMPLE,
             ClarificationStage.VARIABLES,
             ClarificationStage.VENUE,
         ]
+
+    def advance(self, state: ClarificationState) -> ClarificationState:
+        """推进到下一阶段；若已到最后阶段，锁定研究画像。"""
+        if state.is_complete:
+            return state
+
+        order = self._stage_order(state)
         try:
             idx = order.index(state.current_stage)
             if idx + 1 < len(order):
@@ -257,7 +293,15 @@ class ProgressiveClarifier:
                 state.profile = self._build_profile(state)
                 state.needs_user_input = False
         except ValueError:
-            pass
+            # 当前阶段不在动态顺序中（例如从实证改答综述后仍停在 IDENTIFICATION）
+            # 跳到顺序中尚未回答的下一阶段
+            for stage in order:
+                if stage.value not in state.answers:
+                    state.current_stage = stage
+                    break
+            else:
+                state.profile = self._build_profile(state)
+                state.needs_user_input = False
 
         self._save_state(state)
         return state
@@ -333,6 +377,9 @@ class ProgressiveClarifier:
                 raise KeyboardInterrupt("User quit")
 
             try:
+                # VENUE：若选大类 1/2，再追问具体刊名
+                if state.current_stage == ClarificationStage.VENUE:
+                    answer = self._maybe_refine_venue_answer(answer)
                 self.submit_answer(state, answer)
             except RuntimeError as e:
                 print(f"  ❌ {e}")
@@ -347,6 +394,42 @@ class ProgressiveClarifier:
         self._print_profile_summary(state.profile)
 
         return state.profile
+
+    def _maybe_refine_venue_answer(self, answer: str) -> str:
+        """大类 1/2 时二次选择具体刊名；已写刊名则原样返回。"""
+        text = answer.strip()
+        group = self._normalize_choice(text, {
+            "1": "zh_top", "2": "en_top", "3": "ssci", "4": "auto",
+            "中文": "zh_top", "英文": "en_top",
+        }, default="")
+        # 已是具体刊名
+        known = {
+            "经济研究", "金融研究", "管理世界", "会计研究",
+            "JF", "JFE", "RFS", "JAE", "JPE", "SSCI", "auto",
+        }
+        if text in known or (group in ("", "ssci", "auto") and not text[:1].isdigit()):
+            return text
+        if group not in _VENUE_GROUP_PROMPTS:
+            return text
+        print()
+        print(_VENUE_GROUP_PROMPTS[group])
+        print()
+        try:
+            sub = input("  具体刊名 › ").strip()
+        except (EOFError, KeyboardInterrupt):
+            raise
+        if not sub:
+            return text
+        if group == "zh_top":
+            return self._normalize_choice(sub, {
+                "1": "经济研究", "2": "金融研究", "3": "管理世界", "4": "会计研究",
+                "经济研究": "经济研究", "金融研究": "金融研究",
+                "管理世界": "管理世界", "会计研究": "会计研究",
+            }, default=sub)
+        return self._normalize_choice(sub, {
+            "1": "JF", "2": "JFE", "3": "RFS", "4": "JAE", "5": "JPE",
+            "JF": "JF", "JFE": "JFE", "RFS": "RFS", "JAE": "JAE", "JPE": "JPE",
+        }, default=sub)
 
     # ─── Persistence ───────────────────────────────────────────────────────
 
@@ -426,15 +509,24 @@ class ProgressiveClarifier:
                 "1": "empirical", "2": "review", "3": "theoretical",
                 "实证": "empirical", "综述": "review", "理论": "theoretical",
             }, default="empirical"),
-            identification=self._normalize_choice(answers.get(ClarificationStage.IDENTIFICATION.value, ""), {
-                "1": "DID", "2": "IV", "3": "RDD", "4": "PSM", "5": "FE", "6": "LP", "7": "multi",
-            }, default="multi"),
+            identification=(
+                "n/a"
+                if self._normalize_choice(
+                    answers.get(ClarificationStage.QUESTION_TYPE.value, ""),
+                    {"1": "empirical", "2": "review", "3": "theoretical",
+                     "实证": "empirical", "综述": "review", "理论": "theoretical"},
+                    default="empirical",
+                ) in ("review", "theoretical")
+                else self._normalize_choice(
+                    answers.get(ClarificationStage.IDENTIFICATION.value, ""),
+                    {"1": "DID", "2": "IV", "3": "RDD", "4": "PSM", "5": "FE", "6": "LP", "7": "multi"},
+                    default="multi",
+                )
+            ),
             sample_window=sample_window,
             geography=geography,
             unit=unit,
-            venue=self._normalize_choice(answers.get(ClarificationStage.VENUE.value, ""), {
-                "1": "经济研究", "2": "JF", "3": "SSCI", "4": "auto",
-            }, default="auto"),
+            venue=self._resolve_venue(answers.get(ClarificationStage.VENUE.value, "")),
             variables=self._parse_variables(answers.get(ClarificationStage.VARIABLES.value, "")),
             raw_answers=answers,
             locked_at=time.time(),
@@ -535,6 +627,26 @@ class ProgressiveClarifier:
             if key in text:
                 return val
         return default
+
+    def _resolve_venue(self, text: str) -> str:
+        """解析期刊答案：具体刊名优先；大类数字映射到组内默认刊。"""
+        text = (text or "").strip()
+        if not text:
+            return "auto"
+        known = {
+            "经济研究", "金融研究", "管理世界", "会计研究",
+            "JF", "JFE", "RFS", "JAE", "JPE", "SSCI", "auto",
+        }
+        if text in known:
+            return text
+        for name in known:
+            if name in text and name not in {"SSCI", "auto"}:
+                return name
+        # 仍是大类编号（未做二级选择时的兜底）
+        return self._normalize_choice(text, {
+            "1": "经济研究", "2": "JF", "3": "SSCI", "4": "auto",
+            "中文": "经济研究", "英文": "JF",
+        }, default="auto")
 
     def _extract_year_range(self, text: str) -> str:
         """从样本描述提取年份范围。"""

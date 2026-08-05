@@ -29,16 +29,18 @@ pip install "finai-research-workflow[extras]"
 # 配置 LLM（DeepSeek 直连，免费）
 export DEEPSEEK_API_KEY=sk-xxxx
 
-# 启动流水线（wheel 安装后的推荐入口）
-finai-pipeline --topic "Carbon trading and green innovation"
+# 启动流水线（wheel 安装后的写作入口；加 --use-hitl 启用阶段门控）
+finai-pipeline --topic "Carbon trading and green innovation" --use-hitl
 # 或
-python -m finai.pipeline --topic "碳排放权交易与企业绿色创新"
+python -m finai.pipeline --topic "碳排放权交易与企业绿色创新" --use-hitl
 
 # ── 源码安装（推荐贡献者 / 想改代码的用户）────────────────────────────
 git clone https://github.com/csmar432/finai-research.git && cd finai-research
 pip install -e ".[extras]"
-export DEEPSEEK_API_KEY=sk-xxxx
-python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+cp .env.example .env.local   # 编辑 .env.local：DEEPSEEK_API_KEY=sk-...
+# 新用户：先澄清（不自动开跑）→ 再写作；或澄清时加 --continue
+python scripts/start_research.py --topic "Carbon trading and green innovation"
+python scripts/agent_pipeline.py --topic "Carbon trading and green innovation" --use-hitl
 
 # ── Debian/Ubuntu apt 系统 Python ─────────────────────────────────────
 # apt 的 Python 被系统管理，直接 pip install 会触发 PEP 668 冲突。

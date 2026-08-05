@@ -1111,7 +1111,7 @@ class AgentPipeline:
                         print(f"       缺失: {g}")
             print()
 
-        # 数据缺口的想法：询问用户
+        # 数据缺口 / 需授权：TTY 真问；非 TTY fail-closed（不默默丢掉缺口）
         if gap:
             print("\033[91m" + "  ❌ 有数据缺口的想法（需补充数据或跳过）:" + "\033[0m")
             for idea in gap:
@@ -1122,11 +1122,7 @@ class AgentPipeline:
                     for action in result.actions[:3]:
                         print(f"       → {action}")
             print()
-            print("  提示: 请在 data/ 目录补充所需数据文件，或更换研究方向")
-            print("  如需授权使用演示数据，请调用: checker.authorize_variable('{var_name}')")
-            print()
 
-        # 需授权的想法
         if auth_needed:
             print("\033[93m" + "  🔐 需要模拟数据授权的想法:" + "\033[0m")
             for idea in auth_needed:
@@ -1134,8 +1130,37 @@ class AgentPipeline:
                 print(f"     • {title}")
             print()
 
-        # 最终合并：可行 + 部分可行
         validated = available + partial
+        blocked = gap or auth_needed
+        if blocked:
+            if self._is_interactive_terminal():
+                print("  选项：1) 跳过缺口/需授权想法，仅用可行+部分可行继续")
+                print("        2) 停止流水线，先补充数据或更换方向")
+                try:
+                    choice = input("  你的选择 [1/2，默认 2]: ").strip() or "2"
+                except (EOFError, KeyboardInterrupt):
+                    choice = "2"
+                if choice not in ("1", "是", "y", "yes", "skip"):
+                    print("\033[91m  已停止：存在数据缺口/未授权模拟数据\033[0m")
+                    self._validated_ideas = []
+                    return []
+            else:
+                self._interaction = InteractionResult(
+                    needs_input=True,
+                    action_needed="ask_idea_data",
+                    questions=[
+                        f"有 {len(gap)} 个想法存在数据缺口、{len(auth_needed)} 个需模拟数据授权。"
+                        "请补充 data/、授权模拟数据后重试，或在 TTY 下选择跳过缺口。",
+                    ],
+                    limitations=["idea_data_gap", "idea_auth_needed"],
+                    llm_available=True,
+                )
+                print(
+                    "\033[91m  ⚠ Agent/非 TTY：存在数据缺口或需授权，已停止自动继续"
+                    "（请宿主向用户确认后重试）\033[0m"
+                )
+                self._validated_ideas = []
+                return []
 
         print("\033[96m" + "─" * 60 + "\033[0m")
         print(f"  最终通过验证的想法: {len(validated)}/{len(ideas)}个")
@@ -1769,11 +1794,39 @@ class AgentPipeline:
         )
         self._interaction = ir
 
-        # 仅在交互式终端中调用 input()（Cursor IDE）
-        # Claude Code / Codex 等 AI agent 环境：返回 InteractionResult，
-        # 由 AI agent 在对话中向用户询问
-        if self._is_interactive_terminal() and interaction is None:
-            self._handle_interactive(ir)
+        # 交互式终端：input()；Agent/非 TTY：needs_input 时 fail-closed（不静默继续）
+        # interaction 非 None 表示 LLM 预检块已处理过，勿重复拦截（例如已选 mock）
+        _setup_already_handled = interaction is not None
+        if self._is_interactive_terminal() and not _setup_already_handled:
+            selected = self._handle_interactive(ir)
+            if selected == "exit":
+                return AgentPipelineResult(
+                    config=self.config,
+                    success=False,
+                    errors=["用户取消或未选择可用的 LLM/配置路径。"],
+                    total_latency_ms=(time.time() - start_time) * 1000,
+                    interaction=ir,
+                )
+        elif ir.needs_input and not _setup_already_handled:
+            # Agent 宿主必须读取 interaction.questions 并向用户转述；此处停止推进
+            qs = "; ".join(ir.questions) if ir.questions else ir.action_needed
+            print(
+                f"\n⚠️  需要用户确认（非 TTY / Agent 模式，已停止自动继续）:\n"
+                f"   action={ir.action_needed}\n"
+                f"   {qs}\n"
+                f"   limitations={ir.limitations or []}\n",
+                file=sys.stderr,
+            )
+            return AgentPipelineResult(
+                config=self.config,
+                success=False,
+                errors=[
+                    f"InteractionResult.needs_input=True ({ir.action_needed}); "
+                    "host agent must ask the user before retrying.",
+                ],
+                total_latency_ms=(time.time() - start_time) * 1000,
+                interaction=ir,
+            )
 
         # ── 可视化延迟启动 ─────────────────────────────────────────────────
         # 可视化服务器在用户首个 HITL gate 触发后才启动。
@@ -2320,28 +2373,17 @@ class AgentPipeline:
         return result
 
     def _is_interactive_terminal(self) -> bool:
-        """判断是否在交互式终端中运行（而非被 AI agent 调用）。
+        """判断是否可安全调用 input()。
 
-        只有 Cursor IDE 的终端（或有 TTY 的本地 shell）才进行 input() 交互。
-        Claude Code / Codex 通过对话交互，不调用 input()。
+        有 TTY 的本地 shell（含 Cursor 终端、纯终端）→ True。
+        无 TTY 的 Agent 宿主（Claude Code / Codex / Cursor Agent）→ False，
+        由 InteractionResult 交宿主对话询问（fail-closed，不静默继续）。
         """
-        # 优先用平台检测
         try:
-            from scripts.core.platform import get_platform_info
-            info = get_platform_info()
-            if not info.is_cursor:
-                return False
-        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-            pass
-
-        # 备用：检查是否有 TTY
-        try:
-            import sys
             if hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
                 return True
-        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
+        except Exception:  # noqa: S110
             pass
-
         return False
 
     @staticmethod
@@ -2680,7 +2722,7 @@ class AgentPipeline:
                 continue
 
         if not opened:
-            print(f"  {dim('请手动打开: ' + env_hint)}")
+            print(f"  {dim('请手动打开: ' + str(env_file))}")
 
         print()
         print(f"  {dim('配置完成并重启后，下次运行会自动识别')}")
@@ -3167,7 +3209,13 @@ Examples:
     )
     parser.add_argument(
         "--use-hitl", action="store_true",
-        help="启用 Human-in-the-Loop 审批门",
+        help="启用 Human-in-the-Loop 审批门（默认停在 outline/literature/draft）",
+    )
+    parser.add_argument(
+        "--hitl-stages",
+        type=str,
+        default=None,
+        help="逗号分隔的 HITL 阶段（默认 outline,literature,draft；需同时 --use-hitl）",
     )
     parser.add_argument(
         "--language", choices=["zh", "en"], default="zh",
@@ -3266,6 +3314,10 @@ Examples:
         config.venue = args.venue
     if args.use_hitl:
         config.use_hitl = True
+        if args.hitl_stages:
+            config.hitl_stages = [s.strip() for s in args.hitl_stages.split(",") if s.strip()]
+        else:
+            config.hitl_stages = ["outline", "literature", "draft"]
     # Forward LLM safety controls to the pipeline config.
     config.strict_llm = bool(args.strict_llm)
     config.allow_mock = bool(args.allow_mock)

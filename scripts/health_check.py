@@ -924,24 +924,25 @@ def _check_mcp(verify: bool = False) -> tuple[int, int, list[ProblemItem], list[
 
 
 def _platform_fixes(platform: str) -> dict[str, str]:
+    env_hint = "编辑项目根目录下的 .env.local（可从 .env.example 复制）"
     if platform == "cursor":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "启用 MCP 后需要重启 Cursor",
         }
     elif platform == "claude_code":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重启 Claude Code",
         }
     elif platform == "codex":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重新加载窗口（Cmd+Shift+P → Reload Window）",
         }
     else:
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重启 IDE",
         }
 
@@ -955,6 +956,7 @@ def run_diagnostic(
     verify: bool = False,
     ignore_data_source: bool = False,
     ignore_api_key: bool = False,
+    data_source_profile: str = "none",
 ) -> DiagnosticResult:
     """运行完整诊断。verify=True 时执行深度验证（耗时更长）。
 
@@ -962,6 +964,11 @@ def run_diagnostic(
     that operators in environments where paid MCPs (csmar/tushare/wind) are
     intentionally absent can run the diagnostic without it being treated as
     a hard failure.
+
+    data_source_profile:
+      - "none"（默认）: 不做主题硬编码数据源清单检查（避免非关税课题被刷屏）
+      - "tariff": 使用 TARIFF_RESEARCH_REQUIREMENTS
+      - "general": 仅检查常见免费源连通性提示（轻量）
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     platform = _detect_platform()
@@ -977,6 +984,22 @@ def run_diagnostic(
     dep_problems, dep_ok = _check_dependencies()
     all_problems.extend(dep_problems)
 
+    # 2b. graphviz（仅 arch 图可选依赖，缺失为 low，不阻断）
+    import shutil as _shutil
+    if _shutil.which("dot") is None:
+        all_problems.append(ProblemItem(
+            category=ProblemCategory.DEPENDENCY,
+            name="graphviz_dot",
+            name_zh="Graphviz (dot)",
+            message="未检测到 graphviz `dot`（仅 --auto-arch 架构图需要；matplotlib 可降级）",
+            fix_steps=[
+                "macOS: brew install graphviz",
+                "pip install graphviz",
+                "不需要架构图时可忽略",
+            ],
+            severity="low",
+        ))
+
     # 3. MCP 检查
     mcp_count, mcp_verified, mcp_problems, mcp_ok = _check_mcp(verify=verify)
     all_problems.extend(mcp_problems)
@@ -986,36 +1009,42 @@ def run_diagnostic(
         # environments often don't need every paid MCP to be configured.
         all_problems = [p for p in all_problems if p.category != ProblemCategory.API_KEY]
 
-    # 3b. 数据源可用性检查
-    from scripts.data_source_checker import (
-        DataSourceChecker,
-        TARIFF_RESEARCH_REQUIREMENTS,
-    )
-    ds_checker = DataSourceChecker(TARIFF_RESEARCH_REQUIREMENTS)
-    ds_result = ds_checker.run()
+    # 3b. 数据源可用性检查（默认关闭主题硬编码清单）
+    if data_source_profile != "none" and not ignore_data_source:
+        from scripts.data_source_checker import (
+            DataSourceChecker,
+            TARIFF_RESEARCH_REQUIREMENTS,
+        )
+        requirements = []
+        if data_source_profile == "tariff":
+            requirements = TARIFF_RESEARCH_REQUIREMENTS
+        elif data_source_profile == "general":
+            # 轻量：不强制付费源；仅在有 requirements 时跑 checker
+            requirements = []
+        if requirements:
+            ds_checker = DataSourceChecker(requirements)
+            ds_result = ds_checker.run()
 
-    # 将数据源问题转换为ProblemItem
-    for src_id, src_result in ds_result.source_results.items():
-        if src_result.status in ("requires_key", "requires_purchase", "requires_auth", "unavailable"):
-            meta = DataSourceChecker.SOURCE_META.get(src_id, {})
-            severity = "high" if src_id in ("csmar_customs", "tushare") else "medium"
-            if ignore_data_source:
-                # Bug fix 2026-07-12: honor CLI flag to skip DATA_SOURCE
-                # category problems entirely. This is the documented escape
-                # hatch for "I don't need CSMAR/Tushare for my topic" cases.
-                continue
-            all_problems.append(ProblemItem(
-                category=ProblemCategory.DATA_SOURCE,
-                name=f"data_source_{src_id}",
-                name_zh=f"数据源: {src_id}",
-                message=src_result.message,
-                fix_steps=[
-                    f"来源: {meta.get('description', src_id)}",
-                    f"获取: {src_result.url or meta.get('get_url', '请自行获取')}",
-                    f"成本: {meta.get('cost', '未知')}",
-                ] if src_result.status != "unavailable" else [src_result.details or "请将数据文件放入 data/ 目录"],
-                severity=severity,
-            ))
+            for src_id, src_result in ds_result.source_results.items():
+                if src_result.status in (
+                    "requires_key", "requires_purchase", "requires_auth", "unavailable",
+                ):
+                    meta = DataSourceChecker.SOURCE_META.get(src_id, {})
+                    severity = "high" if src_id in ("csmar_customs", "tushare") else "medium"
+                    all_problems.append(ProblemItem(
+                        category=ProblemCategory.DATA_SOURCE,
+                        name=f"data_source_{src_id}",
+                        name_zh=f"数据源: {src_id}",
+                        message=src_result.message,
+                        fix_steps=[
+                            f"来源: {meta.get('description', src_id)}",
+                            f"获取: {src_result.url or meta.get('get_url', '请自行获取')}",
+                            f"成本: {meta.get('cost', '未知')}",
+                        ] if src_result.status != "unavailable" else [
+                            src_result.details or "请将数据文件放入 data/ 目录"
+                        ],
+                        severity=severity,
+                    ))
 
     # 4. 统计
     counts: dict[str, int] = {"network": 0, "api_key": 0, "dependency": 0, "mcp": 0, "data_source": 0}
@@ -1236,6 +1265,12 @@ def main() -> None:
              "适用场景: 已确认不需要该数据源 / 已通过其他途径获取 / 仅作 CI 烟雾测试.",
     )
     parser.add_argument(
+        "--data-source-profile",
+        choices=["none", "general", "tariff"],
+        default="none",
+        help="数据源清单检查档位：none=默认关闭；tariff=关税课题硬编码清单；general=轻量（当前无强制项）.",
+    )
+    parser.add_argument(
         "--ignore-api-key", action="store_true",
         help="忽略 API_KEY 类问题 (即不报告 missing key 警告). "
              "适用场景: 仅做 LLM 烟雾测试 / 已确认不会调用该 MCP.",
@@ -1250,6 +1285,7 @@ def main() -> None:
         verify=args.verify,
         ignore_data_source=args.ignore_data_source,
         ignore_api_key=args.ignore_api_key,
+        data_source_profile=args.data_source_profile,
     )
     # Honor --exit-zero-on-warnings
     if args.exit_zero_on_warnings and result.problem_counts.get("api_key", 0) > 0:

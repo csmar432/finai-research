@@ -78,10 +78,10 @@ class DataGateResult:
                 lines.append(f"    ⚠️  {w}")
         if self.mock_ratio > 0:
             lines.append(f"\n  🚨 警告：{self.mock_ratio*100:.0f}% 为模拟数据！")
-        lines.append("\n  解决方案：")
-        lines.append("    ① 补充缺失数据：python scripts/research_framework/data_fetcher.py")
-        lines.append("    ② 授权使用模拟数据（仅演示）：添加 --allow-synthetic")
-        lines.append("    ③ 更换数据来源：修改 REFINED_DESIGN.md 中的数据源配置")
+        lines.append("\n  解决方案（输入编号）：")
+        lines.append("    1) 补充缺失数据后重试（打印获取命令）")
+        lines.append("    2) 授权使用模拟数据（仅演示，写入 authorized_synthetic.json）")
+        lines.append("    3) 退出，保留会话（可 --resume）")
         return "\n".join(lines)
 
 
@@ -197,11 +197,23 @@ class DataGate:
                 if data_files:
                     warnings.append("缺少 provenance_ids.json（建议在数据获取后生成）")
 
+        auth_path = self.session_dir / "authorized_synthetic.json"
+        synthetic_authorized = auth_path.exists()
+
         is_ready = len(missing) == 0
-        # mock 数据比例 > 0 → 数据不安全，禁止进入写作
+        # mock 数据比例 > 0 → 默认禁止写作；若用户已写授权标记则放行并告警
         if mock_ratio > 0:
-            is_ready = False
-            warnings.insert(0, f"检测到 {mock_ratio*100:.0f}% 模拟数据，数据未就绪")
+            if synthetic_authorized:
+                warnings.insert(
+                    0,
+                    f"检测到约 {mock_ratio*100:.0f}% 模拟数据，但已存在 authorized_synthetic.json（仅演示）",
+                )
+            else:
+                is_ready = False
+                warnings.insert(0, f"检测到 {mock_ratio*100:.0f}% 模拟数据，数据未就绪")
+        elif synthetic_authorized and not is_ready:
+            # 缺失必需文件仍不放行；授权只解除 mock 阻断
+            warnings.append("已授权模拟数据，但仍缺少必需门控文件")
         # FULL 模式下变量冗余不足 → 未就绪
         if self.level == DataGateLevel.FULL:
             var_file = self.session_dir / "redundant_variables.json"
@@ -253,13 +265,26 @@ class DataGate:
 
         if choice == "1":
             print("\n  💡 请运行数据获取：")
-            print(f"    python scripts/research_framework/data_fetcher.py")
+            print("    python scripts/universal_data_fetcher.py --help")
             print(f"    python scripts/start_research.py --resume --session-dir {self.session_dir}")
         elif choice == "2":
-            print("\n  ⚠️  你选择了使用模拟数据继续（仅用于演示）")
+            auth_path = self.session_dir / "authorized_synthetic.json"
+            auth_path.parent.mkdir(parents=True, exist_ok=True)
+            auth_path.write_text(json.dumps({
+                "authorized_at": time.time(),
+                "authorized_via": "DataGate.prompt_user choice=2",
+                "warnings_acknowledged": result.warnings,
+                "mock_ratio": result.mock_ratio,
+                "warning": "⚠️ 任何下游使用此标记生成的论文不能用于发表",
+            }, ensure_ascii=False, indent=2))
+            print("\n  ⚠️  已授权使用模拟数据（仅演示）→", auth_path)
             print("  ⚠️  生成的论文将包含模拟数字，不能用于发表")
+            # 重新检查：mock 阻断可被授权解除；缺失必需文件仍会挡住
+            return self.check()
         elif choice == "3":
             print("\n  退出，当前会话保留在磁盘（可 resume）")
+        else:
+            print("\n  未识别的选项，保持未就绪状态")
         return result
 
     def _save_gate_result(self, result: DataGateResult) -> None:
