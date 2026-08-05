@@ -74,6 +74,7 @@ def check_llm_keys() -> list[CheckItem]:
 
 def check_mcp_servers() -> list[CheckItem]:
     items = []
+    # serverIdentifier（带 user-）→ 与 mcp.json key（剥前缀）对齐
     critical_mcp = [
         ("user-yfinance", "美股行情/ETF/期权（免费）"),
         ("user-financial", "中国宏观数据（GDP/CPI/M2，免费）"),
@@ -81,25 +82,44 @@ def check_mcp_servers() -> list[CheckItem]:
         ("user-eastmoney-reports", "东方财富研报/新闻（免费）"),
         ("user-tushare", "A股数据（需 TUSHARE_TOKEN）"),
     ]
-    mcp_config = _PROJECT_ROOT / ".cursor" / "mcp.json"
-    configured_servers = set()
-    if mcp_config.exists():
+    try:
+        from scripts.register_mcp_servers import get_mcp_json_key
+    except ImportError:
+        def get_mcp_json_key(server_identifier: str) -> str:
+            return (
+                server_identifier[len("user-"):]
+                if server_identifier.startswith("user-")
+                else server_identifier
+            )
+
+    mcp_config_paths = [
+        _PROJECT_ROOT / ".cursor" / "mcp.json",
+        _PROJECT_ROOT / ".mcp.json",
+    ]
+    configured_servers: set[str] = set()
+    for mcp_config in mcp_config_paths:
+        if not mcp_config.exists():
+            continue
         try:
             data = json.loads(mcp_config.read_text())
             if "mcpServers" in data:
-                configured_servers = set(data["mcpServers"].keys())
+                configured_servers |= set(data["mcpServers"].keys())
         except (json.JSONDecodeError, OSError, KeyError, TypeError) as exc:
-            print(f"  ⚠️  无法解析 .cursor/mcp.json: {exc}")
+            print(f"  ⚠️  无法解析 {mcp_config}: {exc}")
 
-    for server, desc in critical_mcp:
-        is_configured = server in configured_servers
+    for server_id, desc in critical_mcp:
+        mcp_key = get_mcp_json_key(server_id)
+        is_configured = mcp_key in configured_servers or server_id in configured_servers
         status = "✅" if is_configured else "⚠️ "
         items.append(CheckItem(
             category="MCP",
-            name=server,
+            name=mcp_key,
             status=status,
-            message=f"{'已注册' if is_configured else '未注册'}: {desc}",
-            fix_hint=f"运行: python scripts/register_mcp_servers.py" if not is_configured else "",
+            message=f"{'已注册' if is_configured else '未注册'}: {desc} (key={mcp_key})",
+            fix_hint=(
+                "运行: python scripts/register_mcp_servers.py --profile academic"
+                if not is_configured else ""
+            ),
         ))
     return items
 

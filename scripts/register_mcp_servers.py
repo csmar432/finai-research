@@ -8,6 +8,7 @@
 用法:
     python scripts/register_mcp_servers.py [--dry-run]
     python scripts/register_mcp_servers.py --list
+    python scripts/register_mcp_servers.py --profile academic --prune --dry-run
     python scripts/register_mcp_servers.py --remove <server_name> ...
     RESEARCH_MCP_CONFIG=/path/to/mcp.json python scripts/register_mcp_servers.py  # 手动指定
 """
@@ -27,6 +28,41 @@ from scripts.core.platform import (
 from scripts.core.ide_platform import PLATFORM
 
 VENV_PYTHON = ROOT / ".venv" / "bin" / "python"
+PROFILES_PATH = ROOT / "config" / "mcp_profiles.json"
+
+
+def load_mcp_profiles() -> dict:
+    """加载 config/mcp_profiles.json；缺失时返回空 dict。"""
+    if not PROFILES_PATH.exists():
+        return {}
+    try:
+        data = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return {k: v for k, v in data.items() if not str(k).startswith(("$", "_"))}
+
+
+def resolve_profile_server_keys(profile_name: str, all_mcp_keys: set[str]) -> set[str] | None:
+    """解析 profile 允许的 mcp.json key 集合。
+
+    Returns
+    -------
+    set[str] | None
+        None 表示 full / 未限制（注册全部可发现服务器）。
+    """
+    profiles = load_mcp_profiles()
+    if profile_name not in profiles:
+        raise ValueError(
+            f"未知 profile: {profile_name!r}. 可选: {sorted(profiles) or ['(无配置)']}"
+        )
+    servers = profiles[profile_name].get("servers")
+    if servers == "ALL_EXCEPT_LEGAL_RISK" or servers is None:
+        return None
+    if not isinstance(servers, list):
+        raise ValueError(f"profile {profile_name!r} 的 servers 字段无效")
+    wanted = set(servers)
+    # 仅保留确实可发现的 key，避免写入幽灵条目
+    return wanted & all_mcp_keys if all_mcp_keys else wanted
 
 
 def get_module_name(dir_name: str) -> str:
@@ -156,14 +192,44 @@ def main():
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    profiles = load_mcp_profiles()
     parser.add_argument("--dry-run", action="store_true", help="只显示将做的更改，不写入文件")
     parser.add_argument("--remove", nargs="+", help="从 mcp.json 移除指定服务器（按 mcp.json key）")
     parser.add_argument("--list", action="store_true", help="列出所有服务器及其注册状态")
+    parser.add_argument(
+        "--profile",
+        type=str,
+        default=None,
+        metavar="NAME",
+        help=(
+            "按 config/mcp_profiles.json 只注册该 profile 内的服务器 "
+            f"(可选: {', '.join(sorted(profiles)) or '无'}); "
+            "省略则注册全部可发现服务器（等同 full）"
+        ),
+    )
+    parser.add_argument(
+        "--prune",
+        action="store_true",
+        help="与 --profile 联用：移除 mcp.json 中不在该 profile 内的服务器",
+    )
     args = parser.parse_args()
 
     existing = load_existing_mcp_json()
+    if "mcpServers" not in existing or not isinstance(existing.get("mcpServers"), dict):
+        existing["mcpServers"] = {}
     existing_keys = set(existing.get("mcpServers", {}).keys())
     servers = discover_servers()
+    all_keys = {s["mcp_key"] for s in servers if s.get("mcp_key")}
+
+    profile_keys: set[str] | None = None
+    if args.profile:
+        try:
+            profile_keys = resolve_profile_server_keys(args.profile, all_keys)
+        except ValueError as exc:
+            print(f"❌ {exc}", file=sys.stderr)
+            return
+        scope = "全部可发现" if profile_keys is None else f"{len(profile_keys)} 个服务器"
+        print(f"📦 profile={args.profile} ({scope})")
 
     # ── List mode ────────────────────────────────────────────────────────────
     if args.list:
@@ -176,6 +242,7 @@ def main():
             if srv["has_metadata"]:
                 print(f"      {srv['description']}")
         print(f"\n现有 mcp.json: {sorted(existing_keys)}")
+        print(f"可用 profiles: {sorted(profiles)}")
         print("脚本将生成 mcp.json key (去掉 user- 前缀)")
         return
 
@@ -203,17 +270,33 @@ def main():
         if not srv["mcp_key"]:
             print(f"  ⏭  {srv['dir']}: 无 serverIdentifier，跳过")
             continue
+        if srv.get("external"):
+            continue  # 外部白名单不自动注册
+        if profile_keys is not None and srv["mcp_key"] not in profile_keys:
+            print(f"  ⏭  {srv['mcp_key']}: 不在 profile={args.profile} 内，跳过")
+            continue
         if srv["mcp_key"] in existing_keys:
             print(f"  ✅ {srv['mcp_key']}: 已存在")
             continue
         new_entries[srv["mcp_key"]] = get_server_entry(srv["module"])
         print(f"  ➕ {srv['mcp_key']}: 新增")
 
-    if not new_entries:
-        print("\n所有服务器均已注册，无需更改。")
+    pruned = []
+    if args.prune:
+        if profile_keys is None:
+            print("⚠️  --prune 在 full/无限制 profile 下无效果（不会删除服务器）")
+        else:
+            for key in list(existing.get("mcpServers", {}).keys()):
+                if key not in profile_keys:
+                    del existing["mcpServers"][key]
+                    pruned.append(key)
+                    print(f"  🗑  {key}: 将 prune（不在 profile 内）")
+
+    if not new_entries and not pruned:
+        print("\n所有目标服务器均已对齐，无需更改。")
         return
 
-    print(f"\n将新增 {len(new_entries)} 个条目到 mcp.json")
+    print(f"\n将新增 {len(new_entries)} 个、prune {len(pruned)} 个条目")
 
     if args.dry_run:
         print("\n[DRY RUN] 未写入文件。去掉 --dry-run 执行写入。")

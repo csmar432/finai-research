@@ -12,11 +12,13 @@ This document describes the two distinct orchestrator systems in the codebase an
 >
 > | CLI | 用途 | 模块 |
 > |-----|------|------|
-> | `python scripts/start_research.py --topic "..."` | 5 轮渐进式主题澄清入口 | `scripts/start_research.py` |
-> | `python scripts/agent_pipeline.py --topic "..."` | 端到端研究流水线（主题→论文 PDF） | `scripts/agent_pipeline.py` |
+> | `python scripts/start_research.py --topic "..."` | 5 轮渐进式主题澄清（默认只锁画像；`--continue` 才进写作） | `scripts/start_research.py` |
+> | `python scripts/agent_pipeline.py --topic "..." [--use-hitl]` | 端到端研究流水线（主题→论文 PDF） | `scripts/agent_pipeline.py` |
 > | `python scripts/agent.py --task "..."` | 单任务智能体入口（轻量级） | `scripts/agent.py` |
 >
-> README 主推 `start_research.py` 作为新用户入口.
+> **推荐路径**：新用户先 `start_research.py` 澄清 → 再 `agent_pipeline.py --use-hitl`；
+> 或澄清时加 `--continue --use-hitl`。批处理可直接跑 `agent_pipeline`。
+> `InteractivePipelineCheckpoint` 不自动挂入主流水线（技能/手动 import）。
 
 ---
 
