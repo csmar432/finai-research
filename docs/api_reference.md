@@ -52,7 +52,7 @@ README 主推前者作为用户入口；后者供框架内调用。
 | `scripts.core.evolution_gate.NoveltyGate` | 新颖性验证（JF/JFE/RFS 查重） |
 | `scripts.core.llm_reviewer.LLMReviewer` | 对抗性 review 循环 |
 
-## 4. 实证设计（47 个方法模块）
+## 4. 实证设计（58 个方法模块）
 
 | 类 | 模块 | 用途 |
 |-----|------|------|
@@ -83,7 +83,7 @@ README 主推前者作为用户入口；后者供框架内调用。
 | `GreenBondFactorModel` | `scripts/research_framework/green_bond_model.py` | Green bond premium / ESG factor decomposition |
 | `IVSurfaceBuilder` | `scripts/research_framework/options_iv_surface.py` | 期权 IV surface + BS solver + Greeks |
 
-> 完整 47 个方法模块列表见 `scripts/research_framework/`，由 `scripts/count_assets.py` 自动统计。
+> 完整模块列表见 `scripts/research_framework/`，当前由 `scripts/count_assets.py` 自动统计为 58 个模块；其中 56 个已有测试覆盖。
 
 ## 5. 数据获取
 
@@ -105,7 +105,7 @@ README 主推前者作为用户入口；后者供框架内调用。
 | `scripts.research_framework.fin_charts.FinancialChartFactory` | 20+ 种专业金融图表（≥300 DPI） |
 | `scripts.journal_template.JournalTemplate` | **30** 种期刊模板（EN/ZH/JP/DE），见 `scripts/count_assets.py` |
 
-## 7. Skills（Cursor / Claude Code / Copilot，17 个）
+## 7. Skills（Cursor / Claude Code / Copilot，18 个）
 
 | Skill | 功能 |
 |-------|------|
@@ -127,7 +127,7 @@ README 主推前者作为用户入口；后者供框架内调用。
 | `fin-ref-paper` | BibTeX 参考文献管理 |
 | `fin-viz-launch` | 自然语言 → 学术图表 |
 
-完整 17 个 skill 文件在 `.cursor/skills/`。
+完整 18 个 skill 文件在 `.cursor/skills/`。
 
 ## 8. MCP 数据源（`{{MCP_COUNT}}` 个目录，自动生成）
 

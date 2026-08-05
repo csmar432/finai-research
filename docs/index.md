@@ -7,7 +7,7 @@
 ## 核心能力
 
 - **数据获取**：`{{MCP_COUNT}}` 个 MCP 数据服务器（自动统计，见 `scripts/count_mcp.py`），覆盖 A股/美股/宏观/学术论文
-- **因果推断**：DID / IV / RDD / PSM / 面板 GMM 等 **47** 种计量方法
+- **因果推断**：DID / IV / RDD / PSM / 面板 GMM 等 **58** 个计量模块
 - **论文写作**：支持 JF / JFE / RFS / 经济研究 / 金融研究 等 **30** 种中英文顶刊格式
 - **智能 Review**：多轮对抗性评审循环，自动检查实证严谨性
 
@@ -32,7 +32,6 @@ python scripts/health_check.py --json
 - [事件驱动研究](tutorials/05-event-driven-research.md)
 - [API 参考](api_reference.md)
 - [架构设计](ARCHITECTURE.md)
-- [改进路线](IMPROVEMENT_ROADMAP.md)
 
 ## 可用研究方向
 
@@ -53,5 +52,5 @@ python scripts/health_check.py --json
 ## 链接
 
 - [项目主页](https://github.com/csmar432/finai-research)
-- [使用指南](../使用指南.md)
+- [使用指南](https://github.com/csmar432/finai-research/blob/main/使用指南.md)
 - [安装配置](tutorials/01-quickstart.md)

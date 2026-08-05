@@ -417,6 +417,6 @@ for event in events:
 
 ## Next Steps
 
-- [API Reference: EventMonitor](../api_reference.md#eventmonitor)
+- [API Reference](../api_reference.md)
 - [Tutorial 2: Financial Research Report](02-financial-report.md)
-- [Setup Guide: MCP Server Configuration](../../SETUP_GUIDE.md)
+- [Setup Guide: MCP Server Configuration](https://github.com/csmar432/finai-research/blob/main/SETUP_GUIDE.md)

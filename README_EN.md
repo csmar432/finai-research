@@ -6,9 +6,11 @@
 >
 > ⚠️ **Legal Risk Servers**: 3 MCP servers (`user-cnki`, `user-wanfang`, `user-chinese-literature`) scrape websites that prohibit automated access. **They are disabled by default for all users.** See [LEGAL_CONSENT.md](LEGAL_CONSENT.md) to understand the risk and opt-in with `CLI_ACCEPT_RISK`.
 
+![FinAI Research Workflow](docs/assets/social-preview.png)
+
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](https://github.com/csmar432/finai-research#installation)
+[![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](README.md)
 [![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research?color=blue)](https://github.com/csmar432/finai-research/releases)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research)](https://github.com/csmar432/finai-research/stargazers)
 [![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
@@ -19,7 +21,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21262689.svg)](https://doi.org/10.5281/zenodo.21262689)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research?style=social)](https://github.com/csmar432/finai-research/stargazers)
 
-[🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](#)
+[🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](README_EN.md)
 
 ---
 
@@ -33,7 +35,7 @@
 |---|---|
 | **One-line publish script** | `python scripts/release.py` |
 | **API reference** | [scripts/](scripts/) modules with type hints and docstrings |
-| **17 AI skills** | [knowledge/skills/](knowledge/skills/) |
+| **18 AI skills** | [knowledge/skills/](knowledge/skills/) |
 | **Troubleshooting FAQ** | [FAQ.md](FAQ.md) |
 | **Chinese comprehensive guide** | [使用指南.md](使用指南.md) (1049 lines, 13 chapters) |
 
@@ -55,9 +57,9 @@
 
 ## ✨ Core Capabilities
 
-### 📊 Data Acquisition (43 MCP server directories: 41 real + 2 mock + 3 opt-in legal)
+### 📊 Data Acquisition (43 MCP server directories: 28 no-key + 12 API-key + 3 opt-in legal)
 
-> **Note**: ~15 servers are fully free (no API key). Others require institutional/paid accounts (Tushare Pro, Wind, CSMAR, CEIC, EODHD). Some have stub implementations (SIPO, ESG, Chinese Customs, CNRD).
+> **Note**: 28 servers are classified as no-key, 12 require API keys, and 3 opt-in legal-risk sources are disabled by default. The classification is maintained by `scripts/count_assets.py`.
 
 | What you need | MCP server |
 |---|---|
@@ -90,7 +92,7 @@
   - Honest DiD (Rambachan-Roth 2023): requires `pip install honestdid` (the official Python port of the original R HonestDiD package)
 
 
-### 📄 Paper Writing (44 journal templates, English/Chinese)
+### 📄 Paper Writing (30 journal templates, English/Chinese)
 
 - **English top**: JF · JFE · RFS · JAE · JFQA · JPE · Econometrica
 - **Chinese top**: 经济研究 · 金融研究 · 管理世界 · 会计研究 · 中国工业经济
@@ -105,7 +107,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 659 test files, 7 CI jobs, 2-OS matrix (Ubuntu + macOS)
+- ✅ 665 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
@@ -121,7 +123,7 @@
 ```bash
 # 1. Install
 git clone https://github.com/csmar432/finai-research.git
-cd finai-research-workflow
+cd finai-research
 pip install -e ".[dev, econometrics]"  # econometrics adds linearmodels + diff-in-diff2
 
 # 2. Configure API keys
@@ -146,7 +148,7 @@ Step 2  Idea ↔ Data verify  → scripts/idea_data_checker.py (HITL checkpoint)
 Step 3  Literature review   → MCP multi-source, citation network, gap analysis
 Step 4  Novelty check       → JF/JFE/RFS/arXiv search
 Step 5  Empirical design    → DID/IV/RD/PSM/18 robustness checks
-Step 6  Data acquisition    → 43 MCP server directories (41 real implementations + 2 mock + 3 opt-in legal), 4-layer fallback
+Step 6  Data acquisition    → 43 MCP server directories (28 no-key + 12 API-key + 3 opt-in legal), 4-layer fallback
 Step 7  Paper writing       → outline → draft → figures → LaTeX
 Step 8  Adversarial review  → multi-round, until publishable
 ```
@@ -160,16 +162,16 @@ Each step is **independently callable** and **has its own output file** as a sta
 | Metric | Value | Note |
 |---|-------|------|
 | MCP data servers | **43** | 43 directories: 28 fully free, 12 API-key, 3 opt-in legal-risk (CNKI/Wanfang/Chinese Literature) |
-| Econometric methods | **47** | 33/47 with tests; ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
+| Econometric method modules | **58** | 56/58 modules have tests; ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
 | Journal templates | **30** | English + Chinese top journals (JF/JFE/RFS/经济研究/金融研究/管理世界/...) |
-| AI skills | **17** | `.cursor/skills/` operational source, 5 fully automated, 12 prompt-driven |
-| Research directions | **15** | digital_finance / green_finance / carbon_economics / ... |
-| Test files / functions | **397 / 7,804** | pytest; ~50K LOC tests |
+| AI skills | **18** | `.cursor/skills/` operational source, 5 fully automated, 13 prompt-driven |
+| Research directions | **45 registered** | digital_finance / green_finance / carbon_economics / ... |
+| Test files / functions | **665 / 12,700** | pytest; count maintained by `scripts/count_assets.py` |
 | Python lines | **~206K scripts + ~98K tests** | |
 | CI jobs | **7 batches × ~40 steps** | lint + 3× smoke + mypy + security + coverage + docker |
-| Coverage | **58.2%** | gate `fail-under=55`, target 60% |
+| Coverage | **60.0% aggregate / 87.4% critical** | aggregate gate `fail-under=60`; critical-path gate 80% |
 
-> Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/finai-research); progressive increase toward 60% target.
+> Coverage is reported to [Codecov](https://codecov.io/gh/csmar432/finai-research); the next aggregate milestone is 65% while critical research paths remain above 80%.
 
 ---
 
@@ -194,7 +196,7 @@ We use PR labeler (`.github/labeler.yml`) for automatic labels.
 ## 🔗 Links
 
 - **Source**: https://github.com/csmar432/finai-research
-- **Install**: `pip install -e ".[extras]"` (clone first; includes Tushare and all common optional integrations) — **not yet published to PyPI**
+- **Install**: `pip install "finai-research-workflow[extras]"` from PyPI, or `pip install -e ".[extras]"` for a source checkout
 - **Issues**: https://github.com/csmar432/finai-research/issues
 - **Discussions**: https://github.com/csmar432/finai-research/discussions
 - **Security**: See [SECURITY.md](SECURITY.md)
@@ -226,38 +228,7 @@ This project is maintained by **[@csmar432](https://github.com/csmar432)**.
 
 ---
 
-## 🛠 8-Step Research Workflow
-
-```
-Step 0  System self-check  → python scripts/health_check.py
-Step 1  Idea generation    → 8-12 ranked ideas for your topic
-Step 1.5 Idea-data check   → Verify data availability BEFORE commitment
-Step 2  Literature review  → Semantic Scholar + ArXiv + OpenAlex + NBER
-Step 3  Novelty check      → JF/JFE/RFS/arXiv dedup → novelty score
-Step 4  Experiment design  → DID/IV/RDD identification strategy
-Step 5  Data acquisition   → 43 MCP server directories (41 real + 2 mock + 3 opt-in legal; free fallback chain)
-Step 6  Paper writing      → Outline → sections → figures → LaTeX
-Step 7  Adversarial review → Multi-round LLM + human review
-```
-
-Each step is independently executable and produces a Markdown artifact
-you can review before proceeding.
-
 ---
-
-## 🧪 Quality Gates (defense against bad research)
-
-This project maintains **3 layers of defense** against LLM-generated
-audit reports that contain hallucinated claims:
-
-| Layer | Mechanism | Catches |
-|-------|-----------|---------|
-| 1 | `scripts/audit_guard.py` (8 deterministic checks) | Fake badges, stale metrics, missing tests |
-| 2 | pre-commit hook (5 cheap checks <3s) | Regression on critical state |
-| 3 | Manual verification protocol | Anything that survives layers 1–2 |
-
-See [docs/audit-workflow.md](docs/audit-workflow.md) for full details
-on why this exists and how to use it.
 
 ---
 
@@ -278,8 +249,8 @@ Run with: `pytest tests/test_numerical_correctness.py -v`
 ## ✨ Why FinAI Research Workflow?
 
 - **Built for economists, not generic AI demos** — every default is calibrated for the *Journal of Finance* / *经济研究* standard (DID with heterogeneous treatment effects, cluster-robust SEs at firm level, 19 robustness checks, parallel-trend plots).
-- **43 MCP server directories** — covers A-share financials, US equities, global macro (FRED/World Bank/IMF/OECD/BEA), and 400M+ academic papers (OpenAlex). 41 directories have full Python implementations; 2 are mock-only (user-csmar, user-wind require institutional accounts); 3 are opt-in legal-risk (CNKI, Wanfang, Chinese Literature). Free alternatives exist via `user-financial` (akshare) and `user-yfinance`.
-- **47 econometric method modules, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon), synthetic control, instrumental variables, panel GMM, RDD, mediation, and more.
+- **43 MCP server directories** — covers A-share financials, US equities, global macro (FRED/World Bank/IMF/OECD/BEA), and 400M+ academic papers (OpenAlex). The registry contains **28 no-key, 12 API-key, 0 stub, and 3 opt-in legal-risk directories**; classification is maintained by `scripts/count_assets.py`.
+- **58 econometric method modules, not just OLS** — standard DID, event study, Bacon decomposition, staggered DID (Callaway-Sant'Anna/Sun-Abraham/Borusyak/Goodman-Bacon), synthetic control, instrumental variables, panel GMM, RDD, mediation, and more.
 - **30 journal templates** (EN/ZH/JP/DE) — JF, JFE, RFS, Econometrica, 经济研究, 金融研究, 管理世界, JPE, RES, AEJ Applied, ZWiSt — all with bilingual (English/Chinese) section headings.
 - **Reproducibility first** — every step has a script, every script has a `--seed` flag, every output has data provenance (source, timestamp, hash).
 
@@ -292,7 +263,7 @@ audit reports containing hallucinated claims:
 
 | Layer | Mechanism | Catches |
 |-------|-----------|---------|
-| 1 | `scripts/audit_guard.py` (17 deterministic checks) | Fake badges, stale metrics, missing tests, version drift |
+| 1 | `scripts/audit_guard.py` (25 deterministic checks) | Fake badges, stale metrics, missing tests, version drift |
 | 2 | pre-commit hook (5 cheap checks <3s) | Regression on critical state |
 | 3 | Manual verification protocol | Anything that survives layers 1–2 |
 

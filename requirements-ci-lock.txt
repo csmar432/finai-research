@@ -192,8 +192,9 @@ patsy==1.0.2
     # via statsmodels
 pillow==12.3.0
     # via matplotlib
-pip==26.2
-    # via pip-api
+# `pip` is intentionally not locked here. CI upgrades pip before installing
+# this file; locking it would make Windows try to self-downgrade in the same
+# install transaction and leave the remaining dependencies uninstalled.
 pip-api==0.0.34
     # via pip-audit
 pip-audit==2.10.1
