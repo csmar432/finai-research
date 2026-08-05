@@ -16,8 +16,11 @@ docs_dir: docs
 
 # Exclude internal plan documents and legacy files
 exclude_docs: |
+  README.md
+  !tutorials/README.md
   plans/
   论文写作工作流使用指南.md
+  zhihu-publish/
 
 
 theme:
@@ -71,8 +74,9 @@ markdown_extensions:
   - pymdownx.keys
 
 nav:
-  - Home: tutorials/index.md
+  - Home: index.md
   - 快速入门:
+      - 教程总览: tutorials/README.md
       - 安装配置: tutorials/01-quickstart.md
       - 金融研究报告: tutorials/02-financial-report.md
       - 研究方向设计: tutorials/03-research-directions.md

@@ -71,10 +71,10 @@ format:
 # ─── Documentation ─────────────────────────────────────────────────────────────
 
 docs:
-	cd docs && mkdocs build
+	mkdocs build -f mkdocs.yml
 
 docs-serve:
-	cd docs && mkdocs serve
+	mkdocs serve -f mkdocs.yml
 
 # ─── Demo & Pipeline ───────────────────────────────────────────────────────────
 

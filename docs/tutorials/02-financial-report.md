@@ -238,4 +238,4 @@ result = asyncio.run(analyze_stock("000001.SZ"))
 
 - [Tutorial 4: MCP Tool Marketplace](04-mcp-marketplace.md)
 - [Tutorial 5: Event-Driven Research](05-event-driven-research.md)
-- [API Reference: AgentOrchestrator](../api_reference.md#agentorchestrator)
+- [API Reference](../api_reference.md)
