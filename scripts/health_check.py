@@ -199,7 +199,9 @@ def _detect_platform() -> str:
         os.environ.get("VSCODE_RESOLVING_ENVIRONMENT", "") +
         os.environ.get("CLAUDE_CODE", "") +
         os.environ.get("AGENT_ID", "") +
-        os.environ.get("CODALANG_AGENT", "")
+        os.environ.get("CODALANG_AGENT", "") +
+        os.environ.get("CODEX_THREAD_ID", "") +
+        os.environ.get("CODEX_INTERNAL_ORIGINATOR_OVERRIDE", "")
     )
     env_lower = env_str.lower()
     if "cursor" in env_lower:
@@ -505,11 +507,9 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
     except Exception:
         pass
 
-    # ── Host Agent 委托检测（v2.1: Cursor / Claude Code / Codex）──────────────
-    # 注意：这里仅记录到 problems 作为 information-level 警告，**不**进入 available。
-    # 因为 CLI 进程无法直接调用 host agent 的 LLM；检测到 host agent 不等于
-    # LLM 真的可用。pipeline.run 在 llm_available=False 时会降级到
-    # MockTemplateEngine，host agent 端可看到 [MOCK] 草稿并补全。
+    # ── Host Agent 委托检测（Cursor / Claude Code / Codex）──────────────────
+    # CLI 进程不能伪造对 host agent 的调用，但 host agent 可以在当前对话中
+    # 直接接管后续步骤。这里必须明确告知这一选项，不能把它描述成 Mock 降级。
     host_platform = _detect_platform()
     if host_platform in ("cursor", "claude_code", "codex"):
         problems.append(ProblemItem(
@@ -518,14 +518,16 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
             name_zh="Host Agent 上下文",
             message=(
                 f"检测到 host agent: {host_platform}。"
-                "CLI 进程无法直接调用 host agent 的 LLM；"
-                "pipeline 将降级到 MockTemplateEngine。"
-                "如需真 LLM，请配置 DEEPSEEK_API_KEY 或运行 ollama serve。"
+                "CLI 进程不会直接调用 host agent 的 LLM；"
+                "可由当前 Codex / Claude Code / Cursor 对话模型继续推进，"
+                "也可选择配置外部 API 或 Ollama。系统不会自动进入 Mock。"
             ),
             fix_steps=[
-                "1. 配置 DEEPSEEK_API_KEY（推荐）— 见 .env.example",
-                "2. 或运行 `ollama serve` 启动本地模型",
-                "3. 或接受 [MOCK] 草稿 — host agent 端可看到并补全内容",
+                "【推荐】1. 由当前 Codex / Claude Code / Cursor 对话模型直接继续，无需额外 API Key",
+                "2. 配置 DEEPSEEK_API_KEY 或 RELAY_API_KEY 供 CLI 调用",
+                "3. 运行 `ollama serve` 启动本地模型",
+                "4. 仅在演示/测试中明确选择 Mock；Mock 结果不可用于研究结论",
+                "5. 退出并补齐配置后重新运行",
             ],
             severity="low",
         ))
@@ -1042,6 +1044,11 @@ def run_diagnostic(
 
     # 7. 建议
     recs: list[str] = []
+    if not llm_available and platform in ("cursor", "claude_code", "codex"):
+        recs.append(
+            "【推荐】当前对话模型（Codex / Claude Code / Cursor）可直接继续；"
+            "CLI 不会自动转入 Mock。"
+        )
     if not llm_available:
         high_sev = [p for p in all_problems if p.severity == "high"]
         if high_sev:

@@ -114,6 +114,8 @@ class InteractionResult:
     - action_needed: 下一步操作类型
     - questions: 需要询问用户的问题（用于 AI agent 对话交互）
     - limitations: 受限功能清单
+    - options: 可供调用方展示给用户的结构化选项
+    - recommended_option: 推荐选项的 id；Mock 永远不会被设为推荐
     - can_proceed: 是否可以继续研究
     """
     needs_input: bool = False
@@ -123,6 +125,22 @@ class InteractionResult:
     api_keys_to_add: list[dict] = field(default_factory=list)   # [{name, url}]
     fix_steps: list[str] = field(default_factory=list)
     llm_available: bool = True
+    options: list[dict[str, Any]] = field(default_factory=list)
+    recommended_option: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a host-agent-friendly representation of the interaction."""
+        return {
+            "needs_input": self.needs_input,
+            "action_needed": self.action_needed,
+            "questions": self.questions,
+            "limitations": self.limitations,
+            "api_keys_to_add": self.api_keys_to_add,
+            "fix_steps": self.fix_steps,
+            "llm_available": self.llm_available,
+            "options": self.options,
+            "recommended_option": self.recommended_option,
+        }
 
 
 def _get_canvas_url() -> str:
@@ -805,6 +823,9 @@ class AgentPipelineConfig:
     auto_dashboard: bool = True
     output_dir: Any = None
     llm_use_cache: bool = True
+    strict_llm: bool = True
+    allow_mock: bool = False
+    skip_health: bool = False
     # Research direction branch (None = general academic paper)
     direction: str | None = None  # "green_finance", "digital_finance", "carbon_economics", etc.
     # Auto-generate architecture diagrams for PPT use (default off)
@@ -858,9 +879,10 @@ class AgentPipelineResult:
     did_chart_paths: list = field(default_factory=list)
     # 自动生成的架构图路径列表（PPT 用, 仅当 config.auto_arch_diagrams=True）
     arch_diagram_paths: list = field(default_factory=list)
-    # 是否因 LLM 不可用而降级到 MockTemplateEngine（pipeline 已执行但产出物为 mock）
+    # 是否因用户明确授权而使用 MockTemplateEngine（产出物为 mock）
     llm_fallback_used: bool = False
     llm_status: str = ""
+    interaction: InteractionResult | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -868,6 +890,8 @@ class AgentPipelineResult:
                 "topic": self.config.topic,
                 "venue": self.config.venue,
                 "research_field": self.config.research_field,
+                "strict_llm": self.config.strict_llm,
+                "allow_mock": self.config.allow_mock,
             },
             "success": self.success,
             "llm_fallback_used": self.llm_fallback_used,
@@ -886,6 +910,7 @@ class AgentPipelineResult:
             "hitl_approvals": [a.stage for a in (self.hitl_approvals or [])],
             "visualization": str(self.visualization_path) if self.visualization_path else None,
             "errors": self.errors,
+            "interaction": self.interaction.to_dict() if self.interaction else None,
         }
 
 
@@ -1147,6 +1172,7 @@ class AgentPipeline:
         self._gateway = LLMGateway(
             self._memory,
             use_cache=self.config.llm_use_cache,
+            allow_mock=self.config.allow_mock,
         )
 
         # Initialize citation verifier
@@ -1577,59 +1603,64 @@ class AgentPipeline:
         """
         start_time = time.time()
 
+        # Apply safety-relevant overrides before the pre-flight check.  In
+        # particular, an explicit ``allow_mock=True`` must be visible before
+        # deciding whether the run may proceed.
+        if topic:
+            self.config.topic = topic
+        for key, value in kwargs.items():
+            if hasattr(self.config, key):
+                setattr(self.config, key, value)
+
         # ── Pre-flight configuration check ─────────────────────────────────────────
-        # v2.1 改进（2026-07-12）：不要因为 LLM 不可用就 raise 阻断。
-        # 之前的设计在 Claude Code / Codex / Cursor 等 host agent 场景下会阻断整个
-        # pipeline（错误："LLM 不可用，无法进行论文写作和分析"），但这些场景下：
-        #   1. host agent 本身就是 LLM，能提供 LLM 能力（虽然 CLI 进程无法直接调用）
-        #   2. 用户可能用本地 Ollama 但 health_check 网络抖动误报
-        #   3. MockTemplateEngine 仍可生成结构化草稿，至少让 pipeline 跑通落盘
-        # 新行为：降级到 MockTemplateEngine，stderr 显式 [LLM FALLBACK] 提示，
-        #         绝不静默退化（CLAUDE.md 核心原则 #3）。
-        #
-        # v2.2 (2026-07-13): 新增 --strict-llm 行为：未配置 LLM 时直接退出码 4，
-        # 不再静默跑 MockTemplateEngine 并落盘占位文件（PR-1.4）。
+        # 外部 LLM 不可用时，先把选择返回给终端或 host agent：
+        #   1. Codex / Claude Code / Cursor 可以直接接管对话继续推进；
+        #   2. 用户可以配置外部 API 或 Ollama；
+        #   3. Mock 只有在显式 allow_mock 后才可使用，绝不自动降级。
         from scripts.health_check import run_diagnostic
+        _skip_health = bool(getattr(self.config, "skip_health", False))
         try:
-            diag = run_diagnostic()
+            diag = None if _skip_health else run_diagnostic()
         except Exception:
             diag = None
 
-        self._llm_actually_available = bool(diag and diag.llm_available)
+        self._llm_actually_available = True if _skip_health else bool(diag and diag.llm_available)
+        interaction = None
         if not self._llm_actually_available:
-            import sys as _sys
             _reason = (
-                "未配置 DEEPSEEK_API_KEY / RELAY_API_KEY 且 Ollama 未运行。"
+                "未配置可调用的外部 LLM，且 Ollama 未运行。"
                 if diag is None or not diag.llm_status
                 else f"原因：{diag.llm_status[:200]}"
             )
-            # 严格模式（默认开启）下，直接退出 4，避免下游脚本误读 mock 输出。
-            _strict = bool(getattr(self.config, "strict_llm", True))
-            if _strict:
-                print(
-                    "\n⚠️  [LLM FALLBACK] 未配置 LLM，严格模式下退出。\n"
-                    "    \n"
-                    f"    诊断：{_reason}\n"
-                    "    \n"
-                    "    解决方式（任选其一）：\n"
-                    "      1. 在 .env 写入 DEEPSEEK_API_KEY=sk-...\n"
-                    "      2. 运行 `ollama serve` 启用本地模型\n"
-                    "      3. 临时绕过：finai-pipeline --topic '...' （不要加 --strict-llm 关闭；\n"
-                    "         当前已默认开启，不需显式传）\n"
-                    "    \n"
-                    "    说明：Cursor / Claude Code / Codex 等 host agent 本身有 LLM，但 CLI\n"
-                    "    进程无法直接调用它。如需在 host agent 中跑 pipeline，请通过 MCP\n"
-                    "    反向调用或 host agent 端补全 LLM 反馈。\n",
-                    file=_sys.stderr,
-                )
-                return 4
+            interaction = self._check_and_suggest_setup(
+                topic or self.config.topic or "",
+                diag=diag,
+            )
+            self._interaction = interaction
+
+            if not self.config.allow_mock:
+                selected = None
+                if self._is_interactive_terminal():
+                    selected = self._handle_interactive(interaction)
+                if selected != "mock":
+                    return AgentPipelineResult(
+                        config=self.config,
+                        success=False,
+                        errors=[
+                            "未选择可用的 LLM 运行方式；未自动进入 Mock。",
+                            _reason,
+                        ],
+                        total_latency_ms=(time.time() - start_time) * 1000,
+                        llm_status=_reason,
+                        interaction=interaction,
+                    )
+                self.config.allow_mock = True
+
             print(
-                "\n⚠️  [LLM FALLBACK] 本次 pipeline 将降级到 MockTemplateEngine。\n"
-                "    产出物仍可落盘到 output/papers/，但内容是模板（带 [MOCK] 前缀），\n"
-                "    不是真实 LLM 生成。请配置 DEEPSEEK_API_KEY 或运行 `ollama serve`\n"
-                "    后重跑以获得真 LLM 输出。\n"
+                "\n⚠️  已明确授权 Mock 模式：仅用于演示/测试，产出物带 [MOCK] 标记，"
+                "不得作为真实研究结论。\n"
                 f"    诊断：{_reason}\n",
-                file=_sys.stderr,
+                file=sys.stderr,
             )
 
         self._ensure_initialized()
@@ -1731,12 +1762,17 @@ class AgentPipeline:
         # computed earlier in run() so the second health probe in
         # _check_and_suggest_setup doesn't re-run network checks.
         topic_for_check = (topic or self.config.topic or "")
-        ir = self._check_and_suggest_setup(topic_for_check, diag=diag)
+        ir = interaction or (
+            InteractionResult(needs_input=False, action_needed="proceed", llm_available=True)
+            if _skip_health
+            else self._check_and_suggest_setup(topic_for_check, diag=diag)
+        )
+        self._interaction = ir
 
         # 仅在交互式终端中调用 input()（Cursor IDE）
         # Claude Code / Codex 等 AI agent 环境：返回 InteractionResult，
         # 由 AI agent 在对话中向用户询问
-        if self._is_interactive_terminal():
+        if self._is_interactive_terminal() and interaction is None:
             self._handle_interactive(ir)
 
         # ── 可视化延迟启动 ─────────────────────────────────────────────────
@@ -2275,7 +2311,7 @@ class AgentPipeline:
         if self._llm_actually_available:
             _canvas_detail += " | LLM: 可用"
         else:
-            _canvas_detail += " | ⚠️ LLM: Mock 降级（内容为模板，非真实论文）"
+            _canvas_detail += " | ⚠️ LLM: 已授权 Mock（内容为模板，非真实论文）"
         _print_canvas_hint(
             f"研究工作流已完成！({_done_count}/{_total_count} 阶段)",
             _canvas_detail,
@@ -2308,6 +2344,63 @@ class AgentPipeline:
 
         return False
 
+    @staticmethod
+    def _llm_mode_options(platform: str) -> tuple[list[dict[str, Any]], str]:
+        """Build explicit LLM choices for a terminal or host agent.
+
+        The direct-conversation option delegates the next step to the current
+        Codex / Claude Code / Cursor conversation. It is not a fake CLI LLM
+        call, and Mock is deliberately never selected as the recommendation.
+        """
+        host_detected = platform in {"cursor", "claude_code", "codex"}
+        options = [
+            {
+                "id": "host_agent",
+                "label": "当前对话模型直接推进",
+                "description": (
+                    "由 Codex / Claude Code / Cursor 在当前对话中继续，"
+                    "不需要额外 API Key；CLI 不会伪装成已调用外部模型。"
+                ),
+                "recommended": host_detected,
+            },
+            {
+                "id": "external_api",
+                "label": "配置外部 LLM API",
+                "description": "配置 DEEPSEEK_API_KEY 或 RELAY_API_KEY 后由 CLI 调用。",
+                "recommended": not host_detected,
+            },
+            {
+                "id": "ollama",
+                "label": "使用 Ollama 本地模型",
+                "description": "启动 ollama serve 并准备本地模型。",
+                "recommended": False,
+            },
+            {
+                "id": "mock",
+                "label": "Mock 模式（仅演示/测试）",
+                "description": "必须明确选择；输出是模板，不能用于研究结论。",
+                "recommended": False,
+            },
+            {
+                "id": "exit",
+                "label": "退出并补齐配置",
+                "description": "不生成研究产出，修复后重新运行。",
+                "recommended": False,
+            },
+        ]
+        return options, "host_agent" if host_detected else "external_api"
+
+    @staticmethod
+    def _format_options(options: list[dict[str, Any]], recommended: str) -> list[str]:
+        """Format structured options for terminal prompts without losing ids."""
+        lines = []
+        for index, option in enumerate(options, start=1):
+            mark = " ← 推荐" if option["id"] == recommended else ""
+            lines.append(
+                f"  ({index}) {option['label']}{mark} — {option['description']}"
+            )
+        return lines
+
     def _check_and_suggest_setup(
         self,
         topic: str = "",
@@ -2339,15 +2432,41 @@ class AgentPipeline:
         try:
             from scripts.health_check import run_diagnostic, print_diagnostic
         except ImportError:
-            print("⚠️  无法导入 health_check 模块，跳过自检")
-            return InteractionResult(needs_input=False, action_needed="proceed")
+            print("⚠️  无法导入 health_check 模块，等待明确选择")
+            options, recommended = self._llm_mode_options("unknown")
+            return InteractionResult(
+                needs_input=True,
+                action_needed="ask_llm_confirm",
+                questions=[
+                    "无法加载健康检查；不会自动进入 Mock。",
+                    *self._format_options(options, recommended),
+                ],
+                limitations=["健康检查模块不可用"],
+                llm_available=False,
+                options=options,
+                recommended_option=recommended,
+            )
 
         if diag is None:
             try:
                 result = run_diagnostic()
             except Exception as e:
-                print(f"⚠️  健康检查执行失败: {e}，跳过自检继续运行")
-                return InteractionResult(needs_input=False, action_needed="proceed")
+                print(f"⚠️  健康检查执行失败: {e}，等待明确选择")
+                options, recommended = self._llm_mode_options("unknown")
+                return InteractionResult(
+                    needs_input=True,
+                    action_needed="ask_llm_confirm",
+                    questions=[
+                        "健康检查未能完成；不会自动进入 Mock。",
+                        "请选择当前对话模型、外部 API、Ollama、Mock（仅演示/测试）或退出。",
+                        *self._format_options(options, recommended),
+                    ],
+                    limitations=["健康检查失败"],
+                    fix_steps=["重新运行健康检查，或检查本地依赖与网络。"],
+                    llm_available=False,
+                    options=options,
+                    recommended_option=recommended,
+                )
         else:
             result = diag
 
@@ -2398,7 +2517,7 @@ class AgentPipeline:
                 f"检测到 {len(api_key_problems)} 个 API Key 缺失，受限功能：{', '.join(limitations)}。"
                 f" 是否现在补充配置？",
                 "",
-                "  (1) 是 — 我来帮你打开 .env.local 配置",
+                "  (1) 是 — 我来帮你打开 .env.local 配置 ← 推荐",
                 "  (2) 否 — 跳过，使用已有工具继续（部分数据功能受限）",
             ]
             self._limitation_note = "；".join(limitations) if limitations else ""
@@ -2410,22 +2529,38 @@ class AgentPipeline:
                 api_keys_to_add=api_keys_to_add,
                 fix_steps=fix_steps,
                 llm_available=True,
+                options=[
+                    {
+                        "id": "configure_data_api",
+                        "label": "补充数据源 API Key",
+                        "description": "解除受限数据功能。",
+                        "recommended": True,
+                    },
+                    {
+                        "id": "continue_limited",
+                        "label": "跳过并继续",
+                        "description": "继续工作，但缺失数据源相关功能不可用。",
+                        "recommended": False,
+                    },
+                ],
+                recommended_option="configure_data_api",
             )
 
         # ── 情形 C：LLM 不可用 ──────────────────────────────────
+        options, recommended = self._llm_mode_options(getattr(result, "platform", "unknown"))
         questions = [
-            "LLM 不可用，无法进行论文写作和分析。",
+            "未检测到可调用的外部 LLM；不会自动进入 Mock。",
+            "如果当前运行在 Codex / Claude Code / Cursor 中，推荐直接由当前对话模型继续推进。",
             "当前受限功能：",
         ]
         for step in fix_steps[:4]:
             questions.append(f"  {step}")
         questions.extend([
             "",
-            "是否继续？（系统将使用已有工具工作，但无法调用 LLM 生成文本）",
-            "  (1) 继续 — 继续工作（受限模式）",
-            "  (2) 退出 — 修复后重新启动",
+            "请选择后续运行方式：",
+            *self._format_options(options, recommended),
         ])
-        self._limitation_note = "LLM 不可用"
+        self._limitation_note = "LLM 不可用；等待明确选择"
         return InteractionResult(
             needs_input=True,
             action_needed="ask_llm_confirm",
@@ -2433,15 +2568,17 @@ class AgentPipeline:
             limitations=["LLM 不可用"],
             fix_steps=fix_steps,
             llm_available=False,
+            options=options,
+            recommended_option=recommended,
         )
 
-    def _handle_interactive(self, ir: InteractionResult) -> None:
+    def _handle_interactive(self, ir: InteractionResult) -> str | None:
         """终端入口专用：在终端中使用 input() 与用户交互。
 
         此方法仅在脚本直接运行时（而非被 AI agent 调用时）使用。
         """
         if not ir.needs_input:
-            return
+            return "proceed"
 
         print()
         print(bold(cyan("─" * 72)))
@@ -2454,29 +2591,57 @@ class AgentPipeline:
             try:
                 response = input(bold("  你的选择: ")).strip().lower()
             except (EOFError, KeyboardInterrupt):
-                response = "2"
+                response = ""
             print()
 
             if response in ("1", "是", "好", "y", "yes", "ok"):
                 self._do_api_key_setup(ir)
+                return "configure_data_api"
             else:
                 lim = '、'.join(ir.limitations) if ir.limitations else "无"
                 print(f"  {dim('跳过配置，受限功能：' + lim)}")
                 print()
+                return "continue_limited"
 
         elif ir.action_needed == "ask_llm_confirm":
             for q in ir.questions:
-                print(f"  {red(q) if 'LLM 不可用' in q else '  ' + q}")
+                print(f"  {red(q) if 'LLM' in q or 'Mock' in q else '  ' + q}")
             print()
+            recommended = ir.recommended_option or "exit"
+            option_ids = {
+                str(index): option["id"]
+                for index, option in enumerate(ir.options, start=1)
+            }
+            labels = {option["id"]: option["label"] for option in ir.options}
+            recommended_index = next(
+                (
+                    index
+                    for index, option in enumerate(ir.options, start=1)
+                    if option["id"] == recommended
+                ),
+                "5",
+            )
             try:
-                response = input(bold("  你的选择 [默认: 1 继续]: ")).strip().lower()
+                response = input(
+                    bold(f"  你的选择 [默认: {recommended_index}]: ")
+                ).strip().lower()
             except (EOFError, KeyboardInterrupt):
                 print()
-                return
-            if response in ("2", "退出", "no", "n"):
+                return "exit"
+            selected = option_ids.get(response, response or recommended)
+            if selected == "mock":
+                print(f"  {yellow('已明确选择 Mock：仅用于演示/测试，不得作为研究结论。')}")
+                print()
+                return "mock"
+            if selected == "exit" or selected not in labels:
                 print(f"  {dim('退出。请修复 LLM 配置后重新启动。')}")
-                return
+                print()
+                return "exit"
+            print(f"  {dim('已选择：' + labels[selected] + '。请由对应模型/服务继续后再运行流水线。')}")
             print()
+            return selected
+
+        return None
 
     def _do_api_key_setup(self, ir: InteractionResult) -> None:
         """执行 API Key 配置向导（终端）。"""
@@ -3029,9 +3194,14 @@ Examples:
         action=argparse.BooleanOptionalAction,
         default=True,
         help=(
-            "默认开启：未配置 LLM 时直接退出码 4（避免静默跑 MockTemplateEngine 并落盘占位文件）。"
-            "用 --no-strict-llm 关闭，回归到 MockTemplateEngine 降级行为。"
+            "默认开启：未配置 LLM 时返回选择项并停止，不生成占位研究产出。"
+            "--no-strict-llm 只改变失败处理策略，不会授权 Mock。"
         ),
+    )
+    parser.add_argument(
+        "--allow-mock",
+        action="store_true",
+        help="明确授权 Mock 模式（仅演示/测试；不得用于研究结论）。",
     )
     parser.add_argument(
         "--skip-health",
@@ -3096,9 +3266,9 @@ Examples:
         config.venue = args.venue
     if args.use_hitl:
         config.use_hitl = True
-    # v2.2 (2026-07-13): forward strict-llm/skip-health to pipeline config so
-    # PR-1.4 的 exit code 4 行为能正确触发（默认开启）。
+    # Forward LLM safety controls to the pipeline config.
     config.strict_llm = bool(args.strict_llm)
+    config.allow_mock = bool(args.allow_mock)
     if args.skip_health:
         config.skip_health = True
     # v2.3 (2026-08-02): --auto-arch 启用 PLOTTING 阶段后的架构图自动生成
@@ -3108,6 +3278,10 @@ Examples:
     pipeline = AgentPipeline(config=config, use_langgraph=args.langgraph)
     result = pipeline.run(topic=args.topic, output_dir=output_dir)
 
+    interaction = getattr(result, "interaction", None)
+    if interaction and not result.success and not interaction.llm_available:
+        print("\n⚠️  未运行流水线：请先选择一种 LLM 运行方式。")
+        return 4
     if result.success:
         print("\n✅ 流水线执行完成")
         return 0

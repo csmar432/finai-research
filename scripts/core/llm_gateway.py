@@ -523,7 +523,12 @@ class LLMGateway:
     _call_counter: int = 0
     _counter_lock: threading.Lock = threading.Lock()
 
-    def __init__(self, memory: ResearchMemory, use_cache: bool = True):
+    def __init__(
+        self,
+        memory: ResearchMemory,
+        use_cache: bool = True,
+        allow_mock: bool = False,
+    ):
         """Initialize the gateway.
 
         Parameters
@@ -532,6 +537,9 @@ class LLMGateway:
             The agent's memory instance for logging calls.
         use_cache : bool
             Whether to enable response caching. Default True.
+        allow_mock : bool
+            Explicitly allow MockTemplateEngine for demonstrations/tests.
+            Default False so backend failures are surfaced to the caller.
         """
         # Use importlib.import_module (NOT ``import x as y``) so we always
         # look up ``scripts.ai_router`` via sys.modules, even when the
@@ -544,7 +552,13 @@ class LLMGateway:
 
         self.memory = memory
         self._use_cache = use_cache
-        self.router = importlib.import_module("scripts.ai_router").AI
+        router_module = importlib.import_module("scripts.ai_router")
+        self._allow_mock = allow_mock
+        self.router = (
+            router_module.AIRouter(use_cache=use_cache, allow_mock=True)
+            if allow_mock
+            else router_module.AI
+        )
         self.stats = CostStats()
 
         # Ensure router cache is consistent with our use_cache setting
