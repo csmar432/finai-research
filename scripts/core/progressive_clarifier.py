@@ -176,7 +176,7 @@ class ProgressiveClarifier:
       1. 5 轮逐步澄清（不一次性接收所有信息）
       2. 每轮产物落盘到 output_dir/.clarify_session/XX_*.json
       3. 强制 ack：不调用 submit_answer()，禁止 advance()
-      4. 同步：每轮问完，CLI 调用 input()；AI agent 模式下返回 InteractionResult
+      4. 同步：每轮问完，CLI 调用 input()；AI agent 模式用 next_interaction()
     """
 
     def __init__(
@@ -190,7 +190,7 @@ class ProgressiveClarifier:
         Args:
             output_dir: 产物落盘目录，默认 output/.clarify_session/
             auto_ack: 仅用于测试；生产必须 False（强制用户确认）
-            cli_mode: True 阻塞 input；False 返回 InteractionResult
+            cli_mode: True 阻塞 input；False 时用 next_interaction()/submit_answer 驱动（不伪造 InteractionResult 类型）
         """
         self.output_dir = Path(output_dir) if output_dir else Path("output/.clarify_session")
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -223,6 +223,37 @@ class ProgressiveClarifier:
         question = _STAGE_QUESTIONS[state.current_stage]
         options = self._extract_options(question)
         return (question, options)
+
+    def next_interaction(self, state: ClarificationState) -> dict[str, Any]:
+        """AI agent / 非 CLI：返回结构化 Interaction 载荷（非终端 input）。
+
+        返回 dict 兼容 ``InteractionResult.to_dict()`` 字段，避免循环导入
+        agent_pipeline。宿主应展示 questions/options，再调用 submit_answer + advance。
+        """
+        question, options = self.next_question(state)
+        if state.is_complete:
+            return {
+                "needs_input": False,
+                "action_needed": "proceed",
+                "questions": [question],
+                "options": [],
+                "recommended_option": "",
+                "stage": None,
+                "can_proceed": True,
+            }
+        opt_dicts = [
+            {"id": str(i), "label": opt}
+            for i, opt in enumerate(options, start=1)
+        ]
+        return {
+            "needs_input": True,
+            "action_needed": "ask_clarification",
+            "questions": [question],
+            "options": opt_dicts,
+            "recommended_option": opt_dicts[0]["id"] if opt_dicts else "",
+            "stage": state.current_stage.value,
+            "can_proceed": False,
+        }
 
     def submit_answer(self, state: ClarificationState, answer: str) -> None:
         """提交当前阶段的答案。
@@ -335,24 +366,25 @@ class ProgressiveClarifier:
     # ─── Interactive Run ───────────────────────────────────────────────────
 
     def run_interactive(self, topic: str) -> ResearchProfile:
-        """CLI 阻塞模式：自动 5 轮 input() 直到画像锁定。
-
-        Returns:
-            ResearchProfile: 锁定后的研究画像
-
-        Raises:
-            KeyboardInterrupt: 用户 Ctrl+C 中断（不会悄悄生成 mock）
-        """
+        """CLI 阻塞模式：从新会话开始 5 轮 input() 直到画像锁定。"""
         if not self.cli_mode:
             raise RuntimeError("run_interactive requires cli_mode=True")
-
         state = self.start(topic)
+        return self.run_interactive_from_state(state)
+
+    def run_interactive_from_state(self, state: ClarificationState) -> ResearchProfile:
+        """CLI 阻塞模式：从已有状态继续（用于 --resume，不调用 start 清空进度）。"""
+        if not self.cli_mode:
+            raise RuntimeError("run_interactive_from_state requires cli_mode=True")
+        if state.is_complete and state.profile is not None:
+            return state.profile
 
         print("\n" + "═" * 70)
-        print("  主题澄清（5 轮逐步引导）")
+        print("  主题澄清（逐步引导）")
         print("═" * 70)
-        print(f"\n  📌 研究主题: {topic}")
+        print(f"\n  📌 研究主题: {state.topic}")
         print(f"  📂 会话目录: {self.output_dir}")
+        print(f"  📈 进度: {state.progress_pct}% · 当前: {state.current_stage.value}")
         print(f"  ⏱️  开始时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
         print("\n  说明：每轮问一个问题，必须回答后才能进入下一轮。")
         print("        随时可输入 'quit' 退出（不会生成任何 mock 数据）。\n")
@@ -377,7 +409,6 @@ class ProgressiveClarifier:
                 raise KeyboardInterrupt("User quit")
 
             try:
-                # VENUE：若选大类 1/2，再追问具体刊名
                 if state.current_stage == ClarificationStage.VENUE:
                     answer = self._maybe_refine_venue_answer(answer)
                 self.submit_answer(state, answer)
@@ -387,12 +418,10 @@ class ProgressiveClarifier:
 
             state = self.advance(state)
 
-        # 画像锁定
         print("\n" + "═" * 70)
         print("  ✅ 研究画像已锁定")
         print("═" * 70)
         self._print_profile_summary(state.profile)
-
         return state.profile
 
     def _maybe_refine_venue_answer(self, answer: str) -> str:

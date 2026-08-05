@@ -31,6 +31,7 @@ __all__ = [
 
 import json
 import logging
+import sys
 import time
 from dataclasses import dataclass, field
 from enum import Enum
@@ -249,7 +250,11 @@ class DataGate:
         return result
 
     def prompt_user(self) -> DataGateResult:
-        """CLI 模式：打印阻止信息，询问用户选择。"""
+        """CLI / Agent：打印阻止信息并处理选择。
+
+        TTY：input() 选 1/2/3。
+        非 TTY：写入 interaction.json 供宿主询问，不静默授权。
+        """
         result = self.check()
         if result.is_ready:
             print("\n✅ 数据验证通过，可以进入写作阶段。")
@@ -257,6 +262,36 @@ class DataGate:
 
         print(result.block_message)
         print("\n" + "─" * 60)
+
+        is_tty = False
+        try:
+            is_tty = bool(hasattr(sys.stdin, "isatty") and sys.stdin.isatty())
+        except Exception:
+            is_tty = False
+
+        if not is_tty:
+            payload = {
+                "needs_input": True,
+                "action_needed": "ask_data_gate",
+                "questions": [
+                    "数据门控未通过。请选择：1) 补充数据 2) 授权模拟数据 3) 退出",
+                ],
+                "options": [
+                    {"id": "1", "label": "补充缺失数据后重试"},
+                    {"id": "2", "label": "授权模拟数据（仅演示）"},
+                    {"id": "3", "label": "退出并保留会话"},
+                ],
+                "session_dir": str(self.session_dir),
+                "missing": result.missing,
+                "warnings": result.warnings,
+            }
+            inter_path = self.session_dir / "data_gate_interaction.json"
+            inter_path.parent.mkdir(parents=True, exist_ok=True)
+            inter_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+            print("\n⚠️  非 TTY：已写入 data_gate_interaction.json，等待宿主向用户确认。")
+            print(f"   → {inter_path}")
+            return result
+
         try:
             choice = input("选择处理方式 [1/2/3]: ").strip()
         except (EOFError, KeyboardInterrupt):
@@ -279,7 +314,6 @@ class DataGate:
             }, ensure_ascii=False, indent=2))
             print("\n  ⚠️  已授权使用模拟数据（仅演示）→", auth_path)
             print("  ⚠️  生成的论文将包含模拟数字，不能用于发表")
-            # 重新检查：mock 阻断可被授权解除；缺失必需文件仍会挡住
             return self.check()
         elif choice == "3":
             print("\n  退出，当前会话保留在磁盘（可 resume）")
