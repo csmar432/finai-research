@@ -3,6 +3,8 @@ Unit tests for scripts/agent_pipeline.py — dataclasses and helper functions.
 """
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
@@ -22,6 +24,8 @@ class TestInteractionResultDataclass:
         assert result.api_keys_to_add == []
         assert result.fix_steps == []
         assert result.llm_available is True
+        assert result.options == []
+        assert result.recommended_option == ""
 
     def test_interaction_result_with_api_key_issues(self):
         from scripts.agent_pipeline import InteractionResult
@@ -52,6 +56,61 @@ class TestInteractionResultDataclass:
         )
         assert result.llm_available is False
         assert result.action_needed == "ask_llm_confirm"
+
+    def test_interaction_result_serializes_options(self):
+        from scripts.agent_pipeline import InteractionResult
+
+        result = InteractionResult(
+            needs_input=True,
+            action_needed="ask_llm_confirm",
+            options=[{"id": "host_agent", "recommended": True}],
+            recommended_option="host_agent",
+        )
+        payload = result.to_dict()
+        assert payload["recommended_option"] == "host_agent"
+        assert payload["options"][0]["id"] == "host_agent"
+
+
+class TestLLMModeSelection:
+    def test_host_agent_is_recommended_without_mock(self):
+        from scripts.agent_pipeline import AgentPipeline
+
+        options, recommended = AgentPipeline._llm_mode_options("codex")
+        assert recommended == "host_agent"
+        assert next(item for item in options if item["id"] == "host_agent")["recommended"] is True
+        assert next(item for item in options if item["id"] == "mock")["recommended"] is False
+
+    def test_external_api_is_recommended_outside_host_agent(self):
+        from scripts.agent_pipeline import AgentPipeline
+
+        options, recommended = AgentPipeline._llm_mode_options("unknown")
+        assert recommended == "external_api"
+        assert {item["id"] for item in options} == {
+            "host_agent", "external_api", "ollama", "mock", "exit",
+        }
+
+    def test_pipeline_returns_choices_instead_of_entering_mock(self):
+        from scripts.agent_pipeline import AgentPipeline, AgentPipelineConfig, InteractionResult
+
+        diag = SimpleNamespace(llm_available=False, llm_status="no external LLM")
+        interaction = InteractionResult(
+            needs_input=True,
+            action_needed="ask_llm_confirm",
+            llm_available=False,
+            options=[{"id": "host_agent", "recommended": True}],
+            recommended_option="host_agent",
+        )
+        pipeline = AgentPipeline(AgentPipelineConfig(topic="test"))
+        with patch("scripts.health_check.run_diagnostic", return_value=diag), \
+             patch.object(pipeline, "_check_and_suggest_setup", return_value=interaction), \
+             patch.object(pipeline, "_is_interactive_terminal", return_value=False):
+            result = pipeline.run(topic="carbon test")
+
+        assert result.success is False
+        assert result.interaction is interaction
+        assert result.interaction.recommended_option == "host_agent"
+        assert result.config.topic == "carbon test"
+        assert pipeline._gateway is None
 
 
 class TestPipelineConfigurationError:

@@ -220,8 +220,7 @@ DIRECTION_REQUIREMENTS: dict[str, DirectionConfig] = {
         # v2.1 (2026-07-12): DEEPSEEK_API_KEY 改为 recommended 而非 required。
         # 理由：在 Cursor/Claude Code/Codex 等 host agent 中运行时，
         #       host agent 本身就是 LLM（虽然 CLI 进程无法直接调用）。
-        #       缺少 DEEPSEEK 时 pipeline 会降级到 MockTemplateEngine，
-        #       产出 [MOCK] 草稿而非崩溃。
+        #       缺少 DEEPSEEK 时可由 host agent 对话继续；CLI 不会自动进入 Mock。
         required=[],
         recommended=["DEEPSEEK_API_KEY", "TUSHARE_TOKEN", "RELAY_API_KEY"],
         nice=["BRAVE_SEARCH_API_KEY", "OLLAMA_ENABLED"],

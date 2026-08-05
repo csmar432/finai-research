@@ -1,4 +1,4 @@
-"""MockTemplateEngine — last-resort fallback when all LLM backends fail.
+"""MockTemplateEngine — explicit opt-in templates for demos and tests.
 
 PR3 (Audit 2026-06-27).
 
@@ -15,7 +15,7 @@ PR3 (Audit 2026-06-27).
   result = engine.generate("outline", topic="碳排放权交易与绿色创新", venue="经济研究")
   print(result.content)   # 结构化大纲
 
-  # 作为 AIRouter 的最终 fallback：
+  # 作为 AIRouter 的显式最终 fallback（需 allow_mock=True）：
   result = ai_router.chat(...)
   if result.model_used == "mock_template":
       print("⚠️  无 LLM 后端，使用模板生成")
@@ -347,7 +347,7 @@ python scripts/agent_pipeline.py --topic "{topic or '[TOPIC]'}"
 
 
 def _register_mock_template_fallback(router) -> None:
-    """将 MockTemplateEngine 注册为 AIRouter 的最终 fallback。
+    """将 MockTemplateEngine 显式注册为 AIRouter 的最终 fallback。
 
     在 ai_router.py 的 AIRouter 实例化后调用此函数。
     修改 router._mock_fallback_engine 引用。

@@ -215,6 +215,11 @@ def pipeline_cmd_wrapper(argv: list[str] | None = None) -> int:
         action="store_true",
         help="无 LLM 时直接退出码 4（默认行为；保留参数以兼容旧脚本）",
     )
+    parser.add_argument(
+        "--allow-mock",
+        action="store_true",
+        help="明确授权 Mock 模式（仅演示/测试；不得用于研究结论）",
+    )
 
     args = parser.parse_args(argv)
 
@@ -255,6 +260,10 @@ def pipeline_cmd_wrapper(argv: list[str] | None = None) -> int:
         forwarded.append("--skip-health")
     if args.interactive:
         forwarded.append("--interactive")
+    if args.strict_llm:
+        forwarded.append("--strict-llm")
+    if args.allow_mock:
+        forwarded.append("--allow-mock")
 
     return pipeline_main(forwarded)
 
