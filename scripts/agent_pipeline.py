@@ -116,7 +116,7 @@ class InteractionResult:
     - limitations: 受限功能清单
     - options: 可供调用方展示给用户的结构化选项
     - recommended_option: 推荐选项的 id；Mock 永远不会被设为推荐
-    - can_proceed: 是否可以继续研究
+    - can_proceed: 派生属性，等价于 not needs_input and action_needed == \"proceed\"
     """
     needs_input: bool = False
     action_needed: str = "proceed"   # "proceed" | "ask_api_key" | "ask_llm_confirm"
@@ -127,6 +127,10 @@ class InteractionResult:
     llm_available: bool = True
     options: list[dict[str, Any]] = field(default_factory=list)
     recommended_option: str = ""
+
+    @property
+    def can_proceed(self) -> bool:
+        return (not self.needs_input) and self.action_needed == "proceed"
 
     def to_dict(self) -> dict[str, Any]:
         """Return a host-agent-friendly representation of the interaction."""
@@ -140,6 +144,7 @@ class InteractionResult:
             "llm_available": self.llm_available,
             "options": self.options,
             "recommended_option": self.recommended_option,
+            "can_proceed": self.can_proceed,
         }
 
 

@@ -866,6 +866,41 @@ if __name__ == "__main__":
         Path(args.output).write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"报告已写入: {args.output}")
 
-    # 退出码：0=全部可行, 1=部分/需授权, 2=全部不可行
-    sys.exit(0 if gap == 0 else (1 if feasible + partial > 0 else 2))
+    # 有缺口/需授权时：TTY 询问；非 TTY 输出 Interaction 载荷并以非 0 退出
+    needs_decision = gap > 0 or auth > 0
+    if needs_decision:
+        options = report.user_options or [
+            "1) 跳过缺口想法，仅保留可行/部分可行",
+            "2) 停止并补充数据",
+        ]
+        is_tty = hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
+        if is_tty:
+            print()
+            print("下一步（请选择）：")
+            for opt in options:
+                print(f"  {opt}")
+            try:
+                choice = input("你的选择 [1/2，默认 2]: ").strip() or "2"
+            except (EOFError, KeyboardInterrupt):
+                choice = "2"
+            if choice not in ("1", "y", "yes", "skip", "是"):
+                print("已停止：存在数据缺口或需授权。")
+                sys.exit(2 if feasible + partial == 0 else 1)
+        else:
+            payload = {
+                "needs_input": True,
+                "action_needed": "ask_idea_data",
+                "questions": [
+                    f"有 {gap} 个数据缺口、{auth} 个需授权。请确认：跳过缺口继续，或停止补充数据。"
+                ],
+                "options": [{"id": str(i), "label": o} for i, o in enumerate(options, 1)],
+                "summary": {
+                    "total": total, "feasible": feasible,
+                    "partial": partial, "gap": gap, "requires_auth": auth,
+                },
+            }
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+            sys.exit(2 if feasible + partial == 0 else 1)
 
+    # 退出码：0=全部可行, 1=部分/需授权, 2=全部不可行
+    sys.exit(0 if gap == 0 and auth == 0 else (1 if feasible + partial > 0 else 2))

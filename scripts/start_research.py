@@ -227,9 +227,9 @@ def cmd_resume(args) -> int:
         print("  ✅ 画像已锁定")
         return 0
 
-    # 继续澄清
+    # 继续澄清（从已恢复的 state 继续，禁止 start() 清空进度）
     try:
-        clarifier.run_interactive(state.topic)
+        clarifier.run_interactive_from_state(state)
     except KeyboardInterrupt:
         return 130
 

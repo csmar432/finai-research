@@ -137,6 +137,7 @@ class ProblemCategory(str, Enum):
     DEPENDENCY = "dependency"
     MCP = "mcp"
     DATA_SOURCE = "data_source"
+    INFO = "info"
     OK = "ok"
 
 
@@ -508,12 +509,11 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
         pass
 
     # ── Host Agent 委托检测（Cursor / Claude Code / Codex）──────────────────
-    # CLI 进程不能伪造对 host agent 的调用，但 host agent 可以在当前对话中
-    # 直接接管后续步骤。这里必须明确告知这一选项，不能把它描述成 Mock 降级。
+    # 信息提示，不是网络故障；不得计入 NETWORK 以免误判「LLM 不可用（网络问题）」。
     host_platform = _detect_platform()
     if host_platform in ("cursor", "claude_code", "codex"):
         problems.append(ProblemItem(
-            category=ProblemCategory.NETWORK,
+            category=ProblemCategory.INFO,
             name="HOST_AGENT_CONTEXT",
             name_zh="Host Agent 上下文",
             message=(
@@ -537,7 +537,10 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
         status = "，".join(available)
         return True, f"✅ LLM 可用: {status}", problems
 
-    if ds_key and any(p.category == ProblemCategory.NETWORK for p in problems):
+    if ds_key and any(
+        p.category == ProblemCategory.NETWORK and p.name != "HOST_AGENT_CONTEXT"
+        for p in problems
+    ):
         return False, "❌ LLM 不可用（网络问题）", problems
 
     return False, "❌ 没有可用的 LLM（请配置 DEEPSEEK_API_KEY 或启动 ollama serve）", problems
@@ -1047,7 +1050,9 @@ def run_diagnostic(
                     ))
 
     # 4. 统计
-    counts: dict[str, int] = {"network": 0, "api_key": 0, "dependency": 0, "mcp": 0, "data_source": 0}
+    counts: dict[str, int] = {
+        "network": 0, "api_key": 0, "dependency": 0, "mcp": 0, "data_source": 0, "info": 0,
+    }
     for p in all_problems:
         cat_val = p.category.value if isinstance(p.category, ProblemCategory) else p.category
         counts[cat_val] = counts.get(cat_val, 0) + 1
@@ -1131,6 +1136,7 @@ _CAT_LABELS: dict[ProblemCategory, str] = {
     ProblemCategory.DEPENDENCY: "📦 依赖问题",
     ProblemCategory.MCP: "🖥️  MCP 配置",
     ProblemCategory.DATA_SOURCE: "📊 数据源问题",
+    ProblemCategory.INFO: "ℹ️  信息提示",
     ProblemCategory.OK: "✅ 无问题",
 }
 

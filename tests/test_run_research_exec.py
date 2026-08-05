@@ -198,7 +198,10 @@ class TestMain:
         """Main with --topic runs the pipeline."""
         monkeypatch.setattr("sys.argv", ["run_research.py", "--topic", "Test topic"])
         called = []
-        monkeypatch.setattr(rr, "run_agent_pipeline", lambda t: called.append(t))
+        monkeypatch.setattr(
+            rr, "run_agent_pipeline",
+            lambda t, **kw: called.append(t),
+        )
         main()
         assert called == ["Test topic"]
 

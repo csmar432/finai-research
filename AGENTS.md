@@ -60,9 +60,10 @@ Stage 7: Paper Draft         → scripts/research_framework/report_generator.py
 Stage 8: Review              → scripts/core/llm_reviewer.py
 ```
 
-Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
-`--use-hitl` enables outline/literature/draft gates by default. `InteractivePipelineCheckpoint`
-is for skills/manual import only — not auto-wired into `agent_pipeline`.
+Each stage should pause for user confirmation when HITL is enabled.
+Use `python scripts/agent_pipeline.py --topic "..." --use-hitl` (defaults to
+outline/literature/draft gates). `run_research.py` also defaults to HITL;
+set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a stage.
 
 ---
 

@@ -301,7 +301,7 @@ config = AgentPipelineConfig(
     topic="[研究方向]",
     venue="[目标期刊]",
     research_field="[研究领域]",
-    use_hitl=False,
+    use_hitl=True,  # outline/literature/draft gates; set False only for batch CI
     visualize=True,
 )
 pipeline = AgentPipeline(config=config)
@@ -935,7 +935,7 @@ config = AgentPipelineConfig(
     topic="[研究方向]",
     venue="[目标期刊]",
     research_field="[研究领域]",
-    use_hitl=False,
+    use_hitl=True,  # outline/literature/draft gates; set False only for batch CI
     visualize=True,
 )
 pipeline = AgentPipeline(config=config)

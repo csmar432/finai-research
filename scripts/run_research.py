@@ -199,15 +199,49 @@ def update_node_status(nodes: list, node_id: str, status: str,
 #  Agent Pipeline 包装
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def run_agent_pipeline(topic: str) -> None:
+def _hitl_pause(stage_id: str, summary: str, *, use_hitl: bool) -> bool:
+    """阶段间 HITL。返回 True 继续，False 中止。
+
+    TTY：input 确认。非 TTY + HITL：默认中止（与 agent_pipeline fail-closed 对齐）；
+    设置 FINAI_NO_HITL=1 可跳过。
+    """
+    import os
+    import sys
+
+    if not use_hitl or os.environ.get("FINAI_NO_HITL") == "1":
+        return True
+    try:
+        tty = hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
+    except Exception:
+        tty = False
+    if not tty:
+        log.error(
+            "HITL 已启用但非 TTY（阶段 %s）。已停止。"
+            "批处理请设 FINAI_NO_HITL=1，或使用 agent_pipeline --use-hitl。",
+            stage_id,
+        )
+        return False
+    print(f"\n🛑 HITL Gate · {stage_id}")
+    print(f"   {summary}")
+    print("   选项: c=continue / a=abort")
+    try:
+        choice = input("  你的选择 [c]: ").strip().lower() or "c"
+    except (EOFError, KeyboardInterrupt):
+        return False
+    return choice in {"c", "continue", "y", "yes", "是"}
+
+
+def run_agent_pipeline(topic: str, *, use_hitl: bool = True) -> None:
     """运行完整的 Agent Pipeline，实时推送状态到可视化服务器。"""
-    log.info("开始研究: %s", topic)
+    log.info("开始研究: %s (use_hitl=%s)", topic, use_hitl)
 
     # 构建初始状态并推送
     payload = build_initial_payload(topic)
     nodes = payload["nodes"]
     edges = payload["edges"]
     meta = payload["meta"]
+    meta["total_gates"] = 3 if use_hitl else 0
+    meta["hitl_enabled"] = use_hitl
 
     _push_wf_state(nodes, edges, meta)
     log.info("已推送初始状态: %d 个节点", len(nodes))
@@ -220,6 +254,8 @@ def run_agent_pipeline(topic: str) -> None:
             topic=topic,
             visualize=False,   # 我们自己推送状态
             auto_dashboard=False,
+            use_hitl=use_hitl,
+            hitl_stages=["outline", "literature", "draft"] if use_hitl else [],
         )
         pipeline = AgentPipeline(config=cfg)
 
@@ -248,6 +284,10 @@ def run_agent_pipeline(topic: str) -> None:
             log.warning("Outline agent failed: %s", e)
             update_node_status(nodes, "outline", "error", error=str(e))
         _push_wf_state(nodes, edges, meta)
+        if not _hitl_pause("outline", "大纲阶段完成，确认后继续文献综述", use_hitl=use_hitl):
+            meta["hitl_paused_at"] = "outline"
+            _push_wf_state(nodes, edges, meta)
+            return
 
         # ── Stage 2: Literature ───────────────────────────────────────────
         log.info("[2/5] 文献综述...")
@@ -274,6 +314,10 @@ def run_agent_pipeline(topic: str) -> None:
             log.warning("Literature agent failed: %s", e)
             update_node_status(nodes, "literature", "error", error=str(e))
         _push_wf_state(nodes, edges, meta)
+        if not _hitl_pause("literature", "文献综述完成，确认后继续图表/写作", use_hitl=use_hitl):
+            meta["hitl_paused_at"] = "literature"
+            _push_wf_state(nodes, edges, meta)
+            return
 
         # ── Stage 3: Plotting ───────────────────────────────────────────────
         log.info("[3/5] 图表生成...")
@@ -325,6 +369,10 @@ def run_agent_pipeline(topic: str) -> None:
             log.warning("Writing agent failed: %s", e)
             update_node_status(nodes, "writing", "error", error=str(e))
         _push_wf_state(nodes, edges, meta)
+        if not _hitl_pause("draft", "正文草稿完成，确认后继续润色", use_hitl=use_hitl):
+            meta["hitl_paused_at"] = "draft"
+            _push_wf_state(nodes, edges, meta)
+            return
 
         # ── Stage 5: Refinement ────────────────────────────────────────────
         log.info("[5/5] 修改润色...")
@@ -469,7 +517,7 @@ def consume_loop(poll_interval: float = POLL_INTERVAL) -> None:
             task_id = task.get("id", "?")
             log.info("取出任务 #%s: %s", task_id, topic[:50])
             try:
-                run_agent_pipeline(topic)
+                run_agent_pipeline(topic, use_hitl=True)
             except Exception as e:
                 log.error("任务 #%s 执行失败: %s", task_id, e)
                 import traceback
@@ -491,11 +539,17 @@ def main():
                         help="同时启动可视化服务器")
     parser.add_argument("--poll", type=float, default=POLL_INTERVAL,
                         help=f"队列轮询间隔（秒，默认 {POLL_INTERVAL}）")
+    parser.add_argument(
+        "--use-hitl",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="阶段间 HITL（默认开启；--no-use-hitl 或 FINAI_NO_HITL=1 关闭）",
+    )
     args = parser.parse_args()
 
     # 直接指定主题 → 立即执行
     if args.topic:
-        run_agent_pipeline(args.topic.strip())
+        run_agent_pipeline(args.topic.strip(), use_hitl=bool(args.use_hitl))
         return
 
     # 启动可视化服务器
