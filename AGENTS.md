@@ -78,7 +78,7 @@ set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a 
 | Run a specific method (DID/IV/RDD/PSM) | `python scripts/research_framework/modern_did.py --help` |
 | List journal templates | `python scripts/journal_template.py --list` |
 | List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
-| Verify project integrity | `python scripts/audit_guard.py` (17/17 checks) |
+| Verify project integrity | `python scripts/audit_guard.py` (25/25 checks) |
 
 ---
 
@@ -101,7 +101,7 @@ scripts/
 ├── research_framework/     # 47 econometric methods
 ├── core/                   # 87 modules (LLM, checkpoint, telemetry)
 ├── health_check.py         # System diagnostics
-├── audit_guard.py          # 17-check project integrity
+├── audit_guard.py          # 25-check project integrity
 ├── journal_template.py     # 30 journal templates
 ├── register_mcp_servers.py # 43 MCP servers
 └── universal_data_fetcher.py # 7-layer data fallback

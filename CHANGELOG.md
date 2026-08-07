@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed (audit_fix_2026_07_12)
+## [0.2.0a1] - 2026-08-07
+
+### Fixed
+- Corrected maintainer docs: `audit_guard` check count 17→25, MCP directory count 50→43, and primary entry documented as `agent_pipeline.py` (not `agent.py`).
+- Fixed `Makefile` `pipeline-lit` target (removed nonexistent `--stage lit`; points to `literature_download.py`).
+
+### Changed
+- Cleared stale PyPI publish workflow waits for mismatched GitHub tags (`v1.0.0`/`v1.0.1`/`v0.2.0-alpha`) that would have uploaded wrong/conflicting package versions.
+- Bumped package version to `0.2.0a1` for a clean Trusted Publishing release aligned with `pyproject.toml`.
+
+### Fixed (audit_fix_2026_07_12, carried in tree)
 - **T001**: Removed mechanism tests from `scripts/us_esg_regression.py` that
   constructed `cds_proxy`, `rating_proxy`, and `analyst_cov_proxy` as linear
   functions of treatment variables (endless tautology — would mechanically

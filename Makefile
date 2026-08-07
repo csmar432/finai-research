@@ -84,8 +84,9 @@ demo:
 pipeline:
 	python scripts/agent_pipeline.py
 
+# agent_pipeline has no --stage flag; lit-only entry is literature_download.py
 pipeline-lit:
-	python scripts/agent_pipeline.py --stage lit
+	python scripts/literature_download.py
 
 # ─── Validation ────────────────────────────────────────────────────────────────
 

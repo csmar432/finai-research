@@ -51,7 +51,7 @@ pip install --break-system-packages "finai-research-workflow[extras]"
 > **重要提示**：缺少 `DEEPSEEK_API_KEY` 时，`finai-pipeline` 默认以退出码 4
 > 退出（严格模式），并打印明确指引。可以用 `finai-doctor` 诊断配置来源。
 
-> **PyPI:** [finai-research-workflow · 0.2.0a0](https://pypi.org/project/finai-research-workflow/) · MIT
+> **PyPI:** [finai-research-workflow · 0.2.0a1](https://pypi.org/project/finai-research-workflow/) · MIT
 > · 默认安装 `pip install finai-research-workflow` 不含 fastapi/streamlit（避免 PyJWT/apt 冲突）
 > · Web 套件：`pip install 'finai-research-workflow[web]'`
 > **DOI:** [10.5281/zenodo.21262689](https://doi.org/10.5281/zenodo.21262689)
