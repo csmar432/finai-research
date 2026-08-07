@@ -6,8 +6,8 @@
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
     "_comment": "Fields below are NOT auto-detected by count_assets.py and require manual maintenance.",
-    "version.github_release": "v1.0.1 (Zenodo DOI 10.5281/zenodo.21262689, archive minted 2026-07-08)",
-    "version.pypi": "0.2.0a0 (published)"
+    "version.github_release": "v0.2.0a1 (Zenodo DOI 10.5281/zenodo.21262689 retained from prior archive)",
+    "version.pypi": "0.2.0a1 (publishing)"
   },
   "mcp": {
     "total_directories": 43,
@@ -131,10 +131,10 @@
     "chinese_guide_lines": 1049
   },
   "version": {
-    "pyproject": "0.2.0a0",
-    "github_release": "v1.0.1",
+    "pyproject": "0.2.0a1",
+    "github_release": "v0.2.0a1",
     "github_release_doi": "10.5281/zenodo.21262689",
-    "github_release_date": "2026-07-08",
-    "pypi": "0.2.0a0"
+    "github_release_date": "2026-08-07",
+    "pypi": "0.2.0a1"
   }
 }

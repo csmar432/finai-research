@@ -28,8 +28,8 @@
 
 || 脚本 | 命令 | 说明 |
 ||------|------|------|
-|| `agent.py` | `python scripts/agent.py` | 统一的 AI 研究 Agent CLI（主入口） |
-|| `agent_pipeline.py` | via `AI()` class | 5-Agent 流水线编排器（AgentPipeline 类，被其他模块导入） |
+|| `agent.py` | `python scripts/agent.py` | 单任务智能体入口（轻量；非端到端主入口） |
+|| `agent_pipeline.py` | `python scripts/agent_pipeline.py --topic "..." [--use-hitl]` | 端到端写作流水线主入口（AgentPipeline） |
 || `enhanced_workflow.py` | `python scripts/enhanced_workflow.py` | 增强研究工作流（含 HITL checkpoint） |
 || `interactive_paper_pipeline.py` | `python scripts/interactive_paper_pipeline.py` | 交互式论文写作（每个章节 checkpoint） |
 || `research_workflow.py` | — | **已废弃** → `deprecated/research_workflow.py`，使用 `agent_pipeline.py` |
