@@ -114,11 +114,15 @@ Settings → Pages:
 
 ## 11. PyPI Trusted Publishing
 
-pypi.org/manage/account/publishing/ → Add a new pending publisher:
-- Owner: `csmar432`（或你的用户名）
-- Repository: `FinAI-Research-Workflow`
+pypi.org/manage/project/finai-research-workflow/settings/publishing/
+→ Add a trusted publisher (project already exists on PyPI):
+- Owner: `csmar432`
+- Repository: `finai-research`   # must match GitHub repo name exactly
 - Workflow filename: `publish-pypi.yml`
 - Environment name: `pypi`
+
+OIDC subject claim shape (for debugging):
+`repo:csmar432/finai-research:environment:pypi`
 
 无需 API token，GitHub Actions 用 OIDC 自动认证。
 
