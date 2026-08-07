@@ -7,7 +7,7 @@
   "_manual_overrides": {
     "_comment": "Fields below are NOT auto-detected by count_assets.py and require manual maintenance.",
     "version.github_release": "v0.2.0a1 (Zenodo DOI 10.5281/zenodo.21262689 retained from prior archive)",
-    "version.pypi": "0.2.0a1 (publishing)"
+    "version.pypi": "0.2.0a1 (published)"
   },
   "mcp": {
     "total_directories": 43,
