@@ -134,54 +134,50 @@ class TestTokenBucketRateLimiterInit:
 
     def test_tokens_initialized_to_full(self):
         r = TokenBucketRateLimiter(rate=5)
-        for tokens, _ in r._tokens:
-            assert tokens == 5.0
+        # Dict buckets: global starts full; per-server buckets are created lazily.
+        assert r._tokens[None][0] == 5.0
 
 
-class TestTokenBucketRateLimiterBucketIdx:
-    def test_none_returns_zero(self):
+class TestTokenBucketRateLimiterBucketKey:
+    def test_none_is_global(self):
         r = TokenBucketRateLimiter()
-        assert r._bucket_idx(None) == 0
+        assert r._bucket_key(None) is None
 
-    def test_same_key_same_idx(self):
+    def test_same_key_stable(self):
         r = TokenBucketRateLimiter()
-        idx1 = r._bucket_idx("user-yfinance")
-        idx2 = r._bucket_idx("user-yfinance")
-        assert idx1 == idx2
-        assert idx1 != 0  # global bucket
+        assert r._bucket_key("user-yfinance") == r._bucket_key("user-yfinance")
+        assert r._bucket_key("user-yfinance") == "user-yfinance"
 
-    def test_different_keys_different_idx(self):
+    def test_different_keys_are_distinct(self):
         r = TokenBucketRateLimiter()
-        idxs = {r._bucket_idx(f"server_{i}") for i in range(20)}
-        # Should spread across 31 buckets (1 global + 31 server)
-        assert len(idxs) > 1
+        keys = {r._bucket_key(f"server_{i}") for i in range(20)}
+        assert len(keys) == 20  # exact per-server keys, no hash collisions
 
-    def test_bucket_idx_within_range(self):
+    def test_bucket_key_is_server_name(self):
         r = TokenBucketRateLimiter(num_buckets=8)
         for key in ["a", "b", "c", "d", "e", "f"]:
-            idx = r._bucket_idx(key)
-            assert 1 <= idx <= 7
+            assert r._bucket_key(key) == key
 
 
 class TestTokenBucketRateLimiterRefill:
     def test_refill_full_bucket(self):
         r = TokenBucketRateLimiter(rate=10, window=60.0)
-        r._tokens[5] = (10.0, time.time() - 60.0)  # full, 60s ago
-        tokens, now = r._refill(5)
+        r._tokens["srv"] = (10.0, time.time() - 60.0)  # full, 60s ago
+        tokens, now = r._refill("srv")
         assert tokens == 10.0
 
     def test_refill_partial_bucket(self):
         r = TokenBucketRateLimiter(rate=10, window=10.0)
         # 5 tokens, 5s ago, refill rate = 10/10 = 1/s
-        r._tokens[3] = (5.0, time.time() - 5.0)
-        tokens, _ = r._refill(3)
+        r._tokens["srv"] = (5.0, time.time() - 5.0)
+        tokens, _ = r._refill("srv")
         # tokens + elapsed * refill_rate = 5 + 5 * 1 = 10
         assert tokens == 10.0
 
     def test_refill_caps_at_rate(self):
         r = TokenBucketRateLimiter(rate=5, window=1.0)
-        r._tokens[2] = (5.0, time.time() - 100.0)  # old, would overfill
-        tokens, _ = r._refill(2)
+        r._tokens["srv"] = (5.0, time.time() - 100.0)  # old, would overfill
+        tokens, _ = r._refill("srv")
         assert tokens == 5.0  # capped at rate
 
 
@@ -216,17 +212,9 @@ class TestTokenBucketRateLimiterCheck:
         assert result.allowed is False
 
     def test_per_server_buckets_independent(self):
-        r = TokenBucketRateLimiter(rate=1, window=60.0, num_buckets=64)
-        # With 64 buckets the probability of a hash collision between two
-        # arbitrary keys is tiny; use many tries to guarantee separation.
-        for _ in range(20):
-            key_a = f"server_a_{_}_"
-            key_b = f"server_b_{_}_"
-            idx_a = r._bucket_idx(key_a)
-            idx_b = r._bucket_idx(key_b)
-            if idx_a != idx_b and idx_a != 0 and idx_b != 0:
-                break
-        # Consume token in bucket A, B should still have a token
+        r = TokenBucketRateLimiter(rate=1, window=60.0)
+        # Exact per-server dict keys — no hash-slot collisions.
+        key_a, key_b = "server_a", "server_b"
         r.check(key_a)
         result = r.check(key_b)
         assert result.allowed is True

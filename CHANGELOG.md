@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **TokenBucketRateLimiter per-server collisions**: replaced `hash()`-slot
+  buckets with exact per-server dict keys so `rate_limit_per_server` no longer
+  flakes under PYTHONHASHSEED / xdist (CI `test_per_server_rate_limit`).
 - **Writing pre-gate compat**: stop inventing `baseline_p=1.0` for
   `negative_result_handler` on the writing track (always blocked). Soft-skip
   unless real baseline stats are present in writing/refinement payloads;
