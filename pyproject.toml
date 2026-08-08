@@ -185,6 +185,7 @@ finai-lit-review = "scripts.cli:lit_review_cmd"
 # 与 PyPI 包名同名的别名，方便 wheel 安装用户直接调用
 finai-research-workflow = "scripts.cli:pipeline_cmd_wrapper"
 finai-doctor = "scripts.cli:doctor_cmd"
+finai-agent-host = "scripts.agent_host_entry:main"
 
 [project.urls]
 Homepage = "https://github.com/csmar432/finai-research"

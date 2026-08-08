@@ -3338,6 +3338,36 @@ Examples:
     interaction = getattr(result, "interaction", None)
     if interaction and not result.success and not interaction.llm_available:
         print("\n⚠️  未运行流水线：请先选择一种 LLM 运行方式。")
+        # Agent-host isolation: leave canonical skip/progress artifacts so the
+        # host does not freestyle a parallel pipeline outside FinAI.
+        try:
+            from scripts.core.agent_host_report import (
+                blockers_from_diag,
+                write_blocked_run,
+            )
+
+            write_blocked_run(
+                topic=args.topic or config.topic or "",
+                output_dir=output_dir,
+                skipped=blockers_from_diag(
+                    llm_available=False,
+                    llm_status=(
+                        "; ".join(result.errors[:3])
+                        if result.errors
+                        else "LLM unavailable; mock disabled"
+                    ),
+                    allow_mock=bool(config.allow_mock),
+                ),
+                completed_steps=["agent_pipeline preflight (blocked)"],
+                entry="scripts/agent_pipeline.py",
+                exit_code=4,
+            )
+            print(
+                f"   已写入 {Path(output_dir) / 'SKIPPED_CONFIG.md'} "
+                f"与 {Path(output_dir) / 'FINAL.md'}"
+            )
+        except Exception as exc:  # noqa: BLE001 — never mask exit 4
+            print(f"   (skip-report write failed: {exc})", file=sys.stderr)
         return 4
     if result.success:
         print("\n✅ 流水线执行完成")

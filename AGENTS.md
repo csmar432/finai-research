@@ -16,8 +16,8 @@
 
 A finance & economics AI research workflow that automates the 8-stage research
 pipeline (idea → lit review → novelty → design → data → analysis → draft → review)
-with 43 MCP data sources, 47 econometric methods, 30 journal templates, and
-17 AI skills.
+with 43 MCP data sources, 58 econometric method modules, 30 journal templates, and
+18 AI skills.
 
 **Repo:** https://github.com/csmar432/finai-research
 **License:** MIT
@@ -42,7 +42,26 @@ python scripts/start_research.py --topic "Carbon trading and green innovation"
 
 # 3b. Direct writing pipeline
 python scripts/agent_pipeline.py --topic "Carbon trading and green innovation" --use-hitl
+
+# 3c. Agent-host / isolation slot (non-interactive, no Mock, fail-closed)
+#    Writes output/SKIPPED_CONFIG.md + output/FINAL.md when blocked (e.g. no LLM).
+#    Do NOT invent a parallel pipeline outside FinAI when this exits non-zero.
+python scripts/agent_host_entry.py --topic "Carbon trading and green innovation"
+# or: place TOPIC.md in cwd, then: python scripts/agent_host_entry.py
 ```
+
+---
+
+## Agent-host / isolation protocol
+
+When a host agent is told **not to ask**, **not to wait**, and **not to use Mock**:
+
+1. Prefer `python scripts/agent_host_entry.py` (reads `TOPIC.md` if `--topic` omitted).
+2. If the run is blocked (no LLM, missing topic, preflight refuse), **stop** after
+   `output/SKIPPED_CONFIG.md` + `output/FINAL.md` are written. Exit `4` = LLM/config block; `2` = bad/missing topic.
+3. **Do not** freestyle a second research stack, fabricate citations/coefficients, or silently enable Mock.
+4. Empirical work (DID/IV/data fetch) remains a **separate hand-off** from the writing pipeline; see dual-track notes in `docs/ARCHITECTURE.md`.
+5. Batch HITL off: default for `agent_host_entry`; or `FINAI_NO_HITL=1` / `--no-use-hitl` on other CLIs.
 
 ---
 
@@ -74,6 +93,7 @@ set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a 
 | Check system health | `python scripts/health_check.py` |
 | Clarify topic (5 rounds) | `python scripts/start_research.py --topic "..."` |
 | Run full pipeline | `python scripts/agent_pipeline.py --topic "..." --use-hitl` |
+| Agent-host batch (fail-closed) | `python scripts/agent_host_entry.py --topic "..."` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
 | Run a specific method (DID/IV/RDD/PSM) | `python scripts/research_framework/modern_did.py --help` |
 | List journal templates | `python scripts/journal_template.py --list` |
@@ -97,9 +117,10 @@ set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a 
 
 ```
 scripts/
-├── agent_pipeline.py       # Entry: full pipeline
-├── research_framework/     # 47 econometric methods
-├── core/                   # 87 modules (LLM, checkpoint, telemetry)
+├── agent_pipeline.py       # Entry: writing pipeline
+├── agent_host_entry.py     # Entry: non-interactive agent-host (SKIPPED/FINAL)
+├── research_framework/     # 58 econometric method modules
+├── core/                   # agent orchestration (LLM, checkpoint, telemetry)
 ├── health_check.py         # System diagnostics
 ├── audit_guard.py          # 25-check project integrity
 ├── journal_template.py     # 30 journal templates
