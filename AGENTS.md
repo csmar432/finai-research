@@ -62,6 +62,17 @@ When a host agent is told **not to ask**, **not to wait**, and **not to use Mock
 3. **Do not** freestyle a second research stack, fabricate citations/coefficients, or silently enable Mock.
 4. Empirical work (DID/IV/data fetch) remains a **separate hand-off** from the writing pipeline; see dual-track notes in `docs/ARCHITECTURE.md`.
 5. Batch HITL off: default for `agent_host_entry`; or `FINAI_NO_HITL=1` / `--no-use-hitl` on other CLIs.
+6. **Local empirics first**: set `FINAI_EMPIRICAL_DATA_ROOT` (e.g. `/data/实证分析`).
+   `DataFetcher.fetch` Layer 0 reads this root before MCP/CLI. Skipping local panels
+   and substituting city patents / overseas revenue / interest coverage for
+   firm green patents / customs HS / bond spreads is **proxy laundering** — forbidden.
+7. **TOPIC integrity**: `agent_host_entry` records hard-gaps in `SKIPPED_CONFIG.md`.
+   Writing may continue as `status=partial` with non-claims; use `--block-on-topic-gaps`
+   to refuse the whole run. Causal PDF delivery is not "completed" while gaps remain.
+8. **Delivery contract**: required artifacts are `FINAL.md` + `SKIPPED_CONFIG.md`
+   (`CODEX_FINAL.md` alone is insufficient). Optional: `--check-delivery` → `DELIVERY.md`.
+9. Interactive Cursor chats still greet / HITL per `.cursor/rules/system-init.mdc`;
+   isolation autopilot overrides that via `FINAI_AUTOPILOT=1` + `agent_host_entry` only.
 
 ---
 

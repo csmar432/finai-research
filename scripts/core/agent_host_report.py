@@ -6,6 +6,7 @@ host agents freestyle outside the official pipeline.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -106,13 +107,30 @@ def write_host_reports(report: HostRunReport) -> tuple[Path, Path]:
         f"- Skip log: `{report.skipped_path.name}`",
         f"- This report: `{report.final_path.name}`",
         "",
-        "## Next actions for the human operator",
-        "",
-        "1. Configure at least one LLM (`DEEPSEEK_API_KEY` or `RELAY_API_KEY` or Ollama).",
-        "2. Re-run: `python scripts/agent_host_entry.py --topic \"...\"`",
-        "3. Interactive path (human TTY): `python scripts/start_research.py --topic \"...\"`",
+        "## Next actions",
         "",
     ]
+    # Autopilot / isolation: do not imply chat confirmation or freestyle empirics.
+    autopilot = os.environ.get("FINAI_AUTOPILOT", "").strip() in {"1", "true", "yes"}
+    if autopilot or report.entry.endswith("agent_host_entry.py"):
+        final_lines += [
+            "1. If **blocked**: fix SKIPPED items, then re-run "
+            "`python scripts/agent_host_entry.py` — do **not** invent a parallel pipeline.",
+            "2. If **partial** with empirics hard-gaps: writing may exist; "
+            "**do not** claim causal DID/IV results or ship proxy-laundered empirics.",
+            "3. Empirics hand-off: set `FINAI_EMPIRICAL_DATA_ROOT`, place matching panels, "
+            "then use `enhanced_pipeline` / `modern_did` (not freestyle `run_real_*.py`).",
+            "4. Delivery contract requires `FINAL.md` + `SKIPPED_CONFIG.md` "
+            "(not `CODEX_FINAL.md` alone).",
+            "",
+        ]
+    else:
+        final_lines += [
+            "1. Configure at least one LLM (`DEEPSEEK_API_KEY` or `RELAY_API_KEY` or Ollama).",
+            "2. Re-run: `python scripts/agent_host_entry.py --topic \"...\"`",
+            "3. Interactive path (human TTY): `python scripts/start_research.py --topic \"...\"`",
+            "",
+        ]
 
     skipped_path = report.skipped_path
     final_path = report.final_path
