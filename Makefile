@@ -3,6 +3,9 @@
 
 .PHONY: help setup install test run clean health check lint format docs demo
 
+# Optional topic for novelty / pipeline targets
+TOPIC ?= carbon trading green innovation
+
 # Default target
 help:
 	@echo "论文-研报工作流 - FinResearch Agent"
@@ -94,7 +97,7 @@ validate-econometrics:
 	python scripts/validate_econometrics.py --method all
 
 validate-novelty:
-	python scripts/research_framework/pipeline.py --mode novelty-check
+	python scripts/agent_pipeline.py --topic "$(TOPIC)" --novelty-check
 
 # ─── Cleanup ───────────────────────────────────────────────────────────────────
 

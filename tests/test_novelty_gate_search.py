@@ -88,3 +88,70 @@ def test_evaluate_includes_search_backend_and_overlaps():
     assert result.passed is True
     assert result.details["search_backend"] == "literature_download"
     assert result.details["results"][0]["overlaps"][0]["title"] == "T"
+
+
+def test_check_novelty_back_compat_delegates():
+    g = NoveltyGate()
+    with patch.object(
+        NoveltyGate,
+        "_assess_idea",
+        return_value={"similarity": 0.55, "search_status": "ok", "overlaps": []},
+    ):
+        assert g._check_novelty("idea") == 0.55
+
+
+def test_normalize_paper_strips_doi_prefix():
+    g = NoveltyGate()
+    p = g._normalize_paper(
+        {
+            "title": "X",
+            "year": 2023,
+            "venue": "Journal of Finance",
+            "doi": "https://doi.org/10.1/abc",
+            "abstract": "hello",
+        },
+        source="openalex",
+    )
+    assert p["doi"] == "10.1/abc"
+    assert g._is_top_journal(p["venue"]) is True
+
+
+def test_top_journal_soft_boost():
+    g = NoveltyGate(lookback_years=5)
+    paper = _paper(
+        "Trading policy study",
+        year=2024,
+        venue="Journal of Finance",
+        abstract="trading policy firm outcomes",
+    )
+    with patch(
+        "scripts.literature_download.search_semantic",
+        return_value=[paper],
+    ), patch(
+        "scripts.literature_download.search_openalex",
+        return_value=[],
+    ):
+        boosted = g._assess_idea("trading policy firm outcomes")
+        paper2 = dict(paper)
+        paper2["venue"] = "Obscure Local Review"
+        with patch(
+            "scripts.literature_download.search_semantic",
+            return_value=[paper2],
+        ):
+            plain = g._assess_idea("trading policy firm outcomes")
+    assert boosted["similarity"] >= plain["similarity"]
+
+
+def test_evaluate_notes_when_all_search_unavailable():
+    g = NoveltyGate()
+    with patch.object(
+        NoveltyGate,
+        "_assess_idea",
+        return_value={
+            "similarity": 0.2,
+            "search_status": "unavailable",
+            "overlaps": [],
+        },
+    ):
+        result = g.evaluate({"ideas": ["a", "b"]})
+    assert any("文献检索不可用" in i for i in result.issues)

@@ -308,16 +308,50 @@ def did_to_latex(results_list, y_labels, x_vars, title="", label=""):
 # ─────────────────────────────────────────
 # MAIN PIPELINE
 # ─────────────────────────────────────────
+
+# Deprecated aliases kept for CLI compatibility (actionable redirect, no silent reimpl).
+_DEPRECATED_MODE_REDIRECTS: dict[str, str] = {
+    "data": (
+        "Deprecated --mode data. Use: python scripts/universal_data_fetcher.py "
+        "(or MCP / local data/). Empirics: python -m scripts.research_framework.enhanced_pipeline"
+    ),
+    "analysis": (
+        "Deprecated --mode analysis. Use: "
+        "python -m scripts.research_framework.enhanced_pipeline --topic \"...\" "
+        "or import scripts.research_framework.modern_did"
+    ),
+    "draft": (
+        "Deprecated --mode draft. Writing track: "
+        "python scripts/agent_pipeline.py --topic \"...\" --use-hitl"
+    ),
+    "lit-review": (
+        "Deprecated --mode lit-review. Use: "
+        "python scripts/literature_download.py \"QUERY\" --source arxiv,semantic,openalex"
+    ),
+    "novelty-check": (
+        "Deprecated --mode novelty-check on pipeline.py. Use: "
+        "python scripts/agent_pipeline.py --topic \"...\" --novelty-check"
+    ),
+    "regression": (
+        "Deprecated --mode regression. Use: "
+        "python -m scripts.research_framework.enhanced_pipeline "
+        "or import scripts.research_framework.modern_did"
+    ),
+}
+
+
 def _parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     ap = argparse.ArgumentParser(description="Academic paper generation pipeline")
     ap.add_argument(
         "--mode", default="full",
-        choices=["full", "design", "review"],
+        choices=["full", "design", "review", *_DEPRECATED_MODE_REDIRECTS.keys()],
         help=(
             "CLI mode. 'full' = demo TWFE pipeline (default). "
             "'design' = template REFINED_DESIGN.md scaffold. "
             "'review' = adversarial review of an existing draft (needs --draft-file). "
+            "Deprecated aliases (data/analysis/draft/lit-review/novelty-check/regression) "
+            "print a redirect and exit 2. "
             "For real empirics use enhanced_pipeline / modern_did; "
             "for writing use scripts/agent_pipeline.py."
         ),
@@ -796,9 +830,12 @@ def _main_dispatch() -> int:
     - `--mode full` (default) → call `_run_full_pipeline(args)`
     - `--mode design`        → call `_run_design_mode(args)`
     - `--mode review`        → call `_run_review_mode(args)`
+    - deprecated aliases     → stderr redirect + exit 2 (compat, no silent reimpl)
     - `--list-methods`       → print orphan-engine inventory and exit
     - Any other value        → print actionable error and return 1
     """
+    import warnings
+
     args = _parse_args()
     if args.list_methods:
         # Print inventory of orphan engines wired into RobustnessRunner.
@@ -817,6 +854,11 @@ def _main_dispatch() -> int:
             print(f"  - {m}")
         print()
         return 0
+    if args.mode in _DEPRECATED_MODE_REDIRECTS:
+        msg = _DEPRECATED_MODE_REDIRECTS[args.mode]
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        print(f"ERROR: {msg}", file=sys.stderr)
+        return 2
     if args.mode == "full":
         return _run_full_pipeline(args)
     if args.mode == "design":
@@ -826,7 +868,8 @@ def _main_dispatch() -> int:
     # Unknown mode: actionable error.
     print(
         f"ERROR: --mode {args.mode!r} is not recognized. "
-        "Valid modes are: full (default), design, review.",
+        "Valid modes are: full (default), design, review. "
+        f"Deprecated aliases: {', '.join(sorted(_DEPRECATED_MODE_REDIRECTS))}.",
         file=sys.stderr,
     )
     return 1

@@ -77,6 +77,77 @@ def test_writing_pre_gate_fail_closed_on_import_error():
     assert any("data_source_checker" in e for e in result.errors)
 
 
+def test_extract_baseline_from_writing_payload():
+    cfg = AgentPipelineConfig(topic="t")
+    result = AgentPipelineResult(
+        config=cfg,
+        writing={"baseline": {"p": 0.03, "coef": 0.12, "did_type": "cs"}},
+    )
+    base = AgentPipeline._extract_baseline_for_pre_gate(result)
+    assert base == {"p": 0.03, "coef": 0.12, "did_type": "cs"}
+    assert AgentPipeline._extract_baseline_for_pre_gate(
+        AgentPipelineResult(config=cfg, writing={"body": "no stats"})
+    ) is None
+
+
+def test_writing_pre_gate_soft_skips_negative_result_without_baseline():
+    """Compat: writing track without empirics must not hard-block on fake p=1.0."""
+    cfg = AgentPipelineConfig(topic="t")
+    pipeline = AgentPipeline(cfg)
+    result = AgentPipelineResult(config=cfg, success=True)
+
+    with patch(
+        "scripts.research_framework.manuscript_quality_gate.check_manuscript",
+        return_value=DataSourceGateReport(passed=True, summary_message="mq"),
+    ), patch(
+        "scripts.research_framework.reference_validator.validate_references",
+        return_value=DataSourceGateReport(passed=True, summary_message="ref"),
+    ), patch(
+        "scripts.data_source_checker.check_data_sources",
+        return_value=DataSourceGateReport(passed=True, summary_message="ds"),
+    ):
+        pipeline._run_writing_pre_gate(result, "理论综述，无回归结果。")
+
+    nr = result.quality_reports["writing_pre_gate/negative_result_handler"]
+    assert nr["passed"] is True
+    assert nr.get("skipped") is True
+    assert result.quality_reports["writing_pre_gate"]["passed"] is True
+
+
+def test_writing_pre_gate_runs_negative_result_when_baseline_present():
+    cfg = AgentPipelineConfig(topic="t")
+    pipeline = AgentPipeline(cfg)
+    result = AgentPipelineResult(
+        config=cfg,
+        success=True,
+        writing={"p": 0.2, "coef": 0.01, "did_type": "twfe"},
+    )
+    called = {}
+
+    def _assess(**kwargs):
+        called.update(kwargs)
+        return DataSourceGateReport(passed=True, summary_message="nr ok")
+
+    with patch(
+        "scripts.research_framework.manuscript_quality_gate.check_manuscript",
+        return_value=DataSourceGateReport(passed=True, summary_message="mq"),
+    ), patch(
+        "scripts.research_framework.reference_validator.validate_references",
+        return_value=DataSourceGateReport(passed=True, summary_message="ref"),
+    ), patch(
+        "scripts.data_source_checker.check_data_sources",
+        return_value=DataSourceGateReport(passed=True, summary_message="ds"),
+    ), patch(
+        "scripts.research_framework.negative_result_handler.assess_result",
+        side_effect=_assess,
+    ):
+        pipeline._run_writing_pre_gate(result, "含回归结果的草稿")
+
+    assert called.get("baseline_p") == 0.2
+    assert called.get("baseline_coef") == 0.01
+    assert result.quality_reports["writing_pre_gate"]["passed"] is True
+
+
 def test_writing_pre_gate_uses_correct_import_path():
     """Regression: must import scripts.data_source_checker, not research_framework.*."""
     cfg = AgentPipelineConfig(topic="t")

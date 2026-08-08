@@ -1449,6 +1449,38 @@ class AgentPipeline:
 
     # ── W1-W4 Writing Pre-Gate ──────────────────────────────────────────────
     @staticmethod
+    def _extract_baseline_for_pre_gate(result: "AgentPipelineResult") -> dict | None:
+        """Pull real DID/OLS baseline stats if the writing payload carries them.
+
+        Returns ``{"p": float, "coef": float, "did_type": str}`` or ``None``
+        when the writing track has no empirics (common — do not invent p=1.0).
+        """
+        candidates: list[Any] = []
+        for blob in (result.writing, result.refinement, result.outline):
+            if isinstance(blob, dict):
+                candidates.append(blob)
+                for key in ("regressions", "baseline", "main_result", "did"):
+                    nested = blob.get(key)
+                    if isinstance(nested, dict):
+                        candidates.append(nested)
+                    elif isinstance(nested, list) and nested and isinstance(nested[0], dict):
+                        candidates.append(nested[0])
+        for src in candidates:
+            p = src.get("p") or src.get("pvalue") or src.get("p_value") or src.get("baseline_p")
+            coef = src.get("coef") or src.get("coefficient") or src.get("baseline_coef")
+            if p is None or coef is None:
+                continue
+            try:
+                return {
+                    "p": float(p),
+                    "coef": float(coef),
+                    "did_type": src.get("did_type") or src.get("estimator") or "twfe",
+                }
+            except (TypeError, ValueError):
+                continue
+        return None
+
+    @staticmethod
     def _as_gate_report(obj: Any, *, fail_closed_on_skip: bool = True) -> dict:
         """Normalize gate return values to ``{passed, summary_message}`` dicts."""
         if isinstance(obj, dict):
@@ -1510,12 +1542,27 @@ class AgentPipeline:
             }
 
         try:
-            from scripts.research_framework.negative_result_handler import assess_result
-            # Only meaningful when manuscript exists; skip soft if manuscript already failed.
-            if reports.get("manuscript_quality", {}).get("passed"):
+            # Negative-result gate needs *real* empirics. Writing track often has
+            # none — do not hardcode baseline_p=1.0 (that always blocks).
+            baseline = self._extract_baseline_for_pre_gate(result)
+            if baseline is None:
+                reports["negative_result_handler"] = {
+                    "summary_message": (
+                        "[negative_result_handler] skipped: no baseline "
+                        "regression stats on writing track (compat soft-pass)"
+                    ),
+                    "passed": True,
+                    "skipped": True,
+                }
+            elif reports.get("manuscript_quality", {}).get("passed"):
+                from scripts.research_framework.negative_result_handler import (
+                    assess_result,
+                )
                 reports["negative_result_handler"] = self._as_gate_report(
                     assess_result(
-                        baseline_p=1.0, baseline_coef=0.0, did_type="twfe"
+                        baseline_p=float(baseline["p"]),
+                        baseline_coef=float(baseline["coef"]),
+                        did_type=str(baseline.get("did_type") or "twfe"),
                     )
                 )
         except Exception as exc:

@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Writing pre-gate compat**: stop inventing `baseline_p=1.0` for
+  `negative_result_handler` on the writing track (always blocked). Soft-skip
+  unless real baseline stats are present in writing/refinement payloads;
+  keep fail-closed for manuscript/reference/data_source import failures.
+- **Deprecated CLI modes**: `research_framework/pipeline.py` accepts
+  `data|analysis|draft|lit-review|novelty-check|regression` again as aliases
+  that print an actionable redirect and exit 2 (DeprecationWarning; no silent
+  reimplementation). Makefile `validate-novelty` and lit-review docs updated.
 - **Dual-track docs**: clarified writing (`agent_pipeline`) vs empirical demo
   (`research_framework/pipeline.py`) vs production empirics (`enhanced_pipeline` /
   `modern_did`) in `ARCHITECTURE.md` §0, `AGENTS.md`, `api_reference.md`,

@@ -16,9 +16,10 @@ python scripts/agent_pipeline.py --topic "研究主题"
 # 演示研报（无需配置）
 python scripts/demo_research_report.py --stock 000001.SZ
 
-# 分步骤执行
-python scripts/research_framework/pipeline.py --mode lit-review --topic "..."
-python scripts/research_framework/pipeline.py --mode regression --topic "..."
+# 分步骤执行（双轨）
+python scripts/literature_download.py "..." --source arxiv,semantic,openalex
+python -m scripts.research_framework.enhanced_pipeline --topic "..."
+python scripts/agent_pipeline.py --topic "..." --use-hitl
 
 # 数据预检查
 python scripts/data_source_checker.py
