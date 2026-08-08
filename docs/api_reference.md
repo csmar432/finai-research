@@ -9,20 +9,18 @@
 
 ---
 
-## 0. Pipeline 角色澄清
+## 0. Dual-track：写作 vs 实证（不要混用）
 
-项目有两个 `pipeline` 入口，但**不是平行入口**，而是不同抽象层：
+| 入口 | 轨道 | 用途 |
+|------|------|------|
+| `scripts/agent_pipeline.py` | **写作轨** | outline→literature→writing→refinement + HITL；`--novelty-check` |
+| `scripts/research_framework/pipeline.py` | **实证 demo / design scaffold** | `--mode full` 演示 TWFE；`--mode design` 模板 REFINED_DESIGN |
+| `scripts/research_framework/enhanced_pipeline.py` | **实证生产入口** | 包装 `modern_did` / gates / latex |
+| `scripts/research_framework/modern_did.py` | **实证库** | CS/SunAb/BJS 等（import API，无独立 CLI） |
 
-| 入口 | 抽象层 | 用途 |
-|------|--------|------|
-| `scripts/agent_pipeline.py` | **Agent 层**（端到端研究流程）| 主题 → 文献 → 想法 → 设计 → 数据 → 论文 PDF，多阶段 HITL 检查点 |
-| `scripts/research_framework/pipeline.py` | **回归层**（DID 工具函数）| 单一面板回归 + LaTeX 表格格式化（`run_did`, `did_to_latex`, `extract`）|
+**没有** “agent_pipeline 调用 research_framework.pipeline 做回归” 这条链路。两轨通过研究者手递交接（表格/设计 → 写作）。
 
-**调用关系**：agent_pipeline 在数据/设计阶段调用 research_framework.pipeline 完成具体回归计算。两者协议不同：
-- agent_pipeline 用 `AgentPipelineResult`（dict，含 `success/outline/literature`）
-- research_framework/pipeline.py 用 `extract()` 返回的 coef dict
-
-README 主推前者作为用户入口；后者供框架内调用。
+详见 `docs/ARCHITECTURE.md` §0。
 
 ---
 

@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Dual-track docs**: clarified writing (`agent_pipeline`) vs empirical demo
+  (`research_framework/pipeline.py`) vs production empirics (`enhanced_pipeline` /
+  `modern_did`) in `ARCHITECTURE.md` §0, `AGENTS.md`, `api_reference.md`,
+  `README.md`, `CLAUDE.md`; removed dead CLI modes (`data`/`analysis`/`draft`/
+  `lit-review`) from argparse and examples.
+- **NoveltyGate real search**: `_check_novelty` now queries Semantic Scholar +
+  OpenAlex via `literature_download`, filters by `lookback_years`, soft-boosts
+  top journals, scores token Jaccard; LLM heuristic only when search is down
+  (documented in report `search_status`).
+- **Writing pre-gate data_source_checker**: fixed wrong import
+  `scripts.research_framework.data_source_checker` → `scripts.data_source_checker`;
+  added `check_data_sources()` adapter; gate reports are normalized to dicts;
+  failures are fail-closed (`passed=False`) instead of silent greenlight.
 - **HITL post-exec + resume semantics**: `AgentOrchestrator` previously called
   `HITLGate.hold()` *before* `agent.run()`, so gated stages often never executed;
   `resume_pipeline` also clamped/skipped incorrectly. Gates now hold **after**

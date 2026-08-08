@@ -1,23 +1,36 @@
 # Agent Orchestration Architecture
 
 > Created: 2026-05-28
-> Last Updated: 2026-07-12 (audit_fix_2026_07_12 — 新增 CLI 入口 + 类名核对)
+> Last Updated: 2026-08-08 (dual-track writing vs empirical clarified)
 > Status: Active
 
 This document describes the two distinct orchestrator systems in the codebase and their architectural boundaries.
 
-> **CLI 入口 (v1.0+ 推荐用户入口)**
+## 0. Writing vs Empirical dual-track (read this first)
+
+FinAI is **two cooperating tracks**, not one fused DAG. Writing does not call modern DID; empirics do not write the paper.
+
+| Track | Entry | What it does | What it does **not** do |
+|-------|-------|--------------|-------------------------|
+| **Writing** | `start_research.py` → `agent_pipeline.py` (`agent_host_entry.py` for batch) | outline → literature → plotting → writing → refinement (+ `--novelty-check`) | DID/IV/RDD estimation |
+| **Empirical (demo)** | `research_framework/pipeline.py --mode full\|design\|review` | Demo TWFE smoke; template `REFINED_DESIGN.md` | Staggered DID / CS / production panels |
+| **Empirical (real)** | `python -m scripts.research_framework.enhanced_pipeline` or `import modern_did` | Modern DID / robustness / latex gates | Paper prose / HITL writing stages |
+| **Data** | `universal_data_fetcher.py` + MCP | Fetch / cache panels | Run regressions or drafts |
+
+Hand-off: finish empirics → feed tables/figures into writing (`report_generator` / `agent_pipeline`). Do not treat `pipeline.py` as “the research entry.”
+
+> **CLI 入口 (写作轨)**
 >
-> 上述两个编排器 (`AgentOrchestrator` / `MultiAgentOrchestrator`) 是**库级 API**, 用户应通过以下 CLI 入口调用:
+> `AgentOrchestrator` / `MultiAgentOrchestrator` 是**库级 API**, 用户应通过以下 CLI 入口调用:
 >
 > | CLI | 用途 | 模块 |
 > |-----|------|------|
 > | `python scripts/start_research.py --topic "..."` | 5 轮渐进式主题澄清（默认只锁画像；`--continue` 才进写作） | `scripts/start_research.py` |
-> | `python scripts/agent_pipeline.py --topic "..." [--use-hitl]` | 端到端研究流水线（主题→论文 PDF） | `scripts/agent_pipeline.py` |
-> | `python scripts/agent.py --task "..."` | 单任务智能体入口（轻量级） | `scripts/agent.py` |
+> | `python scripts/agent_pipeline.py --topic "..." [--use-hitl]` | 写作流水线（主题→论文草稿/PDF） | `scripts/agent_pipeline.py` |
+> | `python scripts/agent_host_entry.py --topic "..."` | 非交互 fail-closed 写作入口 | `scripts/agent_host_entry.py` |
 >
 > **推荐路径**：新用户先 `start_research.py` 澄清 → 再 `agent_pipeline.py --use-hitl`；
-> 或澄清时加 `--continue --use-hitl`。批处理可直接跑 `agent_pipeline`。
+> 实证另开 `enhanced_pipeline` / `modern_did`。批处理写作用 `agent_host_entry`。
 > `InteractivePipelineCheckpoint` 不自动挂入主流水线（技能/手动 import）。
 
 ---

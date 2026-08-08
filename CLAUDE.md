@@ -33,8 +33,10 @@
 或用脚本直接运行：
 
 ```bash
-python scripts/research_framework/pipeline.py --topic "碳排放权交易对企业绿色创新的影响"
-python scripts/research_framework/pipeline.py --topic "..."
+# 写作轨
+python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响" --use-hitl
+# 实证轨（现代 DID）
+python -m scripts.research_framework.enhanced_pipeline --topic "碳排放权交易对企业绿色创新的影响"
 pytest tests/ -v
 ```
 
@@ -231,8 +233,9 @@ output/                           # 输出目录
 | `scripts/setup_wizard.py --guided` | 交互式配置向导 |
 | `scripts/register_mcp_servers.py --list` | 列出 `{{MCP_COUNT}}` 个 MCP 服务器注册状态（首次必须跑）|
 | `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
-| `scripts/research_framework/pipeline.py` | 研究执行层 |
-| `scripts/research_framework/modern_did.py` | 现代 DID 回归 |
+| `scripts/research_framework/pipeline.py` | 实证 demo TWFE + design scaffold（非写作轨）|
+| `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID）|
+| `scripts/research_framework/modern_did.py` | 现代 DID 库（import，无独立 CLI）|
 | `scripts/research_framework/fin_charts.py` | 专业金融图表 |
 | `scripts/research_framework/report_generator.py` | LaTeX 论文生成 |
 | `scripts/demo_research_report.py` | 演示研报生成（**已修复静默fallback**）|
@@ -286,10 +289,11 @@ output/                           # 输出目录
 第1步  研究想法     → 描述方向 → 8-12个候选想法 → 确认
 第1.5步想法-数据交叉验证 → idea_data_checker.py → 用户决策（补充数据/授权模拟/更换）→ 确认
 第2步  文献综述     → literature_download.py + arxiv/openalex/semantic_scholar MCP → 引文网络 → 识别研究缺口
-第3步  新颖性验证   → agent_pipeline.py --topic "..." (内部触发 NoveltyGate + llm_reviewer) → JF/JFE/RFS/arXiv/NBER 检索 → 输出新颖性评分 → 确认
-第4步  实证设计     → research_framework/pipeline.py → DID/IV/RDD → REFINED_DESIGN.md → data_source_checker.py → 确认
-第5步  数据获取     → universal_data_fetcher.py → `{{MCP_COUNT}}` 个 MCP → Python/Stata脚本 → 确认
-第6步  论文写作     → research_framework/report_generator.py → 大纲 → 正文 → 图表 → LaTeX草稿
+第3步  新颖性验证   → agent_pipeline.py --novelty-check（NoveltyGate→SS/OpenAlex 检索；搜索失败才 LLM 回退）→ 确认
+第4步  实证设计     → scaffold: pipeline.py --mode design；真设计: fin-experiment-design → data_source_checker → 确认
+第5步  数据获取     → universal_data_fetcher.py → MCP → Python/Stata脚本 → 确认 【实证轨】
+第5.5 回归分析     → enhanced_pipeline / modern_did（非 agent_pipeline）→ 确认 【实证轨】
+第6步  论文写作     → agent_pipeline / report_generator → 大纲 → 正文 → 图表 → LaTeX草稿 【写作轨】
 第7步  对抗性Review → core/llm_reviewer.py → 多轮严格评审 → 达到发表标准
 ```
 
@@ -298,13 +302,14 @@ output/                           # 输出目录
 | 阶段 | 入口脚本 | 调用方式 |
 |---|---|---|
 | 0. 系统自检 | `scripts/health_check.py` | `python scripts/health_check.py --json` |
-| 1. 想法生成 | `scripts/agent_pipeline.py` | `--topic "..."` |
+| 1. 想法生成 | `scripts/agent_pipeline.py` / skills | `--topic "..."` |
 | 1.5 想法-数据 | `scripts/idea_data_checker.py` | `--idea-file <path>` |
-| 2. 文献综述 | `scripts/literature_download.py` | `--query "..."` |
-| **3. 新颖性** | `scripts/agent_pipeline.py` | `--topic "..."` （内部 Stage: novelty-check，使用 `scripts/core/evolution_gate.py::NoveltyGate`） |
-| 4. 实证设计 | `scripts/research_framework/pipeline.py` | `--mode design --refined-design <path>` |
-| 5. 数据获取 | `scripts/universal_data_fetcher.py` | `--sources tushare,eastmoney` |
-| 6. 论文写作 | `scripts/research_framework/report_generator.py` | `--outline <path>` |
+| 2. 文献综述 | `scripts/literature_download.py` | `"query" --source ...` |
+| **3. 新颖性** | `scripts/agent_pipeline.py` | `--novelty-check`（`NoveltyGate`→SS/OpenAlex） |
+| 4. 实证设计 scaffold | `scripts/research_framework/pipeline.py` | `--mode design` |
+| 5. 数据获取 | `scripts/universal_data_fetcher.py` | MCP / local `data/` |
+| 5.5 实证回归 | `scripts/research_framework/enhanced_pipeline.py` | `python -m ...enhanced_pipeline` |
+| 6. 论文写作 | `scripts/agent_pipeline.py` | `--topic "..." --use-hitl` |
 | 7. Review | `scripts/core/llm_reviewer.py` | `--draft <path>` |
 | Checkpoint 工具 | `scripts/checkpoint.py` | `from scripts.checkpoint import InteractivePipelineCheckpoint` |
 

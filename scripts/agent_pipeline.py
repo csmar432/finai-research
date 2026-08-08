@@ -1448,70 +1448,104 @@ class AgentPipeline:
             pass
 
     # ── W1-W4 Writing Pre-Gate ──────────────────────────────────────────────
+    @staticmethod
+    def _as_gate_report(obj: Any, *, fail_closed_on_skip: bool = True) -> dict:
+        """Normalize gate return values to ``{passed, summary_message}`` dicts."""
+        if isinstance(obj, dict):
+            return {
+                "summary_message": str(obj.get("summary_message", "")),
+                "passed": bool(obj.get("passed", False)),
+                **{k: v for k, v in obj.items() if k not in ("passed", "summary_message")},
+            }
+        if hasattr(obj, "should_block_writing"):
+            passed = not bool(getattr(obj, "should_block_writing"))
+        else:
+            passed = bool(getattr(obj, "passed", False))
+        return {
+            "summary_message": str(getattr(obj, "summary_message", obj)),
+            "passed": passed,
+        }
+
     def _run_writing_pre_gate(self, result: AgentPipelineResult, writing_text: str) -> None:
-        """Run W1-W4 static quality gates before the writing stage is marked complete."""
+        """Run W1-W4 static quality gates before the writing stage is marked complete.
+
+        Fail-closed: import/API failures mark the gate as not passed (no silent greenlight).
+        """
         reports: dict[str, dict] = {}
 
         try:
             from scripts.research_framework.manuscript_quality_gate import check_manuscript
-            reports["manuscript_quality"] = check_manuscript(writing_text)._report  # type: ignore[attr-defined]
+            reports["manuscript_quality"] = self._as_gate_report(
+                check_manuscript(writing_text)
+            )
         except Exception as exc:
             reports["manuscript_quality"] = {
-                "summary_message": f"[manuscript_quality_gate] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[manuscript_quality_gate] failed: {exc}",
+                "passed": False,
             }
 
         try:
             from scripts.research_framework.reference_validator import validate_references
-            reports["reference_validator"] = validate_references(writing_text)._report  # type: ignore[attr-defined]
+            reports["reference_validator"] = self._as_gate_report(
+                validate_references(writing_text)
+            )
         except Exception as exc:
             reports["reference_validator"] = {
-                "summary_message": f"[reference_validator] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[reference_validator] failed: {exc}",
+                "passed": False,
             }
 
         try:
-            from scripts.research_framework.data_source_checker import check_data_sources
+            from scripts.data_source_checker import check_data_sources
             design_text = self._extract_stage_text(
                 getattr(result, "outline", None) or getattr(result, "refinement", None)
             )
-            reports["data_source_checker"] = check_data_sources(
-                writing_text, design_text=design_text
-            )._report  # type: ignore[attr-defined]
+            reports["data_source_checker"] = self._as_gate_report(
+                check_data_sources(writing_text, design_text=design_text)
+            )
         except Exception as exc:
             reports["data_source_checker"] = {
-                "summary_message": f"[data_source_checker] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[data_source_checker] failed: {exc}",
+                "passed": False,
             }
 
         try:
             from scripts.research_framework.negative_result_handler import assess_result
+            # Only meaningful when manuscript exists; skip soft if manuscript already failed.
             if reports.get("manuscript_quality", {}).get("passed"):
-                reports["negative_result_handler"] = assess_result(
-                    baseline_p=1.0, baseline_coef=0.0, did_type="twfe"
-                )._report  # type: ignore[attr-defined]
+                reports["negative_result_handler"] = self._as_gate_report(
+                    assess_result(
+                        baseline_p=1.0, baseline_coef=0.0, did_type="twfe"
+                    )
+                )
         except Exception as exc:
             reports["negative_result_handler"] = {
-                "summary_message": f"[negative_result_handler] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[negative_result_handler] failed: {exc}",
+                "passed": False,
             }
 
         blocked = False
         for key, report in reports.items():
-            passed = report.get("passed", True) if isinstance(report, dict) else True
+            if not isinstance(report, dict):
+                report = {"summary_message": str(report), "passed": False}
+                reports[key] = report
+            passed = bool(report.get("passed", False))
+            result.quality_reports[f"writing_pre_gate/{key}"] = report
             if not passed:
                 blocked = True
                 result.errors.append(
                     f"[writing_pre_gate/{key}] {report.get('summary_message', 'blocked')}"
-                )
-                result.quality_reports[f"writing_pre_gate/{key}"] = (
-                    report if isinstance(report, dict) else {"passed": False}
                 )
 
         if not blocked:
             result.quality_reports["writing_pre_gate"] = {
                 "summary_message": "W1-W4 writing pre-gate passed",
                 "passed": True,
+            }
+        else:
+            result.quality_reports["writing_pre_gate"] = {
+                "summary_message": "W1-W4 writing pre-gate blocked",
+                "passed": False,
             }
 
     async def _parliament_review(self, paper_content: dict) -> dict:
@@ -3240,8 +3274,12 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Note:
-  - 本脚本是主入口，自动选择合适的分析引擎
-  - 纯回归分析请使用: python scripts/research_framework/pipeline.py
+  - 本脚本是【写作轨】主入口（outline→literature→writing→refinement），不跑 DID/IV。
+  - 实证轨请另开：
+      design scaffold:  python scripts/research_framework/pipeline.py --mode design
+      real analysis:    python -m scripts.research_framework.enhanced_pipeline --topic "..."
+                        或 import scripts.research_framework.modern_did
+      demo TWFE only:   python scripts/research_framework/pipeline.py --mode full
 
 Examples:
   python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响" --venue "经济研究"
@@ -3349,9 +3387,19 @@ Examples:
         ]
         for r in result.details.get("results", []):
             mark = "✅" if r["passed"] else "❌"
+            status = r.get("search_status", "?")
             lines.append(
-                f"- {mark} similarity={r['similarity']:.2f} — {r['idea']}"
+                f"- {mark} similarity={r['similarity']:.2f} "
+                f"(search={status}) — {r['idea']}"
             )
+            for hit in (r.get("overlaps") or [])[:3]:
+                doi = hit.get("doi") or ""
+                doi_bit = f" doi:{doi}" if doi else ""
+                lines.append(
+                    f"  - overlap={hit.get('similarity', 0):.2f} "
+                    f"{hit.get('year', '?')} | {hit.get('venue', '')[:50]} | "
+                    f"{(hit.get('title') or '')[:120]}{doi_bit}"
+                )
         if result.issues:
             lines += ["", "## Issues", ""]
             lines += [f"- {x}" for x in result.issues]

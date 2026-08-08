@@ -199,11 +199,14 @@ The AI agent automatically calls all 8 pipeline stages, MCP data sources, and La
 Run individual scripts directly for fine-grained control:
 
 ```bash
-# Full research pipeline
-python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+# Writing track
+python scripts/agent_pipeline.py --topic "Carbon trading and green innovation" --use-hitl
 
-# Research execution layer (DID/IV/RDD + writing)
-python scripts/research_framework/pipeline.py --topic "Carbon trading and green innovation"
+# Empirical track (production modern DID)
+python -m scripts.research_framework.enhanced_pipeline --topic "Carbon trading and green innovation"
+
+# Empirical demo TWFE smoke only
+python scripts/research_framework/pipeline.py --mode full --topic "Carbon trading and green innovation"
 
 # Demo: institutional-grade financial report
 python scripts/demo_research_report.py --stock 000001.SZ
@@ -361,10 +364,10 @@ Each skill is documented in `.claude/skills/` (Claude Code) and `.github/skills/
 | Skill | Description | Key Modules |
 |-------|-------------|------------|
 | `fin-full-pipeline` | End-to-end: topic → paper PDF | `scripts/agent_pipeline.py` |
-| `fin-idea-discovery` | Idea generation + data validation | `scripts/research_framework/pipeline.py` |
-| `fin-lit-review` | Systematic literature review | `scripts/citation_graph.py`, MCP multi-source |
+| `fin-idea-discovery` | Idea generation + data validation | `idea_data_checker.py`, MCP |
+| `fin-lit-review` | Systematic literature review | `literature_download.py`, MCP multi-source |
 | `fin-generate-idea` | 8-12 ranked ideas with实证验证 | MCP data validation |
-| `fin-novelty-check` | Novelty validation against JF/JFE/RFS | NBER, Chinese journals search |
+| `fin-novelty-check` | Novelty vs recent lit (SS/OpenAlex) | `NoveltyGate` / `--novelty-check` |
 | `fin-experiment-design` | Complete empirical design | `modern_did.py`, `regression_engine.py` |
 | `fin-paper-writing` | Writing orchestration | `report_generator.py` |
 | `fin-paper-draft` | Body text generation (LaTeX) | `journal_template.py` |
@@ -427,7 +430,7 @@ python scripts/core/mcp_tool_market.py --search "gdp" --report
 python scripts/event_monitor.py --interval 300 --test
 
 # Literature review
-python scripts/research_framework/pipeline.py --mode lit-review --topic "carbon trading innovation"
+python scripts/literature_download.py "carbon trading innovation" --source arxiv,semantic,openalex --limit 20
 
 # Or use an AI Agent directly
 # "帮我做碳交易创新领域的文献综述"
@@ -561,7 +564,7 @@ flowchart TD
     class P1,P2,P4,P5 hitl_gate
 ```
 
-> **Pipeline stages note:** The core pipeline has **5 stages** (outline → literature → plotting → writing → refinement) with optional HITL gates. Idea generation, novelty verification, and data acquisition run as parallel/prior stages. The research framework CLI (`scripts/research_framework/pipeline.py`) provides a focused DID/IV/RDD analysis mode.
+> **Dual-track note:** Writing (`agent_pipeline.py`) has **5 stages** (outline → literature → plotting → writing → refinement) with optional HITL. Empirics are a separate hand-off: `enhanced_pipeline` / `modern_did` for real estimators; `research_framework/pipeline.py` is demo TWFE + design scaffold only. See `docs/ARCHITECTURE.md` §0.
 
 ### MCP Data Source Selection (43 directories: 28 no-key + 12 API-key + 3 opt-in legal)
 

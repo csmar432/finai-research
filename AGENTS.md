@@ -72,12 +72,17 @@ Stage 0: Health Check        → python scripts/health_check.py
 Stage 1: Idea Generation     → IDE handles via prompt
 Stage 2: Literature Review   → scripts/literature_download.py
 Stage 3: Novelty Check       → scripts/agent_pipeline.py --novelty-check
-Stage 4: Empirical Design    → scripts/research_framework/pipeline.py --mode design
+                               (NoveltyGate: SS/OpenAlex search + Jaccard; LLM only if search down)
+Stage 4: Empirical Design    → scaffold: pipeline.py --mode design
+                               real design: fin-experiment-design / REFINED_DESIGN.md
 Stage 5: Data Acquisition    → scripts/universal_data_fetcher.py
-Stage 6: Analysis            → scripts/research_framework/modern_did.py
-Stage 7: Paper Draft         → scripts/research_framework/report_generator.py
+Stage 6: Analysis            → python -m scripts.research_framework.enhanced_pipeline
+                               or import scripts.research_framework.modern_did
+                               (pipeline.py --mode full = demo TWFE only)
+Stage 7: Paper Draft         → scripts/agent_pipeline.py / report_generator.py  【写作轨】
 Stage 8: Review              → scripts/core/llm_reviewer.py
 ```
+Writing (7) and empirics (4–6) are separate hand-offs — see `docs/ARCHITECTURE.md` §0.
 
 Each stage should pause for user confirmation when HITL is enabled.
 Use `python scripts/agent_pipeline.py --topic "..." --use-hitl` (defaults to
@@ -101,7 +106,7 @@ HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
 | Run full pipeline | `python scripts/agent_pipeline.py --topic "..." --use-hitl` |
 | Agent-host batch (fail-closed) | `python scripts/agent_host_entry.py --topic "..."` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
-| Run a specific method (DID/IV/RDD/PSM) | `python scripts/research_framework/modern_did.py --help` |
+| Run empirics (modern DID) | `python -m scripts.research_framework.enhanced_pipeline --topic "..."` or `from scripts.research_framework import modern_did` |
 | List journal templates | `python scripts/journal_template.py --list` |
 | List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
 | Verify project integrity | `python scripts/audit_guard.py` (25/25 checks) |
