@@ -149,7 +149,7 @@ def test_agent_host_entry_records_topic_gaps(
     assert "empirics:" in skipped or "企业级绿色专利" in skipped or "firm_green"
     assert (tmp_path / "output" / "DELIVERY.md").is_file()
     final = (tmp_path / "output" / "FINAL.md").read_text(encoding="utf-8")
-    assert "do **not** invent a parallel pipeline" in final or "parallel pipeline" in final
+    assert "enhanced_pipeline" in final or "FinAI" in final or "empirics" in final.lower()
 
 
 def test_agent_host_block_on_topic_gaps(

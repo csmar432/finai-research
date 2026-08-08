@@ -10,12 +10,12 @@
 | 分类 | 数量 | 说明 |
 |------|------|------|
 | 🚀 Entry Points (`scripts/*.py`) | 106 | 顶级入口脚本（含 CLI） |
-| 📦 Core Modules (`scripts/core/`) | 109 | 核心库（被其他模块导入）|
+| 📦 Core Modules (`scripts/core/`) | 110 | 核心库（被其他模块导入）|
 | 📊 Research Framework (`scripts/research_framework/`) | 59 | 计量方法模块 |
 | 🧭 Research Directions (`scripts/research_directions/`) | 15 | 研究方向领域 |
-| 🧪 Tests (`tests/`) | 675 | 测试文件 |
+| 🧪 Tests (`tests/`) | 676 | 测试文件 |
 | 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
-| **合计（仅 Python 文件）** | **964** | 不含 MCP / docs / tests fixtures |
+| **合计（仅 Python 文件）** | **966** | 不含 MCP / docs / tests fixtures |
 
 > 自动生成于 2026-08-08
 ---
