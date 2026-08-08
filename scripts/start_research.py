@@ -171,13 +171,13 @@ def cmd_new_research(args) -> int:
     print()
     print(f"  ① 文献综述：python scripts/literature_download.py {tq} --dry-run")
     print(f"  ② 新颖性验证：python scripts/agent_pipeline.py --topic {tq} --novelty-check")
-    print(f"  ③ 实证设计：python scripts/research_framework/pipeline.py --mode design --topic {tq}")
-    print(f"  ④ 端到端写作：python scripts/agent_pipeline.py --topic {tq}{venue_arg} --use-hitl")
-    print(f"  ⑤ 报告生成：python scripts/research_framework/report_generator.py --topic {tq}")
+    print(f"  ③ 实证设计 scaffold：python scripts/research_framework/pipeline.py --mode design --topic {tq}")
+    print(f"  ④ 实证回归：python -m scripts.research_framework.enhanced_pipeline --topic {tq}")
+    print(f"  ⑤ 端到端写作：python scripts/agent_pipeline.py --topic {tq}{venue_arg} --use-hitl")
     print()
     print(f"  📄 研究画像：{profile_path}")
-    print("  💡 提示：阶段间请人工 review 产物。HITL 使用 agent_pipeline --use-hitl（默认停在 outline/literature/draft）。")
-    print("  💡 InteractivePipelineCheckpoint 供技能/脚本手动 import，不自动挂入 agent_pipeline。")
+    print("  💡 写作轨与实证轨分开：agent_pipeline 不跑 DID；实证用 enhanced_pipeline / modern_did。")
+    print("  💡 HITL：agent_pipeline --use-hitl（默认停在 outline/literature/draft）。")
     print()
 
     if getattr(args, "continue_pipeline", False):

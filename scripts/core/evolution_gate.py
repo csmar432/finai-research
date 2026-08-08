@@ -130,15 +130,14 @@ class BaseGate(ABC):
 
 class NoveltyGate(BaseGate):
     """
-    新颖性门控 — 检查研究想法是否与近 3 年文献重叠。
+    新颖性门控 — 检查研究想法是否与近 lookback_years 年文献重叠。
 
-    检查方式：
-      1. 提取研究想法的关键词（LLM 提取）
-      2. 在 Semantic Scholar 搜索近 3 年顶刊文献
-      3. 计算相似度（关键词重叠 + 摘要语义相似度）
-      4. 相似度 < 0.3 → 通过；≥ 0.3 → 拒绝
-
-    失败动作：过滤掉 → 触发新想法生成
+    检查方式（真实检索优先）：
+      1. 用想法文本查询 Semantic Scholar / OpenAlex（``literature_download``）
+      2. 按 lookback_years 过滤；顶刊命中加权
+      3. 标题+摘要 vs 想法的 token Jaccard 最大相似度
+      4. 相似度 < threshold → 通过；≥ threshold → 拒绝
+      5. 全部检索失败时才回退 LLM 启发式，并在 details 中标注 search_status
     """
 
     def __init__(
@@ -151,7 +150,7 @@ class NoveltyGate(BaseGate):
         self.lookback_years = lookback_years
         self.top_journals = top_journals or [
             "Journal of Finance", "Journal of Financial Economics",
-            "Review of Financial Studies", "Journal of Financial Economics",
+            "Review of Financial Studies",
             "Journal of Accounting Research", "Accounting Review",
             "Management Science", "Review of Economics and Statistics",
             "American Economic Review", "Quarterly Journal of Economics",
@@ -169,23 +168,36 @@ class NoveltyGate(BaseGate):
         issues: list[str] = []
         suggestions: list[str] = []
         passed_count = 0
-
         detailed_results = []
+        search_statuses: list[str] = []
 
         for idea in ideas:
             idea_text = idea if isinstance(idea, str) else idea.get("idea", str(idea))
-            similarity = self._check_novelty(idea_text)
+            assessment = self._assess_idea(idea_text)
+            similarity = float(assessment["similarity"])
+            search_statuses.append(str(assessment.get("search_status", "unknown")))
 
             if similarity < self.similarity_threshold:
                 passed_count += 1
             else:
-                issues.append(f"想法与已有文献高度重叠（相似度={similarity:.2f}）：{idea_text[:80]}")
+                issues.append(
+                    f"想法与已有文献高度重叠（相似度={similarity:.2f}）：{idea_text[:80]}"
+                )
+                top = assessment.get("overlaps") or []
+                if top:
+                    hit = top[0]
+                    issues.append(
+                        f"  最接近: {hit.get('title', '?')[:100]} "
+                        f"({hit.get('year', '?')}, {hit.get('venue', '')[:60]})"
+                    )
                 suggestions.append(f"考虑从 {idea_text[:50]}... 方向寻找差异化视角")
 
             detailed_results.append({
                 "idea": idea_text[:100],
                 "similarity": similarity,
                 "passed": similarity < self.similarity_threshold,
+                "search_status": assessment.get("search_status"),
+                "overlaps": assessment.get("overlaps", []),
             })
 
         score = passed_count / len(ideas) if ideas else 0.0
@@ -195,6 +207,11 @@ class NoveltyGate(BaseGate):
             suggestions.append(
                 f"仅 {passed_count}/{len(ideas)} 想法通过新颖性门控，"
                 "建议重新生成更具差异化的研究方向"
+            )
+        if search_statuses and all(s == "unavailable" for s in search_statuses):
+            issues.append(
+                "文献检索不可用（Semantic Scholar / OpenAlex 均无结果）；"
+                "本次分数含 LLM 启发式回退，请联网后重跑 --novelty-check"
             )
 
         return GateResult(
@@ -209,63 +226,175 @@ class NoveltyGate(BaseGate):
                 "passed_ideas": passed_count,
                 "lookback_years": self.lookback_years,
                 "results": detailed_results,
+                "search_backend": "literature_download",
             },
             elapsed_seconds=time.time() - start,
         )
 
-    def _check_novelty(self, idea: str) -> float:
-        """
-        检查单个想法的新颖性。
+    def _assess_idea(self, idea: str) -> dict:
+        """Return similarity + overlap metadata for one idea."""
+        papers = self._search_literature(idea)
+        if not papers:
+            return {
+                "similarity": self._llm_heuristic_similarity(idea),
+                "search_status": "unavailable",
+                "overlaps": [],
+            }
 
-        返回相似度（0-1），越低越新颖。
-        """
+        filtered = self._filter_papers(papers)
+        if not filtered:
+            return {
+                "similarity": self._llm_heuristic_similarity(idea),
+                "search_status": "filtered_empty",
+                "overlaps": [],
+            }
+
+        scored: list[dict] = []
+        for paper in filtered:
+            blob = f"{paper.get('title', '')} {paper.get('abstract', '')}"
+            sim = self._token_jaccard(idea, blob)
+            if self._is_top_journal(str(paper.get("venue") or "")):
+                sim = min(1.0, sim + 0.1)  # top-journal hit soft boost
+            scored.append({**paper, "similarity": round(sim, 4)})
+
+        scored.sort(key=lambda p: p["similarity"], reverse=True)
+        best = scored[0]["similarity"] if scored else 0.0
+        return {
+            "similarity": float(best),
+            "search_status": "ok",
+            "overlaps": [
+                {
+                    "title": p.get("title", ""),
+                    "year": p.get("year"),
+                    "venue": p.get("venue", ""),
+                    "doi": p.get("doi", ""),
+                    "similarity": p.get("similarity", 0.0),
+                }
+                for p in scored[:5]
+            ],
+        }
+
+    def _check_novelty(self, idea: str) -> float:
+        """Back-compat: return max overlap similarity in [0, 1]."""
+        return float(self._assess_idea(idea)["similarity"])
+
+    def _search_literature(self, query: str) -> list[dict]:
+        """Fetch candidate papers from SS + OpenAlex; normalize to a common shape."""
+        q = " ".join((query or "").split())[:240]
+        if not q:
+            return []
+
+        hits: list[dict] = []
+        try:
+            from scripts.literature_download import search_openalex, search_semantic
+        except Exception as exc:
+            logger.warning("NoveltyGate: cannot import literature_download: %s", exc)
+            return []
+
+        for label, fn in (
+            ("semantic", lambda: search_semantic(q, limit=10)),
+            ("openalex", lambda: search_openalex(q, limit=10)),
+        ):
+            try:
+                raw = fn() or []
+            except Exception as exc:
+                logger.debug("NoveltyGate %s search failed: %s", label, exc)
+                continue
+            for item in raw:
+                hits.append(self._normalize_paper(item, source=label))
+
+        # Dedupe by lowercased title
+        seen: set[str] = set()
+        unique: list[dict] = []
+        for p in hits:
+            key = (p.get("title") or "").strip().lower()
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            unique.append(p)
+        return unique
+
+    @staticmethod
+    def _normalize_paper(item: dict, source: str) -> dict:
+        title = item.get("title") or ""
+        year = item.get("year") or item.get("publication_year")
+        venue = item.get("venue") or ""
+        if not venue and isinstance(item.get("primary_location"), dict):
+            src = (item.get("primary_location") or {}).get("source") or {}
+            venue = src.get("display_name", "") if isinstance(src, dict) else ""
+        abstract = item.get("abstract") or ""
+        if isinstance(abstract, dict):
+            # OpenAlex inverted index sometimes leaked through — ignore for overlap.
+            abstract = ""
+        doi = ""
+        ext = item.get("externalIds") or item.get("external_ids") or {}
+        if isinstance(ext, dict):
+            doi = ext.get("DOI") or ext.get("doi") or ""
+        doi = doi or item.get("doi") or ""
+        if isinstance(doi, str) and doi.startswith("https://doi.org/"):
+            doi = doi.replace("https://doi.org/", "")
+        return {
+            "title": title,
+            "year": year,
+            "venue": venue or "",
+            "abstract": abstract if isinstance(abstract, str) else "",
+            "doi": doi,
+            "source": source,
+        }
+
+    def _filter_papers(self, papers: list[dict]) -> list[dict]:
+        from datetime import datetime
+
+        min_year = datetime.now().year - max(1, int(self.lookback_years))
+        kept: list[dict] = []
+        for p in papers:
+            year = p.get("year")
+            try:
+                y = int(year) if year is not None else None
+            except (TypeError, ValueError):
+                y = None
+            if y is not None and y < min_year:
+                continue
+            kept.append(p)
+        return kept or papers  # if year filter empties everything, keep raw hits
+
+    def _is_top_journal(self, venue: str) -> bool:
+        v = (venue or "").lower()
+        if not v:
+            return False
+        return any(j.lower() in v for j in self.top_journals)
+
+    @staticmethod
+    def _token_jaccard(a: str, b: str) -> float:
+        def toks(s: str) -> set[str]:
+            return {t for t in "".join(
+                ch.lower() if ch.isalnum() or ch.isspace() else " " for ch in (s or "")
+            ).split() if len(t) > 2}
+
+        ta, tb = toks(a), toks(b)
+        if not ta or not tb:
+            return 0.0
+        return len(ta & tb) / len(ta | tb)
+
+    def _llm_heuristic_similarity(self, idea: str) -> float:
+        """Fallback when literature search is unavailable. Documented as heuristic."""
         try:
             from scripts.core.llm_gateway import LLMGateway
+            import re
 
             gateway = LLMGateway(memory=None)
-            prompt = f"""分析以下研究想法，找出可能与之重叠的已有研究关键词。
-
-想法：{idea}
-
-请输出 JSON（仅 JSON）：
-{{
-  "keywords": ["关键词1", "关键词2", "关键词3"],
-  "similar_areas": ["相关领域1", "相关领域2"]
-}}
-
-基于你的知识：
-- 如果该想法大量使用 DID/ESG/绿色创新/关税等常见主题，相似度估计为 0.5-0.8
-- 如果该想法使用较新的方法或冷门数据集，相似度估计为 0.2-0.4
-- 纯理论创新且无直接实证对应，相似度估计为 0.1-0.2
-
-请直接给出 0-1 的相似度估计："""
-
-            try:
-                response = gateway.generate(prompt, task_hint="novelty_check")
-                text = response.response if hasattr(response, "response") else str(response)
-
-                import re
-                match = re.search(r"\b(0?\.\d+)", text)
-                if match:
-                    return min(1.0, max(0.0, float(match.group(1))))
-
-                match = re.search(r"\b(\d+)/10", text)
-                if match:
-                    return float(match.group(1)) / 10.0
-
-                match = re.search(r"\b(\d+)", text)
-                if match:
-                    val = int(match.group(1))
-                    if val <= 1:
-                        return float(val)
-                    return min(1.0, val / 10.0)
-            except Exception:
-                pass
-
-            return 0.5
-
-        except Exception:
-            return 0.5
+            prompt = (
+                f"Estimate how overlapping this research idea is with recent finance/"
+                f"economics literature. Reply with ONLY a float in [0,1].\n\nIdea: {idea}"
+            )
+            response = gateway.generate(prompt, task_hint="novelty_check")
+            text = response.response if hasattr(response, "response") else str(response)
+            match = re.search(r"\b(0?\.\d+)\b", text)
+            if match:
+                return min(1.0, max(0.0, float(match.group(1))))
+        except Exception as exc:
+            logger.debug("NoveltyGate LLM heuristic failed: %s", exc)
+        return 0.5
 
 
 # ─────────────────────────────────────────────────────────────────────────────

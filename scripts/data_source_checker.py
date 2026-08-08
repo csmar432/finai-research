@@ -990,6 +990,104 @@ def check_and_confirm(requirements: list[DataRequirement]) -> CheckResult:
     return result
 
 
+@dataclass
+class DataSourceGateReport:
+    """Writing pre-gate report shape (matches manuscript/reference gates)."""
+    passed: bool
+    summary_message: str
+    details: dict = field(default_factory=dict)
+
+    @property
+    def _report(self) -> "DataSourceGateReport":
+        # Back-compat for callers that incorrectly do ``fn(...)._report``.
+        return self
+
+
+def _infer_requirements_from_text(text: str) -> list[DataRequirement]:
+    """Heuristic: map writing/design text to DataRequirement probes."""
+    t = (text or "").lower()
+    reqs: list[DataRequirement] = []
+
+    if any(k in t for k in ("a股", "上市公司", "tushare", "csmar", "财务数据", "资产负债表", "roa")):
+        reqs.append(DataRequirement(
+            name="firm_financials",
+            user_facing_name="公司财务/行情数据",
+            description="文稿声明使用的 A 股/公司财务或行情数据",
+            sources=["tushare", "akshare", "csmar", "wind"],
+            required=True,
+            min_quality="real",
+        ))
+    if any(k in t for k in ("宏观", "gdp", "cpi", "m2", "world bank", "世界银行")):
+        reqs.append(DataRequirement(
+            name="macro",
+            user_facing_name="宏观数据",
+            description="文稿声明使用的宏观指标",
+            sources=["user-financial", "akshare", "user-wb-data"],
+            required=False,
+            min_quality="real",
+        ))
+    if any(k in t for k in ("美股", "yfinance", "sec ", "10-k", "edgar")):
+        reqs.append(DataRequirement(
+            name="us_equity",
+            user_facing_name="美股/SEC 数据",
+            description="文稿声明使用的美股或 SEC 数据",
+            sources=["akshare"],  # free probe proxy; yfinance MCP is separate
+            required=False,
+            min_quality="real",
+        ))
+    if any(k in t for k in ("海关", "出口", "关税", "hs编码", "hs 编码")):
+        reqs.append(DataRequirement(
+            name="customs",
+            user_facing_name="海关/关税暴露数据",
+            description="文稿声明使用的海关或关税清单数据",
+            sources=["csmar_customs"],
+            required=True,
+            min_quality="real",
+        ))
+    return reqs
+
+
+def check_data_sources(
+    writing_text: str,
+    design_text: str | None = None,
+) -> DataSourceGateReport:
+    """
+    Writing pre-gate adapter: infer data needs from text and probe availability.
+
+    - No inferred needs → pass (nothing to verify).
+    - Required needs with no available source → fail (do not silent-greenlight).
+    - Does **not** prompt for synthetic authorization (non-interactive).
+    """
+    combined = f"{writing_text or ''}\n{design_text or ''}"
+    requirements = _infer_requirements_from_text(combined)
+    if not requirements:
+        return DataSourceGateReport(
+            passed=True,
+            summary_message="未检测到明确数据源声明，跳过数据源探测",
+            details={"inferred": 0},
+        )
+
+    checker = DataSourceChecker(requirements)
+    result = checker.run()
+    passed = not result.requires_synthetic_data
+    summary = result.summary_message
+    if not passed:
+        summary = (
+            f"{summary} | 写作前数据源检查未通过："
+            f"存在必需数据缺口（见 DataSourceChecker）"
+        )
+    return DataSourceGateReport(
+        passed=passed,
+        summary_message=summary,
+        details={
+            "inferred": len(requirements),
+            "available_sources": list(result.available_sources),
+            "unavailable_sources": list(result.unavailable_sources),
+            "requires_synthetic_data": result.requires_synthetic_data,
+        },
+    )
+
+
 # ── 关税研究专用预设 ──────────────────────────────────────────────────────
 
 TARIFF_RESEARCH_REQUIREMENTS: list[DataRequirement] = [
