@@ -425,11 +425,17 @@ class TestStep1LoadDataEdgeCases:
         assert isinstance(df, pd.DataFrame)
 
     def test_build_panel_from_empty_falls_back_to_demo(self):
-        p = EnhancedPipeline(topic="T")
+        # Demo fallback is opt-in only (no silent Mock)
+        p = EnhancedPipeline(topic="T", allow_demo=True)
         df = p._build_panel([])
         assert isinstance(df, pd.DataFrame)
-        # Should have fallen back to demo data (has ticker etc.)
         assert "ticker" in df.columns
+
+    def test_build_panel_from_empty_refuses_silent_demo(self):
+        p = EnhancedPipeline(topic="T", allow_demo=False)
+        df = p._build_panel([])
+        assert isinstance(df, pd.DataFrame)
+        assert df.empty
 
     def test_build_panel_unknown_type_returns_empty_df(self):
         p = EnhancedPipeline(topic="T")
@@ -437,19 +443,19 @@ class TestStep1LoadDataEdgeCases:
         assert isinstance(df, pd.DataFrame)
 
     def test_step1_load_data_returns_dataframe(self):
-        p = EnhancedPipeline(topic="T", enable_hitl=False)
+        p = EnhancedPipeline(topic="T", enable_hitl=False, allow_demo=True)
         df = p.step1_load_data()
         assert isinstance(df, pd.DataFrame)
         assert len(df) > 0
 
     def test_step1_load_data_sets_ctx_df(self):
-        p = EnhancedPipeline(topic="T", enable_hitl=False)
+        p = EnhancedPipeline(topic="T", enable_hitl=False, allow_demo=True)
         p.step1_load_data()
         assert p.ctx.df is not None
         assert isinstance(p.ctx.df, pd.DataFrame)
 
     def test_step1_load_data_records_step_result(self):
-        p = EnhancedPipeline(topic="T", enable_hitl=False)
+        p = EnhancedPipeline(topic="T", enable_hitl=False, allow_demo=True)
         p.step1_load_data()
         assert "step1" in p.ctx.step_results
         assert p.ctx.step_results["step1"]["status"] == "ok"
@@ -552,7 +558,7 @@ class TestEnhancedPipelineSummary:
         assert "Step" not in s  # no steps run yet
 
     def test_summary_with_step_results(self):
-        p = EnhancedPipeline(topic="T", enable_hitl=False)
+        p = EnhancedPipeline(topic="T", enable_hitl=False, allow_demo=True)
         p.step1_load_data()
         s = p.summary()
         assert "step1" in s.lower() or "step 1" in s.lower() or "Step 1" in s
