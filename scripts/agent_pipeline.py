@@ -2099,17 +2099,17 @@ class AgentPipeline:
         # ── P0-1: End-to-end PDF / post-run bookkeeping ─────────────────────────
         # (Previously dead-indented under _auto_generate_arch_diagrams after
         # `return arch_paths` — never executed.)
-        paper_content: dict = {}
+        pdf_outline: dict = {}
         if result.outline:
-            paper_content.update(result.outline if isinstance(result.outline, dict) else {})
+            pdf_outline.update(result.outline if isinstance(result.outline, dict) else {})
         if result.writing:
             writing_data = result.writing if isinstance(result.writing, dict) else {}
-            paper_content.setdefault("content", writing_data)
+            pdf_outline.setdefault("content", writing_data)
         if result.refinement:
             refined = result.refinement if isinstance(result.refinement, dict) else {}
-            paper_content.setdefault("content", refined)
+            pdf_outline.setdefault("content", refined)
 
-        if _REPORT_GEN_AVAILABLE and paper_content and orchestrator_result.hitl_paused_at is None:
+        if _REPORT_GEN_AVAILABLE and pdf_outline and orchestrator_result.hitl_paused_at is None:
             import logging as _ap_log
             _ap_log = _ap_log.getLogger("agent_pipeline")
             try:
@@ -2117,7 +2117,7 @@ class AgentPipeline:
                 rg = ReportGenerator(output_dir=_out)
                 tex_path = rg.generate_paper(
                     topic=self.config.topic or "",
-                    outline=paper_content,
+                    outline=pdf_outline,
                     data=None,
                     regressions=None,
                     references=None,
@@ -2934,20 +2934,20 @@ class AgentPipeline:
             and orchestrator_result.hitl_paused_at is None
             and orchestrator_result.success
         ):
-            paper_content: dict = {}
+            resume_pdf_outline: dict = {}
             if result.outline and isinstance(result.outline, dict):
-                paper_content.update(result.outline)
+                resume_pdf_outline.update(result.outline)
             if result.writing and isinstance(result.writing, dict):
-                paper_content.setdefault("content", result.writing)
+                resume_pdf_outline.setdefault("content", result.writing)
             if result.refinement and isinstance(result.refinement, dict):
-                paper_content.setdefault("content", result.refinement)
-            if paper_content:
+                resume_pdf_outline.setdefault("content", result.refinement)
+            if resume_pdf_outline:
                 try:
                     _out = self.config.output_dir or "output/papers/"
                     rg = ReportGenerator(output_dir=_out)
                     tex_path = rg.generate_paper(
                         topic=self.config.topic or "",
-                        outline=paper_content,
+                        outline=resume_pdf_outline,
                         data=None,
                         regressions=None,
                         references=None,
