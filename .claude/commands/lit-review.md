@@ -13,7 +13,8 @@ description: 对指定研究主题进行系统性文献综述，构建引文网�
 等价于：
 
 ```bash
-python scripts/research_framework/pipeline.py --mode lit-review --topic "<topic>"
+python scripts/literature_download.py "<topic>" --source arxiv,semantic,openalex --limit 25
+# or Skill: fin-lit-review
 ```
 
 # MCP 数据源
