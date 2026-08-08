@@ -4,8 +4,9 @@ universal_data_fetcher.py
 经济金融研究统一数据获取模块。
 
 【设计原则】
-每个数据需求都有4层fallback，确保任何情况下都能获取数据或明确标记为模拟：
+每个数据需求都有分层 fallback，确保任何情况下都能获取数据或明确标记为模拟：
 
+  Layer 0: 本地实证数据根（FINAI_EMPIRICAL_DATA_ROOT /data/实证分析）
   Layer 1: MCP调用（Cursor MCP Tool，通过CallMcpTool）
   Layer 2: Python CLI库（akshare/yfinance/baostock，直接pip安装）
   Layer 3: 原始HTTP请求（requests/urllib，无需特殊库）
@@ -75,6 +76,7 @@ sys.path.insert(0, str(_PROJECT_ROOT))
 # ─── 数据来源枚举 ───────────────────────────────────────────────────────────────
 
 class DataSource(str, Enum):
+    LOCAL_EMPIRICAL = "local_empirical"  # FINAI_EMPIRICAL_DATA_ROOT
     MCP = "mcp"              # MCP服务器
     CLI_AKSHARE = "cli_akshare"    # akshare Python库
     CLI_BAOSTOCK = "cli_baostock"  # baostock Python库
@@ -85,6 +87,7 @@ class DataSource(str, Enum):
     @property
     def tier(self) -> int:
         tier_map = {
+            DataSource.LOCAL_EMPIRICAL: 0,
             DataSource.MCP: 1,
             DataSource.CLI_AKSHARE: 2,
             DataSource.CLI_BAOSTOCK: 2,
@@ -174,6 +177,49 @@ class DataFetcher:
         self.name = name
         self._provenance: list[str] = []
 
+    def try_local_empirical(self, *args, **kwargs) -> tuple[bool, Any, str]:
+        """Layer 0: shared empirical data root (FINAI_EMPIRICAL_DATA_ROOT).
+
+        Looks for csv/parquet/dta under the resolved root whose path matches
+        ``local_keywords`` / ``empirical_keywords`` or ``self.name``.
+        """
+        keywords = kwargs.get("local_keywords") or kwargs.get("empirical_keywords")
+        if keywords is None:
+            keywords = [self.name.replace("_", " "), self.name]
+        if isinstance(keywords, str):
+            keywords = [keywords]
+        try:
+            from scripts.core.empirical_data_root import (
+                find_candidate_files,
+                resolve_empirical_data_root,
+            )
+        except Exception as e:  # pragma: no cover
+            return False, None, f"empirical_data_root import failed: {e}"
+        root = resolve_empirical_data_root()
+        if not root.available:
+            return False, None, f"empirical root unavailable ({root.source})"
+        hits = find_candidate_files(list(keywords), root)
+        if not hits:
+            return False, None, "no matching local empirical files"
+        path = hits[0]
+        try:
+            suffix = path.suffix.lower()
+            if suffix == ".csv":
+                data = pd.read_csv(path)
+            elif suffix in {".parquet", ".pq"}:
+                data = pd.read_parquet(path)
+            elif suffix == ".dta":
+                data = pd.read_stata(path)
+            elif suffix in {".xlsx", ".xls"}:
+                data = pd.read_excel(path)
+            else:
+                return False, None, f"unsupported local suffix: {suffix}"
+            if data is None or (hasattr(data, "empty") and data.empty):
+                return False, None, f"empty local file: {path}"
+            return True, data, str(path)
+        except Exception as e:
+            return False, None, f"local load failed: {e}"
+
     def try_mcp(self, *args, **kwargs) -> tuple[bool, Any, str]:
         """Layer 1: 尝试MCP调用。子类应该重写此方法。
 
@@ -218,6 +264,21 @@ class DataFetcher:
                 **永远不要** 设为 True。
         """
         provenance = []
+
+        # Layer 0: local empirical data root (before remote MCP)
+        try:
+            ok, data, err = self.try_local_empirical(*args, **kwargs)
+            if ok and data is not None:
+                provenance.append("local_empirical")
+                return DataResult(
+                    data=data,
+                    source=DataSource.LOCAL_EMPIRICAL,
+                    provenance="→".join(provenance),
+                    available=True,
+                )
+            provenance.append(f"local_miss:{(err or 'none')[:40]}")
+        except Exception as e:
+            provenance.append(f"local_err:{str(e)[:30]}")
 
         # Layer 1: MCP
         try:
@@ -303,8 +364,10 @@ class AStockFinancialFetcher(DataFetcher):
         # 注意：MCP调用需要在Cursor中通过CallMcpTool执行
         # 这里检查环境变量是否有token，但不实际调用MCP
         from dotenv import load_dotenv
+        # Never override already-exported Cursor/shell env (e.g. TUSHARE_TOKEN,
+        # FINAI_EMPIRICAL_DATA_ROOT). Empty .env.local values must not wipe them.
         load_dotenv(_PROJECT_ROOT / ".env", override=False)
-        load_dotenv(_PROJECT_ROOT / ".env.local", override=True)
+        load_dotenv(_PROJECT_ROOT / ".env.local", override=False)
         import os
         token = os.getenv("TUSHARE_TOKEN", "").strip()
         if not token:

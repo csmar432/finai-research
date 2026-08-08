@@ -1,0 +1,20 @@
+---
+description: Isolation / autopilot host protocol (overrides greet-HITL when FINAI_AUTOPILOT)
+globs:
+alwaysApply: false
+---
+
+# Agent-host isolation (when user says 不需要确认 / FINAI_NO_HITL / 交 FINAL)
+
+When the user (or slot) requires **no questions, no wait, no Mock**:
+
+1. Prefer `python scripts/agent_host_entry.py` — do **not** freestyle `run_real_*.py`.
+2. Set / respect `FINAI_EMPIRICAL_DATA_ROOT` (default candidates include `/data/实证分析`).
+   Check local panels **before** remote fetch or proxy substitution.
+3. Never substitute: city patents → firm green patents; overseas revenue → customs HS;
+   interest coverage → bond spreads. Record hard-gaps in `SKIPPED_CONFIG.md`.
+4. Delivery must include `FINAL.md` + `SKIPPED_CONFIG.md` (not only `CODEX_FINAL.md` / PDF).
+5. Writing success with empirics gaps = `partial`, not journal-ready causal completion.
+6. Do not start MCP servers unless the user asked; do not invent coefficients.
+
+Interactive research chats (no autopilot) still follow `system-init.mdc` greet + HITL.

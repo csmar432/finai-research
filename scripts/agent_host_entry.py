@@ -6,6 +6,8 @@ Use when the host agent must:
   - not use Mock for research conclusions
   - write output/SKIPPED_CONFIG.md + output/FINAL.md on blockers
   - avoid inventing a parallel pipeline outside FinAI
+  - check FINAI_EMPIRICAL_DATA_ROOT and TOPIC hard requirements before
+    claiming causal empirics
 
 Examples:
   python scripts/agent_host_entry.py
@@ -30,29 +32,119 @@ from scripts.core.agent_host_report import (  # noqa: E402
 )
 
 
-def _read_topic_md(cwd: Path) -> str:
+def _read_topic_md_full(cwd: Path) -> str:
     for name in ("TOPIC.md", "topic.md"):
         p = cwd / name
         if p.is_file():
             text = p.read_text(encoding="utf-8").strip()
             if text:
-                # First non-empty, non-heading line as short topic; keep full text in report via file
-                for line in text.splitlines():
-                    s = line.strip()
-                    if not s or s.startswith("#"):
-                        continue
-                    return s[:300]
-                return text[:300]
+                return text
     return ""
 
 
-def _resolve_topic(arg_topic: str | None, cwd: Path) -> str:
+def _short_topic(text: str) -> str:
+    if not text:
+        return ""
+    for line in text.splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        return s[:300]
+    return text[:300]
+
+
+def _resolve_topic(arg_topic: str | None, cwd: Path) -> tuple[str, str]:
+    """Return (short_topic, full_text_for_integrity)."""
     if arg_topic and arg_topic.strip():
-        return arg_topic.strip()
-    from_md = _read_topic_md(cwd)
-    if from_md:
-        return from_md
-    return ""
+        t = arg_topic.strip()
+        full = _read_topic_md_full(cwd)
+        # Prefer full TOPIC.md for integrity when present; short topic for reports
+        return t[:300], full or t
+    full = _read_topic_md_full(cwd)
+    if full:
+        return _short_topic(full), full
+    return "", ""
+
+
+def _assess_host_context(
+    topic_full: str,
+    completed: list[str],
+) -> tuple[list[SkipItem], list[str], object | None]:
+    """Empirical root + TOPIC integrity → skip items and boundaries."""
+    skipped: list[SkipItem] = []
+    boundaries: list[str] = []
+    integrity = None
+
+    try:
+        from scripts.core.empirical_data_root import resolve_empirical_data_root
+
+        root = resolve_empirical_data_root()
+        if root.available:
+            completed.append(
+                f"Empirical data root → {root.path} (source={root.source})"
+            )
+        else:
+            completed.append(
+                f"Empirical data root unavailable "
+                f"(source={root.source}, path={root.path})"
+            )
+            skipped.append(
+                SkipItem(
+                    name="FINAI_EMPIRICAL_DATA_ROOT",
+                    reason=(
+                        "Shared empirical data directory not found/readable. "
+                        "Isolation agents must check local panels before remote fetch "
+                        "or proxy substitution."
+                    ),
+                    fix_hint=(
+                        "export FINAI_EMPIRICAL_DATA_ROOT=/data/实证分析 "
+                        "(or your panel directory) before empirics."
+                    ),
+                )
+            )
+            boundaries.append(
+                "No local empirical root — do not freestyle proxy DID/IV; "
+                "writing may still proceed."
+            )
+    except Exception as exc:  # pragma: no cover
+        completed.append(f"empirical_data_root failed: {exc}")
+
+    try:
+        from scripts.core.topic_integrity import assess_topic_integrity
+
+        integrity = assess_topic_integrity(topic_full)
+        completed.append(
+            f"TOPIC integrity → requirements={integrity.requirements} "
+            f"gaps={integrity.hard_gaps} proxies={len(integrity.proxy_warnings)}"
+        )
+        for item in integrity.to_skipped_items():
+            skipped.append(
+                SkipItem(
+                    name=item["item"],
+                    reason=item["reason"],
+                    fix_hint=item.get("fix_hint", ""),
+                )
+            )
+        for w in integrity.proxy_warnings:
+            skipped.append(
+                SkipItem(
+                    name=f"proxy_warning:{w.split(':')[0]}",
+                    reason=w,
+                    fix_hint=(
+                        "Remove proxy-laundered empirics; obtain the required panel "
+                        "or narrow TOPIC."
+                    ),
+                )
+            )
+        if integrity.hard_gaps:
+            boundaries.append(
+                "TOPIC hard-gaps present — writing OK with explicit non-claims; "
+                "causal empirics / journal-ready causal PDF forbidden until gaps close."
+            )
+    except Exception as exc:  # pragma: no cover
+        completed.append(f"topic_integrity failed: {exc}")
+
+    return skipped, boundaries, integrity
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -86,10 +178,27 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Only run health/preflight and write skip/final reports; do not start writing pipeline",
     )
+    parser.add_argument(
+        "--block-on-topic-gaps",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "If TOPIC hard empirics requirements lack local panels, block the whole run "
+            "(default: record skips, allow writing with non-claims)"
+        ),
+    )
+    parser.add_argument(
+        "--check-delivery",
+        action="store_true",
+        help="After run (or alone with --dry-run-preflight), validate delivery contract",
+    )
     args = parser.parse_args(argv)
 
+    # Isolation default: autopilot wording in FINAL.md
+    os.environ.setdefault("FINAI_AUTOPILOT", "1")
+
     cwd = Path.cwd()
-    topic = _resolve_topic(args.topic or None, cwd)
+    topic, topic_full = _resolve_topic(args.topic or None, cwd)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -113,6 +222,10 @@ def main(argv: list[str] | None = None) -> int:
         print("ERROR: missing topic (use --topic or TOPIC.md)", file=sys.stderr)
         print(f"Wrote {output_dir / 'SKIPPED_CONFIG.md'} and {output_dir / 'FINAL.md'}")
         return 2
+
+    context_skips, context_bounds, integrity = _assess_host_context(
+        topic_full or topic, completed
+    )
 
     # Health / LLM preflight (no MCP server start)
     llm_available = False
@@ -138,31 +251,57 @@ def main(argv: list[str] | None = None) -> int:
         allow_mock=allow_mock,
     )
 
+    hard_empirics_gaps = bool(
+        integrity and getattr(integrity, "hard_gaps", None)
+    )
+    if args.block_on_topic_gaps and hard_empirics_gaps:
+        for s in context_skips:
+            if s.name.startswith("empirics:") or s.name.startswith("proxy_warning:"):
+                skipped.append(s)
+
     if skipped or args.dry_run_preflight:
         # dry-run with healthy LLM still writes a progress FINAL (not blocked)
         if args.dry_run_preflight and not skipped:
             from scripts.core.agent_host_report import HostRunReport, write_host_reports
 
+            # Still surface non-blocking context skips (data root / soft gaps)
+            soft = [
+                s
+                for s in context_skips
+                if not s.name.startswith("LLM")
+            ]
             write_host_reports(
                 HostRunReport(
                     topic=topic,
                     output_dir=output_dir,
                     status="partial",
-                    skipped=[],
+                    skipped=soft,
                     completed_steps=completed + ["dry-run-preflight: pipeline not started"],
-                    boundaries=[
+                    boundaries=context_bounds
+                    + [
                         "Preflight only; writing/empirical pipeline not executed.",
                     ],
                     exit_code=0,
                 )
             )
+            if args.check_delivery:
+                from scripts.core.delivery_contract import validate_delivery
+
+                rep = validate_delivery(output_dir)
+                (output_dir / "DELIVERY.md").write_text(rep.to_markdown(), encoding="utf-8")
             print(f"Preflight OK. Reports in {output_dir}")
             return 0
 
+        merged = list(skipped)
+        seen = {s.name for s in merged}
+        for s in context_skips:
+            if s.name not in seen:
+                merged.append(s)
+                seen.add(s.name)
         write_blocked_run(
             topic=topic,
             output_dir=output_dir,
-            skipped=skipped
+            skipped=merged
             or [
                 SkipItem(
                     name="dry-run",
@@ -173,6 +312,11 @@ def main(argv: list[str] | None = None) -> int:
             completed_steps=completed,
             exit_code=4 if skipped else 0,
         )
+        if args.check_delivery:
+            from scripts.core.delivery_contract import validate_delivery
+
+            rep = validate_delivery(output_dir)
+            (output_dir / "DELIVERY.md").write_text(rep.to_markdown(), encoding="utf-8")
         print(
             f"Blocked or dry-run. See {output_dir / 'SKIPPED_CONFIG.md'} "
             f"and {output_dir / 'FINAL.md'}",
@@ -210,7 +354,8 @@ def main(argv: list[str] | None = None) -> int:
                 llm_available=False,
                 llm_status="agent_pipeline refused to start without LLM",
                 allow_mock=allow_mock,
-            ),
+            )
+            + context_skips,
             completed_steps=completed + ["agent_pipeline preflight refused run"],
             exit_code=4,
         )
@@ -226,7 +371,8 @@ def main(argv: list[str] | None = None) -> int:
                     reason="; ".join(result.errors[:5]) or "pipeline returned success=False",
                     fix_hint="Inspect output/fin-manuscript and re-run with LLM configured.",
                 )
-            ],
+            ]
+            + context_skips,
             completed_steps=completed + ["agent_pipeline started but did not fully succeed"],
             exit_code=1,
         )
@@ -234,22 +380,33 @@ def main(argv: list[str] | None = None) -> int:
 
     from scripts.core.agent_host_report import HostRunReport, write_host_reports
 
+    # Writing success + empirics hard-gaps → partial (not "completed" causal paper)
+    status = "partial" if context_skips else "completed"
+    bounds = list(context_bounds) + [
+        "Writing pipeline artifacts are under output/fin-manuscript/.",
+        "Empirical DID/IV stages remain a separate hand-off "
+        "(research_framework / universal_data_fetcher + FINAI_EMPIRICAL_DATA_ROOT).",
+    ]
     write_host_reports(
         HostRunReport(
             topic=topic,
             output_dir=output_dir,
-            status="completed",
-            skipped=[],
+            status=status,
+            skipped=context_skips,
             completed_steps=completed + ["agent_pipeline finished successfully"],
-            boundaries=[
-                "Writing pipeline artifacts are under output/fin-manuscript/.",
-                "Empirical DID/IV stages remain a separate hand-off "
-                "(research_framework / universal_data_fetcher).",
-            ],
+            boundaries=bounds,
             exit_code=0,
         )
     )
-    print(f"✅ Agent-host run completed. See {output_dir / 'FINAL.md'}")
+    if args.check_delivery:
+        from scripts.core.delivery_contract import validate_delivery
+
+        rep = validate_delivery(output_dir)
+        (output_dir / "DELIVERY.md").write_text(rep.to_markdown(), encoding="utf-8")
+    print(
+        f"{'⚠️ Partial' if status == 'partial' else '✅'} Agent-host run finished. "
+        f"See {output_dir / 'FINAL.md'}"
+    )
     return 0
 
 
