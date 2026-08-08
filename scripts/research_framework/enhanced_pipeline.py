@@ -119,16 +119,16 @@ class EnhancedPipeline:
 
     6 步增强流水线：
 
-      Step 1: 数据获取（复用原有 + CachedDataFetcher）
-      Step 2: 现代 DID 回归（modern_did.py — 替换手写 OLS）
-      Step 3: 稳健性检验（robustness_runner.py）
+      Step 1: 数据获取（本地实证根冗余 → CachedDataFetcher；demo 需显式允许）
+      Step 2: 现代 DID 回归（modern_did + optional multi-estimator explore）
+      Step 3: 稳健性检验（robustness_runner；explore 时用 comprehensive）
       Step 4: Validation Gate 评估（evolution_gate.py）
       Step 5: LaTeX 生成 + 即时验证（latex_diff.py + latex_lint.py）
       Step 6: PDF 视觉检查（pdf_vision_check.py）
 
     Usage
     -----
-        pipeline = EnhancedPipeline(topic="ESG and Financing Constraints")
+        pipeline = EnhancedPipeline(topic="ESG and Financing Constraints", explore=True)
         result = pipeline.run()
         print(result.summary())
     """
@@ -148,6 +148,10 @@ class EnhancedPipeline:
         enable_hitl: bool = True,
         hitl_timeout: int = 600,
         on_gate_approved: callable | None = None,
+        *,
+        explore: bool = False,
+        allow_demo: bool = False,
+        panel_path: str | Path | None = None,
         **kwargs,
     ):
         self.topic = topic
@@ -163,6 +167,10 @@ class EnhancedPipeline:
         self.enable_pdf_vision = enable_pdf_vision
         self.enable_sandbox = enable_sandbox
         self.enable_self_evolution = enable_self_evolution
+        # Official empirics depth (reuse FinAI modules; do not freestyle outside)
+        self.explore = bool(explore or kwargs.get("explore", False))
+        self.allow_demo = bool(allow_demo or kwargs.get("allow_demo", False))
+        self.panel_path = panel_path or kwargs.get("panel_path")
         self.enable_hitl = enable_hitl
         self.hitl_timeout = hitl_timeout
         # 审批通过回调：签名 on_gate_approved(stage_name: str, ctx: PipelineContext)
@@ -298,42 +306,88 @@ class EnhancedPipeline:
 
     def step1_load_data(self) -> pd.DataFrame:
         """
-        Step 1: 数据加载。
+        Step 1: 数据加载（冗余顺序，禁止静默 Mock）。
 
-        尝试使用 CachedDataFetcher（MCP 缓存优先）。
-        失败时生成演示面板数据。
+        1. ``--panel`` / ``FINAI_EMPIRICAL_DATA_ROOT`` 本地面板
+        2. CachedDataFetcher 远程/MCP 链
+        3. 演示数据 **仅** 当 ``allow_demo=True``
         """
-        _log.info("[Step 1] 数据加载")
+        _log.info("[Step 1] 数据加载（local → MCP → demo-opt-in）")
+        provenance: list[str] = []
+        data: Any = None
 
+        # Layer A: local empirical root / explicit panel
         try:
-            from scripts.research_framework.data_fetcher import CachedDataFetcher
+            from scripts.core.empirical_explore import load_panel_redundant
 
-            fetcher = CachedDataFetcher(
-                output_dir="data/",
-                enable_7layer_fallback=True,
-                enable_nl_router=False,
-                verbose=True,
+            local = load_panel_redundant(
+                topic=self.topic,
+                panel_path=self.panel_path,
             )
-
-            # 尝试获取演示数据
-            data = fetcher.fetch_with_fallback(
-                "stock_info",
-                {"ticker": "AAPL"},
-            )
-
-            if data:
-                _log.info("[Step 1] ✅ MCP 数据获取成功")
-            else:
-                _log.warning("[Step 1] MCP 获取失败，使用演示数据")
-                data = self._generate_demo_data()
-
+            provenance.extend(local.tried)
+            if local.ok:
+                _log.info("[Step 1] ✅ 本地面板: %s (%s)", local.path, local.source)
+                data = local.df
+                provenance.append(f"source:{local.source}")
         except Exception as exc:
-            _log.warning(f"[Step 1] CachedDataFetcher 不可用: {exc}，使用演示数据")
-            data = self._generate_demo_data()
+            provenance.append(f"local_err:{exc}")
+            _log.warning("[Step 1] 本地面板加载失败: %s", exc)
+
+        # Layer B: CachedDataFetcher (now also probes local root inside fallback)
+        if data is None:
+            try:
+                from scripts.research_framework.data_fetcher import CachedDataFetcher
+
+                fetcher = CachedDataFetcher(
+                    output_dir="data/",
+                    enable_7layer_fallback=True,
+                    enable_nl_router=False,
+                    verbose=True,
+                )
+                remote = fetcher.fetch_with_fallback(
+                    "stock_info",
+                    {"ticker": "AAPL", "local_keywords": [self.topic]},
+                )
+                if remote:
+                    _log.info("[Step 1] ✅ MCP/fallback 数据获取成功")
+                    data = remote
+                    provenance.append("source:cached_fallback")
+                else:
+                    provenance.append("mcp_miss")
+            except Exception as exc:
+                provenance.append(f"mcp_err:{exc}")
+                _log.warning("[Step 1] CachedDataFetcher 不可用: %s", exc)
+
+        # Layer C: demo only with explicit opt-in
+        if data is None:
+            if self.allow_demo:
+                _log.warning("[Step 1] 允许演示数据（allow_demo=True）")
+                data = self._generate_demo_data()
+                provenance.append("source:demo_opt_in")
+            else:
+                msg = (
+                    "无可用面板：请设置 FINAI_EMPIRICAL_DATA_ROOT / --panel，"
+                    "或显式传 allow_demo=True / --allow-demo（仅演示）。"
+                )
+                _log.error("[Step 1] %s", msg)
+                self.ctx.df = None
+                self.ctx.step_results["step1"] = {
+                    "status": "error",
+                    "error": msg,
+                    "provenance": provenance,
+                }
+                return pd.DataFrame()
 
         df = self._build_panel(data)
         self.ctx.df = df
-        self.ctx.step_results["step1"] = {"status": "ok", "n_obs": len(df)}
+        self.ctx.step_results["step1"] = {
+            "status": "ok" if not df.empty else "error",
+            "n_obs": len(df),
+            "provenance": provenance,
+            "simulated": bool(df.attrs.get("simulated") or (
+                not df.empty and "_simulated" in df.columns and bool(df["_simulated"].iloc[0])
+            )),
+        }
         return df
 
     def _generate_demo_data(self) -> list[dict]:
@@ -389,33 +443,41 @@ class EnhancedPipeline:
         else:
             df = pd.DataFrame()
 
-        # 确保有必要的列
+        # 确保有必要的列（不再静默换成 demo，除非 allow_demo）
         required_cols = ["ticker", "year", "roa", "esg_high", "post", "did"]
         missing = [c for c in required_cols if c not in df.columns]
         if missing:
-            _log.warning(f"[Step 1] 缺少列 {missing}，生成演示数据")
-            demo = self._generate_demo_data()
-            df = pd.DataFrame(demo)
+            if self.allow_demo:
+                _log.warning(
+                    "[Step 1] 缺少列 %s，allow_demo=True → 演示面板", missing
+                )
+                df = pd.DataFrame(self._generate_demo_data())
+            else:
+                _log.error(
+                    "[Step 1] 面板缺少 DID 列 %s；拒绝静默 demo。"
+                    "请提供含 treat/post/y 的面板，或 --allow-demo。",
+                    missing,
+                )
+                return pd.DataFrame()
 
-        return df.dropna(subset=["roa", "esg_high", "post", "did"])
+        keep = [c for c in ("roa", "esg_high", "post", "did") if c in df.columns]
+        return df.dropna(subset=keep) if keep else df
 
     # ── Step 2: Modern DID ─────────────────────────────────────────────────
 
     def step2_modern_did(self) -> dict[str, Any]:
         """
-        Step 2: 现代 DID 回归。
+        Step 2: 现代 DID 回归（官方多估计器探索，复用 ModernDiDEngine）。
 
-        集成 modern_did.py：
-          - did_2x2（替换原有手写 OLS）
-          - Callaway-Sant'Anna（交错 DiD）
-          - 平行趋势自动化检验
-          - Bacon 分解
-          - Honest DiD 敏感性分析
+        standard: 2x2 + PT + Bacon + Honest + CS
+        explore:  + BJS + Gardner + event_study_data
+        单估计器失败记入 skipped，不中断整步。
         """
-        _log.info("[Step 2] 现代 DID 回归")
+        level = "explore" if self.explore else "standard"
+        _log.info("[Step 2] 现代 DID 回归（level=%s）", level)
         results: dict[str, Any] = {}
 
-        if self.ctx.df is None:
+        if self.ctx.df is None or self.ctx.df.empty:
             _log.error("[Step 2] 无数据，跳过")
             return results
 
@@ -426,63 +488,49 @@ class EnhancedPipeline:
             return results
 
         try:
+            from scripts.core.empirical_explore import explore_did_suite
             from scripts.research_framework.modern_did import ModernDiDEngine
 
+            x_vars = [
+                c
+                for c in ("lev", "size", "tangibility", "mb", "cash_ratio")
+                if c in df.columns
+            ]
+            cluster = "sector" if "sector" in df.columns else None
             engine = ModernDiDEngine(
                 df=df,
                 y_var="roa",
                 treat_var="did",
                 time_var="post",
                 unit_var="ticker",
-                x_vars=["lev", "size", "tangibility", "mb", "cash_ratio"],
-                cluster_var="sector",
+                x_vars=x_vars,
+                cluster_var=cluster,
             )
 
-            # 2x2 DID（基准）
-            r2x2 = engine.did_2x2(cluster_var="sector")
-            results["did_2x2"] = r2x2.to_dict()
-            _log.info(
-                f"[Step 2] did_2x2: coef={r2x2.coef:+.4f} "
-                f"(p={r2x2.pval:.4f}), N={r2x2.n_obs}"
+            report = explore_did_suite(
+                engine, level=level, cluster_var=cluster
             )
+            # Normalize keys expected by later steps / summary
+            results = dict(report.results)
+            if "parallel_trends_test" in results and "parallel_trends" not in results:
+                results["parallel_trends"] = results["parallel_trends_test"]
+            if "bacon" in results and "bacon_decomp" not in results:
+                results["bacon_decomp"] = results["bacon"]
 
-            # 平行趋势
-            pt = engine.parallel_trends_test()
-            results["parallel_trends"] = pt
-            _log.info(
-                f"[Step 2] Parallel trends: p={pt.get('pval', 1):.3f}, "
-                f"TOST={'pass' if pt.get('toest_pass') else 'fail'}"
-            )
-
-            # Bacon 分解（如果有交错数据）
-            if "sector" in df.columns:
-                try:
-                    bacon_df = engine.bacon()
-                    results["bacon_decomp"] = bacon_df.to_dict("records") if not bacon_df.empty else {}
-                    _log.info(f"[Step 2] Bacon: {len(bacon_df)} comparisons")
-                except Exception as exc:
-                    _log.warning(f"[Step 2] Bacon 分解失败: {exc}")
-
-            # Honest DiD 敏感性
-            honest = engine.honest_did(m=0.5)
-            results["honest_did"] = honest
-            _log.info(
-                f"[Step 2] Honest DiD: breakdown δ={honest.get('breakdown_value', 'N/A')}"
-            )
-
-            # Callaway-Sant'Anna（如果 diff_in_diff2 可用）
-            try:
-                r_cs = engine.cs()
-                results["cs"] = r_cs.to_dict()
-                _log.info(
-                    f"[Step 2] CS: coef={r_cs.coef:+.4f} "
-                    f"(p={r_cs.pval:.4f})"
-                )
-            except Exception:
-                _log.info("[Step 2] diff_in_diff2 不可用，跳过 CS 估计")
+            for name in report.succeeded:
+                _log.info("[Step 2] ✅ %s", name)
+            for name, err in report.errors.items():
+                _log.info("[Step 2] skip %s: %s", name, err)
 
             self.ctx.modern_did_results = results
-            self.ctx.step_results["step2"] = {"status": "ok", "results": list(results.keys())}
+            self.ctx.step_results["step2"] = {
+                "status": "ok" if report.succeeded else "error",
+                "results": list(results.keys()),
+                "explore_level": level,
+                "succeeded": report.succeeded,
+                "skipped": report.skipped,
+                "errors": report.errors,
+            }
 
         except Exception as exc:
             _log.error(f"[Step 2] Modern DID 失败: {exc}")
@@ -520,6 +568,11 @@ class EnhancedPipeline:
         try:
             from scripts.research_framework.robustness_runner import RobustnessRunner
 
+            x_vars = [
+                c
+                for c in ("lev", "size", "tangibility", "mb", "cash_ratio")
+                if c in df.columns
+            ]
             runner = RobustnessRunner(
                 df=df,
                 baseline_result=base_result,
@@ -527,18 +580,21 @@ class EnhancedPipeline:
                 treat_var="did",
                 time_var="post",
                 unit_var="ticker",
-                x_vars=["lev", "size", "tangibility", "mb", "cash_ratio"],
+                x_vars=x_vars,
             )
 
-            # 添加中文顶刊所需的最小稳健性检验
-            runner.add_test("parallel_trends")
-            runner.add_test("placebo")
-            runner.add_test("psm")
-            runner.add_test("replace_outliers", {"pct": 1})
-            runner.add_test("sub_sample", {"year_range": [2019, 2024]})
-            runner.add_test("remove_extreme", {"n_remove": 5})
-
-            report = runner.run_all()
+            if self.explore:
+                # Deeper official suite (existing RobustnessRunner API)
+                report = runner.run_comprehensive(level="advanced")
+            else:
+                # 中文顶刊最低常用子集
+                runner.add_test("parallel_trends")
+                runner.add_test("placebo")
+                runner.add_test("psm")
+                runner.add_test("replace_outliers", {"pct": 1})
+                runner.add_test("sub_sample", {"year_range": [2019, 2024]})
+                runner.add_test("remove_extreme", {"n_remove": 5})
+                report = runner.run_all()
             self.ctx.robustness_report = report
 
             _log.info(
@@ -1242,6 +1298,22 @@ def _cli_main():
         action="store_true",
         help="Enable self-evolution loop",
     )
+    parser.add_argument(
+        "--explore",
+        action="store_true",
+        help="Deeper official empirics: more DID estimators + comprehensive robustness",
+    )
+    parser.add_argument(
+        "--allow-demo",
+        action="store_true",
+        help="Allow simulated demo panel when no local/MCP data (off by default)",
+    )
+    parser.add_argument(
+        "--panel",
+        type=str,
+        default="",
+        help="Path to local panel (csv/parquet/dta); checked before FINAI_EMPIRICAL_DATA_ROOT",
+    )
     args = parser.parse_args()
 
     print(f"\n{'='*60}")
@@ -1250,6 +1322,7 @@ def _cli_main():
     print(f"  Journal: {args.journal}")
     print(f"  Output:  {args.output}")
     print(f"  Language: {args.language}")
+    print(f"  Explore: {args.explore}")
     print(f"{'='*60}\n")
 
     pipeline = EnhancedPipeline(
@@ -1263,6 +1336,9 @@ def _cli_main():
         enable_pdf_vision=args.pdf_vision,
         enable_sandbox=True,
         enable_self_evolution=args.self_evolution,
+        explore=args.explore,
+        allow_demo=args.allow_demo,
+        panel_path=args.panel or None,
     )
 
     ctx = pipeline.run()

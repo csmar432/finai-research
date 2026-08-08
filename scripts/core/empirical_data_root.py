@@ -41,31 +41,41 @@ def resolve_empirical_data_root(
     *,
     env_var: str = "FINAI_EMPIRICAL_DATA_ROOT",
 ) -> EmpiricalDataRoot:
-    """Resolve the shared empirical data directory (read-only usage)."""
-    candidates: list[tuple[str, str]] = []
+    """Resolve the shared empirical data directory (read-only usage).
+
+    Explicit path / ``FINAI_EMPIRICAL_DATA_ROOT`` win. When either is set but
+    missing/unreadable, do **not** silently fall through to repo ``data/`` —
+    that hid empty roots and pulled demo panels during isolation runs.
+    Defaults apply only when neither explicit nor env is set.
+    """
     if explicit:
-        candidates.append((str(explicit), "explicit"))
+        p = Path(os.path.expanduser(str(explicit))).resolve()
+        if p.is_dir():
+            return EmpiricalDataRoot(
+                path=p, source="explicit", exists=True, readable=os.access(p, os.R_OK)
+            )
+        return EmpiricalDataRoot(path=p, source="explicit", exists=False, readable=False)
+
     env_val = (os.environ.get(env_var) or "").strip()
     if env_val:
-        candidates.append((env_val, "env"))
-    for c in _DEFAULT_CANDIDATES:
-        candidates.append((c, "default"))
+        p = Path(os.path.expanduser(env_val)).resolve()
+        if p.is_dir():
+            return EmpiricalDataRoot(
+                path=p, source="env", exists=True, readable=os.access(p, os.R_OK)
+            )
+        return EmpiricalDataRoot(path=p, source="env", exists=False, readable=False)
 
     seen: set[str] = set()
-    for raw, source in candidates:
+    for raw in _DEFAULT_CANDIDATES:
         key = os.path.abspath(os.path.expanduser(raw))
         if key in seen:
             continue
         seen.add(key)
         p = Path(key)
         if p.is_dir():
-            readable = os.access(p, os.R_OK)
-            return EmpiricalDataRoot(path=p, source=source, exists=True, readable=readable)
-
-    # Prefer env path even if missing (so reports show the intended root)
-    if env_val:
-        p = Path(os.path.expanduser(env_val)).resolve()
-        return EmpiricalDataRoot(path=p, source="env", exists=False, readable=False)
+            return EmpiricalDataRoot(
+                path=p, source="default", exists=True, readable=os.access(p, os.R_OK)
+            )
     return EmpiricalDataRoot(path=None, source="missing", exists=False, readable=False)
 
 

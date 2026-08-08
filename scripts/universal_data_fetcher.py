@@ -845,12 +845,24 @@ class UniversalDataFetcher:
         df["_timestamp"] = datetime.now().isoformat()
         return df
 
-    def fetch_entity_list_events(self) -> pd.DataFrame:
-        """获取实体清单事件数据"""
-        result = self.fetch("entity_list")
+    def fetch_entity_list_events(
+        self, *, allow_synthetic: bool = False
+    ) -> pd.DataFrame:
+        """获取实体清单事件数据。
+
+        默认不再静默回落到 KNOWN_ENTITY_LIST；需显式 allow_synthetic=True。
+        """
+        result = self.fetch("entity_list", allow_synthetic=allow_synthetic)
         if result.data is not None and isinstance(result.data, pd.DataFrame):
             return result.data
-        return pd.DataFrame(KNOWN_ENTITY_LIST)
+        if allow_synthetic:
+            df = pd.DataFrame(KNOWN_ENTITY_LIST)
+            df["_synthetic"] = True
+            return df
+        raise SyntheticDataForbiddenError(
+            "entity_list fetch failed and allow_synthetic=False; "
+            "refusing silent KNOWN_ENTITY_LIST fallback."
+        )
 
     def fetch_macro_panel(
         self, indicators: list[str], start_year: int = 2015, end_year: int = 2025
