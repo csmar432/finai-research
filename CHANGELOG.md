@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Agent-host entry robustness**: isolation / non-interactive hosts previously had no
+  fail-closed FinAI entry when LLM was missing and Mock was forbidden, so agents
+  freestyled outside the official pipeline. Added `scripts/agent_host_entry.py` and
+  `scripts/core/agent_host_report.py` to write canonical `output/SKIPPED_CONFIG.md` +
+  `output/FINAL.md`, wired the same artifacts into `agent_pipeline` exit code 4, and
+  documented the protocol in `AGENTS.md` / `fin-full-pipeline` skill.
+
 ## [0.2.0a1] - 2026-08-07
 
 ### Fixed

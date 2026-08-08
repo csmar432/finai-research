@@ -9,6 +9,11 @@ argument-hint: "[research-direction]"
 
 端到端的经济金融学术研究流程，从用户描述研究方向开始，到生成可投稿论文 PDF 结束。
 
+> **Agent-host / 隔离槽位（重要）**  
+> 若任务要求「不要询问、不要 Mock、缺失配置则跳过并写报告」：  
+> **先运行** `python scripts/agent_host_entry.py`。若非 0 退出，**停止本 Skill**，  
+> 不要自建平行复现流水线或编造结果。见 `AGENTS.md` → Agent-host protocol。
+
 ```
 研究方向输入
        ↓

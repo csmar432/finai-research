@@ -2,6 +2,9 @@
 
 > **注意**：本文件是文档版本。操作版本见 `.cursor/skills/fin-full-pipeline/SKILL.md`。
 
+> **Agent-host / 隔离槽位**：若要求不询问、不 Mock、缺失则跳过——先跑
+> `python scripts/agent_host_entry.py`；非 0 退出则停止，勿自建平行流水线。
+
 ## 功能
 
 端到端的经济金融学术研究流程：
