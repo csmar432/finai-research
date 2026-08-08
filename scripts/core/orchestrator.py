@@ -51,7 +51,7 @@ from scripts.core.agents.base import (
     CancellationToken,
     HaltDecision,
 )
-from scripts.core.hitl_gate import HITLGate
+from scripts.core.hitl_gate import GateState, HITLGate
 from scripts.core.agent_state import hitl_manager
 from scripts.core.llm_gateway import LLMGateway
 
@@ -527,6 +527,12 @@ class AgentOrchestrator:
         """
         Resume a HITL-paused pipeline after approval or rejection.
 
+        Semantics (HITL holds *after* the agent produces output):
+        - APPROVED → keep the paused stage output, continue from the next step
+        - REJECTED → drop the rejected output, re-run the same stage with
+          ``prior_rejection_feedback`` injected from ``reject_step()``
+        - PENDING / undecided → return ``paused_result`` unchanged (fail-closed)
+
         Parameters
         ----------
         paused_result : PipelineResult
@@ -545,31 +551,89 @@ class AgentOrchestrator:
 
         paused_stage = paused_result.hitl_paused_at
 
-        # Build context carrying over completed stage results
-        resume_context = dict(paused_result.final_context)
-        # Inject completed stage outputs so downstream stages can access them
-        for stage, result in paused_result.stage_results.items():
-            resume_context[f"{stage.value}_result"] = result.output
-
-        # Find index of the paused stage and resume from the next one
-        resume_idx = 0
-        for i, step in enumerate(steps):
-            if step.stage == paused_stage:
-                resume_idx = i + 1  # skip the paused stage itself, resume from next
-                break
-
-        # Clamp to valid range
-        resume_idx = min(resume_idx, len(steps) - 1)
-        if resume_idx >= len(steps):
+        # Fail-closed: still waiting for a human decision.
+        still_pending = [
+            r for r in self._hitl_gate.get_pending()
+            if r.stage == paused_stage.value
+        ]
+        if still_pending:
             logger.warning(
-                f"resume_pipeline: all steps completed (resume_idx={resume_idx} >= len(steps)={len(steps)}), "
-                "returning existing paused_result"
+                "resume_pipeline: stage %s still PENDING — approve/reject first",
+                paused_stage.value,
             )
             return paused_result
 
+        history = self._hitl_gate.get_history(stage=paused_stage.value, limit=1)
+        if not history:
+            logger.warning(
+                "resume_pipeline: no decision recorded for stage %s",
+                paused_stage.value,
+            )
+            return paused_result
+
+        decision = history[-1]
+        paused_idx = next(
+            (i for i, step in enumerate(steps) if step.stage == paused_stage),
+            None,
+        )
+        if paused_idx is None:
+            logger.warning(
+                "resume_pipeline: paused stage %s not in steps",
+                paused_stage.value,
+            )
+            return paused_result
+
+        resume_context = dict(paused_result.final_context)
+        for stage, result in paused_result.stage_results.items():
+            resume_context[f"{stage.value}_result"] = result.output
+        carried_results = dict(paused_result.stage_results)
+
+        if decision.state == GateState.REJECTED:
+            # Re-run the rejected stage with stored feedback.
+            resume_idx = paused_idx
+            carried_results.pop(paused_stage, None)
+            resume_context.pop(f"{paused_stage.value}_result", None)
+            action = "rejected→rerun"
+        elif decision.state == GateState.APPROVED:
+            resume_idx = paused_idx + 1
+            action = "approved→continue"
+        else:
+            logger.warning(
+                "resume_pipeline: unexpected gate state %s for %s",
+                decision.state,
+                paused_stage.value,
+            )
+            return paused_result
+
+        if resume_idx >= len(steps):
+            # Last stage was approved — nothing left to run.
+            logger.info(
+                "resume_pipeline: '%s' approved final stage %s; pipeline complete",
+                paused_result.pipeline_name,
+                paused_stage.value,
+            )
+            return PipelineResult(
+                pipeline_name=paused_result.pipeline_name,
+                success=True,
+                stage_results=carried_results,
+                final_context=resume_context,
+                total_latency_ms=paused_result.total_latency_ms,
+                hitl_paused_at=None,
+                evolution_events=list(paused_result.evolution_events),
+                trace=list(paused_result.trace) + [{
+                    "type": "hitl_resume_complete",
+                    "stage": paused_stage.value,
+                    "action": action,
+                    "timestamp": time.time(),
+                }],
+            )
+
         logger.info(
-            f"Resuming pipeline '{paused_result.pipeline_name}' "
-            f"from step {resume_idx} ({paused_stage.value} approved)"
+            "Resuming pipeline '%s' from step %s (%s %s)",
+            paused_result.pipeline_name,
+            resume_idx,
+            paused_stage.value,
+            action,
         )
 
         return self._run_pipeline_impl(
@@ -580,6 +644,7 @@ class AgentOrchestrator:
             max_workers=4,
             _resume_from_step=resume_idx,
             _resume_context=resume_context,
+            _resume_stage_results=carried_results,
         )
 
     def run_parallel(
@@ -716,6 +781,7 @@ class AgentOrchestrator:
         max_workers: int = 4,
         _resume_from_step: int = 0,
         _resume_context: dict[str, Any] | None = None,
+        _resume_stage_results: dict[PipelineStage, AgentResult] | None = None,
     ) -> PipelineResult:
         """
         Internal pipeline execution (also used for HITL resume).
@@ -726,6 +792,9 @@ class AgentOrchestrator:
             Index of the step to resume from (used after HITL approval).
         _resume_context : dict | None
             Pre-built context to continue from (replaces rebuilding from input_data).
+        _resume_stage_results : dict | None
+            Stage results already produced before the HITL pause (must be
+            carried forward so success aggregation stays correct).
         """
         # Check if parliament integration is available
         _has_parliament = False
@@ -743,7 +812,9 @@ class AgentOrchestrator:
         else:
             context = dict(input_data)
 
-        stage_results: dict[PipelineStage, AgentResult] = {}
+        stage_results: dict[PipelineStage, AgentResult] = (
+            dict(_resume_stage_results) if _resume_stage_results else {}
+        )
         hitl_paused_at: PipelineStage | None = None
 
         for step in steps[_resume_from_step:]:
@@ -790,13 +861,11 @@ class AgentOrchestrator:
                 )
                 continue
 
-            # Build agent_context BEFORE the HITL gate so it is in scope
             # Inject any prior rejection feedback so the agent can improve
             agent_context = {
                 **context,
                 "messages": self.get_messages(step.agent_name),
             }
-            # Inject rejection feedback from previous rejection
             if step.stage.value in self._rejection_feedback:
                 prior_feedback = self._rejection_feedback.pop(step.stage.value)
                 agent_context["prior_rejection_feedback"] = prior_feedback
@@ -805,48 +874,7 @@ class AgentOrchestrator:
                     "content": f"[审核反馈] 上一轮审核未通过，请根据以下反馈改进：{prior_feedback}",
                 })
 
-            # ── HITL Gate ─────────────────────────────────────────────────
-            if step.hitl_gate:
-                # Build enriched gate content with parliament verdict
-                # Note: 'result' is not yet defined here (agent hasn't run yet);
-                # use context (accumulated stage results) instead of result.output
-                gate_content = {
-                    "context": agent_context,
-                    "result_preview": str(context)[:500],
-                    "stage_result": context.get(f"{step.stage.value}_result"),
-                }
-                if hasattr(self, "_pending_parliament_verdict"):
-                    gate_content["parliament_verdict"] = self._pending_parliament_verdict
-                gate_id = self._hitl_gate.hold(
-                    stage=step.stage.value,
-                    content=gate_content,
-                    question=f"请审核 {step.stage.value} 阶段的输出并决定是否继续。",
-                )
-                hitl_paused_at = step.stage
-                # Also register globally so SSE/web UI can see it
-                self._shared_hitl.create_request(
-                    agent_id=step.agent_name,
-                    task_id=gate_id,
-                    decision_point=step.stage.value,
-                    context={"context": agent_context, "result_preview": str(context)[:500]},
-                )
-                self._trace.append({
-                    "type": "hitl_pause",
-                    "stage": step.stage.value,
-                    "context_preview": str(context)[:200],
-                    "timestamp": time.time(),
-                })
-                return PipelineResult(
-                    pipeline_name=pipeline_name,
-                    success=False,
-                    stage_results=stage_results,
-                    final_context=context,
-                    total_latency_ms=(time.time() - start_time) * 1000,
-                    hitl_paused_at=hitl_paused_at,
-                    trace=self._trace,
-                )
-
-            # ── Execute Agent ───────────────────────────────────────────────
+            # ── Execute Agent (before HITL so humans review real output) ──
             self._trace.append({
                 "type": "agent_start",
                 "stage": step.stage.value,
@@ -885,10 +913,7 @@ class AgentOrchestrator:
                 "status": result.status,
             })
 
-            # ── Parliament Review (before HITL gate) ─────────────────────────
-            # Run AI parliament review AFTER stage execution but BEFORE the
-            # HITL approval gate is created, so the verdict is available to
-            # the human reviewer.
+            # ── Parliament Review (feeds HITL content) ───────────────────
             if _has_parliament and step.hitl_gate:
                 try:
                     import asyncio as _asyncio
@@ -943,13 +968,59 @@ class AgentOrchestrator:
             if result.status == "error":
                 break
 
-        total_latency_ms = (time.time() - start_time) * 1000
+            # ── HITL Gate (after agent output exists) ─────────────────────
+            if step.hitl_gate:
+                preview = str(result.output)[:500]
+                gate_content = {
+                    "context": {k: v for k, v in agent_context.items() if k != "messages"},
+                    "result_preview": preview,
+                    "stage_result": result.output,
+                    "agent_status": result.status,
+                }
+                if getattr(self, "_pending_parliament_verdict", None):
+                    gate_content["parliament_verdict"] = self._pending_parliament_verdict
+                gate_id = self._hitl_gate.hold(
+                    stage=step.stage.value,
+                    content=gate_content,
+                    question=f"请审核 {step.stage.value} 阶段的输出并决定是否继续。",
+                )
+                hitl_paused_at = step.stage
+                self._shared_hitl.create_request(
+                    agent_id=step.agent_name,
+                    task_id=gate_id,
+                    decision_point=step.stage.value,
+                    context={
+                        "result_preview": preview,
+                        "agent_status": result.status,
+                    },
+                )
+                self._trace.append({
+                    "type": "hitl_pause",
+                    "stage": step.stage.value,
+                    "result_preview": preview[:200],
+                    "timestamp": time.time(),
+                })
+                return PipelineResult(
+                    pipeline_name=pipeline_name,
+                    success=False,
+                    stage_results=stage_results,
+                    final_context=context,
+                    total_latency_ms=(time.time() - start_time) * 1000,
+                    hitl_paused_at=hitl_paused_at,
+                    trace=self._trace,
+                )
 
+        total_latency_ms = (time.time() - start_time) * 1000
+        expected_steps = [s for s in steps if not s.skip]
         return PipelineResult(
             pipeline_name=pipeline_name,
             success=hitl_paused_at is None
-            and len(stage_results) == len([s for s in steps if not s.skip])
-            and all(r.status != "error" for r in stage_results.values()),
+            and len(stage_results) >= len(expected_steps)
+            and all(
+                stage_results.get(s.stage) is not None
+                and stage_results[s.stage].status != "error"
+                for s in expected_steps
+            ),
             stage_results=stage_results,
             final_context=context,
             total_latency_ms=total_latency_ms,

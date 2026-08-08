@@ -84,6 +84,12 @@ Use `python scripts/agent_pipeline.py --topic "..." --use-hitl` (defaults to
 outline/literature/draft gates). `run_research.py` also defaults to HITL;
 set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a stage.
 
+HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
+1. Stage agent runs first; gate holds **after** output exists (review real content).
+2. `approve_step(stage)` then `resume_pipeline(paused)` → keep output, run next stage.
+3. `reject_step(stage, feedback)` then `resume_pipeline(paused)` → re-run same stage
+   with feedback injected; do not call resume while the gate is still PENDING.
+
 ---
 
 ## Key Entry Scripts
