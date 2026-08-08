@@ -111,7 +111,7 @@ web = [
 rag = [
     "chromadb>=0.4.22,<2.0",
     "faiss-cpu>=1.7.4,<2.0",
-    "sentence-transformers>=2.3.0,<3.0",
+    "sentence-transformers>=2.3.0,<6.0",
     "jieba>=0.42.0,<99.0",
 ]
 
