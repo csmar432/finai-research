@@ -8,12 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **HITL post-exec + resume semantics**: `AgentOrchestrator` previously called
+  `HITLGate.hold()` *before* `agent.run()`, so gated stages often never executed;
+  `resume_pipeline` also clamped/skipped incorrectly. Gates now hold **after**
+  real agent output (with `stage_result` in gate content). Approve continues from
+  the next step; reject re-runs the same stage with `prior_rejection_feedback`;
+  resume while still PENDING is a no-op (fail-closed). Prior stage results are
+  carried via `_resume_stage_results`.
+- **PDF / post-run bookkeeping dead path**: end-to-end TeX/PDF generation and
+  provenance/HITL bookkeeping lived under `_auto_generate_arch_diagrams` after
+  `return arch_paths` (unreachable). Moved into `AgentPipeline.run()` (and
+  mirrored on successful `resume_pipeline`), skipped while HITL-paused.
 - **Agent-host entry robustness**: isolation / non-interactive hosts previously had no
   fail-closed FinAI entry when LLM was missing and Mock was forbidden, so agents
   freestyled outside the official pipeline. Added `scripts/agent_host_entry.py` and
   `scripts/core/agent_host_report.py` to write canonical `output/SKIPPED_CONFIG.md` +
   `output/FINAL.md`, wired the same artifacts into `agent_pipeline` exit code 4, and
   documented the protocol in `AGENTS.md` / `fin-full-pipeline` skill.
+
+### Added
+- `tests/test_orchestrator_hitl_resume.py`: regression coverage for post-exec HITL,
+  approve→continue, reject→rerun+feedback, pending no-op, final-stage approve.
 
 ## [0.2.0a1] - 2026-08-07
 

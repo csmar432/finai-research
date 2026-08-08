@@ -2096,7 +2096,116 @@ class AgentPipeline:
                 if arr:
                     result.auto_review_reports["refinement"] = arr
 
-        # ── DID Chart Auto-generation ─────────────────────────────────────────────
+        # ── P0-1: End-to-end PDF / post-run bookkeeping ─────────────────────────
+        # (Previously dead-indented under _auto_generate_arch_diagrams after
+        # `return arch_paths` — never executed.)
+        paper_content: dict = {}
+        if result.outline:
+            paper_content.update(result.outline if isinstance(result.outline, dict) else {})
+        if result.writing:
+            writing_data = result.writing if isinstance(result.writing, dict) else {}
+            paper_content.setdefault("content", writing_data)
+        if result.refinement:
+            refined = result.refinement if isinstance(result.refinement, dict) else {}
+            paper_content.setdefault("content", refined)
+
+        if _REPORT_GEN_AVAILABLE and paper_content and orchestrator_result.hitl_paused_at is None:
+            import logging as _ap_log
+            _ap_log = _ap_log.getLogger("agent_pipeline")
+            try:
+                _out = kwargs.get("output_dir") or self.config.output_dir or "output/papers/"
+                rg = ReportGenerator(output_dir=_out)
+                tex_path = rg.generate_paper(
+                    topic=self.config.topic or "",
+                    outline=paper_content,
+                    data=None,
+                    regressions=None,
+                    references=None,
+                    journal=self.config.venue or "经济研究",
+                    output_dir=_out,
+                )
+                result.paper_tex_path = str(tex_path)
+                _ap_log.info("Paper TeX/PDF generated: %s", tex_path)
+                pdf_path = Path(tex_path).with_suffix(".pdf")
+                if pdf_path.exists():
+                    _ap_log.info(
+                        "PDF available: %s (%.1f KB)",
+                        pdf_path,
+                        pdf_path.stat().st_size / 1024,
+                    )
+            except Exception as e:
+                _ap_log.warning("Paper PDF generation failed: %s", e)
+                result.errors.append(f"[PDF] generate_paper: {e}")
+
+        if self._evolution:
+            result.evolution_events = self._evolution.get_history()
+
+        if self._hitl_gate:
+            result.hitl_approvals = self._hitl_gate.get_history()
+
+        if _PROVENANCE_AVAILABLE and self.provenance_chain:
+            try:
+                self._register_provenance_result("outline", result.outline)
+                self._register_provenance_result("literature", result.literature)
+                self._register_provenance_result("plotting", result.plotting)
+                self._register_provenance_result("writing", result.writing)
+                self._register_provenance_result("refinement", result.refinement)
+            except Exception:  # noqa: S110
+                pass
+
+        if self.telemetry:
+            self.telemetry.ended_at = time.time()
+            try:
+                self.telemetry.save()
+            except Exception:  # noqa: S110
+                pass
+
+        if self.config.visualize:
+            result.visualization_path = self._generate_visualization(
+                steps, orchestrator_result
+            )
+
+        _wc = result.writing.get("total_word_count", 0) if isinstance(result.writing, dict) else 0
+        if _wc > 0 and _wc < 3000:
+            print(
+                f"\n⚠️  [字数警告] 论文正文仅 {_wc} 字，低于最低要求 3000 字。\n",
+                file=sys.stderr,
+            )
+            result.errors.append(f"[字数] 正文仅 {_wc} 字，低于 3000 字最低要求")
+
+        _pdf_err = [e for e in result.errors if "[PDF]" in e]
+        if _pdf_err and self._llm_actually_available:
+            print(
+                f"\n⚠️  [PDF] {' '.join(_pdf_err)}\n"
+                f"    请安装 LaTeX 工具链；.tex 文件可能已生成，可手动编译。\n",
+                file=sys.stderr,
+            )
+
+        if orchestrator_result.hitl_paused_at is not None:
+            result.success = False
+            result.errors.append(
+                f"HITL paused at {orchestrator_result.hitl_paused_at.value}; "
+                "call approve_step + resume_pipeline to continue."
+            )
+
+        _done_count = sum(
+            1 for s in orchestrator_result.stage_results.values()
+            if getattr(s, "status", None) in ("approved", "max_iterations", "ok", "success")
+        )
+        _total_count = len(steps)
+        _canvas_detail = f"总耗时: {(time.time() - start_time):.1f}s"
+        if orchestrator_result.hitl_paused_at:
+            _canvas_detail += f" | HITL@{orchestrator_result.hitl_paused_at.value}"
+        elif self._llm_actually_available:
+            _canvas_detail += " | LLM: 可用"
+        else:
+            _canvas_detail += " | ⚠️ LLM: Mock/受限"
+        _print_canvas_hint(
+            f"研究工作流{'暂停' if orchestrator_result.hitl_paused_at else '已完成'}！"
+            f"({_done_count}/{_total_count} 阶段)",
+            _canvas_detail,
+        )
+
         return result
 
     def _auto_generate_did_charts(
@@ -2263,119 +2372,6 @@ class AgentPipeline:
             _log_w.warning("[_auto_generate_arch_diagrams] Arch diagram generation failed: %s", ex)
 
         return arch_paths
-
-    # ── P0-1: End-to-end PDF generation ────────────────────────────────────
-        # Collect writing content for paper generation
-        paper_content: dict = {}
-        if result.outline:
-            paper_content.update(result.outline if isinstance(result.outline, dict) else {})
-        if result.writing:
-            writing_data = result.writing if isinstance(result.writing, dict) else {}
-            paper_content.setdefault("content", writing_data)
-        if result.refinement:
-            refined = result.refinement if isinstance(result.refinement, dict) else {}
-            paper_content.setdefault("content", refined)
-
-        if _REPORT_GEN_AVAILABLE and paper_content:
-            import logging as _ap_log
-            _ap_log = _ap_log.getLogger("agent_pipeline")
-            try:
-                output_dir = kwargs.get("output_dir") or self.config.output_dir or "output/papers/"
-                rg = ReportGenerator(output_dir=output_dir)
-                tex_path = rg.generate_paper(
-                    topic=self.config.topic or "",
-                    outline=paper_content,
-                    data=None,
-                    regressions=None,
-                    references=None,
-                    journal=self.config.venue or "经济研究",
-                    output_dir=output_dir,
-                )
-                result.paper_tex_path = str(tex_path)
-                _ap_log.info("Paper PDF generated: %s", tex_path)
-                pdf_path = tex_path.with_suffix(".pdf")
-                if pdf_path.exists():
-                    _ap_log.info("PDF available: %s (%.1f KB)",
-                                pdf_path, pdf_path.stat().st_size / 1024)
-            except Exception as e:
-                _ap_log.warning("Paper PDF generation failed: %s", e)
-                result.errors.append(f"[PDF] generate_paper: {e}")
-
-        # Evolution events
-        if self._evolution:
-            result.evolution_events = self._evolution.get_history()
-
-        # HITL approvals
-        if self._hitl_gate:
-            result.hitl_approvals = self._hitl_gate.get_history()
-
-        # ── Provenance: register final results ───────────────────────────────────
-        if _PROVENANCE_AVAILABLE and self.provenance_chain:
-            try:
-                self._register_provenance_result("outline", result.outline)
-                self._register_provenance_result("literature", result.literature)
-                self._register_provenance_result("plotting", result.plotting)
-                self._register_provenance_result("writing", result.writing)
-                self._register_provenance_result("refinement", result.refinement)
-            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-                pass
-
-        # ── Telemetry: record total duration ────────────────────────────────────
-        if self.telemetry:
-            self.telemetry.ended_at = time.time()
-            try:
-                self.telemetry.save()
-            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-                pass
-
-        # Visualization
-        if self.config.visualize:
-            result.visualization_path = self._generate_visualization(
-                steps, orchestrator_result
-            )
-
-        # ── P0-3: 字数校验 — 防止论文过短 ─────────────────────────────────
-        # 检查 writing 阶段输出是否达到最低字数要求（中文 CSSCI 通常 ≥8000 字）
-        _wc = result.writing.get("total_word_count", 0) if isinstance(result.writing, dict) else 0
-        if _wc > 0 and _wc < 3000:
-            import sys as _sys_wc
-            _warn_msg = (
-                f"\n⚠️  [字数警告] 论文正文仅 {_wc} 字，低于最低要求 3000 字。\n"
-                f"    建议增加引言、文献综述或机制分析章节内容。\n"
-                f"    如需完整论文草稿，请配置 DEEPSEEK_API_KEY 后重跑。\n"
-            )
-            print(_warn_msg, file=_sys_wc.stderr)
-            result.errors.append(f"[字数] 正文仅 {_wc} 字，低于 3000 字最低要求")
-
-        # ── P1-2: PDF 编译状态 — 缺少工具链时报错而非静默跳过 ───────────
-        _pdf_err = [e for e in result.errors if "[PDF]" in e]
-        if _pdf_err and self._llm_actually_available:
-            # LLM 生成了内容但 PDF 编译失败，打印警告
-            import sys as _sys_pdf
-            print(
-                f"\n⚠️  [PDF] {' '.join(_pdf_err)}\n"
-                f"    请安装 LaTeX 工具链（Mac: brew install --cask mactex；Linux: apt install texlive-full）\n"
-                f"    .tex 文件已生成，可手动编译。\n",
-                file=_sys_pdf.stderr,
-            )
-
-        # ── Canvas 可视化完成提示 ─────────────────────────────────────
-        _done_count = sum(
-            1 for s in orchestrator_result.stage_results.values()
-            if getattr(s, "status", None) == "approved"
-        )
-        _total_count = len(steps)
-        _canvas_detail = f"总耗时: {(time.time() - start_time):.1f}s"
-        if self._llm_actually_available:
-            _canvas_detail += " | LLM: 可用"
-        else:
-            _canvas_detail += " | ⚠️ LLM: 已授权 Mock（内容为模板，非真实论文）"
-        _print_canvas_hint(
-            f"研究工作流已完成！({_done_count}/{_total_count} 阶段)",
-            _canvas_detail,
-        )
-
-        return result
 
     def _is_interactive_terminal(self) -> bool:
         """判断是否可安全调用 input()。
@@ -2847,7 +2843,7 @@ class AgentPipeline:
 
         print()
         print(f"  阶段 '{stage.value}' 已拒绝。反馈：{feedback[:100]}")
-        print(f"  请修改内容后重新提交审批，或直接退出。")
+        print("  下一步：调用 resume_pipeline(paused_result) 将带着反馈重跑该阶段。")
         print()
 
         return result
@@ -2871,28 +2867,29 @@ class AgentPipeline:
 
     def resume_pipeline(self, paused_result) -> "AgentPipelineResult":
         """
-        Resume a HITL-paused pipeline after approval.
+        Resume a HITL-paused pipeline after approve_step / reject_step.
 
-        Usage:
-            # After user approves via approve_step():
-            result = pipeline.resume_pipeline(orchestrator_result)
+        - After approve: continues from the next stage (keeps approved output).
+        - After reject: re-runs the rejected stage with feedback injected.
+        - If the gate is still PENDING: returns the paused result unchanged.
         """
-        # Re-run orchestrator from the pause point
         if self._orchestrator is None:
             return AgentPipelineResult(
                 config=self.config,
                 success=False,
                 errors=["Orchestrator not initialized"],
             )
+        steps = self._current_steps or []
         orchestrator_result = self._orchestrator.resume_pipeline(
-            paused_result, self._current_steps
+            paused_result, steps
         )
 
-        # Extract results (same as run() for completed stages)
         result = AgentPipelineResult(
             config=self.config,
             orchestrator_result=orchestrator_result,
-            total_latency_ms=0.0,  # incremental
+            total_latency_ms=float(
+                getattr(orchestrator_result, "total_latency_ms", 0.0) or 0.0
+            ),
             success=orchestrator_result.success,
             llm_fallback_used=not self._llm_actually_available,
             llm_status=(
@@ -2903,18 +2900,70 @@ class AgentPipeline:
         )
 
         for stage, stage_result in orchestrator_result.stage_results.items():
-            stage_error = getattr(stage_result, 'error', None) or getattr(stage_result, 'err', None)
-            stage_status = getattr(stage_result, 'status', None)
+            stage_error = getattr(stage_result, "error", None) or getattr(
+                stage_result, "err", None
+            )
+            stage_status = getattr(stage_result, "status", None)
             if stage_error:
                 result.errors.append(f"[{stage}] {stage_error}")
             elif stage_status in ("failed", "error"):
-                result.errors.append(f"[{stage}] stage failed with status={stage_status}")
+                result.errors.append(
+                    f"[{stage}] stage failed with status={stage_status}"
+                )
 
+        if PipelineStage.OUTLINE in orchestrator_result.stage_results:
+            result.outline = orchestrator_result.stage_results[
+                PipelineStage.OUTLINE
+            ].output
+        if PipelineStage.LITERATURE in orchestrator_result.stage_results:
+            result.literature = orchestrator_result.stage_results[
+                PipelineStage.LITERATURE
+            ].output
         if PipelineStage.WRITING in orchestrator_result.stage_results:
-            result.writing = orchestrator_result.stage_results[PipelineStage.WRITING].output
-
+            result.writing = orchestrator_result.stage_results[
+                PipelineStage.WRITING
+            ].output
         if PipelineStage.REFINEMENT in orchestrator_result.stage_results:
-            result.refinement = orchestrator_result.stage_results[PipelineStage.REFINEMENT].output
+            result.refinement = orchestrator_result.stage_results[
+                PipelineStage.REFINEMENT
+            ].output
+
+        # Mirror run(): PDF only when the pipeline fully completes (no HITL pause).
+        if (
+            _REPORT_GEN_AVAILABLE
+            and orchestrator_result.hitl_paused_at is None
+            and orchestrator_result.success
+        ):
+            paper_content: dict = {}
+            if result.outline and isinstance(result.outline, dict):
+                paper_content.update(result.outline)
+            if result.writing and isinstance(result.writing, dict):
+                paper_content.setdefault("content", result.writing)
+            if result.refinement and isinstance(result.refinement, dict):
+                paper_content.setdefault("content", result.refinement)
+            if paper_content:
+                try:
+                    _out = self.config.output_dir or "output/papers/"
+                    rg = ReportGenerator(output_dir=_out)
+                    tex_path = rg.generate_paper(
+                        topic=self.config.topic or "",
+                        outline=paper_content,
+                        data=None,
+                        regressions=None,
+                        references=None,
+                        journal=self.config.venue or "经济研究",
+                        output_dir=_out,
+                    )
+                    result.paper_tex_path = str(tex_path)
+                except Exception as e:
+                    result.errors.append(f"[PDF] generate_paper: {e}")
+
+        if orchestrator_result.hitl_paused_at is not None:
+            result.success = False
+            result.errors.append(
+                f"HITL paused at {orchestrator_result.hitl_paused_at.value}; "
+                "call approve_step/reject_step + resume_pipeline to continue."
+            )
 
         return result
 
