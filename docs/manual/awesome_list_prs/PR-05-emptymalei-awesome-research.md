@@ -19,7 +19,7 @@ turns an empirical research topic into a submission-ready LaTeX draft.
 ## Project
 
 [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end
-empirical-research pipeline: 43 data sources, 47 econometric methods,
+empirical-research pipeline: 43 data sources, 58 econometric methods,
 30 journal templates.
 
 ## Format

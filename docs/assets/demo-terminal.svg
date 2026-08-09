@@ -20,7 +20,7 @@
     <text x="24" y="138">  OK  Python version                 3.13.3 (3.10+)</text>
     <text x="24" y="160">  OK  scripts/ directory               ./scripts</text>
     <text x="24" y="182">  OK  tests/ directory                 8,042 tests</text>
-    <text x="24" y="204">  OK  knowledge/skills/                17 Skills</text>
+    <text x="24" y="204">  OK  knowledge/skills/                18 Skills</text>
     <text x="24" y="226">  OK  mcp_servers/                     43 servers</text>
     <text x="24" y="248">  OK  .env file                        DEEPSEEK_API_KEY detected</text>
     <text x="24" y="270">  OK  pyproject.toml                   v0.2.0a0</text>

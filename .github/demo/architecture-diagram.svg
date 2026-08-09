@@ -1,536 +1,175 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
+  <title>System architecture</title>
+  <desc>One research brief, two governed tracks, one auditable delivery contract</desc>
   <defs>
-    <!-- Background gradient -->
-    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(135)">
-      <stop offset="0%" stop-color="#0a0e1a"/>
-      <stop offset="50%" stop-color="#0d1220"/>
-      <stop offset="100%" stop-color="#080c18"/>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
     </linearGradient>
-
-    <!-- Section gradients -->
-    <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#1a3a6e"/>
-      <stop offset="100%" stop-color="#0f2250"/>
-    </linearGradient>
-    <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#1a4a2e"/>
-      <stop offset="100%" stop-color="#0f3020"/>
-    </linearGradient>
-    <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3a1a6e"/>
-      <stop offset="100%" stop-color="#250f50"/>
-    </linearGradient>
-    <linearGradient id="redGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#6e1a1a"/>
-      <stop offset="100%" stop-color="#500f0f"/>
-    </linearGradient>
-    <linearGradient id="amberGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#5a3a00"/>
-      <stop offset="100%" stop-color="#3a2500"/>
-    </linearGradient>
-    <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a4a4a"/>
-      <stop offset="100%" stop-color="#063030"/>
-    </linearGradient>
-
-    <!-- Card fill gradients -->
-    <linearGradient id="cardGreen" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0d2818"/>
-      <stop offset="100%" stop-color="#0a1f12"/>
-    </linearGradient>
-    <linearGradient id="cardAmber" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#1f1a0a"/>
-      <stop offset="100%" stop-color="#151208"/>
-    </linearGradient>
-    <linearGradient id="cardPurple" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#1a0f2e"/>
-      <stop offset="100%" stop-color="#120a1f"/>
-    </linearGradient>
-    <linearGradient id="cardRed" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2e0f0f"/>
-      <stop offset="100%" stop-color="#1f0a0a"/>
-    </linearGradient>
-    <linearGradient id="cardTeal" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a1f2e"/>
-      <stop offset="100%" stop-color="#071520"/>
-    </linearGradient>
-    <linearGradient id="cardBlue" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a1f3e"/>
-      <stop offset="100%" stop-color="#071530"/>
-    </linearGradient>
-    <linearGradient id="cardOrange" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2a1800"/>
-      <stop offset="100%" stop-color="#1a1000"/>
-    </linearGradient>
-
-    <!-- Glow filters -->
-    <filter id="glowBlue" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#4a9eff" flood-opacity="0.5"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glowGreen" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#4ade80" flood-opacity="0.4"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glowPurple" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#a855f7" flood-opacity="0.4"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glowRed" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#f87171" flood-opacity="0.4"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glowAmber" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feFlood flood-color="#fbbf24" flood-opacity="0.4"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glowTeal" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#2dd4bf" flood-opacity="0.4"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-
-    <!-- Arrow marker -->
-    <marker id="arrBlue" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#4a9eff" opacity="0.7"/>
-    </marker>
-    <marker id="arrGreen" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#4ade80" opacity="0.7"/>
-    </marker>
-    <marker id="arrPurple" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#a855f7" opacity="0.7"/>
-    </marker>
-    <marker id="arrAmber" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#fbbf24" opacity="0.7"/>
-    </marker>
-    <marker id="arrTeal" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#2dd4bf" opacity="0.7"/>
-    </marker>
-
-    <!-- Grid pattern for background -->
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2035" stroke-width="0.5"/>
-    </pattern>
-    <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="0.5" fill="#2a3045" opacity="0.5"/>
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
     </pattern>
   </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">System architecture</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">One research brief, two governed tracks, one auditable delivery contract</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
+  <g>
+    <rect x="56" y="176" width="244" height="584" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="72" y="163" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#e38b96"/>
+    <text x="132.0" y="181" fill="#e38b96" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">INPUTS</text>
+  </g>
+  <g>
+    <rect x="80" y="214" width="196" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="214" width="5" height="86" rx="2.5" fill="#a63f3f"/>
+    <text x="102" y="248.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Research brief</text>
+    <text x="102" y="277.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">topic · venue · claims</text>
+  </g>
+  <g>
+    <rect x="80" y="326" width="196" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="326" width="5" height="86" rx="2.5" fill="#3659a2"/>
+    <text x="102" y="360.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Host agent</text>
+    <text x="102" y="389.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Codex · Claude Code · Cursor</text>
+  </g>
+  <g>
+    <rect x="80" y="438" width="196" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="438" width="5" height="86" rx="2.5" fill="#0b7a53"/>
+    <text x="102" y="472.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Local data root</text>
+    <text x="102" y="501.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Layer 0 · panels first</text>
+  </g>
+  <g>
+    <rect x="80" y="550" width="196" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="550" width="5" height="86" rx="2.5" fill="#0b7a53"/>
+    <text x="102" y="584.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">43 data sources</text>
+    <text x="102" y="613.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">provenance recorded</text>
+  </g>
+  <g>
+    <rect x="80" y="662" width="196" height="64" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="662" width="5" height="64" rx="2.5" fill="#71558b"/>
+    <text x="102" y="685.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Human decisions</text>
+    <text x="102" y="714.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">HITL checkpoints</text>
+  </g>
+  <g>
+    <rect x="348" y="176" width="834" height="260" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="364" y="163" width="154" height="26" rx="13" fill="#f7f5ef" stroke="#79a9ff"/>
+    <text x="441.0" y="181" fill="#79a9ff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">WRITING TRACK</text>
+  </g>
+  <g>
+    <rect x="380" y="244" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="380" y="244" width="5" height="112" rx="2.5" fill="#3659a2"/>
+    <text x="402" y="291.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Clarify</text>
+    <text x="402" y="320.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">brief + hard gaps</text>
+  </g>
+  <g>
+    <rect x="634" y="244" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="634" y="244" width="5" height="112" rx="2.5" fill="#3659a2"/>
+    <text x="656" y="291.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Evidence</text>
+    <text x="656" y="320.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">literature + novelty</text>
+  </g>
+  <g>
+    <rect x="888" y="244" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="888" y="244" width="5" height="112" rx="2.5" fill="#3659a2"/>
+    <text x="910" y="291.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Draft</text>
+    <text x="910" y="320.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">outline + manuscript + review</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm596-300-626-300" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="596" y1="300" x2="626" y2="300" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm596-300-626-300)"/>
 
-  <!-- Background -->
-  <rect width="1400" height="1000" fill="url(#bgGrad)"/>
-  <rect width="1400" height="1000" fill="url(#grid)" opacity="0.3"/>
-  <rect width="1400" height="1000" fill="url(#dotGrid)" opacity="0.4"/>
+  </g>
+  <g>
+    <defs><marker id="arrowm850-300-880-300" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="850" y1="300" x2="880" y2="300" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm850-300-880-300)"/>
 
-  <!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
-  <rect x="0" y="0" width="1400" height="70" fill="#0d1117" opacity="0.95"/>
-  <rect x="0" y="68" width="1400" height="2" fill="url(#blueGrad)" opacity="0.8"/>
+  </g>
+  <g>
+    <rect x="348" y="500" width="834" height="260" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="364" y="487" width="174" height="26" rx="13" fill="#f7f5ef" stroke="#4cc9b0"/>
+    <text x="451.0" y="505" fill="#4cc9b0" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">EMPIRICAL TRACK</text>
+  </g>
+  <g>
+    <rect x="380" y="568" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="380" y="568" width="5" height="112" rx="2.5" fill="#0b7a53"/>
+    <text x="402" y="615.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Identification</text>
+    <text x="402" y="644.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DID · IV · RD · GMM</text>
+  </g>
+  <g>
+    <rect x="634" y="568" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="634" y="568" width="5" height="112" rx="2.5" fill="#0b7a53"/>
+    <text x="656" y="615.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Data acquisition</text>
+    <text x="656" y="644.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">validated variables + lineage</text>
+  </g>
+  <g>
+    <rect x="888" y="568" width="216" height="112" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="888" y="568" width="5" height="112" rx="2.5" fill="#0b7a53"/>
+    <text x="910" y="615.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Estimation</text>
+    <text x="910" y="644.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">robustness + diagnostics</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm596-624-626-624" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="596" y1="624" x2="626" y2="624" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm596-624-626-624)"/>
 
-  <text x="25" y="28" font-size="18" font-weight="700" fill="#e6edf3" letter-spacing="0.5">论文-研报工作流</text>
-  <text x="25" y="48" font-size="11" fill="#8b949e" letter-spacing="0.5">FinResearch Agent · Multi-Agent Academic Research Pipeline</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm850-624-880-624" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="850" y1="624" x2="880" y2="624" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm850-624-880-624)"/>
 
-  <!-- Key stats in header -->
-  <rect x="1030" y="12" width="85" height="46" rx="6" fill="#0d2020" stroke="#2dd4bf" stroke-width="1" opacity="0.9"/>
-  <text x="1072" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#2dd4bf">43</text>
-  <text x="1072" y="48" text-anchor="middle" font-size="9" fill="#7dd3c0">MCP Servers</text>
+  </g>
+  <g>
+    <rect x="1230" y="176" width="314" height="584" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1246" y="163" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#d8b66a"/>
+    <text x="1306.0" y="181" fill="#d8b66a" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DELIVERY</text>
+  </g>
+  <g>
+    <rect x="1258" y="228" width="258" height="88" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1258" y="228" width="5" height="88" rx="2.5" fill="#a96024"/>
+    <text x="1280" y="263.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Research package</text>
+    <text x="1280" y="292.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LaTeX · PDF · figures</text>
+  </g>
+  <g>
+    <rect x="1258" y="344" width="258" height="88" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1258" y="344" width="5" height="88" rx="2.5" fill="#a96024"/>
+    <text x="1280" y="379.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FINAL.md</text>
+    <text x="1280" y="408.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">user-facing completion</text>
+  </g>
+  <g>
+    <rect x="1258" y="460" width="258" height="88" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1258" y="460" width="5" height="88" rx="2.5" fill="#71558b"/>
+    <text x="1280" y="495.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">SKIPPED_CONFIG.md</text>
+    <text x="1280" y="524.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">hard gaps, never hidden</text>
+  </g>
+  <g>
+    <rect x="1258" y="576" width="258" height="88" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1258" y="576" width="5" height="88" rx="2.5" fill="#0b7a53"/>
+    <text x="1280" y="611.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Provenance ledger</text>
+    <text x="1280" y="640.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">source · timestamp · transform</text>
+  </g>
+  <g>
+    <rect x="1258" y="692" width="258" height="42" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1258" y="692" width="5" height="42" rx="2.5" fill="#71558b"/>
+    <text x="1280" y="718.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">No silent Mock</text>
 
-  <rect x="1125" y="12" width="85" height="46" rx="6" fill="#1a1020" stroke="#a855f7" stroke-width="1" opacity="0.9"/>
-  <text x="1167" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#a855f7">49</text>
-  <text x="1167" y="48" text-anchor="middle" font-size="9" fill="#c084fc">Econometrics</text>
-
-  <rect x="1220" y="12" width="85" height="46" rx="6" fill="#1a2010" stroke="#4ade80" stroke-width="1" opacity="0.9"/>
-  <text x="1262" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#4ade80">17</text>
-  <text x="1262" y="48" text-anchor="middle" font-size="9" fill="#86efac">AI Skills</text>
-
-  <rect x="1315" y="12" width="65" height="46" rx="6" fill="#1a1020" stroke="#f87171" stroke-width="1" opacity="0.9"/>
-  <text x="1347" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#f87171">41</text>
-  <text x="1347" y="48" text-anchor="middle" font-size="9" fill="#fca5a5">Modules</text>
-
-  <!-- Version tag -->
-  <text x="1370" y="18" text-anchor="end" font-size="9" fill="#6b7280">v1.8.5</text>
-
-  <!-- ── USER INPUT LAYER ──────────────────────────────────────────────────── -->
-  <rect x="450" y="82" width="500" height="52" rx="10" fill="#0a1525" stroke="#4a9eff" stroke-width="2" filter="url(#glowBlue)"/>
-  <text x="700" y="104" text-anchor="middle" font-size="12" font-weight="600" fill="#4a9eff">用户自然语言输入 · User Natural Language Input</text>
-  <text x="700" y="122" text-anchor="middle" font-size="10" fill="#93c5fd" font-style="italic">"帮我研究碳排放权交易的创新影响，设计一篇发表在经济研究的实证论文"</text>
-
-  <!-- Arrow: user → agent -->
-  <line x1="700" y1="134" x2="700" y2="158" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
-  <path d="M694,152 L700,160 L706,152" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
-
-  <!-- ── AI AGENT LAYER ────────────────────────────────────────────────────── -->
-  <rect x="350" y="162" width="700" height="62" rx="12" fill="url(#blueGrad)" stroke="#4a9eff" stroke-width="2" filter="url(#glowBlue)"/>
-  <text x="700" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">Cursor Agent · Claude Code · Codex</text>
-  <text x="700" y="206" text-anchor="middle" font-size="10" fill="#93c5fd">Orchestrator · Memory · Planner · Tool Selector · HITL Gates · Self-Evolution</text>
-
-  <!-- Arrow: agent → pipeline (single main arrow, no slash through stages) -->
-  <line x1="700" y1="224" x2="700" y2="246" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
-  <path d="M694,240 L700,248 L706,240" fill="none" stroke="#4a9eff" stroke-width="2" opacity="0.7"/>
-  <text x="708" y="240" font-size="9" fill="#4a9eff" opacity="0.7" font-style="italic">dispatch</text>
-
-  <!-- ── 9-STAGE RESEARCH PIPELINE ─────────────────────────────────────────── -->
-  <text x="25" y="262" font-size="9" fill="#4b5563" letter-spacing="2">RESEARCH PIPELINE — 11-STEP WORKFLOW</text>
-
-  <!-- Stage definitions: [x, label, sublabel, color, icon] -->
-  <!-- Stage 1: 想法生成 -->
-  <rect x="25" y="272" width="130" height="85" rx="8" fill="url(#cardGreen)" stroke="#4ade80" stroke-width="1.5"/>
-  <rect x="25" y="272" width="130" height="4" rx="2" fill="#4ade80" opacity="0.7"/>
-  <text x="90" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">① 想法生成</text>
-  <text x="90" y="312" text-anchor="middle" font-size="8" fill="#86efac">Research Ideas</text>
-  <text x="90" y="328" text-anchor="middle" font-size="8" fill="#6b7280">8-12 候选想法</text>
-  <text x="90" y="346" text-anchor="middle" font-size="7" fill="#374151">idea_data_checker</text>
-
-  <!-- Stage 2: 数据验证 -->
-  <rect x="165" y="272" width="130" height="85" rx="8" fill="url(#cardAmber)" stroke="#fbbf24" stroke-width="1.5"/>
-  <rect x="165" y="272" width="130" height="4" rx="2" fill="#fbbf24" opacity="0.7"/>
-  <text x="230" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">② 想法-数据</text>
-  <text x="230" y="312" text-anchor="middle" font-size="8" fill="#fcd34d">Idea ↔ Data</text>
-  <text x="230" y="328" text-anchor="middle" font-size="8" fill="#6b7280">数据可行性验证</text>
-  <text x="230" y="346" text-anchor="middle" font-size="7" fill="#374151">用户决策checkpoint</text>
-
-  <!-- Stage 3: 文献综述 -->
-  <rect x="305" y="272" width="130" height="85" rx="8" fill="url(#cardGreen)" stroke="#4ade80" stroke-width="1.5"/>
-  <rect x="305" y="272" width="130" height="4" rx="2" fill="#4ade80" opacity="0.7"/>
-  <text x="370" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#4ade80">③ 文献综述</text>
-  <text x="370" y="312" text-anchor="middle" font-size="8" fill="#86efac">Literature Review</text>
-  <text x="370" y="328" text-anchor="middle" font-size="8" fill="#6b7280">引文网络 · Gap分析</text>
-  <text x="370" y="346" text-anchor="middle" font-size="7" fill="#374151">ArXiv · NBER · JF/JFE</text>
-
-  <!-- Stage 4: 新颖性验证 -->
-  <rect x="445" y="272" width="130" height="85" rx="8" fill="url(#cardPurple)" stroke="#a855f7" stroke-width="1.5"/>
-  <rect x="445" y="272" width="130" height="4" rx="2" fill="#a855f7" opacity="0.7"/>
-  <text x="510" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">④ 新颖性验证</text>
-  <text x="510" y="312" text-anchor="middle" font-size="8" fill="#c084fc">Novelty Check</text>
-  <text x="510" y="328" text-anchor="middle" font-size="8" fill="#6b7280">JF/JFE/RFS/arXiv</text>
-  <text x="510" y="346" text-anchor="middle" font-size="7" fill="#374151">HIGH ≥8 / MEDIUM 6-8</text>
-
-  <!-- Stage 5: 实证设计 -->
-  <rect x="585" y="272" width="130" height="85" rx="8" fill="url(#cardAmber)" stroke="#fbbf24" stroke-width="1.5"/>
-  <rect x="585" y="272" width="130" height="4" rx="2" fill="#fbbf24" opacity="0.7"/>
-  <text x="650" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">⑤ 实证设计</text>
-  <text x="650" y="312" text-anchor="middle" font-size="8" fill="#fcd34d">Experiment Design</text>
-  <text x="650" y="328" text-anchor="middle" font-size="8" fill="#6b7280">DID / IV / RDD / PSM</text>
-  <text x="650" y="346" text-anchor="middle" font-size="7" fill="#374151">18类稳健性检验清单</text>
-
-  <!-- Stage 6: 数据获取 -->
-  <rect x="725" y="272" width="130" height="85" rx="8" fill="url(#cardTeal)" stroke="#2dd4bf" stroke-width="1.5"/>
-  <rect x="725" y="272" width="130" height="4" rx="2" fill="#2dd4bf" opacity="0.7"/>
-  <text x="790" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#2dd4bf">⑥ 数据获取</text>
-  <text x="790" y="312" text-anchor="middle" font-size="8" fill="#5eead4">Data Acquisition</text>
-  <text x="790" y="328" text-anchor="middle" font-size="8" fill="#6b7280">43 MCP Servers</text>
-  <text x="790" y="346" text-anchor="middle" font-size="7" fill="#374151">7层fallback保障</text>
-
-  <!-- Stage 7: 论文大纲 -->
-  <rect x="865" y="272" width="130" height="85" rx="8" fill="url(#cardBlue)" stroke="#60a5fa" stroke-width="1.5"/>
-  <rect x="865" y="272" width="130" height="4" rx="2" fill="#60a5fa" opacity="0.7"/>
-  <text x="930" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#60a5fa">⑦ 论文大纲</text>
-  <text x="930" y="312" text-anchor="middle" font-size="8" fill="#93c5fd">Paper Outline</text>
-  <text x="930" y="328" text-anchor="middle" font-size="8" fill="#6b7280">34 期刊模板</text>
-  <text x="930" y="346" text-anchor="middle" font-size="7" fill="#374151">PAPER_OUTLINE.md</text>
-
-  <!-- Stage 8: 正文写作 -->
-  <rect x="1005" y="272" width="130" height="85" rx="8" fill="url(#cardPurple)" stroke="#a855f7" stroke-width="1.5"/>
-  <rect x="1005" y="272" width="130" height="4" rx="2" fill="#a855f7" opacity="0.7"/>
-  <text x="1070" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#a855f7">⑧ 正文写作</text>
-  <text x="1070" y="312" text-anchor="middle" font-size="8" fill="#c084fc">Paper Drafting</text>
-  <text x="1070" y="328" text-anchor="middle" font-size="8" fill="#6b7280">Intro→Method→Result</text>
-  <text x="1070" y="346" text-anchor="middle" font-size="7" fill="#374151">LaTeX / CTeX 模板</text>
-
-  <!-- Stage 9: 图表生成 -->
-  <rect x="1145" y="272" width="130" height="85" rx="8" fill="url(#cardRed)" stroke="#f87171" stroke-width="1.5"/>
-  <rect x="1145" y="272" width="130" height="4" rx="2" fill="#f87171" opacity="0.7"/>
-  <text x="1210" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="#f87171">⑨ 图表生成</text>
-  <text x="1210" y="312" text-anchor="middle" font-size="8" fill="#fca5a5">Figure Generation</text>
-  <text x="1210" y="328" text-anchor="middle" font-size="8" fill="#6b7280">matplotlib/seaborn</text>
-  <text x="1210" y="346" text-anchor="middle" font-size="7" fill="#374151">≥300 DPI · 20种预设</text>
-
-  <!-- Stage 10: Review -->
-  <rect x="1285" y="272" width="90" height="85" rx="8" fill="url(#cardOrange)" stroke="#fb923c" stroke-width="1.5"/>
-  <rect x="1285" y="272" width="90" height="4" rx="2" fill="#fb923c" opacity="0.7"/>
-  <text x="1330" y="296" text-anchor="middle" font-size="10" font-weight="700" fill="#fb923c">⑩ 对抗 Review</text>
-  <text x="1330" y="312" text-anchor="middle" font-size="8" fill="#fdba74">Multi-round</text>
-  <text x="1330" y="328" text-anchor="middle" font-size="8" fill="#6b7280">迭代修改</text>
-  <text x="1330" y="346" text-anchor="middle" font-size="7" fill="#374151">fin-review-loop</text>
-
-  <!-- Arrows between stages -->
-  <line x1="155" y1="315" x2="163" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M158,310 L165,315 L158,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="295" y1="315" x2="303" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M298,310 L305,315 L298,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="435" y1="315" x2="443" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M438,310 L445,315 L438,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="575" y1="315" x2="583" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M578,310 L585,315 L578,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="715" y1="315" x2="723" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M718,310 L725,315 L718,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="855" y1="315" x2="863" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M858,310 L865,315 L858,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="995" y1="315" x2="1003" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M998,310 L1005,315 L998,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="1135" y1="315" x2="1143" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M1138,310 L1145,315 L1138,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <line x1="1275" y1="315" x2="1283" y2="315" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-  <path d="M1278,310 L1285,315 L1278,320" fill="none" stroke="#30363d" stroke-width="1.5" opacity="0.6"/>
-
-  <!-- Arrow from Agent to pipeline: single thin line down to the center of stages, no slash through cards -->
-  <line x1="700" y1="248" x2="700" y2="264" stroke="#4a9eff" stroke-width="1" fill="none" stroke-dasharray="3,3" opacity="0.35"/>
-  <path d="M696,260 L700,266 L704,260" fill="none" stroke="#4a9eff" stroke-width="1" opacity="0.35"/>
-
-  <!-- ── MCP DATA SERVERS LAYER ────────────────────────────────────────────── -->
-  <rect x="25" y="368" width="1350" height="158" rx="10" fill="#080c18" stroke="#2dd4bf" stroke-width="1.5" opacity="0.95"/>
-  <rect x="25" y="368" width="1350" height="3" rx="1.5" fill="#2dd4bf" opacity="0.5"/>
-  <text x="700" y="386" text-anchor="middle" font-size="12" font-weight="700" fill="#2dd4bf" letter-spacing="1">43 MCP DATA SERVERS — MOST REQUIRE NO API KEY</text>
-
-  <!-- MCP row 1 (8 servers) -->
-  <!-- col positions: 25,165,305,445,585,725,865,1005,1145,1285 -->
-  <!-- Row 1: y=400-450 -->
-  <rect x="30" y="398" width="128" height="58" rx="6" fill="#0a1a1a" stroke="#f97316" stroke-width="1.5" opacity="0.9"/>
-  <text x="94" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#f97316">user-tushare</text>
-  <text x="94" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">A股行情/财务/融资</text>
-  <text x="94" y="444" text-anchor="middle" font-size="7" fill="#6b7280">TUSHARE_TOKEN ⚙</text>
-
-  <rect x="168" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#60a5fa" stroke-width="1.5" opacity="0.9"/>
-  <text x="232" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#60a5fa">user-yfinance</text>
-  <text x="232" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">美股/港股/期权/ETF</text>
-  <text x="232" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="306" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#60a5fa" stroke-width="1.5" opacity="0.9"/>
-  <text x="370" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#60a5fa">user-financial</text>
-  <text x="370" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">中国宏观 GDP/CPI/M2</text>
-  <text x="370" y="444" text-anchor="middle" font-size="7" fill="#4ade80">akshare 无需Key ✓</text>
-
-  <rect x="444" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#a855f7" stroke-width="1.5" opacity="0.9"/>
-  <text x="508" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#a855f7">user-openalex</text>
-  <text x="508" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">2亿+学术论文元数据</text>
-  <text x="508" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="582" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#a855f7" stroke-width="1.5" opacity="0.9"/>
-  <text x="646" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#a855f7">user-context7</text>
-  <text x="646" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">论文全文索引</text>
-  <text x="646" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="720" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#f87171" stroke-width="1.5" opacity="0.9"/>
-  <text x="784" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#f87171">user-sec-edgar</text>
-  <text x="784" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">SEC 10-K/10-Q/8-K</text>
-  <text x="784" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="858" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#fbbf24" stroke-width="1.5" opacity="0.9"/>
-  <text x="922" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#fbbf24">user-wb-data</text>
-  <text x="922" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">World Bank宏观指标</text>
-  <text x="922" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="996" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#fbbf24" stroke-width="1.5" opacity="0.9"/>
-  <text x="1060" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#fbbf24">user-imf-data</text>
-  <text x="1060" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">IMF世界经济展望</text>
-  <text x="1060" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="1134" y="398" width="128" height="58" rx="6" fill="#0a1520" stroke="#2dd4bf" stroke-width="1.5" opacity="0.9"/>
-  <text x="1198" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#2dd4bf">user-eastmoney</text>
-  <text x="1198" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">东方财富 研报/新闻</text>
-  <text x="1198" y="444" text-anchor="middle" font-size="7" fill="#4ade80">无需API Key ✓</text>
-
-  <rect x="1272" y="398" width="93" height="58" rx="6" fill="#0a1520" stroke="#2dd4bf" stroke-width="1.5" opacity="0.9"/>
-  <text x="1318" y="415" text-anchor="middle" font-size="9" font-weight="600" fill="#2dd4bf">+33 more</text>
-  <text x="1318" y="430" text-anchor="middle" font-size="7.5" fill="#8b949e">期权/外汇/航运</text>
-  <text x="1318" y="444" text-anchor="middle" font-size="7" fill="#6b7280">省区/ESG/加密</text>
-
-  <!-- MCP row 2: Categories -->
-  <text x="94" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P0: A股/美股/宏观</text>
-  <text x="232" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P0: 全球股票</text>
-  <text x="370" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P0: 中国宏观</text>
-  <text x="508" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P1: 学术论文</text>
-  <text x="646" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P1: 论文全文</text>
-  <text x="784" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P2: SEC年报</text>
-  <text x="922" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P3: 全球宏观</text>
-  <text x="1060" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P3: IMF数据</text>
-  <text x="1198" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P2: 研报新闻</text>
-  <text x="1318" y="470" text-anchor="middle" font-size="7" fill="#6b7280">P2/P3: 其他</text>
-
-  <!-- Arrow: pipeline → MCP -->
-  <line x1="790" y1="368" x2="790" y2="356" stroke="#2dd4bf" stroke-width="1.5" opacity="0.5"/>
-  <path d="M785,362 L790,354 L795,362" fill="none" stroke="#2dd4bf" stroke-width="1.5" opacity="0.5"/>
-
-  <!-- ── RESEARCH FRAMEWORK LAYER ───────────────────────────────────────────── -->
-  <rect x="25" y="548" width="1350" height="270" rx="10" fill="#080c18" stroke="#a855f7" stroke-width="1.5" opacity="0.95"/>
-  <rect x="25" y="548" width="1350" height="3" rx="1.5" fill="#a855f7" opacity="0.5"/>
-  <text x="700" y="566" text-anchor="middle" font-size="12" font-weight="700" fill="#a855f7" letter-spacing="1">RESEARCH_FRAMEWORK — 49 ECONOMETRIC METHODS (JF/JFE/RFS STANDARD) · 41 PYTHON MODULES</text>
-
-  <!-- RF Column 1: DID Family -->
-  <rect x="30" y="574" width="210" height="238" rx="8" fill="#0a1525" stroke="#4ade80" stroke-width="1.5" opacity="0.9"/>
-  <rect x="30" y="574" width="210" height="5" rx="2" fill="#4ade80" opacity="0.5"/>
-  <text x="135" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#4ade80">A. DID 家族 · 12种</text>
-  <text x="135" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Policy Evaluation</text>
-  <!-- Methods list -->
-  <text x="40" y="626" font-size="8" fill="#86efac">• modern_did.py</text>
-  <text x="40" y="640" font-size="7.5" fill="#6b7280">  CS (QJE 2021) · Sun-Abraham (REStud 2021)</text>
-  <text x="40" y="652" font-size="7.5" fill="#6b7280">  Borusyak (REStud 2024) · GB (QJE 2021)</text>
-  <text x="40" y="664" font-size="7.5" fill="#6b7280">  Gardner · dCdH (JASA 2020)</text>
-  <text x="40" y="676" font-size="7.5" fill="#6b7280">  Honest DiD (Rambachan 2023)</text>
-  <text x="40" y="690" font-size="8" fill="#86efac">• synthetic_control.py</text>
-  <text x="40" y="702" font-size="7.5" fill="#6b7280">  Abel (JASA 2016) · Arkhangelsky (Science 2021)</text>
-  <text x="40" y="714" font-size="8" fill="#86efac">• triple_diff_did.py · local_projections_did.py</text>
-  <text x="40" y="728" font-size="7.5" fill="#6b7280">  三重差分 DDD · 局部投影 DID (Jordà 2005)</text>
-  <text x="40" y="742" font-size="7.5" fill="#6b7280">  事件研究法 · RDD (Cattaneo 2019)</text>
-  <text x="40" y="756" font-size="7.5" fill="#6b7280">  PSM-DID · regression_engine.py</text>
-  <text x="40" y="770" font-size="8" fill="#4b5563">• synthetic_did.py</text>
-  <text x="40" y="782" font-size="7.5" fill="#4b5563">  合成 DID (Arkhangelsky 2021)</text>
-  <text x="40" y="794" font-size="7" fill="#374151">  panel_quantile_regression.py</text>
-
-  <!-- RF Column 2: IV / GMM / Spatial -->
-  <rect x="250" y="574" width="210" height="238" rx="8" fill="#0a1525" stroke="#60a5fa" stroke-width="1.5" opacity="0.9"/>
-  <rect x="250" y="574" width="210" height="5" rx="2" fill="#60a5fa" opacity="0.5"/>
-  <text x="355" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#60a5fa">B. IV / GMM / 空间 · 7种</text>
-  <text x="355" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Causal Inference</text>
-  <text x="260" y="626" font-size="8" fill="#93c5fd">• iv_panel.py</text>
-  <text x="260" y="640" font-size="7.5" fill="#6b7280">  IV/2SLS · Panel GMM</text>
-  <text x="260" y="652" font-size="7.5" fill="#6b7280">  Arellano-Bond · Blundell-Bond</text>
-  <text x="260" y="664" font-size="7.5" fill="#6b7280">  Jackknife IV · Stock-Yogo</text>
-  <text x="260" y="676" font-size="7.5" fill="#6b7280">  Fama-MacBeth 回归</text>
-  <text x="260" y="690" font-size="8" fill="#93c5fd">• interactive_fixed_effects.py</text>
-  <text x="260" y="702" font-size="7.5" fill="#6b7280">  Bai (2009) CCE · 高维固定效应</text>
-  <text x="260" y="714" font-size="8" fill="#93c5fd">• panel_threshold_regression.py</text>
-  <text x="260" y="726" font-size="7.5" fill="#6b7280">  Hansen (2000) 门槛回归</text>
-  <text x="260" y="738" font-size="8" fill="#93c5fd">• spatial_regression.py</text>
-  <text x="260" y="750" font-size="7.5" fill="#6b7280">  SDM/SAR/SEM (LeSage-Pace 2009)</text>
-  <text x="260" y="762" font-size="7.5" fill="#6b7280">  Diebold-Yilmaz 溢出指数</text>
-  <text x="260" y="774" font-size="8" fill="#93c5fd">• robustness_runner.py</text>
-  <text x="260" y="786" font-size="7.5" fill="#6b7280">  18类稳健性检验 · 自动执行</text>
-  <text x="260" y="798" font-size="7" fill="#374151">• leamer_sensitivity.py · Vuong检验</text>
-
-  <!-- RF Column 3: Time Series &amp; Vol -->
-  <rect x="470" y="574" width="210" height="238" rx="8" fill="#0a1525" stroke="#f87171" stroke-width="1.5" opacity="0.9"/>
-  <rect x="470" y="574" width="210" height="5" rx="2" fill="#f87171" opacity="0.5"/>
-  <text x="575" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#f87171">C. 时间序列·波动率 · 8种</text>
-  <text x="575" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Time Series &amp; Volatility</text>
-  <text x="480" y="626" font-size="8" fill="#fca5a5">• volatility_models.py</text>
-  <text x="480" y="640" font-size="7.5" fill="#6b7280">  GARCH / GJR-GARCH / EGARCH</text>
-  <text x="480" y="652" font-size="7.5" fill="#6b7280">  Realized Volatility (HAR)</text>
-  <text x="480" y="664" font-size="7.5" fill="#6b7280">  Bipower Variation</text>
-  <text x="480" y="676" font-size="8" fill="#fca5a5">• time_varying_models.py</text>
-  <text x="480" y="690" font-size="7.5" fill="#6b7280">  DCC-GARCH · 动态条件相关</text>
-  <text x="480" y="702" font-size="7.5" fill="#6b7280">  TVP-VAR · 时变脉冲响应</text>
-  <text x="480" y="714" font-size="8" fill="#fca5a5">• panel_var.py</text>
-  <text x="480" y="726" font-size="7.5" fill="#6b7280">  Panel VAR (Abrigo &amp; Love 2016)</text>
-  <text x="480" y="738" font-size="8" fill="#fca5a5">• panel_cointegration.py</text>
-  <text x="480" y="750" font-size="7.5" fill="#6b7280">  Pedroni/Kao/Westerlund 检验</text>
-  <text x="480" y="762" font-size="7.5" fill="#6b7280">  面板 ECM · 长期均衡</text>
-  <text x="480" y="774" font-size="8" fill="#fca5a5">• mediation_test.py</text>
-  <text x="480" y="786" font-size="7.5" fill="#6b7280">  Buncher-Fillator 中介分析</text>
-  <text x="480" y="798" font-size="7" fill="#374151">• kob_decomposition.py · Olley-Pakes</text>
-
-  <!-- RF Column 4: Discrete &amp; Survival &amp; Causal ML -->
-  <rect x="690" y="574" width="210" height="238" rx="8" fill="#0a1525" stroke="#fbbf24" stroke-width="1.5" opacity="0.9"/>
-  <rect x="690" y="574" width="210" height="5" rx="2" fill="#fbbf24" opacity="0.5"/>
-  <text x="795" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#fbbf24">D. 离散·生存·因果ML · 12种</text>
-  <text x="795" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Discrete Choice &amp; Causal ML</text>
-  <text x="700" y="626" font-size="8" fill="#fcd34d">• discrete_choice.py</text>
-  <text x="700" y="640" font-size="7.5" fill="#6b7280">  Logit / Probit · 二值选择</text>
-  <text x="700" y="652" font-size="7.5" fill="#6b7280">  有序 Logit · Ordered Probit</text>
-  <text x="700" y="664" font-size="7.5" fill="#6b7280">  负二项回归 · 边际效应计算</text>
-  <text x="700" y="676" font-size="8" fill="#fcd34d">• survival_analysis.py</text>
-  <text x="700" y="690" font-size="7.5" fill="#6b7280">  Cox PH · Kaplan-Meier</text>
-  <text x="700" y="702" font-size="7.5" fill="#6b7280">  Nelson-Aalen · Fine-Gray</text>
-  <text x="700" y="714" font-size="8" fill="#fcd34d">• causal_ml.py</text>
-  <text x="700" y="726" font-size="7.5" fill="#6b7280">  Causal Forest · DoubleML</text>
-  <text x="700" y="738" font-size="7.5" fill="#6b7280">  T-Learner / X-Learner</text>
-  <text x="700" y="750" font-size="7.5" fill="#6b7280">  CS-DID 异质性处理效应</text>
-  <text x="700" y="762" font-size="8" fill="#fcd34d">• green_bond_model.py</text>
-  <text x="700" y="774" font-size="7.5" fill="#6b7280">  greenium 估计 · 因子分解</text>
-  <text x="700" y="786" font-size="7.5" fill="#6b7280">  事件研究 · 安慰剂检验</text>
-  <text x="700" y="798" font-size="7" fill="#374151">• options_iv_surface.py · IV曲面</text>
-
-  <!-- RF Column 5: Data &amp; Charts &amp; Outputs -->
-  <rect x="910" y="574" width="210" height="238" rx="8" fill="#0a1525" stroke="#a855f7" stroke-width="1.5" opacity="0.9"/>
-  <rect x="910" y="574" width="210" height="5" rx="2" fill="#a855f7" opacity="0.5"/>
-  <text x="1015" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#a855f7">E. 数据·图表·输出 · 10种</text>
-  <text x="1015" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Data, Charts &amp; Publishing</text>
-  <text x="920" y="626" font-size="8" fill="#c084fc">• data_fetcher.py</text>
-  <text x="920" y="640" font-size="7.5" fill="#6b7280">  7层fallback · 数据溯源追踪</text>
-  <text x="920" y="652" font-size="7.5" fill="#6b7280">  provenance_rag.py</text>
-  <text x="920" y="664" font-size="8" fill="#c084fc">• fin_charts.py</text>
-  <text x="920" y="676" font-size="7.5" fill="#6b7280">  20种专业金融图表预设</text>
-  <text x="920" y="688" font-size="7.5" fill="#6b7280">  ≥300 DPI · PDF/SVG/PNG</text>
-  <text x="920" y="700" font-size="8" fill="#c084fc">• report_generator.py</text>
-  <text x="920" y="712" font-size="7.5" fill="#6b7280">  LaTeX / Word 双格式</text>
-  <text x="920" y="724" font-size="7.5" fill="#6b7280">  45种期刊模板</text>
-  <text x="920" y="736" font-size="8" fill="#c084fc">• a_share_variables.py</text>
-  <text x="920" y="748" font-size="7.5" fill="#6b7280">  A股特色变量（8种）</text>
-  <text x="920" y="760" font-size="8" fill="#c084fc">• policy_database.py</text>
-  <text x="920" y="772" font-size="7.5" fill="#6b7280">  25项政策实验（2008-2024）</text>
-  <text x="920" y="784" font-size="8" fill="#c084fc">• diagnostic_reporter.py</text>
-  <text x="920" y="796" font-size="7.5" fill="#6b7280">  诊断报告 · 回归诊断</text>
-  <text x="920" y="808" font-size="7" fill="#4b5563">• prisma_compliance.py · PRISMA</text>
-
-  <!-- RF Column 6: Pipeline &amp; Core -->
-  <rect x="1130" y="574" width="240" height="238" rx="8" fill="#0a1525" stroke="#2dd4bf" stroke-width="1.5" opacity="0.9"/>
-  <rect x="1130" y="574" width="240" height="5" rx="2" fill="#2dd4bf" opacity="0.5"/>
-  <text x="1250" y="594" text-anchor="middle" font-size="10" font-weight="700" fill="#2dd4bf">F. 流水线·核心·工具 · 41模块</text>
-  <text x="1250" y="609" text-anchor="middle" font-size="8" fill="#6b7280">Pipeline &amp; Core Infrastructure</text>
-  <text x="1140" y="626" font-size="8" fill="#5eead4">• pipeline.py · enhanced_pipeline.py</text>
-  <text x="1140" y="638" font-size="7.5" fill="#6b7280">  标准流水线 + 增强流水线</text>
-  <text x="1140" y="650" font-size="8" fill="#5eead4">• data_validator.py · base.py</text>
-  <text x="1140" y="662" font-size="7.5" fill="#6b7280">  数据验证 · 基础框架</text>
-  <text x="1140" y="674" font-size="8" fill="#5eead4">• finance_sensitivity.py</text>
-  <text x="1140" y="686" font-size="7.5" fill="#6b7280">  信用风险敏感性分析</text>
-  <text x="1140" y="698" font-size="8" fill="#5eead4">• vuong_kob.py · rdd.py</text>
-  <text x="1140" y="710" font-size="7.5" fill="#6b7280">  Vuong检验 · 断点回归</text>
-  <text x="1140" y="722" font-size="8" fill="#5eead4">• journal_templates_multilang.py</text>
-  <text x="1140" y="734" font-size="7.5" fill="#6b7280">  45种期刊模板（含中文）</text>
-  <text x="1140" y="746" font-size="8" fill="#5eead4">• research_directions/ · 12个方向</text>
-  <text x="1140" y="758" font-size="7.5" fill="#6b7280">  数字金融/绿色金融/碳经济学</text>
-  <text x="1140" y="770" font-size="7.5" fill="#6b7280">  公司金融/宏观金融/资产定价...</text>
-  <text x="1140" y="782" font-size="8" fill="#5eead4">• core/ · 83+ Agent模块</text>
-  <text x="1140" y="794" font-size="7.5" fill="#6b7280">  agent_state · planner · checkpoint</text>
-  <text x="1140" y="806" font-size="7.5" fill="#6b7280">  llm_reviewer · autonomy_loop</text>
-
-  <!-- Arrow: MCP → RF -->
-  <line x1="790" y1="548" x2="790" y2="530" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
-  <path d="M785,536 L790,526 L795,536" fill="none" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
-
-  <!-- ── CORE AGENT MODULES (bottom right) ─────────────────────────────────── -->
-  <rect x="1130" y="820" width="245" height="60" rx="8" fill="#0a1525" stroke="#4a9eff" stroke-width="1" opacity="0.9"/>
-  <text x="1252" y="838" text-anchor="middle" font-size="9" font-weight="600" fill="#4a9eff">scripts/core/ · 83+ Agent Modules</text>
-  <text x="1145" y="853" font-size="7.5" fill="#6b7280">Memory · Planner · ToolSelector · LLMReviewer</text>
-  <text x="1145" y="866" font-size="7.5" fill="#6b7280">Checkpoint · Provenance · CrossSessionKnowledge</text>
-  <text x="1145" y="879" font-size="7" fill="#4b5563">AutonomyLoop · SelfEvolution · EventMonitor</text>
-
-  <!-- ── OUTPUT FOOTER ──────────────────────────────────────────────────────── -->
-  <line x1="25" y1="900" x2="1375" y2="900" stroke="#1f2937" stroke-width="1"/>
-  <text x="700" y="916" text-anchor="middle" font-size="10" fill="#6b7280">输出: LaTeX Paper (45 journal formats · JF/JFE/RFS/经济研究/金融研究) + PDF + Diagnostic Report</text>
-  <text x="700" y="932" text-anchor="middle" font-size="9" fill="#4b5563">17 Cursor Skills · 11-Step HITL Pipeline · 7-Layer Data Fallback · Full Provenance Tracking</text>
-
-  <!-- ── LEGEND ──────────────────────────────────────────────────────────────── -->
-  <rect x="30" y="945" width="1335" height="42" rx="6" fill="#0d1117" stroke="#1f2937" stroke-width="1"/>
-  <text x="45" y="961" font-size="8" fill="#9ca3af" font-weight="600">图例:</text>
-  <rect x="75" y="953" width="10" height="10" rx="2" fill="#4ade80" opacity="0.8"/>
-  <text x="90" y="962" font-size="8" fill="#6b7280">DID家族</text>
-  <rect x="145" y="953" width="10" height="10" rx="2" fill="#60a5fa" opacity="0.8"/>
-  <text x="160" y="962" font-size="8" fill="#6b7280">IV/GMM</text>
-  <rect x="210" y="953" width="10" height="10" rx="2" fill="#f87171" opacity="0.8"/>
-  <text x="225" y="962" font-size="8" fill="#6b7280">时间序列</text>
-  <rect x="290" y="953" width="10" height="10" rx="2" fill="#fbbf24" opacity="0.8"/>
-  <text x="305" y="962" font-size="8" fill="#6b7280">离散/因果ML</text>
-  <rect x="370" y="953" width="10" height="10" rx="2" fill="#a855f7" opacity="0.8"/>
-  <text x="385" y="962" font-size="8" fill="#6b7280">数据/输出</text>
-  <rect x="450" y="953" width="10" height="10" rx="2" fill="#2dd4bf" opacity="0.8"/>
-  <text x="465" y="962" font-size="8" fill="#6b7280">核心基础设施</text>
-  <rect x="550" y="953" width="10" height="10" rx="2" fill="#f97316" opacity="0.8"/>
-  <text x="565" y="962" font-size="8" fill="#6b7280">P0 必需API</text>
-  <rect x="630" y="953" width="10" height="10" rx="2" fill="#4ade80" opacity="0.8"/>
-  <text x="645" y="962" font-size="8" fill="#6b7280">✓ 无需API Key</text>
-  <text x="780" y="962" font-size="8" fill="#4b5563">|</text>
-  <text x="800" y="962" font-size="8" fill="#9ca3af">HITL = Human-In-The-Loop 强制交互节点</text>
-  <text x="1080" y="962" font-size="8" fill="#9ca3af">| MCP = Multi-Agent Context Protocol</text>
-  <text x="1280" y="962" font-size="8" fill="#4b5563">greenium = 绿色债券溢价</text>
-
+  </g>
+  <g>
+    <defs><marker id="arrowm1104-300-1250-278" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1104" y1="300" x2="1250" y2="278" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1104-300-1250-278)"/>
+    <text x="1177.0" y="280.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">writing</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm1104-624-1250-620" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1104" y1="624" x2="1250" y2="620" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1104-624-1250-620)"/>
+    <text x="1177.0" y="613.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">empirics</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm300-470-340-470" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="300" y1="470" x2="340" y2="470" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm300-470-340-470)"/>
+    <text x="320.0" y="461.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">route</text>
+  </g>
+  <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
+  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 01 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

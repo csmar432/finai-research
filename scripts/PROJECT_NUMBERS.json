@@ -1,7 +1,7 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-08-05",
+  "last_verified": "2026-08-09",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
@@ -105,8 +105,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 665,
-    "test_functions": 12705,
+    "test_files": 674,
+    "test_functions": 12777,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 60,
     "ci_coverage_target": 65,

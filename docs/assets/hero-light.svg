@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 560" role="img" aria-labelledby="title desc">
+  <title id="title">FinAI Research Workflow</title><desc id="desc">Evidence-first infrastructure from research question to defensible manuscript.</desc>
+  <rect width="1600" height="560" fill="#f7f5ef"/>
+  <path d="M0 448H1600M1000 0V560M1200 0V560M1400 0V560" stroke="#d8d6cd"/>
+  <g transform="translate(84 72)" fill="none" stroke="#10231c" stroke-width="12" stroke-linejoin="round"><rect width="80" height="96" rx="8"/><path d="M20 32h40M20 54h34"/><path d="M20 76h40" stroke="#0b7a53"/></g>
+  <text x="196" y="118" fill="#10231c" font-size="28" font-weight="750" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FinAI</text>
+  <text x="84" y="242" fill="#10231c" font-size="66" font-weight="760" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Research that can</text>
+  <text x="84" y="316" fill="#10231c" font-size="66" font-weight="760" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">show its work.</text>
+  <text x="88" y="380" fill="#53645c" font-size="22" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Evidence-first infrastructure for empirical economics and finance.</text>
+  <text x="88" y="438" fill="#0b7a53" font-size="14" font-weight="700" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LOCAL DATA FIRST  ·  HUMAN CHECKPOINTS  ·  NO SILENT MOCK</text>
+  <g font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace" font-size="13"><text x="1040" y="92" fill="#53645c">01  DISCOVER</text><text x="1240" y="92" fill="#53645c">02  DESIGN</text><text x="1440" y="92" fill="#53645c">03  EVIDENCE</text><text x="1040" y="292" fill="#53645c">04  ESTIMATE</text><text x="1240" y="292" fill="#53645c">05  WRITE</text><text x="1440" y="292" fill="#53645c">06  REVIEW</text></g>
+  <g fill="#10231c" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif" font-weight="740" font-size="31"><text x="1040" y="178">43</text><text x="1240" y="178">58</text><text x="1440" y="178">18</text><text x="1040" y="378">30</text></g>
+  <g fill="#53645c" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace" font-size="11"><text x="1040" y="204">DATA SOURCES</text><text x="1240" y="204">METHOD MODULES</text><text x="1440" y="204">AI SKILLS</text><text x="1040" y="404">JOURNAL TEMPLATES</text></g>
+</svg>

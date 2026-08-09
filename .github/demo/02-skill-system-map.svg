@@ -1,187 +1,171 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
+  <title>18 research skills</title>
+  <desc>A small set of composable capabilities organized by research phase</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0e1a"/>
-      <stop offset="100%" stop-color="#0d1220"/>
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
     </linearGradient>
-    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#a855f7"/>
-    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
   </defs>
   <rect width="100%" height="100%" fill="url(#bgGrad)"/>
-
-  <!-- 页眉 -->
-  <rect x="0" y="0" width="1600" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
-  <text x="60" y="48" fill="#e8edf5" font-size="32" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图 2: 17 技能体系 (Skill System Map)</text>
-  <text x="60" y="72" fill="#aab4c5" font-size="16" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">4 阶段：发现 → 设计 → 写作 → 发布</text>
-  <text x="1540" y="48" fill="#aab4c5" font-size="14" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v1.0.0</text>
-  <text x="1540" y="72" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5-architecture series</text>
-  <line x1="60" y1="100" x2="1540" y2="100" stroke="#1e2738" stroke-width="1"/>
-
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">18 research skills</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">A small set of composable capabilities organized by research phase</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
-    <rect x="60" y="150" width="360" height="720" rx="16" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
-    <rect x="72" y="140" width="104" height="22" rx="6" fill="#0a0e1a" stroke="#3b82f6" stroke-width="1"/>
-    <text x="124" y="155" fill="#3b82f6" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">① 想法发现阶段</text>
+    <rect x="56" y="190" width="354" height="566" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="72" y="177" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#79a9ff"/>
+    <text x="132.0" y="195" fill="#79a9ff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DISCOVER</text>
   </g>
-
   <g>
-    <rect x="75" y="190" width="330" height="153" rx="12" fill="#3b82f6" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="75" y="190" width="330" height="3" rx="2" fill="#3b82f6"/>
-    <text x="240.0" y="258.5" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-idea-discovery</text>
-    <text x="240.0" y="284.5" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">想法发现 + 数据验证</text>
-  </g>
+    <rect x="80" y="230" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="230" width="5" height="68" rx="2.5" fill="#79a9ff"/>
+    <text x="102" y="269.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-idea-discovery</text>
 
+  </g>
   <g>
-    <rect x="75" y="355" width="330" height="153" rx="12" fill="#3b82f6" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="75" y="355" width="330" height="3" rx="2" fill="#3b82f6"/>
-    <text x="240.0" y="423.5" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-generate-idea</text>
-    <text x="240.0" y="449.5" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">8-12 排序想法</text>
-  </g>
+    <rect x="80" y="322" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="322" width="5" height="68" rx="2.5" fill="#79a9ff"/>
+    <text x="102" y="361.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-generate-idea</text>
 
+  </g>
   <g>
-    <rect x="75" y="520" width="330" height="153" rx="12" fill="#3b82f6" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="75" y="520" width="330" height="3" rx="2" fill="#3b82f6"/>
-    <text x="240.0" y="588.5" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-novelty-check</text>
-    <text x="240.0" y="614.5" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">顶刊查重</text>
-  </g>
+    <rect x="80" y="414" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="414" width="5" height="68" rx="2.5" fill="#79a9ff"/>
+    <text x="102" y="453.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-lit-review</text>
 
+  </g>
   <g>
-    <rect x="75" y="685" width="330" height="153" rx="12" fill="#3b82f6" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="75" y="685" width="330" height="3" rx="2" fill="#3b82f6"/>
-    <text x="240.0" y="753.5" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-lit-review</text>
-    <text x="240.0" y="779.5" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">系统性综述</text>
-  </g>
+    <rect x="80" y="506" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="80" y="506" width="5" height="68" rx="2.5" fill="#79a9ff"/>
+    <text x="102" y="545.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-novelty-check</text>
 
+  </g>
   <g>
-    <rect x="450" y="150" width="360" height="720" rx="16" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
-    <rect x="462" y="140" width="104" height="22" rx="6" fill="#0a0e1a" stroke="#10b981" stroke-width="1"/>
-    <text x="514" y="155" fill="#10b981" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">② 研究设计阶段</text>
-  </g>
+    <defs><marker id="arrowm410-472-430-472" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#79a9ff"/></marker></defs>
+    <line x1="410" y1="472" x2="430" y2="472" stroke="#79a9ff" stroke-width="1.6" marker-end="url(#arrowm410-472-430-472)"/>
 
+  </g>
   <g>
-    <rect x="465" y="190" width="330" height="318" rx="12" fill="#10b981" stroke="#10b981" stroke-width="1.5"/>
-    <rect x="465" y="190" width="330" height="3" rx="2" fill="#10b981"/>
-    <text x="630.0" y="341.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-experiment-design</text>
-    <text x="630.0" y="367.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">实证方案设计</text>
+    <rect x="438" y="190" width="354" height="566" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="454" y="177" width="154" height="26" rx="13" fill="#f7f5ef" stroke="#4cc9b0"/>
+    <text x="531.0" y="195" fill="#4cc9b0" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">DESIGN &amp; DATA</text>
   </g>
-
   <g>
-    <rect x="465" y="520" width="330" height="318" rx="12" fill="#10b981" stroke="#10b981" stroke-width="1.5"/>
-    <rect x="465" y="520" width="330" height="3" rx="2" fill="#10b981"/>
-    <text x="630.0" y="671.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-data-acquisition</text>
-    <text x="630.0" y="697.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">数据获取 + 脚本</text>
-  </g>
+    <rect x="462" y="230" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="462" y="230" width="5" height="68" rx="2.5" fill="#4cc9b0"/>
+    <text x="484" y="269.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-brief-generator</text>
 
+  </g>
   <g>
-    <rect x="840" y="150" width="360" height="720" rx="16" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
-    <rect x="852" y="140" width="104" height="22" rx="6" fill="#0a0e1a" stroke="#f59e0b" stroke-width="1"/>
-    <text x="904" y="155" fill="#f59e0b" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">③ 论文写作阶段</text>
-  </g>
+    <rect x="462" y="322" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="462" y="322" width="5" height="68" rx="2.5" fill="#4cc9b0"/>
+    <text x="484" y="361.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-experiment-design</text>
 
+  </g>
   <g>
-    <rect x="855" y="190" width="330" height="120" rx="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="855" y="190" width="330" height="3" rx="2" fill="#f59e0b"/>
-    <text x="1020.0" y="242.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-plan</text>
-    <text x="1020.0" y="268.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">大纲生成</text>
-  </g>
+    <rect x="462" y="414" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="462" y="414" width="5" height="68" rx="2.5" fill="#4cc9b0"/>
+    <text x="484" y="453.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-data-acquisition</text>
 
+  </g>
   <g>
-    <rect x="855" y="322" width="330" height="120" rx="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="855" y="322" width="330" height="3" rx="2" fill="#f59e0b"/>
-    <text x="1020.0" y="374.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-draft</text>
-    <text x="1020.0" y="400.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">正文写作</text>
-  </g>
+    <rect x="462" y="506" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="462" y="506" width="5" height="68" rx="2.5" fill="#4cc9b0"/>
+    <text x="484" y="545.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-arch-diagram</text>
 
+  </g>
   <g>
-    <rect x="855" y="454" width="330" height="120" rx="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="855" y="454" width="330" height="3" rx="2" fill="#f59e0b"/>
-    <text x="1020.0" y="506.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-figure</text>
-    <text x="1020.0" y="532.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图表生成</text>
-  </g>
+    <defs><marker id="arrowm792-472-812-472" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#4cc9b0"/></marker></defs>
+    <line x1="792" y1="472" x2="812" y2="472" stroke="#4cc9b0" stroke-width="1.6" marker-end="url(#arrowm792-472-812-472)"/>
 
+  </g>
   <g>
-    <rect x="855" y="586" width="330" height="120" rx="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="855" y="586" width="330" height="3" rx="2" fill="#f59e0b"/>
-    <text x="1020.0" y="638.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-writing</text>
-    <text x="1020.0" y="664.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">写作编排</text>
+    <rect x="820" y="190" width="354" height="566" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="836" y="177" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#d8b66a"/>
+    <text x="896.0" y="195" fill="#d8b66a" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">WRITE</text>
   </g>
-
   <g>
-    <rect x="855" y="718" width="330" height="120" rx="12" fill="#f59e0b" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="855" y="718" width="330" height="3" rx="2" fill="#f59e0b"/>
-    <text x="1020.0" y="770.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-convert</text>
-    <text x="1020.0" y="796.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LaTeX 编译</text>
-  </g>
+    <rect x="844" y="230" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="844" y="230" width="5" height="68" rx="2.5" fill="#d8b66a"/>
+    <text x="866" y="269.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-plan</text>
 
+  </g>
   <g>
-    <rect x="1230" y="150" width="360" height="720" rx="16" fill="none" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
-    <rect x="1242" y="140" width="104" height="22" rx="6" fill="#0a0e1a" stroke="#a855f7" stroke-width="1"/>
-    <text x="1294" y="155" fill="#a855f7" font-size="13" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">④ 评审发布阶段</text>
-  </g>
+    <rect x="844" y="322" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="844" y="322" width="5" height="68" rx="2.5" fill="#d8b66a"/>
+    <text x="866" y="361.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-draft</text>
 
+  </g>
   <g>
-    <rect x="1245" y="190" width="330" height="120" rx="12" fill="#a855f7" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="1245" y="190" width="330" height="3" rx="2" fill="#a855f7"/>
-    <text x="1410.0" y="242.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-review-loop</text>
-    <text x="1410.0" y="268.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">对抗性 review</text>
-  </g>
+    <rect x="844" y="414" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="844" y="414" width="5" height="68" rx="2.5" fill="#d8b66a"/>
+    <text x="866" y="453.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-writing</text>
 
+  </g>
   <g>
-    <rect x="1245" y="322" width="330" height="120" rx="12" fill="#a855f7" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="1245" y="322" width="330" height="3" rx="2" fill="#a855f7"/>
-    <text x="1410.0" y="374.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-submit-check</text>
-    <text x="1410.0" y="400.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">投稿前检查</text>
-  </g>
+    <rect x="844" y="506" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="844" y="506" width="5" height="68" rx="2.5" fill="#d8b66a"/>
+    <text x="866" y="545.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-figure</text>
 
+  </g>
   <g>
-    <rect x="1245" y="454" width="330" height="120" rx="12" fill="#a855f7" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="1245" y="454" width="330" height="3" rx="2" fill="#a855f7"/>
-    <text x="1410.0" y="506.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-ref-paper</text>
-    <text x="1410.0" y="532.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">BibTeX 管理</text>
-  </g>
+    <rect x="844" y="598" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="844" y="598" width="5" height="68" rx="2.5" fill="#d8b66a"/>
+    <text x="866" y="637.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-viz-launch</text>
 
+  </g>
   <g>
-    <rect x="1245" y="586" width="330" height="120" rx="12" fill="#a855f7" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="1245" y="586" width="330" height="3" rx="2" fill="#a855f7"/>
-    <text x="1410.0" y="638.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-brief-generator</text>
-    <text x="1410.0" y="664.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FIN_BRIEF.md</text>
-  </g>
+    <defs><marker id="arrowm1174-472-1194-472" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#d8b66a"/></marker></defs>
+    <line x1="1174" y1="472" x2="1194" y2="472" stroke="#d8b66a" stroke-width="1.6" marker-end="url(#arrowm1174-472-1194-472)"/>
 
+  </g>
   <g>
-    <rect x="1245" y="718" width="330" height="120" rx="12" fill="#a855f7" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="1245" y="718" width="330" height="3" rx="2" fill="#a855f7"/>
-    <text x="1410.0" y="770.0" fill="#e8edf5" font-size="16" font-weight="600" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-viz-launch</text>
-    <text x="1410.0" y="796.0" fill="#aab4c5" font-size="13" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">自然语言 → 图表</text>
+    <rect x="1202" y="190" width="354" height="566" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1218" y="177" width="184" height="26" rx="13" fill="#f7f5ef" stroke="#a992d4"/>
+    <text x="1310.0" y="195" fill="#a992d4" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">REVIEW &amp; DELIVER</text>
   </g>
-
   <g>
-    <defs><marker id="ah_395_510" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
-    </marker></defs>
-    <line x1="395" y1="510" x2="415" y2="510" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_395_510)"/>
-    
-  </g>
+    <rect x="1226" y="230" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1226" y="230" width="5" height="68" rx="2.5" fill="#a992d4"/>
+    <text x="1248" y="269.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-review-loop</text>
 
+  </g>
   <g>
-    <defs><marker id="ah_785_510" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
-    </marker></defs>
-    <line x1="785" y1="510" x2="805" y2="510" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_785_510)"/>
-    
-  </g>
+    <rect x="1226" y="322" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1226" y="322" width="5" height="68" rx="2.5" fill="#a992d4"/>
+    <text x="1248" y="361.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-ref-paper</text>
 
+  </g>
   <g>
-    <defs><marker id="ah_1175_510" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#5a6478"/>
-    </marker></defs>
-    <line x1="1175" y1="510" x2="1195" y2="510" stroke="#5a6478" stroke-width="1.5" marker-end="url(#ah_1175_510)"/>
-    
-  </g>
-<text x="800.0" y="900" fill="#aab4c5" font-size="14" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">每阶段独立可调用；可串联为 fin-full-pipeline（端到端 1 条命令）</text>
+    <rect x="1226" y="414" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1226" y="414" width="5" height="68" rx="2.5" fill="#a992d4"/>
+    <text x="1248" y="453.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-paper-convert</text>
 
-  <!-- 页脚 -->
-  <line x1="60" y1="950" x2="1540" y2="950" stroke="#1e2738" stroke-width="1"/>
-  <text x="60" y="975" fill="#7a8499" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">图 2 / 5 · finai-research-workflow</text>
-  <text x="1540" y="975" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">开源 · MIT · 2026</text>
+  </g>
+  <g>
+    <rect x="1226" y="506" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1226" y="506" width="5" height="68" rx="2.5" fill="#a992d4"/>
+    <text x="1248" y="545.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-submit-check</text>
+
+  </g>
+  <g>
+    <rect x="1226" y="598" width="306" height="68" rx="12" fill="#f2f0e9" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1226" y="598" width="5" height="68" rx="2.5" fill="#a992d4"/>
+    <text x="1248" y="637.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">fin-full-pipeline</text>
+
+  </g>
+  <g>
+    <rect x="488" y="782" width="624" height="34" rx="17" fill="#79a9ff" fill-opacity="0.08" stroke="#79a9ff" stroke-opacity="0.72"/>
+    <text x="800.0" y="804" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">independent skills · one fin-full-pipeline orchestrator</text>
+  </g>
+  <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
+  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 02 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

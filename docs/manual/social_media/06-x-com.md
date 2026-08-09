@@ -14,7 +14,7 @@ We just open-sourced FinAI Research Workflow — a single-CLI pipeline
 that turns an empirical research topic into a submission-ready LaTeX
 draft.
 
-43 MCP data sources · 47 econometric methods · 30 journal templates
+43 MCP data sources · 58 econometric methods · 30 journal templates
 (JF/JFE/RFS, 经济研究/金融研究/管理世界)
 
 github.com/csmar432/finai-research
@@ -99,7 +99,7 @@ Single CLI to turn an empirical research topic into a submission-ready
 LaTeX draft.
 
 → 43 MCP data sources (28 free, no API key)
-→ 47 econometric methods (modern staggered DID included)
+→ 58 econometric methods (modern staggered DID included)
 → 30 journal templates (JF/JFE/RFS, 经济研究/金融研究/管理世界)
 → HITL gates at every stage (no LLM fabrication reaches the draft)
 

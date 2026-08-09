@@ -50,7 +50,7 @@ class TestHeader:
         result = header("Test Title", "Test Subtitle")
         assert "<defs>" in result
         assert "bgGrad" in result
-        assert "hdrGrad" in result
+        assert "grid" in result
 
     def test_contains_background_rect(self):
         from gen_architecture_diagrams import header
@@ -80,8 +80,7 @@ class TestFooter:
     def test_shows_index(self):
         from gen_architecture_diagrams import footer
         result = footer(3, 5)
-        assert "图 3" in result
-        assert "5" in result
+        assert "FIGURE 03 / 05" in result
 
     def test_mit_license(self):
         from gen_architecture_diagrams import footer
@@ -213,11 +212,11 @@ class TestGenArchitectureOverview:
     def test_contains_all_layers(self):
         from gen_architecture_diagrams import gen_01_architecture_overview
         result = gen_01_architecture_overview()
-        assert "用户" in result
-        assert "接口" in result
-        assert "核心" in result or "Core" in result
-        assert "技能" in result or "Skill" in result
-        assert "数据" in result or "Data" in result
+        assert "INPUTS" in result
+        assert "WRITING TRACK" in result
+        assert "EMPIRICAL TRACK" in result
+        assert "DELIVERY" in result
+        assert "Local data" in result
 
     def test_contains_mcp_count(self):
         from gen_architecture_diagrams import gen_01_architecture_overview, MCP_COUNT

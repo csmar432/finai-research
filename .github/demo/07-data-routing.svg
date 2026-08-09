@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
+  <title>Data routing</title>
+  <desc>Exact-variable matching and provenance outrank convenience</desc>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Data routing</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Exact-variable matching and provenance outrank convenience</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
+  <g>
+    <rect x="60" y="350" width="230" height="110" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="60" y="350" width="5" height="110" rx="2.5" fill="#a63f3f"/>
+    <text x="82" y="396.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Variable request</text>
+    <text x="82" y="425.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">construct · unit · period</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm290-405-352-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="290" y1="405" x2="352" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm290-405-352-405)"/>
+
+  </g>
+  <g>
+    <rect x="352" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="352" y="326" width="5" height="158" rx="2.5" fill="#0b7a53"/>
+    <text x="374" y="396.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">0  Local panel</text>
+    <text x="374" y="425.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FINAI_EMPIRICAL_DATA_ROOT</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm566-405-596-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="566" y1="405" x2="596" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm566-405-596-405)"/>
+    <text x="581.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+  </g>
+  <g>
+    <rect x="602" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="602" y="326" width="5" height="158" rx="2.5" fill="#3659a2"/>
+    <text x="624" y="396.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">1  Validated cache</text>
+    <text x="624" y="425.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">schema + freshness + hash</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm816-405-846-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="816" y1="405" x2="846" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm816-405-846-405)"/>
+    <text x="831.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+  </g>
+  <g>
+    <rect x="852" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="852" y="326" width="5" height="158" rx="2.5" fill="#0b7a53"/>
+    <text x="874" y="396.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">2  MCP / official API</text>
+    <text x="874" y="425.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">compatible source only</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm1066-405-1096-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1066" y1="405" x2="1096" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1066-405-1096-405)"/>
+    <text x="1081.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+  </g>
+  <g>
+    <rect x="1102" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1102" y="326" width="5" height="158" rx="2.5" fill="#71558b"/>
+    <text x="1124" y="396.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">3  Stop visibly</text>
+    <text x="1124" y="425.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">missing ≠ synthetic</text>
+  </g>
+  <g>
+    <rect x="352" y="590" width="964" height="118" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="368" y="577" width="214" height="26" rx="13" fill="#f7f5ef" stroke="#0b7a53"/>
+    <text x="475.0" y="595" fill="#0b7a53" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">ACCEPTANCE CONTRACT</text>
+  </g>
+  <g>
+    <rect x="388" y="632" width="190" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="483.0" y="654" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">exact construct</text>
+  </g>
+  <g>
+    <rect x="622" y="632" width="190" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="717.0" y="654" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">source recorded</text>
+  </g>
+  <g>
+    <rect x="856" y="632" width="190" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="951.0" y="654" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">transform logged</text>
+  </g>
+  <g>
+    <rect x="1090" y="632" width="190" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="1185.0" y="654" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">validation passed</text>
+  </g>
+  <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
+  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 07 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+</svg>
