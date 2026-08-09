@@ -44,6 +44,18 @@
 
 ---
 
+## Quick Demo
+
+![FinAI guided workflow preview](.github/demo/demo.gif)
+
+This guided interface walkthrough shows supported agent hosts, the research-brief
+checkpoint, separate writing and empirical tracks, fail-closed data routing, and
+a verifiable delivery package. It is not a live research run and contains no mock
+coefficients, citations, or statistical claims. Regenerate it with
+`python scripts/demo/gen_quick_demo.py`.
+
+---
+
 ## 👥 Who Is This For?
 
 | Audience | Use Case |
@@ -110,7 +122,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 674 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
+- ✅ 675 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)

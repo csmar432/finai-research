@@ -40,8 +40,8 @@ GitHub: https://github.com/csmar432/finai-research
 
 1. **architecture-diagram.svg** (项目 `.github/demo/` 下)
    完整流水线架构图
-2. **demo.gif** (项目 `.github/demo/` 下, 录制脚本 `scripts/_record_demo.sh`)
-   终端实际录制 (100×30 terminal, ~6 sec)
+2. **demo.gif** (项目 `.github/demo/` 下，生成命令 `python scripts/demo/gen_quick_demo.py`)
+   约 9 秒的产品流程导览（非真实研究运行，不含模拟统计结果）
 3. **PR screenshot** — 4 个 awesome-list PR DRAFT 已准备
    (`docs/manual/awesome_list_prs/PR-02..05`), 提交后截图
 

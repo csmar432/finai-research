@@ -788,8 +788,8 @@ class UserDataMerger:
             True if authorized, False otherwise.
         """
         if not _MOCK_GOVERNANCE_AVAILABLE or self._mock_registry is None:
-            self.logger.warning("Mock governance not available, allowing synthetic '%s'", var_name)
-            return True
+            self.logger.error("Mock governance not available; refusing synthetic '%s'", var_name)
+            return False
 
         try:
             self._mock_registry.authorize(var_name, reason=reason)

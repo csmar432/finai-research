@@ -61,16 +61,14 @@ pip install --break-system-packages "finai-research-workflow[extras]"
 
 ### Quick Demo
 
-![Complete 8-stage research pipeline demo](.github/demo/demo_full_pipeline.gif)
+![FinAI guided workflow preview](.github/demo/demo.gif)
 
-The demo shows an end-to-end run on a sample topic (carbon emissions
-trading and green innovation): tool inventory, OpenAlex literature
-search, empirical specification, real data acquisition from five
-public MCP endpoints (yfinance, SEC EDGAR, World Bank, OpenAlex,
-FRED), a DID coefficient table, LaTeX paper compile, and the
-audit_guard report. All numerical output is fetched live at demo
-generation time. See [`.github/demo/README.md`](.github/demo/README.md)
-for the full inventory and regeneration commands.
+This guided interface walkthrough shows the supported agent hosts, research-brief
+checkpoint, separate writing and empirical tracks, fail-closed data routing, and
+verifiable delivery package. It is intentionally **not** presented as a live
+research run and contains no mock coefficients, citations, or statistical claims.
+Regenerate it deterministically with `python scripts/demo/gen_quick_demo.py`; see
+[`.github/demo/README.md`](.github/demo/README.md) for the visual contract.
 
 **一次输入 → 8 阶段流水线：想法生成 → 文献综述 → 新颖性验证 → 实证设计 → 数据获取 → 分析 → 论文写作 → 对抗性 Review。每阶段需研究者确认。**
 
