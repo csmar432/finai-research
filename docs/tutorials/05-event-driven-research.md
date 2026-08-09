@@ -108,8 +108,9 @@ events = monitor.check_earnings_calendar(lookback_days=7, top_n=20)
 
 **Detects**: Quarterly earnings releases, annual reports (via tushare).
 
-> Requires `TUSHARE_TOKEN` to be set. Without it, returns mock data
-> (`source="tushare_mock"`).
+> Requires `TUSHARE_TOKEN`. Without it, the monitor returns no earnings events.
+> Demonstration events require the explicit `allow_mock=True` option (or CLI
+> `--allow-mock`) and must not be used as research evidence.
 
 ### 2. Macro Releases
 
@@ -133,8 +134,8 @@ events = monitor.check_macro_releases(countries=["US", "CN"])
 
 **Detects**: GDP, CPI, PPI, PMI, NFP, FOMC announcements.
 
-> Currently returns mock data (MCP integration planned). Each event has
-> `source="fed"`/`"nbs"`/`"bls"` depending on origin.
+> A production macro-calendar adapter is not implemented yet, so the default is
+> an empty list. Explicit demonstration mode can return labelled sample events.
 
 ### 3. Policy Keywords
 
@@ -410,8 +411,8 @@ for event in events:
    to the queue automatically.
 4. **Handle exceptions**: Handler exceptions are caught silently by
    `_notify_handlers()`. Use `try/except` inside your handler for robustness.
-5. **Graceful fallback**: When `TUSHARE_TOKEN` is not set, earnings calendar
-   returns mock data. Always check `event.source` to know if data is real.
+5. **Fail closed**: When a source is unavailable, the monitor returns no event
+   for that source. Use `allow_mock=True` only for an explicitly labelled demo.
 
 ---
 

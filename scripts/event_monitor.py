@@ -119,6 +119,7 @@ class EventMonitor:
         check_interval: Seconds between polling cycles (default: 300).
         auto_trigger: If True, automatically trigger pipeline without approval.
         config_path: Path to project_config.json for loading keywords/config.
+        allow_mock: Explicitly allow demonstration events. Defaults to False.
     """
 
     def __init__(
@@ -126,10 +127,12 @@ class EventMonitor:
         check_interval: int = 300,
         auto_trigger: bool = False,
         config_path: str = "config/project_config.json",
+        allow_mock: bool = False,
     ):
         self.check_interval = check_interval
         self.auto_trigger = auto_trigger
         self.config_path = Path(config_path)
+        self.allow_mock = allow_mock
         self._running = False
         self._last_check: dict[str, datetime] = {}
         self._event_queue: deque = deque(maxlen=1000)
@@ -179,7 +182,7 @@ class EventMonitor:
     ) -> list[EarningsEvent]:
         """Check upcoming earnings releases via tushare.
 
-        Falls back to mock data when TUSHARE_TOKEN is not set.
+        Returns no events when Tushare is unavailable unless Mock was explicitly allowed.
 
         Args:
             lookback_days: Number of days to look back for announcements.
@@ -188,7 +191,7 @@ class EventMonitor:
         Returns:
             List of EarningsEvent objects.
         """
-        raw_events = _get_earnings_calendar_tushare(lookback_days)
+        raw_events = _get_earnings_calendar_tushare(lookback_days, allow_mock=self.allow_mock)
         events = []
         for record in raw_events[:top_n]:
             event = EarningsEvent(
@@ -227,8 +230,9 @@ class EventMonitor:
         """
         events = []
 
-        # Build macro events from mock/config (MCP integration would replace this)
-        macro_data = _get_mock_macro_releases()
+        # No production macro calendar adapter exists yet. Never fabricate events
+        # unless a caller explicitly opts into demonstration mode.
+        macro_data = _get_mock_macro_releases() if self.allow_mock else []
 
         for record in macro_data:
             country = record.get("country", "")
@@ -275,9 +279,9 @@ class EventMonitor:
             keywords = self.keywords
 
         events = []
-        # In production, this would call brave_search MCP tool
-        # For now, return mock data based on keywords
-        policy_data = _search_policy_keywords_mock(keywords, max_results)
+        # No production policy-search adapter exists yet. Never fabricate events
+        # unless a caller explicitly opts into demonstration mode.
+        policy_data = _search_policy_keywords_mock(keywords, max_results) if self.allow_mock else []
 
         for record in policy_data:
             event = PolicyEvent(
@@ -972,10 +976,14 @@ def _build_topic_from_event(event: ResearchEvent) -> str:
 # MCP Integration Helpers (with graceful fallback)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _get_earnings_calendar_tushare(lookback_days: int = 7) -> list[dict]:
+def _get_earnings_calendar_tushare(
+    lookback_days: int = 7,
+    *,
+    allow_mock: bool = False,
+) -> list[dict]:
     """Get earnings calendar from tushare (requires TUSHARE_TOKEN).
 
-    Falls back to mock data when token is not available.
+    Returns an empty list when unavailable. Mock data requires explicit opt-in.
 
     Args:
         lookback_days: Number of days to look back.
@@ -1008,12 +1016,12 @@ def _get_earnings_calendar_tushare(lookback_days: int = 7) -> list[dict]:
         return records
 
     except (ValueError, AttributeError, KeyError, TypeError):
-        # Graceful fallback to mock data for expected tushare errors:
+        # Fail closed for expected Tushare errors:
         # ValueError  - TUSHARE_TOKEN not set
         # AttributeError - tushare API response structure changed
         # KeyError   - tushare API returned unexpected key
         # TypeError  - tushare returned non-iterable response
-        return _get_mock_earnings_calendar(lookback_days)
+        return _get_mock_earnings_calendar(lookback_days) if allow_mock else []
 
 
 def _get_mock_earnings_calendar(lookback_days: int = 7) -> list[dict]:
@@ -1316,6 +1324,10 @@ Examples:
         "--output-dir", type=str, default="",
         help="Custom output directory for triggered pipelines"
     )
+    parser.add_argument(
+        "--allow-mock", action="store_true",
+        help="Explicitly allow demonstration events; disabled by default"
+    )
 
     args = parser.parse_args()
 
@@ -1379,6 +1391,7 @@ Examples:
             language=args.language,
             output_dir=args.output_dir,
             config_path=args.config,
+            allow_mock=args.allow_mock,
         )
         sys.exit(0)
 
@@ -1390,6 +1403,7 @@ Examples:
         check_interval=args.interval,
         auto_trigger=args.auto_trigger,
         config_path=args.config,
+        allow_mock=args.allow_mock,
     )
 
     def on_event(event: ResearchEvent):
@@ -1448,6 +1462,7 @@ def _run_scheduler_mode(
     language: str,
     output_dir: str,
     config_path: str,
+    allow_mock: bool = False,
 ):
     """Run event monitor with APScheduler-based calendar-aware scheduling."""
     try:
@@ -1476,7 +1491,7 @@ def _run_scheduler_mode(
             scheduler.add_job(
                 _scheduled_poll,
                 CronTrigger(hour=hour, minute=minute),
-                args=[auto_trigger, keywords, countries, pipeline_type, language, output_dir],
+                args=[auto_trigger, keywords, countries, pipeline_type, language, output_dir, allow_mock],
                 id=f"cron_{hour:02d}{minute:02d}",
                 name=f"Daily at {hour:02d}:{minute:02d}",
                 replace_existing=True,
@@ -1499,7 +1514,7 @@ def _run_scheduler_mode(
             scheduler.add_job(
                 _scheduled_poll,
                 CronTrigger(hour=hour, minute=minute),
-                args=[auto_trigger, keywords, [country], pipeline_type, language, output_dir],
+                args=[auto_trigger, keywords, [country], pipeline_type, language, output_dir, allow_mock],
                 id=f"macro_{country}_{time_str.replace(':', '')}",
                 name=description,
                 replace_existing=True,
@@ -1509,7 +1524,7 @@ def _run_scheduler_mode(
         scheduler.add_job(
             _scheduled_poll,
             CronTrigger(hour=22, minute=0, day_of_week="wed", weeks=6),
-            args=[auto_trigger, keywords, ["US"], pipeline_type, language, output_dir],
+            args=[auto_trigger, keywords, ["US"], pipeline_type, language, output_dir, allow_mock],
             id="fomc_6w",
             name="US: FOMC meeting (6-week schedule)",
             replace_existing=True,
@@ -1546,11 +1561,16 @@ def _scheduled_poll(
     pipeline_type: str,
     language: str,
     output_dir: str,
+    allow_mock: bool = False,
 ):
     """Poll and trigger pipelines for a scheduled run."""
     print(f"[Scheduler:{datetime.now().strftime('%H:%M:%S')}] Running scheduled poll...")
     try:
-        monitor = EventMonitor(check_interval=0, auto_trigger=auto_trigger)
+        monitor = EventMonitor(
+            check_interval=0,
+            auto_trigger=auto_trigger,
+            allow_mock=allow_mock,
+        )
         events = monitor.poll_all()
         print(f"[Scheduler] Found {len(events)} events")
         for event in events:

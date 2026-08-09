@@ -1,43 +1,31 @@
 # Demo Assets
 
-This directory contains visual assets for the project README and
-documentation.
+This directory contains the README demo and complementary architecture views.
 
-## Demo GIFs
+## Canonical Quick Demo
 
-| File | Dimensions | Frames | Loop | Purpose |
-|------|-----------|--------|------|---------|
-| `demo_full_pipeline.gif` | 1100×211 | 33 | ~47 s | Full 8-stage research workflow with real MCP data |
-| `demo.gif` | 860×608 | 30 | ~6 s | Tool-inventory only (legacy) |
-| `demo.cast` | – | – | – | asciinema source for `demo.gif` |
-| `demo_v1_health.*` | – | – | – | Backups of v1 |
+`demo.gif` is a 1200×675, 15-frame guided product preview. It explains the
+workflow contract without pretending that a staged animation is a live research
+run. In particular, it contains no generated citations, coefficients, p-values,
+or claims of real-time data acquisition.
 
-### `demo_full_pipeline.gif` (active demo)
+The five scenes cover:
 
-Records an end-to-end academic research session for the topic
-*Carbon Emissions Trading and Enterprise Green Innovation*. Each
-frame is a real command invocation whose output is captured at
-demo-generation time (no simulated data).
+1. Codex (recommended), Cursor, Claude Code, and API/Ollama hosts.
+2. Research-brief clarification and human review.
+3. Separate writing and empirical tracks.
+4. Local-first, fail-closed routing; Mock remains explicit opt-in only.
+5. A verifiable delivery package and dynamically counted capabilities.
 
-| Stage | Real data source |
-|-------|------------------|
-| 0  Tool inventory  | `scripts/cli.py version/health` |
-| 1  Literature      | OpenAlex MCP — title-search, top 4 by citations |
-| 2  Novelty check   | `scripts/cli.py lit-review` |
-| 3  Identification  | DID specification: Treat × Post on 14 firms × 3 yrs |
-| 4  Data (5 MCPs)   | (a) yfinance, (b) SEC EDGAR, (c) World Bank, (d) OpenAlex, (e) FRED |
-| 5  Estimation      | DID coefficient table (Table 3 of the paper) |
-| 6  Paper draft     | `papers/us_esg_financing/latex/esg_financing_paper.tex` |
-| 7  Audit           | `scripts/audit_guard.py` (current integrity checks) |
-
-Regenerate:
+Regenerate with the repository's existing Pillow dependency:
 
 ```bash
-bash scripts/demo/record_full_pipeline_v4.sh > /tmp/demo.txt 2>&1
-python scripts/demo/render_demo_gif_v4.py \
-    /tmp/demo.txt .github/demo/demo_full_pipeline.gif \
-    1100 0.7 32
+python scripts/demo/gen_quick_demo.py
 ```
+
+The storyboard and content are deterministic. Platform-appropriate fonts may
+produce small pixel differences across operating systems. The generator validates
+output dimensions and frame count before returning.
 
 ## Architecture diagrams (9 complementary views)
 

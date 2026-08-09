@@ -327,6 +327,15 @@ class TestAuthorizeSynthetic:
         assert details is not None
         assert details.get("reason") == "linear interpolation"
 
+    def test_missing_governance_fails_closed(self, monkeypatch):
+        import scripts.core.user_data_merger as module
+
+        monkeypatch.setattr(module, "_MOCK_GOVERNANCE_AVAILABLE", False)
+        merger = UserDataMerger()
+        merger._mock_registry = None
+
+        assert merger.authorize_synthetic_variable("unsafe") is False
+
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 

@@ -11,7 +11,7 @@ macro_finance_center.py — 宏观金融数据中心
 
 特点：
 - 所有数据自动标注来源、时间和方法论说明
-- 智能缓存（akshare本地数据 > FRED实时 > 模拟备选）
+- 智能缓存（akshare本地数据 > FRED实时 > 明确不可用状态）
 - 宏观日历：自动生成NFP/CPI/FOMC/PMI等重要发布日期
 - 跨市场联动分析：中美欧央行政策联动
 """
@@ -383,9 +383,16 @@ class FREDDataFetcher:
         },
     }
 
-    def __init__(self, api_key: str | None = None, cache_dir: str | None = None):
+    def __init__(
+        self,
+        api_key: str | None = None,
+        cache_dir: str | None = None,
+        *,
+        allow_mock: bool = False,
+    ):
         self.api_key = api_key or FRED_API_KEY
         self.cache_dir = cache_dir
+        self.allow_mock = allow_mock
         self._session = requests.Session()
         self._session.headers.update({"User-Agent": "FinResearch-Agent/1.0"})
         self._cache: dict[str, Any] = {}
@@ -456,7 +463,7 @@ class FREDDataFetcher:
                 return self._parse_csv_response(r.text, series_id, unit, freq, catalog)
             except Exception as e:
                 logger.warning(f"FRED public API failed for {series_id}: {e}")
-                return self._fallback_mock(series_id, unit, freq, "FRED public API failed")
+                return self._unavailable_series(series_id, unit, freq, "FRED public API failed")
 
         # API接口（需要Key）
         url = f"{self.BASE_URL}/series/observations"
@@ -475,7 +482,7 @@ class FREDDataFetcher:
             return self._parse_fred_response(data, series_id, unit, freq, catalog)
         except Exception as e:
             logger.error(f"FRED API failed for {series_id}: {e}")
-            return self._fallback_mock(series_id, unit, freq, str(e))
+            return self._unavailable_series(series_id, unit, freq, str(e))
 
     def _parse_fred_response(
         self, data: dict, series_id: str,
@@ -521,7 +528,7 @@ class FREDDataFetcher:
     ) -> MacroTimeSeries:
         lines = csv_text.strip().split("\n")
         if len(lines) < 2:
-            return self._fallback_mock(series_id, unit, freq, "Empty CSV response")
+            return self._unavailable_series(series_id, unit, freq, "Empty CSV response")
 
         observations = []
         for line in lines[1:]:  # skip header
@@ -559,20 +566,22 @@ class FREDDataFetcher:
             methodology=catalog.get("methodology"),
         )
 
-    def _fallback_mock(
+    def _unavailable_series(
         self, series_id: str, unit: str,
         freq: DataFreshness, reason: str,
     ) -> MacroTimeSeries:
-        logger.warning(f"FRED {series_id} fallback to mock data: {reason}")
+        source = DataSourceType.SIMULATED if self.allow_mock else DataSourceType.UNKNOWN
+        label = "MOCK" if self.allow_mock else "UNAVAILABLE"
+        logger.warning("FRED %s %s: %s", series_id, label.lower(), reason)
         return MacroTimeSeries(
             indicator=series_id,
             country="US",
             unit=unit,
             frequency=freq,
-            source=DataSourceType.SIMULATED,
+            source=source,
             observations=[],
             last_updated=datetime.now().isoformat(),
-            description=f"{series_id} (MOCK - {reason})",
+            description=f"{series_id} ({label} - {reason})",
         )
 
     def fetch_nfp(self, start_year: int | None = None, end_year: int | None = None) -> MacroTimeSeries:
