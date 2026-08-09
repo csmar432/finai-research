@@ -88,7 +88,7 @@ gifski --fps 20 --quality 90 \
 ```markdown
 ## Quick Demo
 
-![FinAI Research Workflow Demo](docs/assets/demo.gif)
+![FinAI Research Workflow Demo](assets/demo.gif)
 
 > ⏱️ 15 秒看完完整流程：从研究主题到论文草稿
 ```

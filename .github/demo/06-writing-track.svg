@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
-  <title>Writing track</title>
-  <desc>Five generated artifacts, four reviewable transitions, no empirical estimation hidden inside</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Writing track</title>
+  <desc id="desc">Five generated artifacts, four reviewable transitions, no empirical estimation hidden inside</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f7f5ef"/>
@@ -16,7 +16,7 @@
   <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Writing track</text>
   <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Five generated artifacts, four reviewable transitions, no empirical estimation hidden inside</text>
   <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
-  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
   <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
     <rect x="70" y="270" width="252" height="118" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -27,7 +27,7 @@
   <g>
     <defs><marker id="arrowm322-329-360-329" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="322" y1="329" x2="360" y2="329" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm322-329-360-329)"/>
-    <text x="341.0" y="320.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
+    <text x="341.0" y="320.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
   </g>
   <g>
     <rect x="370" y="270" width="252" height="118" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -38,33 +38,33 @@
   <g>
     <defs><marker id="arrowm622-329-660-329" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="622" y1="329" x2="660" y2="329" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm622-329-660-329)"/>
-    <text x="641.0" y="320.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
+    <text x="641.0" y="320.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
   </g>
   <g>
     <rect x="670" y="270" width="252" height="118" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="670" y="270" width="5" height="118" rx="2.5" fill="#a96024"/>
+    <rect x="670" y="270" width="5" height="118" rx="2.5" fill="#a35b20"/>
     <text x="692" y="320.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">03  Figures</text>
     <text x="692" y="349.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">claims matched to visual evidence</text>
   </g>
   <g>
     <defs><marker id="arrowm922-329-960-329" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="922" y1="329" x2="960" y2="329" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm922-329-960-329)"/>
-    <text x="941.0" y="320.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
+    <text x="941.0" y="320.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
   </g>
   <g>
     <rect x="970" y="270" width="252" height="118" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="970" y="270" width="5" height="118" rx="2.5" fill="#a96024"/>
+    <rect x="970" y="270" width="5" height="118" rx="2.5" fill="#a35b20"/>
     <text x="992" y="320.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">04  Manuscript</text>
     <text x="992" y="349.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">structured LaTeX draft</text>
   </g>
   <g>
     <defs><marker id="arrowm1222-329-1260-329" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="1222" y1="329" x2="1260" y2="329" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1222-329-1260-329)"/>
-    <text x="1241.0" y="320.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
+    <text x="1241.0" y="320.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">HITL</text>
   </g>
   <g>
     <rect x="1270" y="270" width="252" height="118" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1270" y="270" width="5" height="118" rx="2.5" fill="#a96024"/>
+    <rect x="1270" y="270" width="5" height="118" rx="2.5" fill="#a35b20"/>
     <text x="1292" y="320.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">05  Refinement</text>
     <text x="1292" y="349.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">adversarial review loop</text>
   </g>
@@ -92,6 +92,6 @@
     <text x="1044" y="623.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">citations, claims, and authorship</text>
   </g>
   <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
-  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 06 / 09 · github.com/csmar432/finai-research</text>
-  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+  <text x="56" y="878" fill="#607168" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 06 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#607168" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

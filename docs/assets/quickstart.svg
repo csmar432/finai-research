@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img">
-<title>Start FinAI with your preferred agent</title><desc>Codex is recommended; Cursor, Claude Code, API providers, and Ollama are supported. Mock is explicit opt-in only.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-labelledby="title desc">
+<title id="title">Start FinAI with your preferred agent</title><desc id="desc">Codex is recommended; Cursor, Claude Code, API providers, and Ollama are supported. Mock is explicit opt-in only.</desc>
 <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="#d8d6cd" opacity=".32"/></pattern></defs>
 <rect width="100%" height="100%" fill="#f7f5ef"/>
 <rect width="100%" height="100%" fill="url(#grid)"/>
@@ -14,8 +14,8 @@
 <rect x="604" y="132" width="250" height="92" rx="14" fill="#ffffff" stroke="#71558b"/>
 <text x="626" y="162" fill="#71558b" font-size="10" font-weight="700" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">SUPPORTED</text>
 <text x="626" y="198" fill="#10231c" font-size="20" font-weight="700" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Claude Code</text>
-<rect x="874" y="132" width="462" height="92" rx="14" fill="#ffffff" stroke="#a96024"/>
-<text x="896" y="162" fill="#a96024" font-size="10" font-weight="700" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">OPTIONAL</text>
+<rect x="874" y="132" width="462" height="92" rx="14" fill="#ffffff" stroke="#a35b20"/>
+<text x="896" y="162" fill="#a35b20" font-size="10" font-weight="700" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">OPTIONAL</text>
 <text x="896" y="198" fill="#10231c" font-size="20" font-weight="700" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">API / Ollama</text>
   <g>
     <rect x="64" y="284" width="360" height="388" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>

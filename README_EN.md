@@ -79,15 +79,15 @@
 | Academic papers | `user-arxiv`, `user-nber-wp`, `user-semantic-scholar` |
 | Chinese literature | `user-brave-search` |
 
-> **4-layer fallback** for every data request: `MCP → Python lib → HTTP → synthetic (explicitly marked)`
+> **Fail-closed routing** for every data request: local empirical root → validated cache → compatible MCP/official source → visible stop. Mock data is available only after explicit opt-in.
 
 ### 🧮 Econometric Methods (~33 individual estimators / ~13 method families, JF/JFE/RFS standard)
 
-> **Note**: Numbers below count independent estimators. Some methods depend on `linearmodels` or `diff-in-diff2` (marked 🔗); ⭐ denotes self-contained Python implementations.
+> **Note**: Numbers below count independent estimators. Some methods depend on optional maintained backends such as `linearmodels` (marked 🔗); ⭐ denotes self-contained Python implementations. Unavailable backends fail visibly.
 
 - **⭐ Standard DID + Event Study** (2): 2x2 OLS, cluster-robust SE (HC0/HC1/CR0/CR1/CGM)
 - **⭐ Bacon Decomposition** (1): Goodman-Bacon (2021) weight diagnostic
-- **🔗 Staggered DID** (4): Callaway-Sant'Anna (QJE 2021), Sun-Abraham (REStud 2021), Borusyak (REStud 2024), dCdH — requires `pip install diff-in-diff2`
+- **Staggered DID diagnostics** (4): Callaway-Sant'Anna (QJE 2021), Sun-Abraham (REStud 2021), Borusyak (REStud 2024), dCdH — availability depends on the selected implementation; no unmaintained package is installed implicitly
 - **🔗 Synthetic Control** (2): Abadie (JASA 2016), Arkhangelsky (Science 2021)
 - **🔗 IV / 2SLS** (2): panel IV, Jackknife IV — requires `linearmodels`
 - **🔗 Panel GMM** (2): Arellano-Bond, Blundell-Bord — requires `linearmodels`
@@ -127,7 +127,7 @@
 # 1. Install
 git clone https://github.com/csmar432/finai-research.git
 cd finai-research
-pip install -e ".[dev, econometrics]"  # econometrics adds linearmodels + diff-in-diff2
+pip install -e ".[dev, econometrics]"  # optional maintained econometrics backends
 
 # 2. Configure API keys
 cp .env.example .env
@@ -142,7 +142,7 @@ python scripts/agent_pipeline.py --topic "Carbon trading policy and corporate gr
 
 ---
 
-## 🏛 Research Pipeline (8 steps)
+## 🏛 Research Pipeline (preflight + 8 research stages)
 
 ```
 Step 0  Health check        → scripts/health_check.py
@@ -151,7 +151,7 @@ Step 2  Idea ↔ Data verify  → scripts/idea_data_checker.py (HITL checkpoint)
 Step 3  Literature review   → MCP multi-source, citation network, gap analysis
 Step 4  Novelty check       → JF/JFE/RFS/arXiv search
 Step 5  Empirical design    → DID/IV/RD/PSM/18 robustness checks
-Step 6  Data acquisition    → 43 MCP server directories (28 no-key + 12 API-key + 3 opt-in legal), 4-layer fallback
+Step 6  Data acquisition    → local/cache/source routing across 43 MCP directories; fail closed on gaps
 Step 7  Paper writing       → outline → draft → figures → LaTeX
 Step 8  Adversarial review  → multi-round, until publishable
 ```
@@ -165,11 +165,11 @@ Each step is **independently callable** and **has its own output file** as a sta
 | Metric | Value | Note |
 |---|-------|------|
 | MCP data servers | **43** | 43 directories: 28 fully free, 12 API-key, 3 opt-in legal-risk (CNKI/Wanfang/Chinese Literature) |
-| Econometric method modules | **58** | 56/58 modules have tests; ⭐ self-contained, 🔗 requires linearmodels/diff-in-diff2 |
+| Econometric method modules | **58** | 56/58 modules have tests; ⭐ self-contained, 🔗 requires an optional maintained backend |
 | Journal templates | **30** | English + Chinese top journals (JF/JFE/RFS/经济研究/金融研究/管理世界/...) |
 | AI skills | **18** | `.cursor/skills/` operational source, 5 fully automated, 13 prompt-driven |
 | Research directions | **45 registered** | digital_finance / green_finance / carbon_economics / ... |
-| Test files / functions | **665 / 12,700** | pytest; count maintained by `scripts/count_assets.py` |
+| Test files / functions | **674 / 12,783** | pytest; count maintained by `scripts/count_assets.py` |
 | Python lines | **~206K scripts + ~98K tests** | |
 | CI jobs | **7 batches × ~40 steps** | lint + 3× smoke + mypy + security + coverage + docker |
 | Coverage | **60.0% aggregate / 87.4% critical** | aggregate gate `fail-under=60`; critical-path gate 80% |

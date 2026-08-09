@@ -55,12 +55,13 @@ agent
 
 ## 5. Social Preview（1280×640 PNG）
 
-Social preview 已在仓库根目录的 `.github/social-preview.png` 提供（已加入 .gitignore，**在 release 流程中自动生成并上传**）。
+Social preview 的受版本控制源文件是 `.github/social-preview.png`。GitHub 目前仍需在 Settings → General → Social preview 手动上传；仓库工作流不会替你修改该设置。
 
 > 如需重新生成本地预览图，运行：
 > ```bash
 > python scripts/gen_social_preview.py
 > ```
+> 上传与核验步骤见 [`docs/MANUAL_SOCIAL_PREVIEW_UPLOAD.md`](../docs/MANUAL_SOCIAL_PREVIEW_UPLOAD.md)。
 
 ## 6. Branch Protection Rules（main 分支）
 

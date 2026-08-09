@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
-  <title>Modern DID selection</title>
-  <desc>Estimator choice follows treatment timing and assumptions—not a default TWFE button</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Modern DID selection</title>
+  <desc id="desc">Estimator choice follows treatment timing and assumptions—not a default TWFE button</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f7f5ef"/>
@@ -16,84 +16,89 @@
   <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Modern DID selection</text>
   <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Estimator choice follows treatment timing and assumptions—not a default TWFE button</text>
   <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
-  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
   <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
     <rect x="60" y="350" width="250" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
     <rect x="60" y="350" width="5" height="104" rx="2.5" fill="#a63f3f"/>
-    <text x="82" y="393.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Staggered adoption?</text>
-    <text x="82" y="422.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">inspect timing first</text>
+    <text x="82" y="393.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Treatment structure</text>
+    <text x="82" y="422.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">timing · cohort · dose</text>
   </g>
   <g>
-    <defs><marker id="arrowm310-402-390-402" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
-    <line x1="310" y1="402" x2="390" y2="402" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm310-402-390-402)"/>
-
+    <rect x="390" y="246" width="272" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="390" y="246" width="5" height="104" rx="2.5" fill="#71558b"/>
+    <text x="412" y="289.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Staggered binary</text>
+    <text x="412" y="318.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">adoption timing differs</text>
   </g>
   <g>
-    <rect x="390" y="280" width="272" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="390" y="280" width="5" height="104" rx="2.5" fill="#71558b"/>
-    <text x="412" y="323.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Never-treated units?</text>
-    <text x="412" y="352.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">comparison set available</text>
+    <rect x="390" y="500" width="272" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="390" y="500" width="5" height="104" rx="2.5" fill="#71558b"/>
+    <text x="412" y="543.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Continuous dose</text>
+    <text x="412" y="572.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">intensity varies</text>
   </g>
   <g>
-    <rect x="390" y="482" width="272" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="390" y="482" width="5" height="104" rx="2.5" fill="#71558b"/>
-    <text x="412" y="525.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Continuous treatment?</text>
-    <text x="412" y="554.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">dose varies by unit/time</text>
+    <defs><marker id="arrowm310-402-390-298" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="310" y1="402" x2="390" y2="298" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm310-402-390-298)"/>
+    <text x="350.0" y="341.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">binary</text>
   </g>
   <g>
-    <defs><marker id="arrowm662-332-760-264" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
-    <line x1="662" y1="332" x2="760" y2="264" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-332-760-264)"/>
-    <text x="711.0" y="289.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">yes</text>
+    <defs><marker id="arrowm310-402-390-552" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="310" y1="402" x2="390" y2="552" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm310-402-390-552)"/>
+    <text x="350.0" y="468.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">dose</text>
   </g>
   <g>
-    <defs><marker id="arrowm662-332-760-400" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
-    <line x1="662" y1="332" x2="760" y2="400" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-332-760-400)"/>
-    <text x="711.0" y="357.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">heterogeneity</text>
+    <defs><marker id="arrowm662-298-760-246" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="662" y1="298" x2="760" y2="246" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-298-760-246)"/>
+    <text x="711.0" y="263.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">group-time ATT</text>
   </g>
   <g>
-    <defs><marker id="arrowm662-534-760-566" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
-    <line x1="662" y1="534" x2="760" y2="566" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-534-760-566)"/>
-    <text x="711.0" y="541.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">yes</text>
+    <defs><marker id="arrowm662-298-760-392" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="662" y1="298" x2="760" y2="392" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-298-760-392)"/>
+    <text x="711.0" y="336.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">dynamic effects</text>
   </g>
   <g>
-    <rect x="760" y="204" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="760" y="204" width="5" height="104" rx="2.5" fill="#0b7a53"/>
-    <text x="782" y="247.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Callaway–Sant’Anna</text>
-    <text x="782" y="276.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">group-time ATT · default</text>
+    <defs><marker id="arrowm662-552-760-554" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="662" y1="552" x2="760" y2="554" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm662-552-760-554)"/>
+    <text x="711.0" y="544.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">dose response</text>
   </g>
   <g>
-    <rect x="760" y="350" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="760" y="350" width="5" height="104" rx="2.5" fill="#3659a2"/>
-    <text x="782" y="393.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Sun–Abraham / BJS</text>
-    <text x="782" y="422.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">event study or imputation</text>
+    <rect x="760" y="194" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="760" y="194" width="5" height="104" rx="2.5" fill="#0b7a53"/>
+    <text x="782" y="237.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Callaway–Sant’Anna</text>
+    <text x="782" y="266.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">never / not-yet controls</text>
   </g>
   <g>
-    <rect x="760" y="512" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="760" y="512" width="5" height="104" rx="2.5" fill="#0b7a53"/>
-    <text x="782" y="555.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Continuous DID</text>
-    <text x="782" y="584.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">dose-response estimand</text>
+    <rect x="760" y="340" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="760" y="340" width="5" height="104" rx="2.5" fill="#3659a2"/>
+    <text x="782" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Sun–Abraham / BJS</text>
+    <text x="782" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">event study / imputation</text>
+  </g>
+  <g>
+    <rect x="760" y="502" width="332" height="104" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="760" y="502" width="5" height="104" rx="2.5" fill="#0b7a53"/>
+    <text x="782" y="545.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Continuous DID</text>
+    <text x="782" y="574.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">state the dose estimand</text>
   </g>
   <g>
     <rect x="1160" y="204" width="360" height="412" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1176" y="191" width="224" height="26" rx="13" fill="#f7f5ef" stroke="#a96024"/>
-    <text x="1288.0" y="209" fill="#a96024" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">REQUIRED DIAGNOSTICS</text>
+    <rect x="1176" y="191" width="224" height="26" rx="13" fill="#f7f5ef" stroke="#a35b20"/>
+    <text x="1288.0" y="209" fill="#a35b20" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">REQUIRED DIAGNOSTICS</text>
   </g>
   <g>
     <rect x="1188" y="246" width="304" height="82" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1188" y="246" width="5" height="82" rx="2.5" fill="#a96024"/>
+    <rect x="1188" y="246" width="5" height="82" rx="2.5" fill="#a35b20"/>
     <text x="1210" y="278.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Pre-trends</text>
     <text x="1210" y="307.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">joint tests + plot</text>
   </g>
   <g>
     <rect x="1188" y="358" width="304" height="82" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1188" y="358" width="5" height="82" rx="2.5" fill="#a96024"/>
+    <rect x="1188" y="358" width="5" height="82" rx="2.5" fill="#a35b20"/>
     <text x="1210" y="390.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Inference</text>
     <text x="1210" y="419.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">cluster / wild bootstrap</text>
   </g>
   <g>
     <rect x="1188" y="470" width="304" height="82" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1188" y="470" width="5" height="82" rx="2.5" fill="#a96024"/>
+    <rect x="1188" y="470" width="5" height="82" rx="2.5" fill="#a35b20"/>
     <text x="1210" y="502.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Sensitivity</text>
     <text x="1210" y="531.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">alternative windows</text>
   </g>
@@ -102,6 +107,6 @@
     <text x="800.0" y="722" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">TWFE is a diagnostic baseline, not proof of identification</text>
   </g>
   <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
-  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 08 / 09 · github.com/csmar432/finai-research</text>
-  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+  <text x="56" y="878" fill="#607168" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 08 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#607168" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

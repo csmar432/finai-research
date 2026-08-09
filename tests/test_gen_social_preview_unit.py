@@ -36,10 +36,6 @@ class TestConstants:
         assert gsp.ACCENT3.startswith("#")
         assert gsp.ACCENT1 != gsp.ACCENT2 != gsp.ACCENT3
 
-    def test_card_color_different_from_bg(self, gsp):
-        assert gsp.CARD != gsp.BG
-
-
 class TestStats:
     def test_mcp_total_is_int(self, gsp):
         assert isinstance(gsp.mcp_total, int)

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
-  <title>Data routing</title>
-  <desc>Exact-variable matching and provenance outrank convenience</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Data routing</title>
+  <desc id="desc">Exact-variable matching and provenance outrank convenience</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f7f5ef"/>
@@ -16,7 +16,7 @@
   <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Data routing</text>
   <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Exact-variable matching and provenance outrank convenience</text>
   <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
-  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
   <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
     <rect x="60" y="350" width="230" height="110" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -38,7 +38,7 @@
   <g>
     <defs><marker id="arrowm566-405-596-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="566" y1="405" x2="596" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm566-405-596-405)"/>
-    <text x="581.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+    <text x="581.0" y="396.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
   </g>
   <g>
     <rect x="602" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -49,7 +49,7 @@
   <g>
     <defs><marker id="arrowm816-405-846-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="816" y1="405" x2="846" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm816-405-846-405)"/>
-    <text x="831.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+    <text x="831.0" y="396.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
   </g>
   <g>
     <rect x="852" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -60,7 +60,7 @@
   <g>
     <defs><marker id="arrowm1066-405-1096-405" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
     <line x1="1066" y1="405" x2="1096" y2="405" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1066-405-1096-405)"/>
-    <text x="1081.0" y="396.0" fill="#77877f" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
+    <text x="1081.0" y="396.0" fill="#607168" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">miss</text>
   </g>
   <g>
     <rect x="1102" y="326" width="214" height="158" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -90,6 +90,6 @@
     <text x="1185.0" y="654" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">validation passed</text>
   </g>
   <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
-  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 07 / 09 · github.com/csmar432/finai-research</text>
-  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+  <text x="56" y="878" fill="#607168" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 07 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#607168" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

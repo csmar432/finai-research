@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
-  <title>Execution and delivery</title>
-  <desc>Interactive research and isolated agent-host runs share the same governed core</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Execution and delivery</title>
+  <desc id="desc">Interactive research and isolated agent-host runs share the same governed core</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#f7f5ef"/>
@@ -16,12 +16,12 @@
   <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Execution and delivery</text>
   <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Interactive research and isolated agent-host runs share the same governed core</text>
   <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
-  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
   <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
     <rect x="56" y="188" width="312" height="548" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="72" y="175" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#79a9ff"/>
-    <text x="132.0" y="193" fill="#79a9ff" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">ENTRY</text>
+    <rect x="72" y="175" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#3659a2"/>
+    <text x="132.0" y="193" fill="#3659a2" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">ENTRY</text>
   </g>
   <g>
     <rect x="82" y="230" width="260" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -49,18 +49,18 @@
   </g>
   <g>
     <rect x="418" y="188" width="402" height="548" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="434" y="175" width="154" height="26" rx="13" fill="#f7f5ef" stroke="#d8b66a"/>
-    <text x="511.0" y="193" fill="#d8b66a" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">GOVERNED CORE</text>
+    <rect x="434" y="175" width="154" height="26" rx="13" fill="#f7f5ef" stroke="#a35b20"/>
+    <text x="511.0" y="193" fill="#a35b20" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">GOVERNED CORE</text>
   </g>
   <g>
     <rect x="446" y="230" width="346" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="446" y="230" width="5" height="92" rx="2.5" fill="#a96024"/>
+    <rect x="446" y="230" width="5" height="92" rx="2.5" fill="#a35b20"/>
     <text x="468" y="267.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Agent orchestrator</text>
     <text x="468" y="296.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">routing · checkpoints · resume</text>
   </g>
   <g>
     <rect x="446" y="354" width="346" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="446" y="354" width="5" height="92" rx="2.5" fill="#a96024"/>
+    <rect x="446" y="354" width="5" height="92" rx="2.5" fill="#a35b20"/>
     <text x="468" y="391.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">LLM gateway</text>
     <text x="468" y="420.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">host model · API · Ollama</text>
   </g>
@@ -78,8 +78,8 @@
   </g>
   <g>
     <rect x="870" y="188" width="312" height="548" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="886" y="175" width="124" height="26" rx="13" fill="#f7f5ef" stroke="#4cc9b0"/>
-    <text x="948.0" y="193" fill="#4cc9b0" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">BOUNDARIES</text>
+    <rect x="886" y="175" width="124" height="26" rx="13" fill="#f7f5ef" stroke="#0b7a53"/>
+    <text x="948.0" y="193" fill="#0b7a53" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">BOUNDARIES</text>
   </g>
   <g>
     <rect x="896" y="230" width="260" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
@@ -103,16 +103,16 @@
     <rect x="896" y="602" width="260" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
     <rect x="896" y="602" width="5" height="92" rx="2.5" fill="#3659a2"/>
     <text x="918" y="639.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">CI</text>
-    <text x="918" y="668.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">12,777 tests · 3 OS</text>
+    <text x="918" y="668.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">12,783 tests · 3 OS</text>
   </g>
   <g>
     <rect x="1232" y="188" width="312" height="548" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1248" y="175" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#a992d4"/>
-    <text x="1308.0" y="193" fill="#a992d4" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">OUTPUT</text>
+    <rect x="1248" y="175" width="120" height="26" rx="13" fill="#f7f5ef" stroke="#71558b"/>
+    <text x="1308.0" y="193" fill="#71558b" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">OUTPUT</text>
   </g>
   <g>
     <rect x="1258" y="230" width="260" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
-    <rect x="1258" y="230" width="5" height="92" rx="2.5" fill="#a96024"/>
+    <rect x="1258" y="230" width="5" height="92" rx="2.5" fill="#a35b20"/>
     <text x="1280" y="267.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FINAL.md</text>
     <text x="1280" y="296.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">required delivery summary</text>
   </g>
@@ -150,6 +150,6 @@
 
   </g>
   <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
-  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 05 / 09 · github.com/csmar432/finai-research</text>
-  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+  <text x="56" y="878" fill="#607168" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 05 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#607168" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>
