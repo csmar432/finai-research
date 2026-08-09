@@ -1,9 +1,13 @@
 # 论文-研报工作流 · FinAI Research Workflow
 
-> **研究主题一句话 → 收到可投稿的 LaTeX 草稿。**
-> **Describe your research topic → receive a submission-ready LaTeX draft.**
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/assets/hero-light.svg">
+  <img alt="FinAI Research Workflow — research that can show its work" src="docs/assets/hero-light.svg">
+</picture>
 
-![FinAI Research Workflow](docs/assets/social-preview.png)
+> **研究主题一句话 → 收到可核验的 LaTeX 草稿。**
+> **Describe your research topic → receive a verifiable LaTeX draft.**
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,7 +18,6 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21262689.svg)](https://doi.org/10.5281/zenodo.21262689)
 [![Discussions](https://img.shields.io/github/discussions/csmar432/finai-research?color=blueviolet)](https://github.com/csmar432/finai-research/discussions)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in%20Codespaces-526ADF?logo=github)](https://codespaces.new/csmar432/finai-research)
-[![Star History](https://api.star-history.com/svg?repos=csmar432/finai-research&type=Timeline)](https://star-history.com/#csmar432/finai-research&Timeline)
 
 ---
 
@@ -536,81 +539,26 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Architecture Diagrams
 
-### Pipeline DAG (8 Stages + 4 Human-in-the-Loop Checkpoints)
+### Writing Track (5 Artifacts + Human Checkpoints)
 
-```mermaid
-flowchart TD
-    Start([User inputs research topic]) --> P1[1. Outline<br/>Research framework + venue template]
-    P1 -->|HITL gate| P2[2. Literature Review<br/>OpenAlex + ArXiv + Context7 + NBER]
-    P2 -->|HITL gate| P3[3. Plotting<br/>Parallel chart generation]
-    P3 --> P4[4. Paper Writing<br/>Full manuscript draft]
-    P4 -->|HITL gate| P5[5. Refinement<br/>Multi-round adversarial review]
-    P5 --> Done([LaTeX manuscript draft])
-
-    IdeaStage[Idea Generation<br/>Stage 1 of 3] -.->|optional| P1
-    DataStage[Data Acquisition<br/>Stage 2 of 3] -.->|feeds into| P3
-    NoveltyStage[Novelty Check<br/>Stage 3 of 3] -.->|feeds into| P1
-
-    style P1 fill:#e94560,color:#fff
-    style P2 fill:#0f3460,color:#fff
-    style P3 fill:#533483,color:#fff
-    style P4 fill:#16213e,color:#fff
-    style P5 fill:#0f3460,color:#fff
-    style IdeaStage fill:#444,color:#fff,stroke-dasharray:3
-    style DataStage fill:#444,color:#fff,stroke-dasharray:3
-    style NoveltyStage fill:#444,color:#fff,stroke-dasharray:3
-
-    classDef hitl_gate stroke:#f0ad4e,stroke-width:3px
-    class P1,P2,P4,P5 hitl_gate
-```
+![FinAI writing track with reviewable human checkpoints](.github/demo/06-writing-track.svg)
 
 > **Dual-track note:** Writing (`agent_pipeline.py`) has **5 stages** (outline → literature → plotting → writing → refinement) with optional HITL. Empirics are a separate hand-off: `enhanced_pipeline` / `modern_did` for real estimators; `research_framework/pipeline.py` is demo TWFE + design scaffold only. See `docs/ARCHITECTURE.md` §0.
 
-### MCP Data Source Selection (43 directories: 28 no-key + 12 API-key + 3 opt-in legal)
+### Data Routing (43 directories: 28 no-key + 12 API-key + 3 opt-in legal)
 
-```mermaid
-flowchart LR
-    Req[Data Request<br/>e.g. A-share ROA] --> Router{Smart Router}
-    Router --> Tier1[Tier 1<br/>CSMAR/Wind<br/>Highest quality]
-    Router -->|unavailable| Tier2[Tier 2<br/>Tushare<br/>+ patent data]
-    Router -->|no key| Tier3[Tier 3<br/>akshare<br/>Free, slower]
-    Router -->|no data| Tier4[Tier 4<br/>yfinance/synthetic<br/>Last resort]
-    Tier1 --> Cache[(Local Cache<br/>SQLite)]
-    Tier2 --> Cache
-    Tier3 --> Cache
-    Tier4 --> Cache
-    Cache --> Result[Validated Data +<br/>Provenance Hash]
+![FinAI data routing: local panels, validated cache, MCP or official APIs, then fail closed](.github/demo/07-data-routing.svg)
 
-    style Tier1 fill:#28c840,color:#fff
-    style Tier2 fill:#febc2e,color:#000
-    style Tier3 fill:#0f3460,color:#fff
-    style Tier4 fill:#e94560,color:#fff
-    style Cache fill:#1a1a2e,color:#fff
-```
+Local empirical panels are checked first. A missing exact variable stops visibly;
+it does not trigger an unannounced synthetic or proxy-data substitution.
 
 ### Modern DID Estimator Selection
 
-```mermaid
-flowchart TD
-    DID[DID with Staggered Treatment] --> Check{Never-treated<br/>available?}
-    Check -->|Yes| Q1{Heterogeneous<br/>effects suspected?}
-    Check -->|No| Q2{Continuous<br/>treatment?}
-    Q1 -->|Yes| CS[Callaway-Sant'Anna<br/>2021 - default]
-    Q1 -->|No| SA[Sun-Abraham<br/>2021]
-    Q1 -->|Wants imputation| BJJ[Borusyak-Jaravel-Spiess<br/>2024]
-    Q2 -->|Yes| ContDID[Continuous DID<br/>Callaway-DiTraglia 2024]
-    Q2 -->|No| Decompose[Bacon Decomposition<br/>diagnose TWFE bias]
-    CS --> Synth[Synthetic DiD<br/>Arkhangelsky 2021]
-    SA --> Synth
-    BJJ --> Synth
+![FinAI modern DID estimator selection and required diagnostics](.github/demo/08-did-selection.svg)
 
-    style CS fill:#e94560,color:#fff
-    style SA fill:#0f3460,color:#fff
-    style BJJ fill:#533483,color:#fff
-    style Synth fill:#16213e,color:#fff
-    style Decompose fill:#16213e,color:#fff
-    style ContDID fill:#0f3460,color:#fff
-```
+The estimator follows treatment timing, comparison-group availability, and the
+target estimand. TWFE remains a diagnostic baseline rather than automatic proof
+of identification.
 
 ---
 

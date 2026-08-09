@@ -6,7 +6,11 @@
 >
 > ⚠️ **Legal Risk Servers**: 3 MCP servers (`user-cnki`, `user-wanfang`, `user-chinese-literature`) scrape websites that prohibit automated access. **They are disabled by default for all users.** See [LEGAL_CONSENT.md](LEGAL_CONSENT.md) to understand the risk and opt-in with `CLI_ACCEPT_RISK`.
 
-![FinAI Research Workflow](docs/assets/social-preview.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/assets/hero-light.svg">
+  <img alt="FinAI Research Workflow — research that can show its work" src="docs/assets/hero-light.svg">
+</picture>
 
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -19,7 +23,6 @@
 [![codecov](https://codecov.io/gh/csmar432/finai-research/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research)
 <!-- Zenodo DOI badge: 真实发布到 Zenodo 后替换占位符。 -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21262689.svg)](https://doi.org/10.5281/zenodo.21262689)
-[![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research?style=social)](https://github.com/csmar432/finai-research/stargazers)
 
 [🇨🇳 **中文文档**](README.md) · [🇬🇧 **English Documentation**](README_EN.md)
 
@@ -107,7 +110,7 @@
 
 ### 🏗 Engineering Quality
 
-- ✅ 665 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
+- ✅ 674 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)

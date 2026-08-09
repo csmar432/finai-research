@@ -1,164 +1,127 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img">
+  <title>Evidence acquisition · 43 source directories</title>
+  <desc>Priority is explicit: local panels first, provenance always, failure visible</desc>
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0e1a"/>
-      <stop offset="100%" stop-color="#0d1220"/>
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
     </linearGradient>
-    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#a855f7"/>
-    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
   </defs>
   <rect width="100%" height="100%" fill="url(#bgGrad)"/>
-
-  <!-- 页眉 -->
-  <rect x="0" y="0" width="1600" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
-  <text x="60" y="48" fill="#e8edf5" font-size="32" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">图 3: 44 MCP 数据生态 (MCP Ecosystem Map)</text>
-  <text x="60" y="72" fill="#aab4c5" font-size="16" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">8 类别：学术 / A股 / 美股 / 宏观 / 新闻 / 工具 / 加密 / 区块链</text>
-  <text x="1540" y="48" fill="#aab4c5" font-size="14" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v1.0.0</text>
-  <text x="1540" y="72" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5-architecture series</text>
-  <line x1="60" y1="100" x2="1540" y2="100" stroke="#1e2738" stroke-width="1"/>
-
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Evidence acquisition · 43 source directories</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Priority is explicit: local panels first, provenance always, failure visible</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#77877f" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
   <g>
-    <circle cx="800" cy="480" r="100" fill="url(#hdrGrad)" opacity="0.2"/>
-    <circle cx="800" cy="480" r="80" fill="#0d1220" stroke="#3b82f6" stroke-width="2"/>
-    <text x="800" y="465" fill="#e8edf5" font-size="20" font-weight="700" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MCP 协议</text>
-    <text x="800" y="490" fill="#aab4c5" font-size="14" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">Model Context Protocol</text>
-    <text x="800" y="515" fill="#7a8499" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">222 tools</text>
-    <text x="800" y="532" fill="#7a8499" font-size="11" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">100% schema 完整</text>
+    <rect x="70" y="206" width="150" height="34" rx="17" fill="#a63f3f" fill-opacity="0.08" stroke="#a63f3f" stroke-opacity="0.72"/>
+    <text x="145.0" y="228" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LAYER 0</text>
   </g>
-
   <g>
-    <rect x="670" y="115" width="260" height="90" rx="10" fill="#3b82f6" fill-opacity="0.15" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="670" y="115" width="3" height="90" fill="#3b82f6"/>
-    <text x="690" y="138" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">学术文献</text>
-    <text x="690" y="157" fill="#3b82f6" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">5 servers</text>
-    <text x="690" y="178" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">openalex / arxiv / context7 / seman</text>
+    <rect x="250" y="180" width="1020" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="250" y="180" width="5" height="86" rx="2.5" fill="#a63f3f"/>
+    <text x="272" y="214.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Local empirical panels</text>
+    <text x="272" y="243.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FINAI_EMPIRICAL_DATA_ROOT · exact variables</text>
   </g>
-
   <g>
-    <defs><marker id="ah_800_400" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"/>
-    </marker></defs>
-    <line x1="800" y1="400" x2="800" y2="205" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ah_800_400)"/>
-    
-  </g>
+    <defs><marker id="arrowm760-266-760-302" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="760" y1="266" x2="760" y2="302" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm760-266-760-302)"/>
 
+  </g>
   <g>
-    <rect x="896" y="208" width="260" height="90" rx="10" fill="#10b981" fill-opacity="0.15" stroke="#10b981" stroke-width="1.5"/>
-    <rect x="896" y="208" width="3" height="90" fill="#10b981"/>
-    <text x="916" y="231" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">A股数据</text>
-    <text x="916" y="250" fill="#10b981" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">4 servers</text>
-    <text x="916" y="271" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">tushare / eastmoney / wind / csmar</text>
+    <rect x="70" y="338" width="150" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="145.0" y="360" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LAYER 1</text>
   </g>
-
   <g>
-    <defs><marker id="ah_856_423" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#10b981"/>
-    </marker></defs>
-    <line x1="856" y1="423" x2="934" y2="284" stroke="#10b981" stroke-width="1.5" marker-end="url(#ah_856_423)"/>
-    
+    <rect x="250" y="312" width="1020" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="250" y="312" width="5" height="86" rx="2.5" fill="#3659a2"/>
+    <text x="272" y="346.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Validated cache</text>
+    <text x="272" y="375.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">schema · freshness · content hash</text>
   </g>
-
   <g>
-    <rect x="990" y="435" width="260" height="90" rx="10" fill="#f59e0b" fill-opacity="0.15" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="990" y="435" width="3" height="90" fill="#f59e0b"/>
-    <text x="1010" y="458" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">美股/全球</text>
-    <text x="1010" y="477" fill="#f59e0b" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">3 servers</text>
-    <text x="1010" y="498" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">yfinance / sec-edgar / enhanced-fin</text>
-  </g>
+    <defs><marker id="arrowm760-398-760-434" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="760" y1="398" x2="760" y2="434" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm760-398-760-434)"/>
 
+  </g>
   <g>
-    <defs><marker id="ah_880_480" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#f59e0b"/>
-    </marker></defs>
-    <line x1="880" y1="480" x2="990" y2="480" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#ah_880_480)"/>
-    
+    <rect x="70" y="470" width="150" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="145.0" y="492" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LAYER 2</text>
   </g>
-
   <g>
-    <rect x="896" y="661" width="260" height="90" rx="10" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="896" y="661" width="3" height="90" fill="#a855f7"/>
-    <text x="916" y="684" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">宏观经济</text>
-    <text x="916" y="703" fill="#a855f7" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">10 servers</text>
-    <text x="916" y="724" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">financial / eodhd / fed / wb / imf </text>
+    <rect x="250" y="444" width="1020" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="250" y="444" width="5" height="86" rx="2.5" fill="#0b7a53"/>
+    <text x="272" y="478.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">43 MCP directories</text>
+    <text x="272" y="507.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">academic · China markets · global macro · filings</text>
   </g>
-
   <g>
-    <defs><marker id="ah_856_536" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#a855f7"/>
-    </marker></defs>
-    <line x1="856" y1="536" x2="934" y2="674" stroke="#a855f7" stroke-width="1.5" marker-end="url(#ah_856_536)"/>
-    
-  </g>
+    <defs><marker id="arrowm760-530-760-566" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="760" y1="530" x2="760" y2="566" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm760-530-760-566)"/>
 
+  </g>
   <g>
-    <rect x="670" y="755" width="260" height="90" rx="10" fill="#ec4899" fill-opacity="0.15" stroke="#ec4899" stroke-width="1.5"/>
-    <rect x="670" y="755" width="3" height="90" fill="#ec4899"/>
-    <text x="690" y="778" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">研报/新闻</text>
-    <text x="690" y="797" fill="#ec4899" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">2 servers</text>
-    <text x="690" y="818" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">eastmoney-reports / newsapi</text>
+    <rect x="70" y="602" width="150" height="34" rx="17" fill="#a96024" fill-opacity="0.08" stroke="#a96024" stroke-opacity="0.72"/>
+    <text x="145.0" y="624" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">LAYER 3+</text>
   </g>
-
   <g>
-    <defs><marker id="ah_800_560" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#ec4899"/>
-    </marker></defs>
-    <line x1="800" y1="560" x2="800" y2="755" stroke="#ec4899" stroke-width="1.5" marker-end="url(#ah_800_560)"/>
-    
+    <rect x="250" y="576" width="1020" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="250" y="576" width="5" height="86" rx="2.5" fill="#a96024"/>
+    <text x="272" y="610.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Official libraries and APIs</text>
+    <text x="272" y="639.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">only compatible, documented substitutions</text>
   </g>
-
   <g>
-    <rect x="443" y="661" width="260" height="90" rx="10" fill="#06b6d4" fill-opacity="0.15" stroke="#06b6d4" stroke-width="1.5"/>
-    <rect x="443" y="661" width="3" height="90" fill="#06b6d4"/>
-    <text x="463" y="684" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">工具类</text>
-    <text x="463" y="703" fill="#06b6d4" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">10 servers</text>
-    <text x="463" y="724" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">latex / pandas / playwright / e2b /</text>
-  </g>
+    <defs><marker id="arrowm760-662-760-698" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="760" y1="662" x2="760" y2="698" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm760-662-760-698)"/>
 
+  </g>
   <g>
-    <defs><marker id="ah_743_536" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#06b6d4"/>
-    </marker></defs>
-    <line x1="743" y1="536" x2="665" y2="674" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#ah_743_536)"/>
-    
+    <rect x="70" y="734" width="150" height="34" rx="17" fill="#71558b" fill-opacity="0.08" stroke="#71558b" stroke-opacity="0.72"/>
+    <text x="145.0" y="756" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">STOP</text>
   </g>
-
   <g>
-    <rect x="350" y="435" width="260" height="90" rx="10" fill="#84cc16" fill-opacity="0.15" stroke="#84cc16" stroke-width="1.5"/>
-    <rect x="350" y="435" width="3" height="90" fill="#84cc16"/>
-    <text x="370" y="458" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">加密货币</text>
-    <text x="370" y="477" fill="#84cc16" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">1 server</text>
-    <text x="370" y="498" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">cryptocompare</text>
+    <rect x="250" y="708" width="1020" height="86" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="250" y="708" width="5" height="86" rx="2.5" fill="#71558b"/>
+    <text x="272" y="742.0" fill="#10231c" font-size="17" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Fail closed</text>
+    <text x="272" y="771.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">no proxy laundering · no silent synthetic data</text>
   </g>
-
   <g>
-    <defs><marker id="ah_720_480" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#84cc16"/>
-    </marker></defs>
-    <line x1="720" y1="480" x2="610" y2="480" stroke="#84cc16" stroke-width="1.5" marker-end="url(#ah_720_480)"/>
-    
+    <rect x="1310" y="190" width="234" height="522" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1326" y="177" width="164" height="26" rx="13" fill="#f7f5ef" stroke="#4cc9b0"/>
+    <text x="1408.0" y="195" fill="#4cc9b0" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">SOURCE DOMAINS</text>
   </g>
-
   <g>
-    <rect x="443" y="208" width="260" height="90" rx="10" fill="#ef4444" fill-opacity="0.15" stroke="#ef4444" stroke-width="1.5"/>
-    <rect x="443" y="208" width="3" height="90" fill="#ef4444"/>
-    <text x="463" y="231" fill="#e8edf5" font-size="15" font-weight="700" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">中文文献</text>
-    <text x="463" y="250" fill="#ef4444" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">1 server</text>
-    <text x="463" y="271" fill="#aab4c5" font-size="10" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">chinese-literature / cnki / wanfang</text>
+    <rect x="1332" y="230" width="190" height="78" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1332" y="230" width="5" height="78" rx="2.5" fill="#0b7a53"/>
+    <text x="1354" y="260.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Academic</text>
+    <text x="1354" y="289.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">OpenAlex · ArXiv · NBER</text>
   </g>
-
   <g>
-    <defs><marker id="ah_743_423" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
-    </marker></defs>
-    <line x1="743" y1="423" x2="664" y2="284" stroke="#ef4444" stroke-width="1.5" marker-end="url(#ah_743_423)"/>
-    
+    <rect x="1332" y="338" width="190" height="78" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1332" y="338" width="5" height="78" rx="2.5" fill="#0b7a53"/>
+    <text x="1354" y="368.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">China</text>
+    <text x="1354" y="397.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Tushare · CSMAR · Wind</text>
   </g>
-<text x="800.0" y="900" fill="#aab4c5" font-size="14" text-anchor="middle" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">每个数据需求 4 层 fallback：MCP → Python lib → HTTP → synthetic（标记）</text>
-
-  <!-- 页脚 -->
-  <line x1="60" y1="950" x2="1540" y2="950" stroke="#1e2738" stroke-width="1"/>
-  <text x="60" y="975" fill="#7a8499" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">图 3 / 5 · finai-research-workflow</text>
-  <text x="1540" y="975" fill="#7a8499" font-size="12" text-anchor="end" font-family="'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">开源 · MIT · 2026</text>
+  <g>
+    <rect x="1332" y="446" width="190" height="78" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1332" y="446" width="5" height="78" rx="2.5" fill="#0b7a53"/>
+    <text x="1354" y="476.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Global</text>
+    <text x="1354" y="505.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">SEC · yfinance · EODHD</text>
+  </g>
+  <g>
+    <rect x="1332" y="554" width="190" height="78" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1332" y="554" width="5" height="78" rx="2.5" fill="#0b7a53"/>
+    <text x="1354" y="584.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Macro</text>
+    <text x="1354" y="613.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FRED · WB · IMF · OECD</text>
+  </g>
+  <g>
+    <rect x="1318" y="738" width="218" height="34" rx="17" fill="#e38b96" fill-opacity="0.08" stroke="#e38b96" stroke-opacity="0.72"/>
+    <text x="1427.0" y="760" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">Mock = explicit opt-in</text>
+  </g>
+  <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
+  <text x="56" y="878" fill="#77877f" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 03 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#77877f" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
 </svg>

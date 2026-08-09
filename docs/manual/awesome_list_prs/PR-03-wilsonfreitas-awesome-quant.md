@@ -21,7 +21,7 @@ Environments** section (the closest fit per the category list in CONTRIBUTING.md
 
 [FinAI Research Workflow](https://github.com/csmar432/finai-research) - `Python` -
 End-to-end empirical-research workflow for economists: 43 data sources
-(A-share, US, global macro, 400M+ papers), 47 econometric methods
+(A-share, US, global macro, 400M+ papers), 58 econometric methods
 (DID + modern staggered variants, IV, panel GMM, synthetic control,
 triple-diff, spatial), 30 journal templates, and HITL gates preventing
 LLM fabrication in submission-ready LaTeX drafts.
@@ -29,7 +29,7 @@ LLM fabrication in submission-ready LaTeX drafts.
 ## Proposed Entry
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - `Python` - End-to-end empirical-research workflow (43 data sources, 47 econometric methods, 30 journal templates) with HITL gates.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - `Python` - End-to-end empirical-research workflow (43 data sources, 58 econometric methods, 30 journal templates) with HITL gates.
 ```
 
 ## Why This Fits "Quant Research Environments"

@@ -28,7 +28,7 @@ demo-generation time (no simulated data).
 | 4  Data (5 MCPs)   | (a) yfinance, (b) SEC EDGAR, (c) World Bank, (d) OpenAlex, (e) FRED |
 | 5  Estimation      | DID coefficient table (Table 3 of the paper) |
 | 6  Paper draft     | `papers/us_esg_financing/latex/esg_financing_paper.tex` |
-| 7  Audit           | `scripts/audit_guard.py` (16/16 checks) |
+| 7  Audit           | `scripts/audit_guard.py` (current integrity checks) |
 
 Regenerate:
 
@@ -39,28 +39,32 @@ python scripts/demo/render_demo_gif_v4.py \
     1100 0.7 32
 ```
 
-## Architecture diagrams (5 complementary views)
+## Architecture diagrams (9 complementary views)
 
 | # | File | One-line description | View |
 |---|------|----------------------|------|
 | 1 | `01-architecture-overview.svg/png` | 5-layer end-to-end architecture | High-level bird's-eye |
-| 2 | `02-skill-system-map.svg/png` | 17 skills organised into 4 phases | Skill layer |
-| 3 | `03-mcp-ecosystem-map.svg/png` | 44 MCP server ecosystem (8 categories) | Data layer |
+| 2 | `02-skill-system-map.svg/png` | 18 skills organised into 4 phases | Skill layer |
+| 3 | `03-mcp-ecosystem-map.svg/png` | 43 source directories with fail-closed routing | Data layer |
 | 4 | `04-research-pipeline.svg/png` | 8-stage research pipeline (idea → paper) | Flow layer |
 | 5 | `05-deployment-data-flow.svg/png` | Deployment / data flow + 3 security boundaries | Ops layer |
+| 6 | `06-writing-track.svg/png` | Five writing artifacts + HITL transitions | Writing layer |
+| 7 | `07-data-routing.svg/png` | Exact-variable routing and visible stop | Data contract |
+| 8 | `08-did-selection.svg/png` | Modern DID estimator decision path | Methods layer |
+| 9 | `09-provenance-chain.svg/png` | Source-to-artifact lineage | Reproducibility |
 
 Generate:
 
 ```bash
 python scripts/gen_architecture_diagrams.py
-# Output → .github/demo/0[1-5]-*.{svg,png}
+# Output → .github/demo/0[1-9]-*.{svg,png}
 ```
 
 Convert to PNG (requires `librsvg`):
 
 ```bash
 brew install librsvg
-for f in .github/demo/0[1-5]-*.svg; do
+for f in .github/demo/0[1-9]-*.svg; do
   rsvg-convert -w 1600 -h 1000 "$f" -o "${f%.svg}.png"
 done
 ```

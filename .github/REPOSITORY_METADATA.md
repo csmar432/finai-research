@@ -7,7 +7,7 @@
 ## 1. Description (顶部 "About" 卡片)
 
 ```
-End-to-end AI agent workflow for economic & financial research: lit review → idea generation → empirical design (DID/IV/RDD) → paper writing. 43 MCP data servers, 42 econometric methods, 17 AI skills, 45 journal templates.
+Evidence-first AI workflow for economic and financial research: literature → identification → data → econometrics → verifiable LaTeX. 43 data sources, 58 method modules, 18 AI skills, 30 journal templates.
 ```
 
 ## 2. Website

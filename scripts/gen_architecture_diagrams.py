@@ -1,150 +1,158 @@
-"""
-gen_architecture_diagrams.py
-============================
-生成 5 个**非冗余**架构图，覆盖项目的不同视角：
+"""Generate FinAI's deterministic SVG visual system.
 
-  01_architecture_overview.svg   端到端体系架构（高层鸟瞰）
-  02_skill_system_map.svg       17 个 skill 体系
-  03_mcp_ecosystem_map.svg      {{MCP_COUNT}} 个 MCP server 生态
-  04_research_pipeline.svg      8 步研究流水线
-  05_deployment_data_flow.svg   部署/数据流
-
-设计原则：
-  - 每图只讲一个故事
-  - 统一暗色背景（与现有架构图一致）
-  - 16:9 比例
-  - 文字层级清晰（标题 > 节标题 > 节点标题 > 节点描述）
-  - 颜色编码：蓝色 (interface) / 绿色 (data) / 橙色 (process) / 紫色 (control)
+The five architecture views are deliberately complementary. Supporting README
+assets are generated from the same design tokens so screenshots, counts, and
+security claims do not drift independently.
 """
 from __future__ import annotations
 
-import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
 
-OUT_DIR = os.path.join(os.path.dirname(__file__), "..", ".github", "demo")
-os.makedirs(OUT_DIR, exist_ok=True)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+OUT_DIR = PROJECT_ROOT / ".github" / "demo"
+ASSET_DIR = PROJECT_ROOT / "docs" / "assets"
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from count_assets import count_all  # noqa: E402
 
-# ─── MCP 数量（真相源: scripts/count_mcp.py）─────────────────────────
-# v2.1 (2026-07-12): 此前硬编码 44 (drift)，改为运行时同步 count_mcp.py 的结果。
-try:
-    from scripts.count_mcp import count_mcp_directories as _cad
-    MCP_COUNT = _cad()
-except Exception:
-    # 兜底：43 个（当前 ground truth）
-    MCP_COUNT = 43
+STATS = count_all()
+MCP_COUNT = STATS["mcp_servers"]["total"]
+METHOD_COUNT = STATS["econometric_methods"]
+SKILL_COUNT = STATS["skills"]
+JOURNAL_COUNT = STATS["journal_templates"]["total"]
+TEST_COUNT = STATS["tests"]["test_functions"]
 
-# ─── 主题与样式 ──────────────────────────────────────────────────────
-BG = "#0a0e1a"
-BG2 = "#0d1220"
-INK = "#e8edf5"
-INK2 = "#aab4c5"
-INK3 = "#7a8499"
+WIDTH, HEIGHT = 1600, 900
+BG = "#f7f5ef"
+BG2 = "#efede5"
+PANEL = "#ffffff"
+PANEL2 = "#f2f0e9"
+INK = "#10231c"
+INK2 = "#4f6259"
+INK3 = "#77877f"
+BORDER = "#d8d6cd"
 
-# 4 类节点配色 (4 个视角统一)
-COL_INTERFACE = ("#1a3a6e", "#3b82f6")  # 蓝 - 接口
-COL_DATA      = ("#0f4d2e", "#10b981")  # 绿 - 数据
-COL_PROCESS   = ("#7a3b0e", "#f59e0b")  # 橙 - 处理
-COL_CONTROL   = ("#3b1a6e", "#a855f7")  # 紫 - 控制
-COL_USER      = ("#5e1a3b", "#ec4899")  # 粉 - 用户/角色
+COL_INTERFACE = (PANEL, "#3659a2")
+COL_DATA = (PANEL, "#0b7a53")
+COL_PROCESS = (PANEL, "#a96024")
+COL_CONTROL = (PANEL, "#71558b")
+COL_USER = (PANEL, "#a63f3f")
 
-FONT = "'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif"
+FONT = "'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif"
 MONO = "'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace"
 
-WIDTH, HEIGHT = 1600, 1000  # 16:10 宽屏
+
+def _esc(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _esc(s: str) -> str:
-    """Escape XML special chars."""
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+def _version() -> str:
+    try:
+        try:
+            import tomllib
+        except ImportError:
+            import tomli as tomllib  # type: ignore[no-redef]
+        with (PROJECT_ROOT / "pyproject.toml").open("rb") as handle:
+            return "v" + tomllib.load(handle).get("project", {}).get("version", "?")
+    except Exception:
+        return "v?"
 
 
 def header(title: str, subtitle: str, version: str | None = None) -> str:
-    """所有图共享的页眉。version 默认为动态读取 pyproject。"""
-    if version is None:
-        try:
-            from pathlib import Path as _P
-
-            try:
-                import tomllib
-            except ImportError:
-                import tomli as tomllib  # type: ignore[no-redef]
-            pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
-            if pyproject.exists():
-                with open(pyproject, "rb") as f:
-                    data = tomllib.load(f)
-                version = "v" + data.get("project", {}).get("version", "0.0.0")
-            else:
-                version = "v?"
-        except Exception:
-            version = "v?"
-    return f'''  <defs>
+    version = version or _version()
+    return f'''  <title>{_esc(title)}</title>
+  <desc>{_esc(subtitle)}</desc>
+  <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="{BG}"/>
       <stop offset="100%" stop-color="{BG2}"/>
     </linearGradient>
-    <linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#a855f7"/>
-    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
   </defs>
   <rect width="100%" height="100%" fill="url(#bgGrad)"/>
-
-  <!-- 页眉 -->
-  <rect x="0" y="0" width="{WIDTH}" height="80" fill="url(#hdrGrad)" opacity="0.15"/>
-  <text x="60" y="48" fill="{INK}" font-size="32" font-weight="700" font-family="{FONT}">{_esc(title)}</text>
-  <text x="60" y="72" fill="{INK2}" font-size="16" font-family="{FONT}">{_esc(subtitle)}</text>
-  <text x="{WIDTH-60}" y="48" fill="{INK2}" font-size="14" text-anchor="end" font-family="{MONO}">FinAI Research Workflow · {version}</text>
-  <text x="{WIDTH-60}" y="72" fill="{INK3}" font-size="12" text-anchor="end" font-family="{MONO}">5-architecture series</text>
-  <line x1="60" y1="100" x2="{WIDTH-60}" y2="100" stroke="#1e2738" stroke-width="1"/>'''
-
-
-def footer(idx: int, total: int = 5) -> str:
-    """所有图共享的页脚 (不含 </svg>)。"""
-    return f'''
-  <!-- 页脚 -->
-  <line x1="60" y1="{HEIGHT-50}" x2="{WIDTH-60}" y2="{HEIGHT-50}" stroke="#1e2738" stroke-width="1"/>
-  <text x="60" y="{HEIGHT-25}" fill="{INK3}" font-size="12" font-family="{MONO}">图 {idx} / {total} · finai-research-workflow</text>
-  <text x="{WIDTH-60}" y="{HEIGHT-25}" fill="{INK3}" font-size="12" text-anchor="end" font-family="{FONT}">开源 · MIT · 2026</text>'''
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="{INK}" font-size="31" font-weight="720" font-family="{FONT}">{_esc(title)}</text>
+  <text x="104" y="98" fill="{INK2}" font-size="15" font-family="{FONT}">{_esc(subtitle)}</text>
+  <text x="1544" y="65" fill="{INK2}" font-size="13" text-anchor="end" font-family="{MONO}">FinAI Research Workflow · {version}</text>
+  <text x="1544" y="91" fill="{INK3}" font-size="11" text-anchor="end" font-family="{MONO}">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="{BORDER}"/>'''
 
 
-def node(x: int, y: int, w: int, h: int, title: str, desc: str = "",
-         col=COL_PROCESS, radius: int = 12, fontsize: int = 16) -> str:
-    """一个节点（圆角矩形 + 标题 + 描述）。"""
-    c1, c2 = col
-    text_x = x + w / 2
-    return f'''
-  <g>
-    <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" fill="{c1}" stroke="{c2}" stroke-width="1.5"/>
-    <rect x="{x}" y="{y}" width="{w}" height="3" rx="2" fill="{c2}"/>
-    <text x="{text_x}" y="{y + h/2 - (8 if desc else 0)}" fill="{INK}" font-size="{fontsize}" font-weight="600" text-anchor="middle" font-family="{FONT}">{_esc(title)}</text>
-    {f'<text x="{text_x}" y="{y + h/2 + 18}" fill="{INK2}" font-size="13" text-anchor="middle" font-family="{FONT}">{_esc(desc)}</text>' if desc else ''}
+def footer(index: int, total: int = 5) -> str:
+    return f'''  <line x1="56" y1="850" x2="1544" y2="850" stroke="{BORDER}"/>
+  <text x="56" y="878" fill="{INK3}" font-size="12" font-family="{MONO}">FIGURE {index:02d} / {total:02d} · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="{INK3}" font-size="12" text-anchor="end" font-family="{FONT}">MIT · 2026</text>'''
+
+
+def node(
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    title: str,
+    desc: str = "",
+    col=COL_PROCESS,
+    radius: int = 12,
+    fontsize: int = 16,
+) -> str:
+    fill, accent = col
+    title_y = y + h / 2 - (9 if desc else -5)
+    desc_text = (
+        f'<text x="{x + 22}" y="{title_y + 29}" fill="{INK2}" font-size="12.5" '
+        f'font-family="{FONT}">{_esc(desc)}</text>'
+        if desc
+        else ""
+    )
+    return f'''  <g>
+    <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" fill="{fill}" stroke="{BORDER}" stroke-width="1.2"/>
+    <rect x="{x}" y="{y}" width="5" height="{h}" rx="2.5" fill="{accent}"/>
+    <text x="{x + 22}" y="{title_y}" fill="{INK}" font-size="{fontsize}" font-weight="680" font-family="{FONT}">{_esc(title)}</text>
+    {desc_text}
   </g>'''
 
 
-def arrow(x1: int, y1: int, x2: int, y2: int, label: str = "",
-          color: str = "#5a6478", dashed: bool = False) -> str:
-    """一条带箭头的连接线（可选标签）。"""
-    dash_attr = ' stroke-dasharray="4 4"' if dashed else ''
-    label_html = ""
+def arrow(
+    x1: int,
+    y1: int,
+    x2: int,
+    y2: int,
+    label: str = "",
+    color: str = "#829087",
+    dashed: bool = False,
+) -> str:
+    marker = f"arrow-{x1}-{y1}-{x2}-{y2}".replace("-", "m", 1)
+    dash = ' stroke-dasharray="6 6"' if dashed else ""
+    label_svg = ""
     if label:
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2 - 8
-        label_html = f'<text x="{mx}" y="{my}" fill="{INK3}" font-size="11" text-anchor="middle" font-family="{MONO}">{label}</text>'
-    return f'''
-  <g>
-    <defs><marker id="ah_{x1}_{y1}" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L9,3 z" fill="{color}"/>
-    </marker></defs>
-    <line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="1.5"{dash_attr} marker-end="url(#ah_{x1}_{y1})"/>
-    {label_html}
+        label_svg = (
+            f'<text x="{(x1 + x2) / 2}" y="{(y1 + y2) / 2 - 9}" fill="{INK3}" '
+            f'font-size="11" text-anchor="middle" font-family="{MONO}">{_esc(label)}</text>'
+        )
+    return f'''  <g>
+    <defs><marker id="{marker}" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="{color}"/></marker></defs>
+    <line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="1.6"{dash} marker-end="url(#{marker})"/>
+    {label_svg}
   </g>'''
 
 
-def section(x: int, y: int, w: int, h: int, label: str, color: str = "#3b82f6") -> str:
-    """一个分组（虚线矩形 + 标签）。"""
-    return f'''
-  <g>
-    <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="16" fill="none" stroke="{color}" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.6"/>
-    <rect x="{x+12}" y="{y-10}" width="{len(label)*10+24}" height="22" rx="6" fill="{BG}" stroke="{color}" stroke-width="1"/>
-    <text x="{x+12+len(label)*5+12}" y="{y+5}" fill="{color}" font-size="13" font-weight="600" text-anchor="middle" font-family="{FONT}">{_esc(label)}</text>
+def section(x: int, y: int, w: int, h: int, label: str, color: str = "#79a9ff") -> str:
+    label_w = max(120, len(label) * 10 + 24)
+    return f'''  <g>
+    <rect x="{x}" y="{y}" width="{w}" height="{h}" rx="18" fill="{PANEL}" stroke="{BORDER}" stroke-width="1.2"/>
+    <rect x="{x + 16}" y="{y - 13}" width="{label_w}" height="26" rx="13" fill="{BG}" stroke="{color}"/>
+    <text x="{x + 16 + label_w / 2}" y="{y + 5}" fill="{color}" font-size="12" font-weight="700" text-anchor="middle" font-family="{FONT}">{_esc(label)}</text>
+  </g>'''
+
+
+def pill(x: int, y: int, w: int, text: str, color: str) -> str:
+    return f'''  <g>
+    <rect x="{x}" y="{y}" width="{w}" height="34" rx="17" fill="{color}" fill-opacity="0.08" stroke="{color}" stroke-opacity="0.72"/>
+    <text x="{x + w / 2}" y="{y + 22}" fill="{INK}" font-size="12" text-anchor="middle" font-family="{MONO}">{_esc(text)}</text>
   </g>'''
 
 
@@ -152,414 +160,378 @@ def wrap(text: str) -> str:
     return text
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 图 1: 体系架构 (端到端)
-# ═══════════════════════════════════════════════════════════════════
+def _start() -> list[str]:
+    return [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" role="img">']
+
+
+def _finish(parts: list[str], index: int) -> str:
+    parts.append(footer(index, 9))
+    parts.append("</svg>")
+    return "\n".join(parts) + "\n"
+
+
 def gen_01_architecture_overview() -> str:
-    """高层鸟瞰：5 层架构 (User → Interface → Core → Skill → Data)。"""
-    title = "图 1: 体系架构 (System Architecture Overview)"
-    subtitle = "5 层端到端：用户 → 接口层 → 编排核心 → 技能系统 → 数据与基础设施"
+    parts = _start()
+    parts.append(header("System architecture", "One research brief, two governed tracks, one auditable delivery contract"))
 
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" font-family="{FONT}">']
-    parts.append(header(title, subtitle))
+    parts.append(section(56, 176, 244, 584, "INPUTS", "#e38b96"))
+    parts.append(node(80, 214, 196, 86, "Research brief", "topic · venue · claims", COL_USER))
+    parts.append(node(80, 326, 196, 86, "Host agent", "Codex · Claude Code · Cursor", COL_INTERFACE))
+    parts.append(node(80, 438, 196, 86, "Local data root", "Layer 0 · panels first", COL_DATA))
+    parts.append(node(80, 550, 196, 86, f"{MCP_COUNT} data sources", "provenance recorded", COL_DATA))
+    parts.append(node(80, 662, 196, 64, "Human decisions", "HITL checkpoints", COL_CONTROL))
 
-    # 5 个 section 横向排列
-    y_top = 150
-    layer_h = 700
-    layer_w = 280
-    gap = 30
-    x_start = 60
+    parts.append(section(348, 176, 834, 260, "WRITING TRACK", "#79a9ff"))
+    writing = (
+        (380, "Clarify", "brief + hard gaps"),
+        (634, "Evidence", "literature + novelty"),
+        (888, "Draft", "outline + manuscript + review"),
+    )
+    for x, title, desc in writing:
+        parts.append(node(x, 244, 216, 112, title, desc, COL_INTERFACE))
+    parts.append(arrow(596, 300, 626, 300))
+    parts.append(arrow(850, 300, 880, 300))
 
-    # Layer 1: User / Roles
-    x = x_start
-    parts.append(section(x, y_top, layer_w, layer_h, "① 用户 / 角色层", "#ec4899"))
-    parts.append(node(x+30, y_top+40, layer_w-60, 80, "4 类用户", "学生 / 研究员 / 老师 / 机构", COL_USER))
-    parts.append(node(x+30, y_top+150, layer_w-60, 70, "Setup Wizard", "交互式配置", COL_INTERFACE))
-    parts.append(node(x+30, y_top+240, layer_w-60, 70, "Profile 切换", "4 profile / 智能 fallback", COL_INTERFACE))
-    parts.append(node(x+30, y_top+330, layer_w-60, 70, "CLI 入口", "12+ 入口脚本", COL_INTERFACE))
-    parts.append(node(x+30, y_top+420, layer_w-60, 70, "Checkpoint", "强制交互 (HITL)", COL_CONTROL))
-    parts.append(node(x+30, y_top+510, layer_w-60, 70, "Event Monitor", "NFP/CPI/FOMC 监控", COL_CONTROL))
-    parts.append(node(x+30, y_top+600, layer_w-60, 70, "Keychain", "API key 加密存储", COL_CONTROL))
+    parts.append(section(348, 500, 834, 260, "EMPIRICAL TRACK", "#4cc9b0"))
+    empirics = (
+        (380, "Identification", "DID · IV · RD · GMM"),
+        (634, "Data acquisition", "validated variables + lineage"),
+        (888, "Estimation", "robustness + diagnostics"),
+    )
+    for x, title, desc in empirics:
+        parts.append(node(x, 568, 216, 112, title, desc, COL_DATA))
+    parts.append(arrow(596, 624, 626, 624))
+    parts.append(arrow(850, 624, 880, 624))
 
-    # Layer 2: Interface / I/O
-    x += layer_w + gap
-    parts.append(section(x, y_top, layer_w, layer_h, "② 接口层", "#3b82f6"))
-    parts.append(node(x+30, y_top+40, layer_w-60, 70, "Claude Code / Cursor", "原生 IDE 集成", COL_INTERFACE))
-    parts.append(node(x+30, y_top+130, layer_w-60, 70, "GitHub Copilot", "VS Code 集成", COL_INTERFACE))
-    parts.append(node(x+30, y_top+220, layer_w-60, 70, "自然语言", "中文主题 → 论文", COL_INTERFACE))
-    parts.append(node(x+30, y_top+310, layer_w-60, 70, "MCP Protocol", "Model Context Protocol", COL_INTERFACE))
-    parts.append(node(x+30, y_top+400, layer_w-60, 70, "Stdin/stdout", "subprocess 沙箱", COL_INTERFACE))
-    parts.append(node(x+30, y_top+490, layer_w-60, 70, "LaTeX 编译", "PDF 输出", COL_INTERFACE))
-    parts.append(node(x+30, y_top+580, layer_w-60, 70, "JSON/CSV/YAML", "结构化输出", COL_INTERFACE))
-
-    # Layer 3: Orchestration Core
-    x += layer_w + gap
-    parts.append(section(x, y_top, layer_w, layer_h, "③ 编排核心", "#f59e0b"))
-    parts.append(node(x+30, y_top+40, layer_w-60, 80, "Agent Pipeline", "8 步端到端编排", COL_PROCESS))
-    parts.append(node(x+30, y_top+140, layer_w-60, 70, "AI Router", "DeepSeek / Claude / GPT 路由", COL_PROCESS))
-    parts.append(node(x+30, y_top+230, layer_w-60, 70, "LLM Reviewer", "对抗性评审", COL_PROCESS))
-    parts.append(node(x+30, y_top+320, layer_w-60, 70, "Checkpoint", "断点续传", COL_PROCESS))
-    parts.append(node(x+30, y_top+410, layer_w-60, 70, "Provenance", "数据溯源追踪", COL_PROCESS))
-    parts.append(node(x+30, y_top+500, layer_w-60, 70, "Autonomy Loop", "自主循环 + HITL", COL_PROCESS))
-    parts.append(node(x+30, y_top+590, layer_w-60, 70, "MCP Tool Market", "工具市场", COL_PROCESS))
-
-    # Layer 4: Skill System
-    x += layer_w + gap
-    parts.append(section(x, y_top, layer_w, layer_h, "④ 技能系统", "#a855f7"))
-    parts.append(node(x+30, y_top+40, layer_w-60, 80, "17 技能", "完整研究生命周期", COL_CONTROL))
-    parts.append(node(x+30, y_top+140, layer_w-60, 70, "lit-review", "文献综述", COL_CONTROL))
-    parts.append(node(x+30, y_top+230, layer_w-60, 70, "idea-discovery", "想法生成", COL_CONTROL))
-    parts.append(node(x+30, y_top+320, layer_w-60, 70, "experiment-design", "实证设计", COL_CONTROL))
-    parts.append(node(x+30, y_top+410, layer_w-60, 70, "paper-writing", "论文写作", COL_CONTROL))
-    parts.append(node(x+30, y_top+500, layer_w-60, 70, "review-loop", "对抗性 review", COL_CONTROL))
-    parts.append(node(x+30, y_top+590, layer_w-60, 70, "submit-check", "投稿前检查", COL_CONTROL))
-
-    # Layer 5: Data & Infra
-    x += layer_w + gap
-    parts.append(section(x, y_top, layer_w, layer_h, "⑤ 数据与基础设施", "#10b981"))
-    parts.append(node(x+30, y_top+40, layer_w-60, 80, f"{MCP_COUNT} MCP Servers", "完整金融数据", COL_DATA))
-    parts.append(node(x+30, y_top+140, layer_w-60, 70, "4 层 Fallback", "MCP → lib → HTTP → synthetic", COL_DATA))
-    parts.append(node(x+30, y_top+230, layer_w-60, 70, "27 计量方法", "DID/IV/RD/GMM", COL_DATA))
-    parts.append(node(x+30, y_top+320, layer_w-60, 70, "20+ 图表预设", "≥300 DPI", COL_DATA))
-    parts.append(node(x+30, y_top+410, layer_w-60, 70, "34 期刊模板", "JF/JFE/CTeX 等", COL_DATA))
-    parts.append(node(x+30, y_top+500, layer_w-60, 70, "180 测试", "pytest 100% 通过", COL_DATA))
-    parts.append(node(x+30, y_top+590, layer_w-60, 70, "3 平台 CI", "macOS/Linux/Windows", COL_DATA))
-
-    # 横向连接箭头
-    for i in range(4):
-        x_from = x_start + (i+1)*layer_w + i*gap - gap + 5
-        x_to = x_from + gap - 10
-        ay = y_top + layer_h / 2
-        parts.append(arrow(x_from, int(ay), x_to, int(ay), color="#5a6478"))
-
-    parts.append(footer(1))
-    return "\n".join(parts) + "\n</svg>\n"
+    parts.append(section(1230, 176, 314, 584, "DELIVERY", "#d8b66a"))
+    parts.append(node(1258, 228, 258, 88, "Research package", "LaTeX · PDF · figures", COL_PROCESS))
+    parts.append(node(1258, 344, 258, 88, "FINAL.md", "user-facing completion", COL_PROCESS))
+    parts.append(node(1258, 460, 258, 88, "SKIPPED_CONFIG.md", "hard gaps, never hidden", COL_CONTROL))
+    parts.append(node(1258, 576, 258, 88, "Provenance ledger", "source · timestamp · transform", COL_DATA))
+    parts.append(node(1258, 692, 258, 42, "No silent Mock", "", COL_CONTROL, fontsize=14))
+    parts.append(arrow(1104, 300, 1250, 278, "writing"))
+    parts.append(arrow(1104, 624, 1250, 620, "empirics"))
+    parts.append(arrow(300, 470, 340, 470, "route"))
+    return _finish(parts, 1)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 图 2: Skill System Map
-# ═══════════════════════════════════════════════════════════════════
 def gen_02_skill_system_map() -> str:
-    """17 个 skill 体系 + 4 阶段 + 触发关系。"""
-    title = "图 2: 17 技能体系 (Skill System Map)"
-    subtitle = "4 阶段：发现 → 设计 → 写作 → 发布"
-
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" font-family="{FONT}">']
-    parts.append(header(title, subtitle))
-
-    # 4 个 phase 大块
-    y_top = 150
-    phase_w = 360
-    phase_h = 720
-    gap = 30
-    x_start = 60
-    phases = [
-        ("① 想法发现阶段", "#3b82f6", [
-            ("fin-idea-discovery", "想法发现 + 数据验证", "完整流程"),
-            ("fin-generate-idea", "8-12 排序想法", "批量生成"),
-            ("fin-novelty-check", "顶刊查重", "JF/JFE/RFS"),
-            ("fin-lit-review", "系统性综述", "MCP 检索"),
-        ]),
-        ("② 研究设计阶段", "#10b981", [
-            ("fin-experiment-design", "实证方案设计", "DID/IV/RD/PSM"),
-            ("fin-data-acquisition", "数据获取 + 脚本", f"{MCP_COUNT} MCP 数据源"),
-        ]),
-        ("③ 论文写作阶段", "#f59e0b", [
-            ("fin-paper-plan", "大纲生成", "34 期刊模板"),
-            ("fin-paper-draft", "正文写作", "中英双语"),
-            ("fin-paper-figure", "图表生成", "≥300 DPI"),
-            ("fin-paper-writing", "写作编排", "全流程调度"),
-            ("fin-paper-convert", "LaTeX 编译", "PDF 输出"),
-        ]),
-        ("④ 评审发布阶段", "#a855f7", [
-            ("fin-review-loop", "对抗性 review", "多轮严格"),
-            ("fin-submit-check", "投稿前检查", "格式/数据"),
-            ("fin-ref-paper", "BibTeX 管理", "参考文献"),
-            ("fin-brief-generator", "FIN_BRIEF.md", "研究简报"),
-            ("fin-viz-launch", "自然语言 → 图表", "快速可视化"),
-        ]),
-    ]
-
-    for i, (label, color, skills) in enumerate(phases):
-        x = x_start + i * (phase_w + gap)
-        parts.append(section(x, y_top, phase_w, phase_h, label, color))
-
-        # 节点
-        n = len(skills)
-        h_node = (phase_h - 60) // n - 12
-        for j, (name, desc, _) in enumerate(skills):
-            ny = y_top + 40 + j * (h_node + 12)
-            parts.append(node(x+15, ny, phase_w-30, h_node, name, desc, col=(color, color)))
-
-    # 阶段箭头
-    for i in range(3):
-        x_from = x_start + (i+1)*phase_w + i*gap - gap + 5
-        x_to = x_from + gap - 10
-        ay = y_top + phase_h / 2
-        parts.append(arrow(x_from, int(ay), x_to, int(ay), color="#5a6478"))
-
-    # 底部说明
-    y_btm = 900
-    parts.append(f'<text x="{WIDTH/2}" y="{y_btm}" fill="{INK2}" font-size="14" text-anchor="middle" font-family="{FONT}">每阶段独立可调用；可串联为 fin-full-pipeline（端到端 1 条命令）</text>')
-
-    parts.append(footer(2))
-    return "\n".join(parts) + "\n</svg>\n"
+    parts = _start()
+    parts.append(header(f"{SKILL_COUNT} research skills", "A small set of composable capabilities organized by research phase"))
+    groups = (
+        ("DISCOVER", "#79a9ff", ("fin-idea-discovery", "fin-generate-idea", "fin-lit-review", "fin-novelty-check")),
+        ("DESIGN & DATA", "#4cc9b0", ("fin-brief-generator", "fin-experiment-design", "fin-data-acquisition", "fin-arch-diagram")),
+        ("WRITE", "#d8b66a", ("fin-paper-plan", "fin-paper-draft", "fin-paper-writing", "fin-paper-figure", "fin-viz-launch")),
+        ("REVIEW & DELIVER", "#a992d4", ("fin-review-loop", "fin-ref-paper", "fin-paper-convert", "fin-submit-check", "fin-full-pipeline")),
+    )
+    for index, (label, color, skills) in enumerate(groups):
+        x = 56 + index * 382
+        parts.append(section(x, 190, 354, 566, label, color))
+        for row, skill in enumerate(skills):
+            parts.append(node(x + 24, 230 + row * 92, 306, 68, skill, "", (PANEL2, color), fontsize=14))
+        if index < 3:
+            parts.append(arrow(x + 354, 472, x + 374, 472, color=color))
+    parts.append(pill(488, 782, 624, "independent skills · one fin-full-pipeline orchestrator", "#79a9ff"))
+    return _finish(parts, 2)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 图 3: MCP Ecosystem Map
-# ═══════════════════════════════════════════════════════════════════
 def gen_03_mcp_ecosystem_map() -> str:
-    f"""{MCP_COUNT} 个 MCP server 分类。"""
-    title = f"图 3: {MCP_COUNT} MCP 数据生态 (MCP Ecosystem Map)"
-    subtitle = "8 类别：学术 / A股 / 美股 / 宏观 / 新闻 / 工具 / 加密 / 区块链"
+    parts = _start()
+    parts.append(header(f"Evidence acquisition · {MCP_COUNT} source directories", "Priority is explicit: local panels first, provenance always, failure visible"))
+    layers = (
+        (180, "LAYER 0", "Local empirical panels", "FINAI_EMPIRICAL_DATA_ROOT · exact variables", COL_USER),
+        (312, "LAYER 1", "Validated cache", "schema · freshness · content hash", COL_INTERFACE),
+        (444, "LAYER 2", f"{MCP_COUNT} MCP directories", "academic · China markets · global macro · filings", COL_DATA),
+        (576, "LAYER 3+", "Official libraries and APIs", "only compatible, documented substitutions", COL_PROCESS),
+        (708, "STOP", "Fail closed", "no proxy laundering · no silent synthetic data", COL_CONTROL),
+    )
+    for index, (y, tag, title, desc, color) in enumerate(layers):
+        parts.append(pill(70, y + 26, 150, tag, color[1]))
+        parts.append(node(250, y, 1020, 86, title, desc, color, fontsize=17))
+        if index < len(layers) - 1:
+            parts.append(arrow(760, y + 86, 760, layers[index + 1][0] - 10))
 
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" font-family="{FONT}">']
-    parts.append(header(title, subtitle))
-
-    # 中心节点：MCP 协议
-    cx, cy = WIDTH//2, 480
-    parts.append(f'''
-  <g>
-    <circle cx="{cx}" cy="{cy}" r="100" fill="url(#hdrGrad)" opacity="0.2"/>
-    <circle cx="{cx}" cy="{cy}" r="80" fill="{BG2}" stroke="#3b82f6" stroke-width="2"/>
-    <text x="{cx}" y="{cy-15}" fill="{INK}" font-size="20" font-weight="700" text-anchor="middle" font-family="{FONT}">MCP 协议</text>
-    <text x="{cx}" y="{cy+10}" fill="{INK2}" font-size="14" text-anchor="middle" font-family="{MONO}">Model Context Protocol</text>
-    <text x="{cx}" y="{cy+35}" fill="{INK3}" font-size="11" text-anchor="middle" font-family="{MONO}">222 tools</text>
-    <text x="{cx}" y="{cy+52}" fill="{INK3}" font-size="11" text-anchor="middle" font-family="{MONO}">100% schema 完整</text>
-  </g>''')
-
-    # 8 个分类环状分布
-    import math
-    categories = [
-        ("学术文献", "5 servers", "openalex / arxiv / context7 / semantic_scholar / nber", "#3b82f6"),
-        ("A股数据", "4 servers", "tushare / eastmoney / wind / csmar", "#10b981"),
-        ("美股/全球", "3 servers", "yfinance / sec-edgar / enhanced-finance", "#f59e0b"),
-        ("宏观经济", "10 servers", "financial / eodhd / fed / wb / imf / oecd / bea / ceic / datas / stats", "#a855f7"),
-        ("研报/新闻", "2 servers", "eastmoney-reports / newsapi", "#ec4899"),
-        ("工具类", "10 servers", "latex / pandas / playwright / e2b / filesystem / province / hubei / wuhan / crypto / newsapi", "#06b6d4"),
-        ("加密货币", "1 server", "cryptocompare", "#84cc16"),
-        ("中文文献", "1 server", "chinese-literature / cnki / wanfang", "#ef4444"),
-    ]
-    n = len(categories)
-    r = 320
-    for i, (name, count, members, color) in enumerate(categories):
-        angle = i * (2 * math.pi / n) - math.pi / 2
-        px = int(cx + r * math.cos(angle))
-        py = int(cy + r * math.sin(angle))
-        # 节点
-        parts.append(f'''
-  <g>
-    <rect x="{px-130}" y="{py-45}" width="260" height="90" rx="10" fill="{color}" fill-opacity="0.15" stroke="{color}" stroke-width="1.5"/>
-    <rect x="{px-130}" y="{py-45}" width="3" height="90" fill="{color}"/>
-    <text x="{px-110}" y="{py-22}" fill="{INK}" font-size="15" font-weight="700" font-family="{FONT}">{name}</text>
-    <text x="{px-110}" y="{py-3}" fill="{color}" font-size="12" font-family="{MONO}">{count}</text>
-    <text x="{px-110}" y="{py+18}" fill="{INK2}" font-size="10" font-family="{MONO}">{members[:35]}</text>
-  </g>''')
-        # 连接线
-        # 计算线段起点（从中心圆边缘到目标节点边缘）
-        dx = px - cx
-        dy = py - cy
-        dist = math.sqrt(dx*dx + dy*dy)
-        # 中心圆边缘
-        x1 = int(cx + 80 * dx / dist)
-        y1 = int(cy + 80 * dy / dist)
-        # 目标节点边缘 (近似)
-        x2 = int(px - 130 * dx / dist)
-        y2 = int(py - 45 * dy / dist)
-        parts.append(arrow(x1, y1, x2, y2, color=color))
-
-    # 底部说明：4 层 fallback
-    y_btm = 900
-    parts.append(f'<text x="{WIDTH/2}" y="{y_btm}" fill="{INK2}" font-size="14" text-anchor="middle" font-family="{FONT}">每个数据需求 4 层 fallback：MCP → Python lib → HTTP → synthetic（标记）</text>')
-
-    parts.append(footer(3))
-    return "\n".join(parts) + "\n</svg>\n"
+    parts.append(section(1310, 190, 234, 522, "SOURCE DOMAINS", "#4cc9b0"))
+    for row, (label, sub) in enumerate((
+        ("Academic", "OpenAlex · ArXiv · NBER"),
+        ("China", "Tushare · CSMAR · Wind"),
+        ("Global", "SEC · yfinance · EODHD"),
+        ("Macro", "FRED · WB · IMF · OECD"),
+    )):
+        parts.append(node(1332, 230 + row * 108, 190, 78, label, sub, COL_DATA, fontsize=14))
+    parts.append(pill(1318, 738, 218, "Mock = explicit opt-in", "#e38b96"))
+    return _finish(parts, 3)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 图 4: Research Pipeline (8 步)
-# ═══════════════════════════════════════════════════════════════════
 def gen_04_research_pipeline() -> str:
-    """8 步研究流水线。"""
-    title = "图 4: 研究流水线 (8-Step Research Pipeline)"
-    subtitle = "想法 → 文献 → 验证 → 设计 → 数据 → 写作 → 评审 → 发布"
+    parts = _start()
+    parts.append(header("Research pipeline", "Eight research stages after preflight; HITL gates review real outputs"))
+    stages = (
+        ("0", "Health", "preflight", COL_CONTROL),
+        ("1", "Idea", "question", COL_PROCESS),
+        ("2", "Literature", "evidence map", COL_INTERFACE),
+        ("3", "Novelty", "search gate", COL_INTERFACE),
+        ("4", "Design", "identification", COL_DATA),
+        ("5", "Data", "provenance", COL_DATA),
+        ("6", "Analysis", "robustness", COL_DATA),
+        ("7", "Draft", "LaTeX", COL_PROCESS),
+        ("8", "Review", "adversarial", COL_CONTROL),
+    )
+    for index, (num, title, desc, color) in enumerate(stages):
+        row, col = divmod(index, 5)
+        x = 56 + col * 306
+        y = 192 + row * 238
+        parts.append(node(x, y, 266, 112, f"{num}  {title}", desc, color, fontsize=17))
+        if col < 4 and index < len(stages) - 1:
+            parts.append(arrow(x + 266, y + 56, x + 296, y + 56))
+    parts.append(arrow(1530, 248, 1530, 382, "continue", dashed=True))
+    parts.append(arrow(1530, 382, 1280, 430, color="#668099"))
 
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" font-family="{FONT}">']
-    parts.append(header(title, subtitle))
-
-    # 8 步水平流程 + 中间有 checkpoint 标志
-    steps = [
-        ("0", "系统自检", "health_check.py", COL_CONTROL),
-        ("1", "研究想法", "8-12 候选", COL_PROCESS),
-        ("1.5", "想法-数据", "交叉验证", COL_PROCESS),
-        ("2", "文献综述", "MCP 检索", COL_DATA),
-        ("3", "新颖性验证", "顶刊查重", COL_DATA),
-        ("4", "实证设计", "DID/IV/RD", COL_PROCESS),
-        ("5", "数据获取", f"{MCP_COUNT} MCP", COL_DATA),
-        ("6", "论文写作", "LaTeX", COL_PROCESS),
-        ("7", "对抗 Review", "多轮严格", COL_CONTROL),
-    ]
-    n = len(steps)
-    box_w = 150
-    box_h = 100
-    gap = (WIDTH - 120 - n * box_w) // (n - 1)
-    y_row = 200
-    for i, (num, name, sub, col) in enumerate(steps):
-        x = 60 + i * (box_w + gap)
-        c1, c2 = col
-        parts.append(f'''
-  <g>
-    <rect x="{x}" y="{y_row}" width="{box_w}" height="{box_h}" rx="10" fill="{c1}" stroke="{c2}" stroke-width="2"/>
-    <circle cx="{x+25}" cy="{y_row+25}" r="18" fill="{c2}"/>
-    <text x="{x+25}" y="{y_row+30}" fill="{BG}" font-size="14" font-weight="700" text-anchor="middle" font-family="{MONO}">{num}</text>
-    <text x="{x+box_w/2+10}" y="{y_row+30}" fill="{INK}" font-size="16" font-weight="700" text-anchor="middle" font-family="{FONT}">{name}</text>
-    <text x="{x+box_w/2}" y="{y_row+65}" fill="{INK2}" font-size="11" text-anchor="middle" font-family="{MONO}">{sub}</text>
-    <text x="{x+box_w/2}" y="{y_row+85}" fill="{INK3}" font-size="10" text-anchor="middle" font-family="{MONO}">↳ checkpoint</text>
-  </g>''')
-        # 箭头
-        if i < n - 1:
-            ax1 = x + box_w
-            ax2 = x + box_w + gap
-            ay = y_row + box_h // 2
-            parts.append(arrow(ax1, ay, ax2, ay, color="#5a6478"))
-
-    # 下方：核心约束
-    y_constraints = 400
-    parts.append(section(60, y_constraints, WIDTH-120, 280, "6 大核心约束", "#ec4899"))
-    constraints = [
-        ("数据优先", "想法生成前先验证数据可行性"),
-        ("禁止静默 Fallback", "模拟数据必须经用户授权"),
-        ("强制 Checkpoint", "每阶段暂停等用户确认"),
-        ("数据溯源", "每次数据获取记录来源+时间戳"),
-        ("中文顶刊标准", "经济研究/金融研究/管理世界"),
-        ("生成-评审分离", "写作和 review 由不同模块处理"),
-    ]
-    cw = (WIDTH - 180) // 3
-    ch = 90
-    for i, (title, desc) in enumerate(constraints):
-        col = i % 3
-        row = i // 3
-        x = 90 + col * (cw + 15)
-        y = y_constraints + 40 + row * (ch + 15)
-        parts.append(node(x, y, cw, ch, title, desc, COL_CONTROL, fontsize=15))
-
-    # 底部：闭环
-    y_btm = 750
-    parts.append(section(60, y_btm, WIDTH-120, 130, "流水线闭环 (Feedback Loop)", "#3b82f6"))
-    parts.append(f'<text x="{WIDTH/2}" y="{y_btm+50}" fill="{INK}" font-size="16" text-anchor="middle" font-family="{FONT}">每个 step 失败时，可回退到上一步或更换方向；每步产出 checkpoint 文件</text>')
-    parts.append(f'<text x="{WIDTH/2}" y="{y_btm+80}" fill="{INK2}" font-size="14" text-anchor="middle" font-family="{MONO}">FIN_BRIEF.md → LIT_REVIEW.md → IDEA_REPORT.md → NOVELTY_REPORT.md → REFINED_DESIGN.md → DATA_READY.md → PAPER_OUTLINE.md → MANUSCRIPT.md → REVIEW_REPORT.md</text>')
-    parts.append(f'<text x="{WIDTH/2}" y="{y_btm+105}" fill="{INK3}" font-size="12" text-anchor="middle" font-family="{MONO}">10 个文档作为流水线状态载体</text>')
-
-    parts.append(footer(4))
-    return "\n".join(parts) + "\n</svg>\n"
+    parts.append(section(56, 680, 1488, 118, "GOVERNANCE AT EVERY TRANSITION", "#a992d4"))
+    controls = (
+        (80, "Checkpoint", "approve or reject output"),
+        (448, "Provenance", "source and transform recorded"),
+        (816, "No silent fallback", "Mock requires explicit authorization"),
+        (1184, "Dual-track hand-off", "writing ≠ empirical estimation"),
+    )
+    for x, title, desc in controls:
+        parts.append(node(x, 710, 328, 62, title, desc, COL_CONTROL, fontsize=13))
+    return _finish(parts, 4)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 图 5: Deployment & Data Flow
-# ═══════════════════════════════════════════════════════════════════
 def gen_05_deployment_data_flow() -> str:
-    """部署 / 数据流 / 安全边界。"""
-    title = "图 5: 部署与数据流 (Deployment &amp; Data Flow)"
-    subtitle = "用户 → Profile → CI → MCP → 输出 + 3 层安全边界"
+    parts = _start()
+    parts.append(header("Execution and delivery", "Interactive research and isolated agent-host runs share the same governed core"))
+    parts.append(section(56, 188, 312, 548, "ENTRY", "#79a9ff"))
+    parts.append(node(82, 230, 260, 92, "Interactive", "start_research · HITL on", COL_INTERFACE))
+    parts.append(node(82, 354, 260, 92, "Direct writing", "agent_pipeline · explicit gates", COL_INTERFACE))
+    parts.append(node(82, 478, 260, 92, "Agent host", "non-interactive · fail closed", COL_CONTROL))
+    parts.append(node(82, 602, 260, 92, "Topic integrity", "hard gaps recorded", COL_CONTROL))
 
-    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}" font-family="{FONT}">']
-    parts.append(header(title, subtitle))
+    parts.append(section(418, 188, 402, 548, "GOVERNED CORE", "#d8b66a"))
+    parts.append(node(446, 230, 346, 92, "Agent orchestrator", "routing · checkpoints · resume", COL_PROCESS))
+    parts.append(node(446, 354, 346, 92, "LLM gateway", "host model · API · Ollama", COL_PROCESS))
+    parts.append(node(446, 478, 346, 92, "DataFetcher", "local → cache → source", COL_DATA))
+    parts.append(node(446, 602, 346, 92, "Validation", "schema · statistics · provenance", COL_CONTROL))
 
-    # 横向流：4 个区域
-    # 区域 A: 用户端
-    ax, ay, aw, ah = 60, 180, 280, 600
-    parts.append(section(ax, ay, aw, ah, "A. 用户端 (Client)", "#ec4899"))
-    parts.append(node(ax+20, ay+40, aw-40, 70, "Cursor / Claude Code", "IDE 集成", COL_USER))
-    parts.append(node(ax+20, ay+130, aw-40, 70, "4 Profile", "学生/老师/...", COL_USER))
-    parts.append(node(ax+20, ay+220, aw-40, 70, ".env + Keychain", "API Key 安全", COL_CONTROL))
-    parts.append(node(ax+20, ay+310, aw-40, 70, "Setup Wizard", "首次配置", COL_INTERFACE))
-    parts.append(node(ax+20, ay+400, aw-40, 70, "Interactive Checkpoint", "HITL 强制确认", COL_CONTROL))
-    parts.append(node(ax+20, ay+490, aw-40, 70, "Health Check", "启动前自检", COL_CONTROL))
+    parts.append(section(870, 188, 312, 548, "BOUNDARIES", "#4cc9b0"))
+    parts.append(node(896, 230, 260, 92, "Local data", "never uploaded implicitly", COL_DATA))
+    parts.append(node(896, 354, 260, 92, "External sources", "keys stay in keychain", COL_DATA))
+    parts.append(node(896, 478, 260, 92, "Sandbox", "subprocess · limits", COL_CONTROL))
+    parts.append(node(896, 602, 260, 92, "CI", f"{TEST_COUNT:,} tests · 3 OS", COL_INTERFACE))
 
-    # 区域 B: 编排层
-    bx = ax + aw + 30
-    bw = 320
-    parts.append(section(bx, ay, bw, ah, "B. 编排层 (Orchestration)", "#3b82f6"))
-    parts.append(node(bx+20, ay+40, bw-40, 70, "Agent Pipeline", "8 步编排", COL_PROCESS))
-    parts.append(node(bx+20, ay+130, bw-40, 70, "AI Router", "DeepSeek/Claude/GPT", COL_PROCESS))
-    parts.append(node(bx+20, ay+220, bw-40, 70, "Checkpoint / Autonomy", "状态持久化", COL_PROCESS))
-    parts.append(node(bx+20, ay+310, bw-40, 70, "LLM Reviewer", "对抗性评审", COL_PROCESS))
-    parts.append(node(bx+20, ay+400, bw-40, 70, "17 Skills", "完整研究能力", COL_CONTROL))
-    parts.append(node(bx+20, ay+490, bw-40, 70, "Provenance Tracker", "数据溯源", COL_CONTROL))
-
-    # 区域 C: 沙箱
-    cx = bx + bw + 30
-    cw = 280
-    parts.append(section(cx, ay, cw, ah, "C. 沙箱 (Sandbox)", "#f59e0b"))
-    parts.append(node(cx+20, ay+40, cw-40, 70, "Subprocess 隔离", "subprocess.run", COL_CONTROL))
-    parts.append(node(cx+20, ay+130, cw-40, 70, "AST 静态分析", "禁止危险调用", COL_CONTROL))
-    parts.append(node(cx+20, ay+220, cw-40, 70, "Restricted exec()", "受限命名空间", COL_PROCESS))
-    parts.append(node(cx+20, ay+310, cw-40, 70, "Halt Rules", "动态停止", COL_CONTROL))
-    parts.append(node(cx+20, ay+400, cw-40, 70, "Resource Limits", "内存/CPU/时间", COL_CONTROL))
-    parts.append(node(cx+20, ay+490, cw-40, 70, "Pre-commit Hooks", "私钥/AWS 检测", COL_CONTROL))
-
-    # 区域 D: 数据 + 输出
-    dx = cx + cw + 30
-    dw = WIDTH - dx - 60
-    parts.append(section(dx, ay, dw, ah, "D. 数据与输出 (Data &amp; Output)", "#10b981"))
-    parts.append(node(dx+20, ay+40, dw-40, 70, f"{MCP_COUNT} MCP Servers", "金融数据", COL_DATA))
-    parts.append(node(dx+20, ay+130, dw-40, 70, "4 层 Fallback", "MCP→lib→HTTP→synth", COL_DATA))
-    parts.append(node(dx+20, ay+220, dw-40, 70, "data/ 目录", "用户上传/缓存", COL_DATA))
-    parts.append(node(dx+20, ay+310, dw-40, 70, "output/", "LaTeX/PDF/图表", COL_DATA))
-    parts.append(node(dx+20, ay+400, dw-40, 70, "knowledge/", "skills/rules", COL_DATA))
-    # 版本号动态读取（pyproject.toml → 避免硬编码漂移）
-    _version_tag = "v?"
-    try:
-        from pathlib import Path as _P
-        try:
-            import tomllib
-        except ImportError:
-            import tomli as tomllib  # type: ignore[no-redef]
-        _pyproject = _P(__file__).resolve().parent.parent / "pyproject.toml"
-        if _pyproject.exists():
-            with open(_pyproject, "rb") as _f:
-                _data = tomllib.load(_f)
-            _version_tag = "v" + _data.get("project", {}).get("version", "0.0.0")
-    except Exception:  # noqa: S110
-        pass
-    parts.append(node(dx+20, ay+490, dw-40, 70, "GitHub Releases", f"{_version_tag} 标签", COL_DATA))
-
-    # 横向箭头
-    for x1_end, x2_start in [(ax+aw, bx), (bx+bw, cx), (cx+cw, dx)]:
-        ay_arrow = ay + ah // 2
-        parts.append(arrow(x1_end+5, ay_arrow, x2_start-5, ay_arrow, color="#5a6478"))
-
-    # 底部：3 层安全
-    y_sec = 800
-    parts.append(section(60, y_sec, WIDTH-120, 110, "3 层安全边界 (3-Layer Security)", "#ef4444"))
-    parts.append(f'<text x="200" y="{y_sec+45}" fill="{INK}" font-size="14" font-family="{FONT}">① Pre-commit: 检测私钥/AWS 凭据 + ruff + mypy</text>')
-    parts.append(f'<text x="200" y="{y_sec+70}" fill="{INK}" font-size="14" font-family="{FONT}">② CI/CD: 3 OS matrix + pip-audit + secret scanning + dependabot</text>')
-    parts.append(f'<text x="200" y="{y_sec+95}" fill="{INK}" font-size="14" font-family="{FONT}">③ Runtime: Keychain + .env 隔离 + 沙箱 AST 验证 + Halt rules</text>')
-
-    parts.append(footer(5))
-    return "\n".join(parts) + "\n</svg>\n"
+    parts.append(section(1232, 188, 312, 548, "OUTPUT", "#a992d4"))
+    parts.append(node(1258, 230, 260, 92, "FINAL.md", "required delivery summary", COL_PROCESS))
+    parts.append(node(1258, 354, 260, 92, "SKIPPED_CONFIG.md", "required gap ledger", COL_CONTROL))
+    parts.append(node(1258, 478, 260, 92, "Research artifacts", "data · code · figures · paper", COL_DATA))
+    parts.append(node(1258, 602, 260, 92, "DELIVERY.md", "optional contract check", COL_INTERFACE))
+    for x1, x2 in ((368, 410), (820, 862), (1182, 1224)):
+        parts.append(arrow(x1, 462, x2, 462))
+    return _finish(parts, 5)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 主入口
-# ═══════════════════════════════════════════════════════════════════
-def main():
-    generators = [
+def gen_banner() -> str:
+    width, height = 1600, 520
+    stages = ("Question", "Evidence", "Design", "Data", "Analysis", "Draft", "Review")
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img">']
+    parts.append(header("FinAI Research Workflow", "Evidence-first infrastructure for economic and financial research"))
+    for index, stage in enumerate(stages):
+        x = 70 + index * 216
+        parts.append(node(x, 190, 182, 92, stage, "", (PANEL, ("#79a9ff", "#4cc9b0", "#d8b66a")[index % 3]), fontsize=15))
+        if index < len(stages) - 1:
+            parts.append(arrow(x + 182, 236, x + 206, 236))
+    parts.append(pill(166, 340, 286, f"{MCP_COUNT} data sources", "#4cc9b0"))
+    parts.append(pill(492, 340, 286, f"{METHOD_COUNT} method modules", "#79a9ff"))
+    parts.append(pill(818, 340, 286, f"{SKILL_COUNT} research skills", "#d8b66a"))
+    parts.append(pill(1144, 340, 286, f"{JOURNAL_COUNT} journal templates", "#a992d4"))
+    parts.append(f'<text x="800" y="460" fill="{INK3}" font-size="12" text-anchor="middle" font-family="{MONO}">human checkpoints · provenance · no silent Mock</text>')
+    parts.append("</svg>")
+    return "\n".join(parts) + "\n"
+
+
+def gen_quickstart() -> str:
+    width, height = 1400, 900
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" role="img">']
+    parts.append('<title>Start FinAI with your preferred agent</title><desc>Codex is recommended; Cursor, Claude Code, API providers, and Ollama are supported. Mock is explicit opt-in only.</desc>')
+    parts.append(f'''<defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="{BORDER}" opacity=".32"/></pattern></defs>''')
+    parts.append(f'<rect width="100%" height="100%" fill="{BG}"/>')
+    parts.append(f'<rect width="100%" height="100%" fill="url(#grid)"/>')
+    parts.append(f'<text x="64" y="68" fill="{INK}" font-size="34" font-weight="720" font-family="{FONT}">Start with the agent you already use</text>')
+    parts.append(f'<text x="64" y="102" fill="{INK2}" font-size="16" font-family="{FONT}">Codex is recommended; Cursor, Claude Code, API providers, and Ollama use the same project protocol.</text>')
+    hosts = ((64, 250, "RECOMMENDED", "Codex", "#0b7a53"), (334, 250, "SUPPORTED", "Cursor", "#3659a2"), (604, 250, "SUPPORTED", "Claude Code", "#71558b"), (874, 462, "OPTIONAL", "API / Ollama", "#a96024"))
+    for x, w, tag, title, color in hosts:
+        parts.append(f'<rect x="{x}" y="132" width="{w}" height="92" rx="14" fill="{PANEL}" stroke="{color}"/>')
+        parts.append(f'<text x="{x + 22}" y="162" fill="{color}" font-size="10" font-weight="700" font-family="{MONO}">{tag}</text>')
+        parts.append(f'<text x="{x + 22}" y="198" fill="{INK}" font-size="20" font-weight="700" font-family="{FONT}">{title}</text>')
+    cards = (
+        (64, "01 · RECOMMENDED", "Clarify first", "start_research.py", "Refine the question before running|the writing track.", "#0b7a53"),
+        (478, "02 · DIRECT", "Writing pipeline", "agent_pipeline.py --use-hitl", "Use when the research brief|is already specific.", "#3659a2"),
+        (892, "03 · BATCH", "Agent host", "agent_host_entry.py", "Fail closed; writes explicit gap files;|never enables Mock.", "#71558b"),
+    )
+    for x, tag, title, command, desc, color in cards:
+        parts.append(section(x, 284, 360, 388, tag, color))
+        parts.append(f'<text x="{x + 28}" y="358" fill="{INK}" font-size="25" font-weight="700" font-family="{FONT}">{_esc(title)}</text>')
+        for line_index, line in enumerate(desc.split("|")):
+            parts.append(f'<text x="{x + 28}" y="{397 + line_index * 21}" fill="{INK2}" font-size="13" font-family="{FONT}">{_esc(line)}</text>')
+        parts.append(f'<rect x="{x + 28}" y="454" width="304" height="88" rx="12" fill="{PANEL2}" stroke="{BORDER}"/>')
+        parts.append(f'<text x="{x + 48}" y="490" fill="{color}" font-size="12" font-family="{MONO}">python scripts/</text>')
+        parts.append(f'<text x="{x + 48}" y="518" fill="{INK}" font-size="13" font-family="{MONO}">{_esc(command)}</text>')
+        parts.append(pill(x + 28, 586, 304, "Mock is explicit opt-in only", "#71558b"))
+    parts.append(section(64, 746, 1188, 92, "SEPARATE EMPIRICAL HAND-OFF", "#0b7a53"))
+    parts.append(f'<text x="94" y="800" fill="{INK}" font-size="15" font-family="{MONO}">python -m scripts.research_framework.enhanced_pipeline --topic "..." --explore [--panel FILE]</text>')
+    parts.append("</svg>")
+    return "\n".join(parts) + "\n"
+
+
+def gen_06_writing_track() -> str:
+    parts = _start()
+    parts.append(header("Writing track", "Five generated artifacts, four reviewable transitions, no empirical estimation hidden inside"))
+    stages = (
+        ("01", "Outline", "research question · venue"),
+        ("02", "Literature", "verified identifiers · evidence map"),
+        ("03", "Figures", "claims matched to visual evidence"),
+        ("04", "Manuscript", "structured LaTeX draft"),
+        ("05", "Refinement", "adversarial review loop"),
+    )
+    for i, (num, title, desc) in enumerate(stages):
+        x = 70 + i * 300
+        parts.append(node(x, 270, 252, 118, f"{num}  {title}", desc, COL_INTERFACE if i < 2 else COL_PROCESS, fontsize=17))
+        if i < 4:
+            parts.append(arrow(x + 252, 329, x + 290, 329, "HITL"))
+    parts.append(section(174, 520, 1252, 164, "RESEARCHER RESPONSIBILITY", "#71558b"))
+    for i, (title, desc) in enumerate((("Approve", "accept the actual artifact"), ("Reject", "rerun the same stage with feedback"), ("Verify", "citations, claims, and authorship"))):
+        parts.append(node(210 + i * 406, 564, 352, 78, title, desc, COL_CONTROL, fontsize=15))
+    return _finish(parts, 6)
+
+
+def gen_07_data_routing() -> str:
+    parts = _start()
+    parts.append(header("Data routing", "Exact-variable matching and provenance outrank convenience"))
+    parts.append(node(60, 350, 230, 110, "Variable request", "construct · unit · period", COL_USER))
+    parts.append(arrow(290, 405, 352, 405))
+    routes = (
+        (352, "0", "Local panel", "FINAI_EMPIRICAL_DATA_ROOT", COL_DATA),
+        (602, "1", "Validated cache", "schema + freshness + hash", COL_INTERFACE),
+        (852, "2", "MCP / official API", "compatible source only", COL_DATA),
+        (1102, "3", "Stop visibly", "missing ≠ synthetic", COL_CONTROL),
+    )
+    for i, (x, num, title, desc, color) in enumerate(routes):
+        parts.append(node(x, 326, 214, 158, f"{num}  {title}", desc, color, fontsize=16))
+        if i < len(routes) - 1:
+            parts.append(arrow(x + 214, 405, x + 244, 405, "miss"))
+    parts.append(section(352, 590, 964, 118, "ACCEPTANCE CONTRACT", "#0b7a53"))
+    for x, label in ((388, "exact construct"), (622, "source recorded"), (856, "transform logged"), (1090, "validation passed")):
+        parts.append(pill(x, 632, 190, label, "#0b7a53"))
+    return _finish(parts, 7)
+
+
+def gen_08_did_selection() -> str:
+    parts = _start()
+    parts.append(header("Modern DID selection", "Estimator choice follows treatment timing and assumptions—not a default TWFE button"))
+    parts.append(node(60, 350, 250, 104, "Staggered adoption?", "inspect timing first", COL_USER))
+    parts.append(arrow(310, 402, 390, 402))
+    parts.append(node(390, 280, 272, 104, "Never-treated units?", "comparison set available", COL_CONTROL))
+    parts.append(node(390, 482, 272, 104, "Continuous treatment?", "dose varies by unit/time", COL_CONTROL))
+    parts.append(arrow(662, 332, 760, 264, "yes"))
+    parts.append(arrow(662, 332, 760, 400, "heterogeneity"))
+    parts.append(arrow(662, 534, 760, 566, "yes"))
+    parts.append(node(760, 204, 332, 104, "Callaway–Sant’Anna", "group-time ATT · default", COL_DATA))
+    parts.append(node(760, 350, 332, 104, "Sun–Abraham / BJS", "event study or imputation", COL_INTERFACE))
+    parts.append(node(760, 512, 332, 104, "Continuous DID", "dose-response estimand", COL_DATA))
+    parts.append(section(1160, 204, 360, 412, "REQUIRED DIAGNOSTICS", "#a96024"))
+    for i, (title, desc) in enumerate((("Pre-trends", "joint tests + plot"), ("Inference", "cluster / wild bootstrap"), ("Sensitivity", "alternative windows"))):
+        parts.append(node(1188, 246 + i * 112, 304, 82, title, desc, COL_PROCESS, fontsize=14))
+    parts.append(pill(458, 700, 684, "TWFE is a diagnostic baseline, not proof of identification", "#a63f3f"))
+    return _finish(parts, 8)
+
+
+def gen_09_provenance_chain() -> str:
+    parts = _start()
+    parts.append(header("Provenance chain", "Every reported number remains traceable to source, transform, validation, and artifact"))
+    steps = (
+        (70, "SOURCE", "provider · query · timestamp", COL_DATA),
+        (370, "RAW", "immutable snapshot · checksum", COL_INTERFACE),
+        (670, "TRANSFORM", "code version · parameters", COL_PROCESS),
+        (970, "VALIDATE", "schema · ranges · missingness", COL_CONTROL),
+        (1270, "ARTIFACT", "table · figure · manuscript", COL_USER),
+    )
+    for i, (x, title, desc, color) in enumerate(steps):
+        parts.append(node(x, 330, 240, 124, title, desc, color, fontsize=16))
+        if i < 4:
+            parts.append(arrow(x + 240, 392, x + 290, 392))
+    parts.append(section(220, 564, 1160, 132, "REPRODUCIBILITY RECORD", "#3659a2"))
+    for x, label in ((256, "provenance.json"), (526, "manifest + hashes"), (796, "environment lock"), (1066, "gap ledger")):
+        parts.append(pill(x, 610, 220, label, "#3659a2"))
+    return _finish(parts, 9)
+
+
+def gen_hero(dark: bool = False) -> str:
+    bg, ink, sub, rule = (("#10231c", "#f7f4eb", "#b9c7bf", "#29473c") if dark else ("#f7f5ef", "#10231c", "#53645c", "#d8d6cd"))
+    green = "#49c08d" if dark else "#0b7a53"
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 560" role="img" aria-labelledby="title desc">
+  <title id="title">FinAI Research Workflow</title><desc id="desc">Evidence-first infrastructure from research question to defensible manuscript.</desc>
+  <rect width="1600" height="560" fill="{bg}"/>
+  <path d="M0 448H1600M1000 0V560M1200 0V560M1400 0V560" stroke="{rule}"/>
+  <g transform="translate(84 72)" fill="none" stroke="{ink}" stroke-width="12" stroke-linejoin="round"><rect width="80" height="96" rx="8"/><path d="M20 32h40M20 54h34"/><path d="M20 76h40" stroke="{green}"/></g>
+  <text x="196" y="118" fill="{ink}" font-size="28" font-weight="750" font-family="{FONT}">FinAI</text>
+  <text x="84" y="242" fill="{ink}" font-size="66" font-weight="760" font-family="{FONT}">Research that can</text>
+  <text x="84" y="316" fill="{ink}" font-size="66" font-weight="760" font-family="{FONT}">show its work.</text>
+  <text x="88" y="380" fill="{sub}" font-size="22" font-family="{FONT}">Evidence-first infrastructure for empirical economics and finance.</text>
+  <text x="88" y="438" fill="{green}" font-size="14" font-weight="700" font-family="{MONO}">LOCAL DATA FIRST  ·  HUMAN CHECKPOINTS  ·  NO SILENT MOCK</text>
+  <g font-family="{MONO}" font-size="13"><text x="1040" y="92" fill="{sub}">01  DISCOVER</text><text x="1240" y="92" fill="{sub}">02  DESIGN</text><text x="1440" y="92" fill="{sub}">03  EVIDENCE</text><text x="1040" y="292" fill="{sub}">04  ESTIMATE</text><text x="1240" y="292" fill="{sub}">05  WRITE</text><text x="1440" y="292" fill="{sub}">06  REVIEW</text></g>
+  <g fill="{ink}" font-family="{FONT}" font-weight="740" font-size="31"><text x="1040" y="178">{MCP_COUNT}</text><text x="1240" y="178">{METHOD_COUNT}</text><text x="1440" y="178">{SKILL_COUNT}</text><text x="1040" y="378">{JOURNAL_COUNT}</text></g>
+  <g fill="{sub}" font-family="{MONO}" font-size="11"><text x="1040" y="204">DATA SOURCES</text><text x="1240" y="204">METHOD MODULES</text><text x="1440" y="204">AI SKILLS</text><text x="1040" y="404">JOURNAL TEMPLATES</text></g>
+</svg>\n'''
+
+
+def _write_svg(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    normalized = "\n".join(line.rstrip() for line in content.splitlines()) + "\n"
+    path.write_text(normalized, encoding="utf-8")
+
+
+def _render_png(svg_path: Path, width: int, height: int) -> bool:
+    renderer = shutil.which("rsvg-convert")
+    if not renderer:
+        return False
+    subprocess.run(
+        [renderer, "-w", str(width), "-h", str(height), str(svg_path), "-o", str(svg_path.with_suffix(".png"))],
+        check=True,
+    )
+    return True
+
+
+def main() -> None:
+    diagrams = (
         ("01-architecture-overview.svg", gen_01_architecture_overview),
         ("02-skill-system-map.svg", gen_02_skill_system_map),
         ("03-mcp-ecosystem-map.svg", gen_03_mcp_ecosystem_map),
         ("04-research-pipeline.svg", gen_04_research_pipeline),
         ("05-deployment-data-flow.svg", gen_05_deployment_data_flow),
-    ]
-    print(f"生成 5 个架构图 → {OUT_DIR}")
-    for name, gen in generators:
-        svg = gen()
-        fpath = os.path.join(OUT_DIR, name)
-        with open(fpath, "w", encoding="utf-8") as f:
-            f.write(svg)
-        size = os.path.getsize(fpath)
-        print(f"  ✅ {name} ({size} bytes)")
+        ("06-writing-track.svg", gen_06_writing_track),
+        ("07-data-routing.svg", gen_07_data_routing),
+        ("08-did-selection.svg", gen_08_did_selection),
+        ("09-provenance-chain.svg", gen_09_provenance_chain),
+    )
+    for name, generator in diagrams:
+        path = OUT_DIR / name
+        _write_svg(path, generator())
+        rendered = _render_png(path, WIDTH, HEIGHT)
+        print(f"generated {path.relative_to(PROJECT_ROOT)}" + (" + PNG" if rendered else ""))
+
+    support = (
+        (ASSET_DIR / "banner.svg", gen_banner(), 1600, 520),
+        (ASSET_DIR / "quickstart.svg", gen_quickstart(), 1400, 900),
+        (ASSET_DIR / "hero-light.svg", gen_hero(False), 1600, 560),
+        (ASSET_DIR / "hero-dark.svg", gen_hero(True), 1600, 560),
+    )
+    for path, content, width, height in support:
+        _write_svg(path, content)
+        _render_png(path, width, height)
+        print(f"generated {path.relative_to(PROJECT_ROOT)} + PNG")
+    shutil.copyfile(ASSET_DIR / "banner.svg", OUT_DIR / "banner.svg")
+    shutil.copyfile(OUT_DIR / "01-architecture-overview.svg", OUT_DIR / "architecture-diagram.svg")
+    shutil.copyfile(OUT_DIR / "01-architecture-overview.png", OUT_DIR / "architecture-diagram.png")
 
 
 if __name__ == "__main__":
