@@ -73,7 +73,7 @@ combined econometric rigor with LaTeX templating and modern MCP
 data plumbing. I'd value feedback from anyone working on causal
 inference, time-series, or applied ML. PRs welcome.
 
-Tech: Python 3.10+, FastAPI, linearmodels, diff-in-diff2, matplotlib.
+Tech: Python 3.10+, FastAPI, linearmodels, matplotlib.
 License: MIT. No telemetry. No SaaS.
 
 Happy to answer technical questions.

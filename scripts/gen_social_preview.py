@@ -16,7 +16,6 @@ SUB = "#b9c7bf"
 ACCENT1 = "#49c08d"
 ACCENT2 = "#8ea7ff"
 ACCENT3 = "#e7b875"
-CARD = "#183128"
 FONT = "'Inter','SF Pro Display','Segoe UI',system-ui,sans-serif"
 MONO = "'SF Mono','JetBrains Mono','Cascadia Code',monospace"
 

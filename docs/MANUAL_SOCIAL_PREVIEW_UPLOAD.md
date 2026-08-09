@@ -1,8 +1,8 @@
-# A2 Social Preview 上传指引 (audit_fix_2026_07_12)
+# GitHub Social Preview 上传指引
 
 > **目标**: 把 `social-preview.png` 上传到 GitHub 仓库 Settings → Social preview
 >
-> **当前文件** (含正确数字 43/47/17/30):
+> **当前文件**（指标由 `scripts/count_assets.py` 自动读取）:
 > - `docs/assets/social-preview.png` ⭐ **推荐从这里上传** — 路径在网页 UI 中好找
 > - `.github/social-preview.png` — 备份位置 (隐藏目录, 网页选择器中不可见)
 
@@ -33,9 +33,10 @@ https://github.com/csmar432/finai-research/settings
 
 ### Step 3: 验证
 页面会显示新上传的预览图. 检查:
-- [ ] 数字是 43 / 47 / 17 / **30** (不是 45)
+- [ ] 数字与 `python scripts/count_assets.py` 输出一致（当前为 43 / 58 / 18 / 30）
 - [ ] 没有裁剪
 - [ ] 文字清晰
+- [ ] 主标题为 “Research that can show its work.”
 
 ---
 
@@ -58,16 +59,16 @@ python scripts/gen_social_preview.py
 # 会同时更新 .github/social-preview.png 和 docs/assets/social-preview.png
 ```
 
-数字自动从 `scripts/count_assets.py` 拉 (SSOT), 不会过期.
+生成器从 `scripts/count_assets.py` 读取数字；仓库文件会自动更新，但 GitHub Settings 中已经上传的图片不会自动替换，指标变化后需重新上传。
 
 ---
 
 ## 📊 当前 Social Preview 内容
 
-4 个卡片显示核心能力指标:
+右侧流程与底部指标展示:
 - **43** MCP Data Sources
-- **47** Econometric Methods (DID/IV/RDD/...)
-- **17** AI Skills
+- **58** Econometric Method Modules
+- **18** AI Skills
 - **30** Journal Templates (JF / 经济研究 / ...)
 
-底部: `github.com/csmar432/finai-research`
+左侧强调可验证研究，右侧展示 Discover → Design → Evidence → Estimate → Write → Review，底部为仓库地址。

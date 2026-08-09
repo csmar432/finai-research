@@ -33,7 +33,8 @@ accelerate>=1.14.0
 # 用途：面板数据 IV 估计、GMM、Sargan-Hansen 过度识别检验
 # 说明：linearmodels 已含于核心依赖，此处为扩展包
 linearmodels>=4.17
-diff_in_diff2>=1.0.0
+# No staggered-DID package is declared here: the historical diff_in_diff2 name
+# has no maintained PyPI distribution. Runtime adapters fail closed instead.
 pandas-datareader>=0.10.0
 pandasql>=0.7.3
 
