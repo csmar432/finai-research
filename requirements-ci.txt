@@ -31,7 +31,7 @@ linearmodels>=6.0.0
 networkx>=3.2.0,<4.0
 # matplotlib pinned to <3.10 because matplotlib 3.10+ requires numpy>=2.0
 # (see matplotlib 3.10 release notes). With numpy<2 we need matplotlib<3.10.
-matplotlib>=3.8.0,<3.10
+matplotlib>=3.8.0,<3.11
 seaborn>=0.13.0,<1.0
 graphviz>=0.20.0,<1.0
 # tenacity required by data_fetcher.py / retry_utils.py — scripts/ imports
