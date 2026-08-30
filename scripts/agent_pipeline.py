@@ -1582,8 +1582,6 @@ class AgentPipeline:
             if out_raw:
                 out = Path(str(out_raw))
                 search_dirs = [out, out / "fin-refinement", out / "fin-experiments", *search_dirs]
-            else:
-                search_dirs.append(Path("output"))
             reports["empirical_package"] = check_empirical_package(
                 manuscript=writing_text,
                 search_dirs=search_dirs,

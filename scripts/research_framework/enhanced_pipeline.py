@@ -1145,6 +1145,17 @@ class EnhancedPipeline:
         pretend a single TWFE table is a complete policy-DID package.
         """
         try:
+            import os
+
+            # Parallel pytest workers share ./output; do not drop a failing
+            # scaffold there or writing-pre-gate tests pick it up.
+            if os.environ.get("PYTEST_CURRENT_TEST"):
+                try:
+                    if Path(self.output_dir).resolve() == Path("output").resolve():
+                        return None
+                except OSError:
+                    return None
+
             from scripts.core.empirical_package import package_from_pipeline_ctx
 
             pkg = package_from_pipeline_ctx(self.ctx)

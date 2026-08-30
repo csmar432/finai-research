@@ -187,6 +187,41 @@ def test_empty_scaffold_cli_shape():
     assert "placebo" not in pkg["slots"]
 
 
+def test_writing_pre_gate_does_not_search_shared_output_by_default():
+    """Default writing track must not pick up a leftover output/*.json."""
+    from scripts.core.empirical_package import EmpiricalPackageReport
+
+    cfg = AgentPipelineConfig(topic="t")
+    pipeline = AgentPipeline(cfg)
+    result = AgentPipelineResult(config=cfg, success=True)
+    seen: dict = {}
+
+    def _check(**kwargs):
+        seen["dirs"] = [Path(p) for p in (kwargs.get("search_dirs") or [])]
+        return EmpiricalPackageReport(
+            passed=True, skipped=True, summary_message="skip"
+        )
+
+    with patch(
+        "scripts.core.empirical_package.check_empirical_package",
+        side_effect=_check,
+    ), patch(
+        "scripts.research_framework.manuscript_quality_gate.check_manuscript",
+        return_value=DataSourceGateReport(passed=True, summary_message="mq"),
+    ), patch(
+        "scripts.research_framework.reference_validator.validate_references",
+        return_value=DataSourceGateReport(passed=True, summary_message="ref"),
+    ), patch(
+        "scripts.data_source_checker.check_data_sources",
+        return_value=DataSourceGateReport(passed=True, summary_message="ds"),
+    ):
+        pipeline._run_writing_pre_gate(result, "理论综述，无回归结果。")
+
+    assert Path("output") not in seen.get("dirs", [])
+    assert Path("output/fin-refinement") in seen.get("dirs", [])
+    assert result.quality_reports["writing_pre_gate"]["passed"] is True
+
+
 def test_writing_pre_gate_blocks_when_package_fails(tmp_path: Path):
     (tmp_path / "empirical_package.json").write_text(
         '{"mode":"core","unit":"firm","y_construct":"Y","x_construct":"X",'
