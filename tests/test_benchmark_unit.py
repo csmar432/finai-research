@@ -17,6 +17,7 @@ try:
         ValidationSummary,
         SyntheticPaperGenerator,
         PaperWritingBench,
+        parse_llm_judge_scores,
     )
 except Exception as _exc:
     pytest.skip(f"benchmark not importable: {_exc}", allow_module_level=True)
@@ -728,6 +729,123 @@ class TestPaperWritingBenchLLMJudge:
         ]
         df = bench.llm_judge_evaluate(papers)
         assert len(df) == 3
+
+    def test_llm_judge_evaluate_reads_prompt_schema(self):
+        """Instruction-following top-level scores must not collapse to 0.0 (#201)."""
+        from unittest.mock import MagicMock, patch
+
+        bench = PaperWritingBench()
+        papers = [{"paper_id": "p1", "domain": "empirical_paper", "halt_score": 0.8, "text": "x"}]
+        payload = (
+            '{"technical_soundness": {"score": 7.0, "reasoning": "ok"},'
+            ' "novelty": {"score": 8.0, "reasoning": "ok"},'
+            ' "clarity": {"score": 6.0, "reasoning": "ok"},'
+            ' "significance": {"score": 7.5, "reasoning": "ok"},'
+            ' "overall": {"score": 7.0, "reasoning": "ok"}}'
+        )
+        mock_rev = MagicMock()
+        mock_rev._call_llm.return_value = payload
+        with patch("scripts.core.reviewer.LLMReviewer", return_value=mock_rev):
+            df = bench.llm_judge_evaluate(papers)
+        row = df.iloc[0]
+        assert row["llm_soundness"] == 7.0
+        assert row["llm_novelty"] == 8.0
+        assert row["llm_clarity"] == 6.0
+        assert row["llm_significance"] == 7.5
+        assert row["llm_overall"] == 7.0
+        assert abs(row["llm_mean"] - 7.1) < 1e-9
+        assert abs(row["score_diff"] - 1.1) < 1e-9
+
+    def test_llm_judge_evaluate_incomplete_json_uses_fallback_not_zeros(self):
+        """Missing dimensions must not be recorded as successful 0.0 scores."""
+        from unittest.mock import MagicMock, patch
+
+        bench = PaperWritingBench()
+        papers = [{"paper_id": "p1", "domain": "empirical_paper", "halt_score": 0.8, "text": "x"}]
+        mock_rev = MagicMock()
+        mock_rev._call_llm.return_value = '{"novelty": {"score": 9.0, "reasoning": "only one"}}'
+        with patch("scripts.core.reviewer.LLMReviewer", return_value=mock_rev):
+            df = bench.llm_judge_evaluate(papers)
+        row = df.iloc[0]
+        # halt_score 0.8 → scaled 8.2 fallback, not parsed 0.0
+        assert row["llm_mean"] == 8.2
+        assert row["score_diff"] == 0.0
+        assert bool(row["agreement"]) is True
+
+
+class TestParseLlmJudgeScores:
+    """#201: prompt schema and wrapped schema must both parse."""
+
+    _PROMPT = {
+        "technical_soundness": {"score": 7.0, "reasoning": "brief"},
+        "novelty": {"score": 8.0, "reasoning": "brief"},
+        "clarity": {"score": 6.0, "reasoning": "brief"},
+        "significance": {"score": 7.5, "reasoning": "brief"},
+        "overall": {"score": 7.0, "reasoning": "brief"},
+    }
+
+    def test_prompt_schema_top_level(self):
+        import json
+
+        scores = parse_llm_judge_scores(json.dumps(self._PROMPT))
+        assert scores == {
+            "technical_soundness": 7.0,
+            "novelty": 8.0,
+            "clarity": 6.0,
+            "significance": 7.5,
+            "overall": 7.0,
+        }
+
+    def test_wrapped_scores_schema(self):
+        import json
+
+        scores = parse_llm_judge_scores(json.dumps({"scores": self._PROMPT}))
+        assert scores["novelty"] == 8.0
+        assert scores["overall"] == 7.0
+
+    def test_markdown_fence(self):
+        import json
+
+        raw = "Here you go:\n```json\n" + json.dumps(self._PROMPT) + "\n```\n"
+        scores = parse_llm_judge_scores(raw)
+        assert scores["clarity"] == 6.0
+
+    def test_bare_numeric_scores(self):
+        raw = (
+            '{"technical_soundness": 7, "novelty": 8, "clarity": 6,'
+            ' "significance": 7.5, "overall": 7}'
+        )
+        scores = parse_llm_judge_scores(raw)
+        assert scores["significance"] == 7.5
+
+    def test_empty_scores_wrapper_falls_back_to_top_level(self):
+        import json
+
+        payload = {"scores": {}, **self._PROMPT}
+        scores = parse_llm_judge_scores(json.dumps(payload))
+        assert scores["novelty"] == 8.0
+
+    def test_missing_dimension_raises(self):
+        import pytest
+
+        with pytest.raises(ValueError, match="missing scores"):
+            parse_llm_judge_scores('{"novelty": {"score": 8.0, "reasoning": "x"}}')
+
+    def test_no_json_raises(self):
+        import pytest
+
+        with pytest.raises(ValueError, match="no JSON object"):
+            parse_llm_judge_scores("not json at all")
+
+    def test_old_parser_would_have_zeroed_prompt_schema(self):
+        """Document the #201 failure mode against the new parser."""
+        import json
+
+        data = json.loads(json.dumps(self._PROMPT))
+        old = data.get("scores", {})
+        assert old == {}  # old path
+        new = parse_llm_judge_scores(json.dumps(self._PROMPT))
+        assert new["technical_soundness"] == 7.0
 
 
 class TestPaperWritingBenchPrintRuleBreakdown:
