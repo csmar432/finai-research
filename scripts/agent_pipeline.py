@@ -1575,7 +1575,10 @@ class AgentPipeline:
             from scripts.core.empirical_package import check_empirical_package
 
             out_raw = getattr(self.config, "output_dir", None)
+            # Must cover where enhanced_pipeline drops the package, or the
+            # Stage 6 → Stage 7 hand-off silently skips this gate.
             search_dirs = [
+                Path("output"),
                 Path("output/fin-refinement"),
                 Path("output/fin-experiments"),
             ]
