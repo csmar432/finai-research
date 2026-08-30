@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -30,7 +31,67 @@ __all__ = [
     "ValidationSummary",
     "SyntheticPaperGenerator",
     "PaperWritingBench",
+    "parse_llm_judge_scores",
 ]
+
+_LLM_JUDGE_KEYS = (
+    "technical_soundness",
+    "novelty",
+    "clarity",
+    "significance",
+    "overall",
+)
+
+
+def _extract_json_object(raw: str) -> dict[str, Any]:
+    """Pull the first JSON object out of an LLM reply."""
+    text = raw.strip()
+    fenced = re.search(r"```(?:json)?\s*(.*?)\s*```", text, re.DOTALL)
+    if fenced:
+        text = fenced.group(1).strip()
+    try:
+        data = json.loads(text)
+        if isinstance(data, dict):
+            return data
+    except json.JSONDecodeError:
+        pass
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end <= start:
+        raise ValueError("judge response contains no JSON object")
+    data = json.loads(text[start : end + 1])
+    if not isinstance(data, dict):
+        raise ValueError("judge JSON is not an object")
+    return data
+
+
+def _coerce_judge_score(value: Any, key: str) -> float:
+    if isinstance(value, dict):
+        if "score" not in value:
+            raise ValueError(f"judge field {key!r} is an object without 'score'")
+        value = value["score"]
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"judge field {key!r} has unusable score {value!r}")
+    return float(value)
+
+
+def parse_llm_judge_scores(raw: str) -> dict[str, float]:
+    """Parse llm_judge_evaluate JSON.
+
+    Accepts the prompt schema (top-level dimensions) and the wrapped
+    ``{"scores": {...}}`` schema. Missing dimensions raise ValueError
+    instead of silently becoming 0.0.
+    """
+    data = _extract_json_object(raw)
+    wrapped = data.get("scores")
+    if isinstance(wrapped, dict) and any(k in wrapped for k in _LLM_JUDGE_KEYS):
+        source = wrapped
+    else:
+        source = data
+    missing = [key for key in _LLM_JUDGE_KEYS if key not in source]
+    if missing:
+        raise ValueError(f"judge response missing scores: {missing}")
+    return {key: _coerce_judge_score(source[key], key) for key in _LLM_JUDGE_KEYS}
 
 # ─── Data Models ───────────────────────────────────────────────────────────────
 
@@ -821,15 +882,13 @@ Respond ONLY with valid JSON (no markdown):
 
             try:
                 raw = reviewer._call_llm(prompt, model=judge_model, language="en")
-                data = json.loads(re.search(r"\{.*\}", raw, re.DOTALL).group())
-                s = data.get("scores", {})
-
-                soundness = float(s.get("technical_soundness", {}).get("score", 0))
-                novelty = float(s.get("novelty", {}).get("score", 0))
-                clarity = float(s.get("clarity", {}).get("score", 0))
-                significance = float(s.get("significance", {}).get("score", 0))
-                overall = float(s.get("overall", {}).get("score", 0))
-                llm_mean = np.mean([soundness, novelty, clarity, significance, overall])
+                parsed = parse_llm_judge_scores(raw)
+                soundness = parsed["technical_soundness"]
+                novelty = parsed["novelty"]
+                clarity = parsed["clarity"]
+                significance = parsed["significance"]
+                overall = parsed["overall"]
+                llm_mean = float(np.mean([soundness, novelty, clarity, significance, overall]))
 
                 # Scale halt_score from [0,1] to [1,10] for comparison
                 halt_scaled = halt_score * 9 + 1
