@@ -30,6 +30,15 @@ argument-hint: [chapter-name]
 | 8 | `output/fin-literature/LIT_REVIEW.md` | 文献综述 |
 | 9 | `output/fin-novelty/NOVELTY_REPORT.md` | 新颖性报告 |
 | 10 | `output/fin-experiments/DATA_MANIFEST.md` | 数据清单 |
+| 11 | `output/fin-refinement/empirical_package.json` 或 `output/empirical_package.json` | 实证包写稿门 |
+
+政策 DID / 因果主张开写前必须过写稿门：
+
+```bash
+python -m scripts.core.empirical_package audit output/empirical_package.json --manuscript <草稿>
+```
+
+无包文件的纯写作轨可跳过。有包则四件同时（主栏显著、控制有职务、活机制表、图干净）才许把结果写成「研究发现」。正文禁止备忘录腔（不应解释为 / 升为主结果），参考文献表不写 DOI。
 
 ## 输出文件
 

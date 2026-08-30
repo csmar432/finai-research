@@ -93,7 +93,8 @@ Stage 4: Empirical Design    → scaffold: pipeline.py --mode design
 Stage 5: Data Acquisition    → scripts/universal_data_fetcher.py
 Stage 6: Analysis            → python -m scripts.research_framework.enhanced_pipeline
                                or import scripts.research_framework.modern_did
-                               (pipeline.py --mode full = demo TWFE only)
+                               (writes output/empirical_package.json; missing slots stay dropped)
+Stage 6.5 Write-gate         → python -m scripts.core.empirical_package audit <package.json>
 Stage 7: Paper Draft         → scripts/agent_pipeline.py / report_generator.py  【写作轨】
 Stage 8: Review              → scripts/core/llm_reviewer.py
 ```
@@ -122,6 +123,7 @@ HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
 | Agent-host batch (fail-closed) | `python scripts/agent_host_entry.py --topic "..."` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
 | Run empirics (modern DID) | `python -m scripts.research_framework.enhanced_pipeline --topic "..."` or `from scripts.research_framework import modern_did` |
+| Audit empirical package / write-gate | `python -m scripts.core.empirical_package audit output/empirical_package.json` |
 | List journal templates | `python scripts/journal_template.py --list` |
 | List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
 | Verify project integrity | `python scripts/audit_guard.py` (25/25 checks) |
@@ -136,6 +138,7 @@ HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
 4. **Journals** — 30 templates available. Default venue: 经济研究 (Chinese) / JF (English). User can override via `--venue`.
 5. **HITL** — pause at every stage transition. Never auto-skip a confirmation gate.
 6. **No silent fallback to mock data** — fetch() raises if all layers fail unless user opts in.
+7. **Empirical package before causal claims** — a policy DID is gold slots + live T→M table, not one TWFE coefficient. Controls need jobs attached to *this* Y. Do not drop mechanism on core mode. Do not write 「研究发现」 when `main_p>0.10` or the event-study figure is dirty.
 
 ---
 
