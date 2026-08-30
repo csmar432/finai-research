@@ -19,6 +19,17 @@ FinAI is **two cooperating tracks**, not one fused DAG. Writing does not call mo
 
 Hand-off: finish empirics → feed tables/figures into writing (`report_generator` / `agent_pipeline`). Do not treat `pipeline.py` as “the research entry.”
 
+The hand-off carries a contract, not just tables: `enhanced_pipeline` step2b runs
+the gold slots (`gold_tables.py` — structure facts, stepwise ladder, tighter
+comparison, sample flow, and treatment→M for every channel named via
+`--mechanism`), emits `GOLD_TABLES.md`, and writes
+`<output_dir>/empirical_package.json` (gold slots, control jobs, T→M channels,
+figure gate; whatever it did not run stays `dropped`). The writing pre-gate reads
+it (`scripts/core/empirical_package.py`) and blocks the draft unless the main
+column is significant, controls carry jobs tied to *this* Y, a live mechanism
+table exists, and the genre's fourth piece holds. No package → writing-only
+track, gate soft-skips.
+
 > **CLI 入口 (写作轨)**
 >
 > `AgentOrchestrator` / `MultiAgentOrchestrator` 是**库级 API**, 用户应通过以下 CLI 入口调用:

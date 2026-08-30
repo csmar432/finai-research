@@ -93,7 +93,10 @@ Stage 4: Empirical Design    → scaffold: pipeline.py --mode design
 Stage 5: Data Acquisition    → scripts/universal_data_fetcher.py
 Stage 6: Analysis            → python -m scripts.research_framework.enhanced_pipeline
                                or import scripts.research_framework.modern_did
-                               (writes output/empirical_package.json; missing slots stay dropped)
+                               step2b runs the gold slots (structure facts / stepwise /
+                               tighter / sample flow / T→M with --mechanism M ...),
+                               writes GOLD_TABLES.md + empirical_package.json;
+                               slots that did not run stay dropped with a reason
 Stage 6.5 Write-gate         → python -m scripts.core.empirical_package audit <package.json>
 Stage 7: Paper Draft         → scripts/agent_pipeline.py / report_generator.py  【写作轨】
 Stage 8: Review              → scripts/core/llm_reviewer.py
@@ -122,11 +125,11 @@ HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
 | Run full pipeline | `python scripts/agent_pipeline.py --topic "..." --use-hitl` |
 | Agent-host batch (fail-closed) | `python scripts/agent_host_entry.py --topic "..."` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
-| Run empirics (modern DID) | `python -m scripts.research_framework.enhanced_pipeline --topic "..."` or `from scripts.research_framework import modern_did` |
+| Run empirics (modern DID) | `python -m scripts.research_framework.enhanced_pipeline --topic "..." [--mechanism M1 M2]` or `from scripts.research_framework import modern_did` |
 | Audit empirical package / write-gate | `python -m scripts.core.empirical_package audit output/empirical_package.json` |
 | List journal templates | `python scripts/journal_template.py --list` |
 | List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
-| Verify project integrity | `python scripts/audit_guard.py` (25/25 checks) |
+| Verify project integrity | `python scripts/audit_guard.py` (26/26 checks) |
 
 ---
 

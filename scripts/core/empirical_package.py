@@ -374,12 +374,20 @@ def write_gate(pkg: Mapping[str, Any]) -> list[PackageFinding]:
         cross0 = int(fig.get("event_post_cross0_n") or 0)
         outside = fig.get("placebo_true_outside_mass")
         event0_job = str(fig.get("event0_job") or "").strip()
-        if post_n <= 0 or cross0 > 0:
+        if post_n <= 0:
             findings.append(
                 PackageFinding(
                     "error",
                     "figure_gate",
-                    "政策 DID 事件图处理后多数 CI 不得跨 0；TWFE 显著但图不干净不能交",
+                    "事件图没有处理后期数（event_post_n=0）：时间轴用年份而非 0/1 post 重跑",
+                )
+            )
+        elif cross0 > 0:
+            findings.append(
+                PackageFinding(
+                    "error",
+                    "figure_gate",
+                    f"事件图处理后有 {cross0}/{post_n} 个 CI 跨 0；TWFE 显著但图不干净不能交",
                 )
             )
         if outside is not True:
@@ -547,51 +555,125 @@ def check_empirical_package(
     )
 
 
-def package_from_pipeline_ctx(ctx: Any) -> dict[str, Any]:
-    """Honest scaffold from EnhancedPipeline context. Missing slots stay dropped."""
-    results = getattr(ctx, "modern_did_results", None) or {}
-    topic = str(getattr(ctx, "topic", "") or "")
-    main_p = None
-    main_col = ""
-    for key, val in results.items() if isinstance(results, Mapping) else []:
-        if not isinstance(val, Mapping):
-            continue
-        for pk in ("pval", "p", "pvalue", "p_value"):
-            if pk in val:
-                try:
-                    main_p = float(val[pk])
-                    main_col = str(key)
-                except (TypeError, ValueError):
-                    continue
-                break
-        if main_col:
-            break
+_DROP_REASONS: dict[str, str] = {
+    "desc": "流水线未生成描述统计（面板为空或未跑 step2b）",
+    "facts_before_reg": "未跑回归前结构事实表",
+    "baseline_stepwise": "未跑逐步加信息的基准表",
+    "tighter_compare": "未跑 within / 更局部 FE 的更紧比较",
+    "robust_matrix": "未跑稳健性矩阵",
+    "mechanism": "未点名 M：用 --mechanism 指定渠道后重跑，写稿前必须补机制表",
+    "sample_flow": "未记录逐步流失 n",
+    "parallel_trends": "未跑平行趋势/事件研究",
+    "placebo": "未跑随机安慰剂",
+    "exclusive": "未跑排他政策",
+    "psm": "未跑 PSM；有排他金融政策时可保留此 dropped",
+    "hetero": "未跑两条异质",
+}
 
-    ran_baseline = bool(results)
-    robust = getattr(ctx, "robustness_report", None)
-    ran_robust = robust is not None and bool(getattr(robust, "__len__", lambda: True)())
+
+def _robustness_tests(ctx: Any) -> list[Any]:
+    report = getattr(ctx, "robustness_report", None)
+    if report is None:
+        return []
+    tests = getattr(report, "tests", None)
+    if isinstance(tests, list):
+        return tests
+    return list(report) if isinstance(report, list) else []
+
+
+def _find_test(tests: Iterable[Any], *needles: str) -> Any | None:
+    for test in tests:
+        name = f"{getattr(test, 'test_name', '')} {getattr(test, 'test_type', '')}".lower()
+        if any(n in name for n in needles):
+            return test
+    return None
+
+
+def package_from_pipeline_ctx(ctx: Any) -> dict[str, Any]:
+    """Build the package from what the pipeline actually ran.
+
+    Slots backed by a real table are filled; everything else stays ``dropped``
+    with a reason. Control ``job`` / ``basis`` and ``mechanism_theory`` are
+    left empty on purpose — generated text there would be the sticker the
+    contract rejects, so the gate keeps asking the human for them.
+    """
     pkg = empty_package(mode="core", unit="firm")
-    pkg["y_construct"] = topic or "未点名 Y"
-    pkg["x_construct"] = "处理（流水线未点名官方名单/时点）"
-    pkg["main_col"] = main_col or "did"
-    pkg["main_p"] = main_p
-    pkg["slots"]["baseline_stepwise"] = "enhanced_pipeline.modern_did" if ran_baseline else ""
-    pkg["slots"]["robust_matrix"] = "enhanced_pipeline.robustness_runner" if ran_robust else ""
-    pkg["slots"]["parallel_trends"] = str(
-        getattr(ctx, "parallel_trends_method", "") or "event_study"
+    topic = str(getattr(ctx, "topic", "") or "")
+    tables = getattr(ctx, "gold_tables", None)
+    tests = _robustness_tests(ctx)
+    results = getattr(ctx, "modern_did_results", None) or {}
+
+    pkg["y_construct"] = getattr(tables, "y_var", "") or topic or "未点名 Y"
+    pkg["x_construct"] = (
+        f"处理组 {getattr(tables, 'treat_var', '')} × 政策后"
+        if tables is not None
+        else "处理（流水线未点名官方名单/时点）"
     )
+
+    # ── slots the gold-table run can fill ───────────────────────────────
+    if tables is not None:
+        pkg["slots"].update(tables.to_slots())
+        battery = list(getattr(tables, "battery", []) or [])
+        pkg["battery"] = battery
+        # Skeleton rows only: name + printed row. job/basis stay for the human.
+        pkg["variable_jobs"] = [
+            {"name": name, "table_row": "", "construct": "", "job": "", "basis": ""}
+            for name in battery
+        ]
+        main = tables.main_column
+        if main is not None:
+            pkg["main_col"] = main.label
+            pkg["main_p"] = main.pval
+        channels = [m.channel for m in getattr(tables, "mechanism", []) or []]
+        if channels:
+            pkg["mechanism_channels"] = channels
+            pkg["mechanism_methods"] = ["did_on_m"]
+
+    if pkg["main_p"] is None:
+        for key, val in results.items() if isinstance(results, Mapping) else []:
+            if not isinstance(val, Mapping):
+                continue
+            for pk in ("pval", "p", "pvalue", "p_value"):
+                if pk in val:
+                    try:
+                        pkg["main_p"] = float(val[pk])
+                        pkg["main_col"] = pkg["main_col"] or str(key)
+                    except (TypeError, ValueError):
+                        continue
+                    break
+            if pkg["main_p"] is not None:
+                break
+
+    # ── slots the robustness runner can fill ────────────────────────────
+    if tests:
+        pkg["slots"]["robust_matrix"] = f"稳健性矩阵（{len(tests)} 项）"
+    for slot, needles in (
+        ("parallel_trends", ("parallel", "trend")),
+        ("placebo", ("placebo",)),
+        ("psm", ("psm", "propensity")),
+        ("hetero", ("hetero", "异质")),
+    ):
+        test = _find_test(tests, *needles)
+        if test is not None:
+            pkg["slots"][slot] = str(getattr(test, "test_name", slot))
+
+    # ── figure gate, measured rather than asserted ──────────────────────
+    placebo = _find_test(tests, "placebo")
+    placebo_p = getattr(placebo, "did_pval", None) if placebo is not None else None
+    event_rows = results.get("event_study_data") if isinstance(results, Mapping) else None
+    if isinstance(event_rows, list) or placebo_p is not None:
+        from scripts.research_framework.gold_tables import figure_gate_from_event_study
+
+        pkg["figure_gate"] = figure_gate_from_event_study(
+            event_rows if isinstance(event_rows, list) else [],
+            placebo_tail_p=placebo_p,
+        )
+
     pkg["dropped"] = [
-        {"slot": "desc", "reason": "enhanced_pipeline 未生成变量定义表，须设计轨补全"},
-        {"slot": "facts_before_reg", "reason": "流水线未跑回归前结构事实表"},
-        {"slot": "tighter_compare", "reason": "未自动跑 within / 更局部 FE 梯子"},
-        {"slot": "mechanism", "reason": "流水线未估计处理→独立 M；写稿前必须补机制表"},
-        {"slot": "sample_flow", "reason": "未记录逐步流失 n"},
-        {"slot": "placebo", "reason": "未跑随机安慰剂密度"},
-        {"slot": "exclusive", "reason": "未跑排他政策"},
-        {"slot": "psm", "reason": "未跑 PSM；有排他金融政策时可保留此 dropped"},
-        {"slot": "hetero", "reason": "未跑两条异质"},
+        {"slot": name, "reason": _DROP_REASONS.get(name, "未跑")}
+        for name in (*GOLD_SLOTS, *CORE_OVERLAY_SLOTS)
+        if not _slot_filled(pkg["slots"], name)
     ]
-    # Honest: core still fails mechanism_required — that is the point.
     return pkg
 
 

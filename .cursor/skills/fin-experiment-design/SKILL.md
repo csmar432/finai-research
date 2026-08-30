@@ -33,6 +33,12 @@ python -m scripts.core.empirical_package scaffold --mode core --unit firm
 python -m scripts.core.empirical_package audit output/fin-refinement/empirical_package.json
 ```
 
+实证轨跑一遍就能把能算的格填上（结构事实 / 逐步 / 更紧 / 样本流；机制须自己点名渠道）：
+
+```bash
+python -m scripts.research_framework.enhanced_pipeline --topic "..." --mechanism 渠道列名
+```
+
 `empirical_package.json` 最低要求：`y_construct` / `x_construct`、每件控制的 `variable_jobs`（中文 `table_row` + 接到本题 Y 的 `job` + 非贴纸 `basis`）、黄金八格（缺格写 `dropped` 理由）、政策 DID 还要独立于电池的 `mechanism_channels` 与 `figure_gate`。政策 DID 不得 `dropped: mechanism`。交稿是合取：主栏显著 ∧ 控制有职务 ∧ 活机制表 ∧ 图干净。
 
 ## 前置条件

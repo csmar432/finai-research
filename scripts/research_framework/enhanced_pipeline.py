@@ -45,7 +45,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import pandas as pd
 
@@ -76,6 +76,9 @@ class PipelineContext:
 
     # Modern DID Results
     modern_did_results: dict[str, Any] = field(default_factory=dict)
+
+    # Gold-slot tables (structure facts / stepwise / tighter / sample flow / T→M)
+    gold_tables: Any = None
 
     # Robustness
     robustness_report: Any = None
@@ -153,6 +156,7 @@ class EnhancedPipeline:
         explore: bool = False,
         allow_demo: bool = False,
         panel_path: str | Path | None = None,
+        mechanism_vars: Sequence[str] = (),
         **kwargs,
     ):
         self.topic = topic
@@ -172,6 +176,8 @@ class EnhancedPipeline:
         self.explore = bool(explore or kwargs.get("explore", False))
         self.allow_demo = bool(allow_demo or kwargs.get("allow_demo", False))
         self.panel_path = panel_path or kwargs.get("panel_path")
+        # Named mechanism channels. Never auto-invented: the caller names M.
+        self.mechanism_vars = list(mechanism_vars or kwargs.get("mechanism_vars") or ())
         self.enable_hitl = enable_hitl
         self.hitl_timeout = hitl_timeout
         # 审批通过回调：签名 on_gate_approved(stage_name: str, ctx: PipelineContext)
@@ -740,7 +746,7 @@ class EnhancedPipeline:
             from scripts.research_framework.report_generator import ReportGenerator
             from scripts.research_framework.base import ProvenanceTracker
 
-            tracker = ProvenanceTracker(output_dir=str(self.output_dir))
+            tracker = ProvenanceTracker()
 
             gen = ReportGenerator(
                 output_dir=str(self.output_dir),
@@ -1060,6 +1066,9 @@ class EnhancedPipeline:
             # 审批通过 → 推送 DID 策略可视化（平行趋势图等）
             self._notify_gate_approved("step2_did_strategy", gate_result.get("feedback", "") if gate_result else "")
 
+        # Step 2b: 黄金八格实跑表（结构事实 / 逐步 / 更紧 / 样本流 / T→M）
+        self.step2b_gold_tables()
+
         # Step 3: 稳健性检验
         self.step3_robustness()
         _log.info("[Step 3] 稳健性检验完成")
@@ -1137,6 +1146,66 @@ class EnhancedPipeline:
         _log.info(f"=" * 60)
 
         return self.ctx
+
+    _GROUP_CANDIDATES = ("esg_high", "treat", "treated", "treatment", "group")
+
+    def _pick_group_var(self, df: pd.DataFrame) -> str | None:
+        """Find the 0/1 *group* column; ``did`` is the interaction, not the group."""
+        for col in self._GROUP_CANDIDATES:
+            if col in df.columns:
+                return col
+        return None
+
+    def step2b_gold_tables(self) -> Any:
+        """Run the gold-slot ladder so the package carries tables, not excuses."""
+        df = self.ctx.df
+        if df is None or df.empty:
+            _log.info("[Step 2b] 无面板，跳过黄金八格")
+            return None
+
+        group = self._pick_group_var(df)
+        if group is None or "post" not in df.columns:
+            _log.info("[Step 2b] 缺组别/时期列，跳过黄金八格（need group + post）")
+            return None
+
+        x_vars = [
+            c
+            for c in ("lev", "size", "tangibility", "mb", "cash_ratio")
+            if c in df.columns and c not in self.mechanism_vars
+        ]
+        try:
+            from scripts.research_framework.gold_tables import build_gold_tables
+
+            tables = build_gold_tables(
+                df,
+                y_var="roa",
+                treat_var=group,
+                time_var="post",
+                unit_col="ticker",
+                year_col="year",
+                x_vars=x_vars,
+                mechanism_vars=self.mechanism_vars,
+            )
+        except Exception as exc:
+            _log.warning("[Step 2b] 黄金八格失败: %s", exc)
+            self.ctx.step_results["step2b"] = {"status": "error", "error": str(exc)}
+            return None
+
+        self.ctx.gold_tables = tables
+        slots = tables.to_slots()
+        try:
+            md_path = self.output_dir / "GOLD_TABLES.md"
+            md_path.write_text(tables.to_markdown(), encoding="utf-8")
+            self.ctx.step_results["step2b"] = {
+                "status": "ok",
+                "slots": sorted(slots),
+                "markdown": str(md_path),
+            }
+            _log.info("[Step 2b] ✅ 黄金八格：%s → %s", sorted(slots), md_path)
+        except OSError as exc:
+            self.ctx.step_results["step2b"] = {"status": "ok", "slots": sorted(slots)}
+            _log.warning("[Step 2b] 表已算出但写盘失败: %s", exc)
+        return tables
 
     def _write_empirical_package(self) -> Path | None:
         """Emit an honest empirical_package.json after DID + robustness.
@@ -1350,6 +1419,14 @@ def _cli_main():
         default="",
         help="Path to local panel (csv/parquet/dta); checked before FINAI_EMPIRICAL_DATA_ROOT",
     )
+    parser.add_argument(
+        "--mechanism",
+        nargs="*",
+        default=[],
+        metavar="M",
+        help="Named mechanism channels (columns). Never auto-invented; "
+             "an M that is also a control is refused.",
+    )
     args = parser.parse_args()
 
     print(f"\n{'='*60}")
@@ -1375,6 +1452,7 @@ def _cli_main():
         explore=args.explore,
         allow_demo=args.allow_demo,
         panel_path=args.panel or None,
+        mechanism_vars=args.mechanism,
     )
 
     ctx = pipeline.run()

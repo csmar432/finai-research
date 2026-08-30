@@ -187,9 +187,15 @@ def test_empty_scaffold_cli_shape():
     assert "placebo" not in pkg["slots"]
 
 
-def test_writing_pre_gate_does_not_search_shared_output_by_default():
-    """Default writing track must not pick up a leftover output/*.json."""
+def test_writing_pre_gate_searches_where_empirics_writes_the_package(tmp_path: Path):
+    """Stage 6 → Stage 7 contract: the gate must look where empirics drops it."""
     from scripts.core.empirical_package import EmpiricalPackageReport
+    from scripts.research_framework.enhanced_pipeline import EnhancedPipeline
+
+    written = EnhancedPipeline(
+        topic="ESG", output_dir=tmp_path / "run", enable_hitl=False
+    )._write_empirical_package()
+    assert written is not None, "empirics must emit a package after DID + robustness"
 
     cfg = AgentPipelineConfig(topic="t")
     pipeline = AgentPipeline(cfg)
@@ -198,9 +204,7 @@ def test_writing_pre_gate_does_not_search_shared_output_by_default():
 
     def _check(**kwargs):
         seen["dirs"] = [Path(p) for p in (kwargs.get("search_dirs") or [])]
-        return EmpiricalPackageReport(
-            passed=True, skipped=True, summary_message="skip"
-        )
+        return EmpiricalPackageReport(passed=True, skipped=True, summary_message="skip")
 
     with patch(
         "scripts.core.empirical_package.check_empirical_package",
@@ -217,8 +221,16 @@ def test_writing_pre_gate_does_not_search_shared_output_by_default():
     ):
         pipeline._run_writing_pre_gate(result, "理论综述，无回归结果。")
 
-    assert Path("output") not in seen.get("dirs", [])
-    assert Path("output/fin-refinement") in seen.get("dirs", [])
+    # enhanced_pipeline defaults to output/; the default gate must cover that dir.
+    import inspect
+
+    default_out = Path(
+        str(inspect.signature(EnhancedPipeline.__init__).parameters["output_dir"].default)
+    )
+    assert written.name == "empirical_package.json"
+    assert (default_out / written.name) in {
+        d / written.name for d in seen.get("dirs", [])
+    }
     assert result.quality_reports["writing_pre_gate"]["passed"] is True
 
 

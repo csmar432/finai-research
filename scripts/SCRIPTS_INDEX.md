@@ -10,14 +10,14 @@
 | 分类 | 数量 | 说明 |
 |------|------|------|
 | 🚀 Entry Points (`scripts/*.py`) | 106 | 顶级入口脚本（含 CLI） |
-| 📦 Core Modules (`scripts/core/`) | 110 | 核心库（被其他模块导入）|
-| 📊 Research Framework (`scripts/research_framework/`) | 59 | 计量方法模块 |
+| 📦 Core Modules (`scripts/core/`) | 111 | 核心库（被其他模块导入）|
+| 📊 Research Framework (`scripts/research_framework/`) | 60 | 计量方法模块 |
 | 🧭 Research Directions (`scripts/research_directions/`) | 15 | 研究方向领域 |
-| 🧪 Tests (`tests/`) | 677 | 测试文件 |
+| 🧪 Tests (`tests/`) | 679 | 测试文件 |
 | 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
-| **合计（仅 Python 文件）** | **967** | 不含 MCP / docs / tests fixtures |
+| **合计（仅 Python 文件）** | **971** | 不含 MCP / docs / tests fixtures |
 
-> 自动生成于 2026-08-09
+> 自动生成于 2026-08-31
 ---
 
 ## 一、Entry Points · 用户入口
@@ -57,6 +57,7 @@
 || `empirical_agent.py` | `python scripts/empirical_agent.py` | 智能实证分析 Agent（自动诊断 + 调参） |
 || `empirical_advisor.py` | via class | 实证分析顾问（5级调参策略，被 `empirical_agent.py` 使用） |
 || `core/empirical_package.py` | `python -m scripts.core.empirical_package audit FILE` | 实证包契约 + 写稿合取门（黄金八格 / 控制职务 / 机制分列 / 图门） |
+|| `research_framework/gold_tables.py` | via class | 黄金八格实跑表（结构事实 / 逐步 / 更紧 / 样本流 / 处理→M） |
 || `econometrics_extended.py` | `python scripts/econometrics_extended.py` | 核心计量引擎（DID / OLS / PSM / GMM / Heckman 等） |
 
 ### 1.4 金融分析
@@ -219,4 +220,4 @@ report_*.py           # 报告生成（小写下划线）
 
 ---
 
-*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-08-09（自动对账）
+*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-08-31（自动对账）
