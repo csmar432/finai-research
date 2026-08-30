@@ -1447,7 +1447,7 @@ class AgentPipeline:
         except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
             pass
 
-    # ── W1-W4 Writing Pre-Gate ──────────────────────────────────────────────
+    # ── W1-W5 Writing Pre-Gate ──────────────────────────────────────────────
     @staticmethod
     def _extract_baseline_for_pre_gate(result: "AgentPipelineResult") -> dict | None:
         """Pull real DID/OLS baseline stats if the writing payload carries them.
@@ -1499,7 +1499,7 @@ class AgentPipeline:
         }
 
     def _run_writing_pre_gate(self, result: AgentPipelineResult, writing_text: str) -> None:
-        """Run W1-W4 static quality gates before the writing stage is marked complete.
+        """Run W1-W5 static quality gates before the writing stage is marked complete.
 
         Fail-closed: import/API failures mark the gate as not passed (no silent greenlight).
         """
@@ -1571,6 +1571,27 @@ class AgentPipeline:
                 "passed": False,
             }
 
+        try:
+            from scripts.core.empirical_package import check_empirical_package
+
+            out_raw = getattr(self.config, "output_dir", None)
+            search_dirs = [
+                Path("output/fin-refinement"),
+                Path("output/fin-experiments"),
+            ]
+            if out_raw:
+                out = Path(str(out_raw))
+                search_dirs = [out, out / "fin-refinement", out / "fin-experiments", *search_dirs]
+            reports["empirical_package"] = check_empirical_package(
+                manuscript=writing_text,
+                search_dirs=search_dirs,
+            ).to_gate_dict()
+        except Exception as exc:
+            reports["empirical_package"] = {
+                "summary_message": f"[empirical_package] failed: {exc}",
+                "passed": False,
+            }
+
         blocked = False
         for key, report in reports.items():
             if not isinstance(report, dict):
@@ -1586,12 +1607,12 @@ class AgentPipeline:
 
         if not blocked:
             result.quality_reports["writing_pre_gate"] = {
-                "summary_message": "W1-W4 writing pre-gate passed",
+                "summary_message": "W1-W5 writing pre-gate passed",
                 "passed": True,
             }
         else:
             result.quality_reports["writing_pre_gate"] = {
-                "summary_message": "W1-W4 writing pre-gate blocked",
+                "summary_message": "W1-W5 writing pre-gate blocked",
                 "passed": False,
             }
 
@@ -2161,7 +2182,7 @@ class AgentPipeline:
                     result.quality_reports["writing"] = qg
                 if arr:
                     result.auto_review_reports["writing"] = arr
-            # ── W1-W4 writing pre-gate: reference / negative-result / manuscript quality ──
+            # ── W1-W5 writing pre-gate: refs / data / negative-result / empirical package ──
             if writing_text:
                 self._run_writing_pre_gate(result, writing_text)
 

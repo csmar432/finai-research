@@ -234,7 +234,8 @@ output/                           # 输出目录
 | `scripts/register_mcp_servers.py --list` | 列出 `{{MCP_COUNT}}` 个 MCP 服务器注册状态（首次必须跑）|
 | `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
 | `scripts/research_framework/pipeline.py` | 实证 demo TWFE + design scaffold（非写作轨）|
-| `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID）|
+| `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID；写出 `empirical_package.json`）|
+| `scripts/core/empirical_package.py` | 实证包写稿门（黄金八格 / 控制职务 / 机制分列 / 图门）|
 | `scripts/research_framework/modern_did.py` | 现代 DID 库（import，无独立 CLI）|
 | `scripts/research_framework/fin_charts.py` | 专业金融图表 |
 | `scripts/research_framework/report_generator.py` | LaTeX 论文生成 |
@@ -309,6 +310,7 @@ output/                           # 输出目录
 | 4. 实证设计 scaffold | `scripts/research_framework/pipeline.py` | `--mode design` |
 | 5. 数据获取 | `scripts/universal_data_fetcher.py` | MCP / local `data/` |
 | 5.5 实证回归 | `scripts/research_framework/enhanced_pipeline.py` | `python -m ...enhanced_pipeline` |
+| 5.6 实证包写稿门 | `scripts/core/empirical_package.py` | `python -m scripts.core.empirical_package audit FILE` |
 | 6. 论文写作 | `scripts/agent_pipeline.py` | `--topic "..." --use-hitl` |
 | 7. Review | `scripts/core/llm_reviewer.py` | `--draft <path>` |
 | Checkpoint 工具 | `scripts/checkpoint.py` | `from scripts.checkpoint import InteractivePipelineCheckpoint` |

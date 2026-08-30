@@ -21,6 +21,19 @@ trigger: "设计实证方案|实验设计|研究设计|实证方法"
 | `ROBUSTNESS_PLAN.md` | 稳健性检验方案 | 必须 |
 | `ENDOGENEITY_PLAN.md` | 内生性处理方案 | 必须 |
 | `EXECUTION_CHECKLIST.md` | 实验执行检查清单 | 必须 |
+| `empirical_package.json` | 实证包契约（表台阶 / 控制职务 / 机制 / 图门） | 必须 |
+
+## 实证包（先问后填）
+
+选控制、写机制前先走十问，不要抄例 JSON 的渠道名：
+
+```bash
+python -m scripts.core.empirical_package questions
+python -m scripts.core.empirical_package scaffold --mode core --unit firm
+python -m scripts.core.empirical_package audit output/fin-refinement/empirical_package.json
+```
+
+`empirical_package.json` 最低要求：`y_construct` / `x_construct`、每件控制的 `variable_jobs`（中文 `table_row` + 接到本题 Y 的 `job` + 非贴纸 `basis`）、黄金八格（缺格写 `dropped` 理由）、政策 DID 还要独立于电池的 `mechanism_channels` 与 `figure_gate`。政策 DID 不得 `dropped: mechanism`。交稿是合取：主栏显著 ∧ 控制有职务 ∧ 活机制表 ∧ 图干净。
 
 ## 前置条件
 

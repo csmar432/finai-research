@@ -384,7 +384,7 @@ from .vuong_test import (
     vuong_linear_vs_logit,
 )
 
-# W1-W4 gates (design doc / data checker / negative result / ref validator / manuscript quality)
+# W1-W5 gates (design / data / negative result / refs / manuscript / empirical package)
 
 # ─────────────────────────────────────────────────────────────────────────────
 __all__ = [

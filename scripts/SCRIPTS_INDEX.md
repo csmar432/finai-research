@@ -56,6 +56,7 @@
 ||------|------|------|
 || `empirical_agent.py` | `python scripts/empirical_agent.py` | 智能实证分析 Agent（自动诊断 + 调参） |
 || `empirical_advisor.py` | via class | 实证分析顾问（5级调参策略，被 `empirical_agent.py` 使用） |
+|| `core/empirical_package.py` | `python -m scripts.core.empirical_package audit FILE` | 实证包契约 + 写稿合取门（黄金八格 / 控制职务 / 机制分列 / 图门） |
 || `econometrics_extended.py` | `python scripts/econometrics_extended.py` | 核心计量引擎（DID / OLS / PSM / GMM / Heckman 等） |
 
 ### 1.4 金融分析

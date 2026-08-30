@@ -40,6 +40,7 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 from dataclasses import dataclass, field
@@ -1062,6 +1063,7 @@ class EnhancedPipeline:
         # Step 3: 稳健性检验
         self.step3_robustness()
         _log.info("[Step 3] 稳健性检验完成")
+        self._write_empirical_package()
 
         # Step 4: Validation Gates（纯算法，无需人工）
         if self.enable_validation_gates:
@@ -1135,6 +1137,40 @@ class EnhancedPipeline:
         _log.info(f"=" * 60)
 
         return self.ctx
+
+    def _write_empirical_package(self) -> Path | None:
+        """Emit an honest empirical_package.json after DID + robustness.
+
+        Missing gold slots stay ``dropped`` so the writing pre-gate cannot
+        pretend a single TWFE table is a complete policy-DID package.
+        """
+        try:
+            import os
+
+            # Parallel pytest workers share ./output; do not drop a failing
+            # scaffold there or writing-pre-gate tests pick it up.
+            if os.environ.get("PYTEST_CURRENT_TEST"):
+                try:
+                    if Path(self.output_dir).resolve() == Path("output").resolve():
+                        return None
+                except OSError:
+                    return None
+
+            from scripts.core.empirical_package import package_from_pipeline_ctx
+
+            pkg = package_from_pipeline_ctx(self.ctx)
+            path = self.output_dir / "empirical_package.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(pkg, ensure_ascii=False, indent=2, default=str),
+                encoding="utf-8",
+            )
+            self.ctx.step_results["empirical_package"] = str(path)
+            _log.info("[empirical_package] wrote %s", path)
+            return path
+        except Exception as exc:
+            _log.warning("[empirical_package] skip write: %s", exc)
+            return None
 
     def _check_dof_warning(self) -> bool:
         """检查自由度警告。"""
@@ -1345,7 +1381,6 @@ def _cli_main():
     print(pipeline.summary())
 
     # Persist manifest
-    import json
     manifest_path = Path(args.output) / "enhanced_manifest.json"
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(
