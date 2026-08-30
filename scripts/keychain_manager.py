@@ -10,9 +10,9 @@
     api_key = get_secret("DEEPSEEK_API_KEY")  # 可返回空字符串
     if not api_key:
         # 在 host agent (Cursor/Claude Code/Codex) 模式下，
-        # host agent 本身有 LLM，pipeline 会降级到 MockTemplateEngine。
+        # host agent 本身可以在当前对话中继续；CLI 不会自动进入 Mock。
         # 这里仅记录到日志，不再 raise。
-        logger.warning("DEEPSEEK_API_KEY 未配置，将使用 host agent 或 MockTemplateEngine")
+        logger.warning("DEEPSEEK_API_KEY 未配置，可由 host agent 对话继续或配置外部 LLM")
 
 环境：
   macOS   — 使用 security CLI (需要 scripts.keychain_setup 先注册)

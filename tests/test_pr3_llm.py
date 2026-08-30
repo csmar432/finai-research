@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
 
 from scripts.core.mock_template_engine import (
@@ -128,8 +130,8 @@ def test_content_contains_no_hallucinated_data():
 # ─── AIRouter Integration Test ──────────────────────────────────────────────────
 
 
-def test_airouter_initializes_mock_fallback():
-    """AIRouter 初始化后应有 _mock_fallback 属性。"""
+def test_airouter_mock_fallback_is_opt_in():
+    """AIRouter must not enable Mock unless the caller explicitly opts in."""
     from scripts.ai_router import AIRouter
     router = AIRouter(use_cache=False)
 
@@ -137,8 +139,11 @@ def test_airouter_initializes_mock_fallback():
     router._lazy_init()
 
     assert hasattr(router, "_mock_fallback"), "AIRouter should have _mock_fallback attribute"
-    # mock_fallback 可以是 None（如果导入失败）或 MockTemplateEngine
-    # 两者都是合法状态
+    assert router._mock_fallback is None
+
+    allowed = AIRouter(use_cache=False, allow_mock=True)
+    allowed._lazy_init()
+    assert allowed._mock_fallback is not None
 
 
 def test_airouter_status_includes_mock():
@@ -147,15 +152,16 @@ def test_airouter_status_includes_mock():
     router = AIRouter(use_cache=False)
     status = router.status()
 
-    # status 应该有 mock_template 条目
+    # status should expose the explicit opt-in state
     assert "mock_template" in status, f"Expected 'mock_template' in status keys: {list(status.keys())}"
+    assert "未启用" in status["mock_template"]
 
 
 # ─── Smoke Test: End-to-end via AIRouter ──────────────────────────────────────
 
 
-def test_airouter_chat_uses_mock_when_all_backends_fail():
-    """当所有后端都不可用时，AIRouter 应返回 mock_template 内容。"""
+def test_airouter_chat_uses_mock_only_when_explicitly_allowed():
+    """当所有后端都不可用时，Mock 必须由调用方明确授权。"""
     import os
     # 若存在任何 LLM key，跳过（因为可能实际调用成功，而非 mock）
     has_key = any([
@@ -168,7 +174,7 @@ def test_airouter_chat_uses_mock_when_all_backends_fail():
 
     from scripts.ai_router import AIRouter
 
-    router = AIRouter(use_cache=False)
+    router = AIRouter(use_cache=False, allow_mock=True)
     result = router.chat(
         "生成一个关于碳排放权交易的论文大纲",
         task="paper_cn",
@@ -185,3 +191,17 @@ def test_airouter_chat_uses_mock_when_all_backends_fail():
     if result.model_used == "mock_template":
         assert "[MOCK" in result.response
         assert len(result.response) > 50
+
+
+def test_airouter_does_not_auto_mock_when_backends_fail():
+    """Default routing must surface backend failure instead of returning a template."""
+    from scripts.ai_router import AIRouter
+
+    router = AIRouter(use_cache=False)
+    router._lazy_init()
+    router._ollama = None
+    with pytest.raises(RuntimeError, match="未自动进入 Mock"):
+        with patch.object(
+            router.bridge, "call", side_effect=RuntimeError("backend down")
+        ):
+            router.chat("生成一个测试大纲", task="paper_cn")

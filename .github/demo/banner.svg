@@ -1,151 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">FinAI Research Workflow</title>
+  <desc id="desc">Evidence-first infrastructure for economic and financial research</desc>
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0e1a"/>
-      <stop offset="50%" stop-color="#071520"/>
-      <stop offset="100%" stop-color="#0a1525"/>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
     </linearGradient>
-    <linearGradient id="bar" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0a4a4a"/>
-      <stop offset="100%" stop-color="#1a4a2e"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
   </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">FinAI Research Workflow</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Evidence-first infrastructure for economic and financial research</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
+  <g>
+    <rect x="48" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="48" y="190" width="5" height="92" rx="2.5" fill="#a35b20"/>
+    <text x="70" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Idea</text>
 
-  <!-- Background -->
-  <rect width="1280" height="200" fill="url(#bg)" rx="8"/>
+  </g>
+  <g>
+    <defs><marker id="arrowm212-236-228-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="212" y1="236" x2="228" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm212-236-228-236)"/>
 
-  <!-- Top accent bar -->
-  <rect x="0" y="0" width="1280" height="3" fill="url(#bar)"/>
+  </g>
+  <g>
+    <rect x="236" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="236" y="190" width="5" height="92" rx="2.5" fill="#3659a2"/>
+    <text x="258" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Literature</text>
 
-  <!-- Left: Main title -->
-  <text x="32" y="82"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="40" font-weight="700" fill="#e8f4fd" letter-spacing="-0.5">
-    FinResearch Agent
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm400-236-416-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="400" y1="236" x2="416" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm400-236-416-236)"/>
 
-  <!-- Tagline -->
-  <text x="32" y="116"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="17" fill="#5ba8c8" letter-spacing="0.2">
-    ???? AI ???????
-  </text>
+  </g>
+  <g>
+    <rect x="424" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="424" y="190" width="5" height="92" rx="2.5" fill="#3659a2"/>
+    <text x="446" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Novelty</text>
 
-  <!-- Subtitle -->
-  <text x="32" y="145"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="13" fill="#3d6a80">
-    From research idea ? paper draft ? LaTeX submission � fully automated
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm588-236-604-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="588" y1="236" x2="604" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm588-236-604-236)"/>
 
-  <!-- Separator line -->
-  <line x1="600" y1="20" x2="600" y2="180" stroke="#1a3a6e" stroke-width="1" opacity="0.5"/>
+  </g>
+  <g>
+    <rect x="612" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="612" y="190" width="5" height="92" rx="2.5" fill="#0b7a53"/>
+    <text x="634" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Design</text>
 
-  <!-- Stats grid (right side) -->
-  <!-- Row 1 -->
-  <text x="660" y="50"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#4ade80">
-    43
-  </text>
-  <text x="660" y="70"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    MCP Servers
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm776-236-792-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="776" y1="236" x2="792" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm776-236-792-236)"/>
 
-  <text x="790" y="50"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#60a5fa">
-    49
-  </text>
-  <text x="790" y="70"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    Econometric Methods
-  </text>
+  </g>
+  <g>
+    <rect x="800" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="800" y="190" width="5" height="92" rx="2.5" fill="#0b7a53"/>
+    <text x="822" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Data</text>
 
-  <text x="970" y="50"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#f472b6">
-    17
-  </text>
-  <text x="970" y="70"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    AI Skills
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm964-236-980-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="964" y1="236" x2="980" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm964-236-980-236)"/>
 
-  <!-- Row 2 -->
-  <text x="660" y="110"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#facc15">
-    41
-  </text>
-  <text x="660" y="130"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    Journal Templates
-  </text>
+  </g>
+  <g>
+    <rect x="988" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="988" y="190" width="5" height="92" rx="2.5" fill="#0b7a53"/>
+    <text x="1010" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Analysis</text>
 
-  <text x="790" y="110"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#34d399">
-    8
-  </text>
-  <text x="790" y="130"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    Pipeline Stages
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm1152-236-1168-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1152" y1="236" x2="1168" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1152-236-1168-236)"/>
 
-  <text x="970" y="110"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="26" font-weight="700" fill="#c084fc">
-    3
-  </text>
-  <text x="970" y="130"
-        font-family="'SF Pro Text','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="11" fill="#5ba8c8">
-    AI Tools Supported
-  </text>
+  </g>
+  <g>
+    <rect x="1176" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1176" y="190" width="5" height="92" rx="2.5" fill="#a35b20"/>
+    <text x="1198" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Draft</text>
 
-  <!-- Bottom pill badges -->
-  <rect x="660" y="152" width="70" height="22" rx="11" fill="#0a4a4a" opacity="0.8"/>
-  <text x="695" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
-        font-size="11" fill="#4ade80" text-anchor="middle">
-    Python
-  </text>
+  </g>
+  <g>
+    <defs><marker id="arrowm1340-236-1356-236" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1340" y1="236" x2="1356" y2="236" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1340-236-1356-236)"/>
 
-  <rect x="740" y="152" width="85" height="22" rx="11" fill="#1a1f3e" opacity="0.8"/>
-  <text x="782" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
-        font-size="11" fill="#60a5fa" text-anchor="middle">
-    Cursor/Claude
-  </text>
+  </g>
+  <g>
+    <rect x="1364" y="190" width="164" height="92" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1364" y="190" width="5" height="92" rx="2.5" fill="#71558b"/>
+    <text x="1386" y="241.0" fill="#10231c" font-size="14" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Review</text>
 
-  <rect x="835" y="152" width="58" height="22" rx="11" fill="#1a0f2e" opacity="0.8"/>
-  <text x="864" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
-        font-size="11" fill="#c084fc" text-anchor="middle">
-    MIT
-  </text>
-
-  <rect x="905" y="152" width="80" height="22" rx="11" fill="#0a2e0a" opacity="0.8"/>
-  <text x="945" y="167" font-family="'SF Pro Text',system-ui,sans-serif"
-        font-size="11" fill="#4ade80" text-anchor="middle">
-    18+ Stars
-  </text>
-
-  <!-- GitHub star -->
-  <text x="1140" y="140"
-        font-family="'SF Pro Display','Segoe UI',system-ui,-apple-system,sans-serif"
-        font-size="48" font-weight="800" fill="#e8f4fd" text-anchor="middle">
-    ?
-  </text>
+  </g>
+  <g>
+    <rect x="166" y="340" width="286" height="34" rx="17" fill="#0b7a53" fill-opacity="0.08" stroke="#0b7a53" stroke-opacity="0.72"/>
+    <text x="309.0" y="362" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">43 data sources</text>
+  </g>
+  <g>
+    <rect x="492" y="340" width="286" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="635.0" y="362" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">58 method modules</text>
+  </g>
+  <g>
+    <rect x="818" y="340" width="286" height="34" rx="17" fill="#a35b20" fill-opacity="0.08" stroke="#a35b20" stroke-opacity="0.72"/>
+    <text x="961.0" y="362" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">18 research skills</text>
+  </g>
+  <g>
+    <rect x="1144" y="340" width="286" height="34" rx="17" fill="#71558b" fill-opacity="0.08" stroke="#71558b" stroke-opacity="0.72"/>
+    <text x="1287.0" y="362" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">30 journal templates</text>
+  </g>
+<text x="800" y="460" fill="#607168" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">human checkpoints · provenance · no silent Mock</text>
 </svg>

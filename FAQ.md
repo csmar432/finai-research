@@ -533,19 +533,17 @@ PYTHONIOENCODING=utf-8
 
 ---
 
-### Q29: `scripts/run_research.py` 报 `FileNotFoundError`
+### Q29: `scripts/run_research.py` 与 HITL
 
-**原因**：`run_research.py` 可能是占位符脚本。
+**说明**：`run_research.py` 是可视化队列 Runner，默认开启阶段 HITL（outline/literature/draft）。非 TTY 批处理需 `--no-use-hitl` 或 `FINAI_NO_HITL=1`。
 
-**解决**：
+**推荐主入口**（写作流水线）：
 ```bash
-# 使用主入口
-python3 scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响"
+python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响" --use-hitl
 
-# 或使用交互式向导
-python3 scripts/setup_wizard.py --interactive
+# 或先澄清再写作
+python scripts/start_research.py --topic "..." --continue --use-hitl
 ```
-
 ---
 
 ### Q30: 如何获取帮助？

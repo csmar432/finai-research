@@ -18,7 +18,7 @@
   version   = {0.2.0a0},
   url       = {https://github.com/csmar432/finai-research},
   doi       = {10.5281/zenodo.21262689},
-  note      = {43 MCP data sources, 47 econometric methods, 17 AI skills, 30 journal templates}
+  note      = {43 MCP data sources, 58 econometric methods, 18 AI skills, 30 journal templates}
 }
 ```
 

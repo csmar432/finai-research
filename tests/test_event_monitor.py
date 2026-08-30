@@ -57,14 +57,23 @@ atexit.register(_restore_dedup)
 
 @pytest.fixture
 def monitor():
-    """Fresh EventMonitor with defaults."""
-    return EventMonitor(check_interval=300, auto_trigger=False)
+    """Fresh EventMonitor with explicitly enabled demonstration events."""
+    return EventMonitor(check_interval=300, auto_trigger=False, allow_mock=True)
 
 
 @pytest.fixture
 def auto_monitor():
-    """EventMonitor with auto_trigger=True."""
-    return EventMonitor(check_interval=300, auto_trigger=True)
+    """EventMonitor with auto-trigger and explicit demonstration events."""
+    return EventMonitor(check_interval=300, auto_trigger=True, allow_mock=True)
+
+
+def test_default_monitor_fails_closed_without_sources(monkeypatch):
+    monkeypatch.delenv("TUSHARE_TOKEN", raising=False)
+    monitor = EventMonitor(config_path="/does/not/exist.json")
+
+    assert monitor.check_earnings_calendar() == []
+    assert monitor.check_macro_releases() == []
+    assert monitor.check_policy_keywords() == []
 
 
 @pytest.fixture

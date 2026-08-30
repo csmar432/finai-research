@@ -114,7 +114,9 @@ class InteractionResult:
     - action_needed: 下一步操作类型
     - questions: 需要询问用户的问题（用于 AI agent 对话交互）
     - limitations: 受限功能清单
-    - can_proceed: 是否可以继续研究
+    - options: 可供调用方展示给用户的结构化选项
+    - recommended_option: 推荐选项的 id；Mock 永远不会被设为推荐
+    - can_proceed: 派生属性，等价于 not needs_input and action_needed == \"proceed\"
     """
     needs_input: bool = False
     action_needed: str = "proceed"   # "proceed" | "ask_api_key" | "ask_llm_confirm"
@@ -123,6 +125,27 @@ class InteractionResult:
     api_keys_to_add: list[dict] = field(default_factory=list)   # [{name, url}]
     fix_steps: list[str] = field(default_factory=list)
     llm_available: bool = True
+    options: list[dict[str, Any]] = field(default_factory=list)
+    recommended_option: str = ""
+
+    @property
+    def can_proceed(self) -> bool:
+        return (not self.needs_input) and self.action_needed == "proceed"
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a host-agent-friendly representation of the interaction."""
+        return {
+            "needs_input": self.needs_input,
+            "action_needed": self.action_needed,
+            "questions": self.questions,
+            "limitations": self.limitations,
+            "api_keys_to_add": self.api_keys_to_add,
+            "fix_steps": self.fix_steps,
+            "llm_available": self.llm_available,
+            "options": self.options,
+            "recommended_option": self.recommended_option,
+            "can_proceed": self.can_proceed,
+        }
 
 
 def _get_canvas_url() -> str:
@@ -805,6 +828,9 @@ class AgentPipelineConfig:
     auto_dashboard: bool = True
     output_dir: Any = None
     llm_use_cache: bool = True
+    strict_llm: bool = True
+    allow_mock: bool = False
+    skip_health: bool = False
     # Research direction branch (None = general academic paper)
     direction: str | None = None  # "green_finance", "digital_finance", "carbon_economics", etc.
     # Auto-generate architecture diagrams for PPT use (default off)
@@ -858,9 +884,10 @@ class AgentPipelineResult:
     did_chart_paths: list = field(default_factory=list)
     # 自动生成的架构图路径列表（PPT 用, 仅当 config.auto_arch_diagrams=True）
     arch_diagram_paths: list = field(default_factory=list)
-    # 是否因 LLM 不可用而降级到 MockTemplateEngine（pipeline 已执行但产出物为 mock）
+    # 是否因用户明确授权而使用 MockTemplateEngine（产出物为 mock）
     llm_fallback_used: bool = False
     llm_status: str = ""
+    interaction: InteractionResult | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -868,6 +895,8 @@ class AgentPipelineResult:
                 "topic": self.config.topic,
                 "venue": self.config.venue,
                 "research_field": self.config.research_field,
+                "strict_llm": self.config.strict_llm,
+                "allow_mock": self.config.allow_mock,
             },
             "success": self.success,
             "llm_fallback_used": self.llm_fallback_used,
@@ -886,6 +915,7 @@ class AgentPipelineResult:
             "hitl_approvals": [a.stage for a in (self.hitl_approvals or [])],
             "visualization": str(self.visualization_path) if self.visualization_path else None,
             "errors": self.errors,
+            "interaction": self.interaction.to_dict() if self.interaction else None,
         }
 
 
@@ -1086,7 +1116,7 @@ class AgentPipeline:
                         print(f"       缺失: {g}")
             print()
 
-        # 数据缺口的想法：询问用户
+        # 数据缺口 / 需授权：TTY 真问；非 TTY fail-closed（不默默丢掉缺口）
         if gap:
             print("\033[91m" + "  ❌ 有数据缺口的想法（需补充数据或跳过）:" + "\033[0m")
             for idea in gap:
@@ -1097,11 +1127,7 @@ class AgentPipeline:
                     for action in result.actions[:3]:
                         print(f"       → {action}")
             print()
-            print("  提示: 请在 data/ 目录补充所需数据文件，或更换研究方向")
-            print("  如需授权使用演示数据，请调用: checker.authorize_variable('{var_name}')")
-            print()
 
-        # 需授权的想法
         if auth_needed:
             print("\033[93m" + "  🔐 需要模拟数据授权的想法:" + "\033[0m")
             for idea in auth_needed:
@@ -1109,8 +1135,37 @@ class AgentPipeline:
                 print(f"     • {title}")
             print()
 
-        # 最终合并：可行 + 部分可行
         validated = available + partial
+        blocked = gap or auth_needed
+        if blocked:
+            if self._is_interactive_terminal():
+                print("  选项：1) 跳过缺口/需授权想法，仅用可行+部分可行继续")
+                print("        2) 停止流水线，先补充数据或更换方向")
+                try:
+                    choice = input("  你的选择 [1/2，默认 2]: ").strip() or "2"
+                except (EOFError, KeyboardInterrupt):
+                    choice = "2"
+                if choice not in ("1", "是", "y", "yes", "skip"):
+                    print("\033[91m  已停止：存在数据缺口/未授权模拟数据\033[0m")
+                    self._validated_ideas = []
+                    return []
+            else:
+                self._interaction = InteractionResult(
+                    needs_input=True,
+                    action_needed="ask_idea_data",
+                    questions=[
+                        f"有 {len(gap)} 个想法存在数据缺口、{len(auth_needed)} 个需模拟数据授权。"
+                        "请补充 data/、授权模拟数据后重试，或在 TTY 下选择跳过缺口。",
+                    ],
+                    limitations=["idea_data_gap", "idea_auth_needed"],
+                    llm_available=True,
+                )
+                print(
+                    "\033[91m  ⚠ Agent/非 TTY：存在数据缺口或需授权，已停止自动继续"
+                    "（请宿主向用户确认后重试）\033[0m"
+                )
+                self._validated_ideas = []
+                return []
 
         print("\033[96m" + "─" * 60 + "\033[0m")
         print(f"  最终通过验证的想法: {len(validated)}/{len(ideas)}个")
@@ -1147,6 +1202,7 @@ class AgentPipeline:
         self._gateway = LLMGateway(
             self._memory,
             use_cache=self.config.llm_use_cache,
+            allow_mock=self.config.allow_mock,
         )
 
         # Initialize citation verifier
@@ -1392,70 +1448,151 @@ class AgentPipeline:
             pass
 
     # ── W1-W4 Writing Pre-Gate ──────────────────────────────────────────────
+    @staticmethod
+    def _extract_baseline_for_pre_gate(result: "AgentPipelineResult") -> dict | None:
+        """Pull real DID/OLS baseline stats if the writing payload carries them.
+
+        Returns ``{"p": float, "coef": float, "did_type": str}`` or ``None``
+        when the writing track has no empirics (common — do not invent p=1.0).
+        """
+        candidates: list[Any] = []
+        for blob in (result.writing, result.refinement, result.outline):
+            if isinstance(blob, dict):
+                candidates.append(blob)
+                for key in ("regressions", "baseline", "main_result", "did"):
+                    nested = blob.get(key)
+                    if isinstance(nested, dict):
+                        candidates.append(nested)
+                    elif isinstance(nested, list) and nested and isinstance(nested[0], dict):
+                        candidates.append(nested[0])
+        for src in candidates:
+            p = src.get("p") or src.get("pvalue") or src.get("p_value") or src.get("baseline_p")
+            coef = src.get("coef") or src.get("coefficient") or src.get("baseline_coef")
+            if p is None or coef is None:
+                continue
+            try:
+                return {
+                    "p": float(p),
+                    "coef": float(coef),
+                    "did_type": src.get("did_type") or src.get("estimator") or "twfe",
+                }
+            except (TypeError, ValueError):
+                continue
+        return None
+
+    @staticmethod
+    def _as_gate_report(obj: Any, *, fail_closed_on_skip: bool = True) -> dict:
+        """Normalize gate return values to ``{passed, summary_message}`` dicts."""
+        if isinstance(obj, dict):
+            return {
+                "summary_message": str(obj.get("summary_message", "")),
+                "passed": bool(obj.get("passed", False)),
+                **{k: v for k, v in obj.items() if k not in ("passed", "summary_message")},
+            }
+        if hasattr(obj, "should_block_writing"):
+            passed = not bool(getattr(obj, "should_block_writing"))
+        else:
+            passed = bool(getattr(obj, "passed", False))
+        return {
+            "summary_message": str(getattr(obj, "summary_message", obj)),
+            "passed": passed,
+        }
+
     def _run_writing_pre_gate(self, result: AgentPipelineResult, writing_text: str) -> None:
-        """Run W1-W4 static quality gates before the writing stage is marked complete."""
+        """Run W1-W4 static quality gates before the writing stage is marked complete.
+
+        Fail-closed: import/API failures mark the gate as not passed (no silent greenlight).
+        """
         reports: dict[str, dict] = {}
 
         try:
             from scripts.research_framework.manuscript_quality_gate import check_manuscript
-            reports["manuscript_quality"] = check_manuscript(writing_text)._report  # type: ignore[attr-defined]
+            reports["manuscript_quality"] = self._as_gate_report(
+                check_manuscript(writing_text)
+            )
         except Exception as exc:
             reports["manuscript_quality"] = {
-                "summary_message": f"[manuscript_quality_gate] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[manuscript_quality_gate] failed: {exc}",
+                "passed": False,
             }
 
         try:
             from scripts.research_framework.reference_validator import validate_references
-            reports["reference_validator"] = validate_references(writing_text)._report  # type: ignore[attr-defined]
+            reports["reference_validator"] = self._as_gate_report(
+                validate_references(writing_text)
+            )
         except Exception as exc:
             reports["reference_validator"] = {
-                "summary_message": f"[reference_validator] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[reference_validator] failed: {exc}",
+                "passed": False,
             }
 
         try:
-            from scripts.research_framework.data_source_checker import check_data_sources
+            from scripts.data_source_checker import check_data_sources
             design_text = self._extract_stage_text(
                 getattr(result, "outline", None) or getattr(result, "refinement", None)
             )
-            reports["data_source_checker"] = check_data_sources(
-                writing_text, design_text=design_text
-            )._report  # type: ignore[attr-defined]
+            reports["data_source_checker"] = self._as_gate_report(
+                check_data_sources(writing_text, design_text=design_text)
+            )
         except Exception as exc:
             reports["data_source_checker"] = {
-                "summary_message": f"[data_source_checker] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[data_source_checker] failed: {exc}",
+                "passed": False,
             }
 
         try:
-            from scripts.research_framework.negative_result_handler import assess_result
-            if reports.get("manuscript_quality", {}).get("passed"):
-                reports["negative_result_handler"] = assess_result(
-                    baseline_p=1.0, baseline_coef=0.0, did_type="twfe"
-                )._report  # type: ignore[attr-defined]
+            # Negative-result gate needs *real* empirics. Writing track often has
+            # none — do not hardcode baseline_p=1.0 (that always blocks).
+            baseline = self._extract_baseline_for_pre_gate(result)
+            if baseline is None:
+                reports["negative_result_handler"] = {
+                    "summary_message": (
+                        "[negative_result_handler] skipped: no baseline "
+                        "regression stats on writing track (compat soft-pass)"
+                    ),
+                    "passed": True,
+                    "skipped": True,
+                }
+            elif reports.get("manuscript_quality", {}).get("passed"):
+                from scripts.research_framework.negative_result_handler import (
+                    assess_result,
+                )
+                reports["negative_result_handler"] = self._as_gate_report(
+                    assess_result(
+                        baseline_p=float(baseline["p"]),
+                        baseline_coef=float(baseline["coef"]),
+                        did_type=str(baseline.get("did_type") or "twfe"),
+                    )
+                )
         except Exception as exc:
             reports["negative_result_handler"] = {
-                "summary_message": f"[negative_result_handler] skipped: {exc}",
-                "passed": True,
+                "summary_message": f"[negative_result_handler] failed: {exc}",
+                "passed": False,
             }
 
         blocked = False
         for key, report in reports.items():
-            passed = report.get("passed", True) if isinstance(report, dict) else True
+            if not isinstance(report, dict):
+                report = {"summary_message": str(report), "passed": False}
+                reports[key] = report
+            passed = bool(report.get("passed", False))
+            result.quality_reports[f"writing_pre_gate/{key}"] = report
             if not passed:
                 blocked = True
                 result.errors.append(
                     f"[writing_pre_gate/{key}] {report.get('summary_message', 'blocked')}"
-                )
-                result.quality_reports[f"writing_pre_gate/{key}"] = (
-                    report if isinstance(report, dict) else {"passed": False}
                 )
 
         if not blocked:
             result.quality_reports["writing_pre_gate"] = {
                 "summary_message": "W1-W4 writing pre-gate passed",
                 "passed": True,
+            }
+        else:
+            result.quality_reports["writing_pre_gate"] = {
+                "summary_message": "W1-W4 writing pre-gate blocked",
+                "passed": False,
             }
 
     async def _parliament_review(self, paper_content: dict) -> dict:
@@ -1577,59 +1714,64 @@ class AgentPipeline:
         """
         start_time = time.time()
 
+        # Apply safety-relevant overrides before the pre-flight check.  In
+        # particular, an explicit ``allow_mock=True`` must be visible before
+        # deciding whether the run may proceed.
+        if topic:
+            self.config.topic = topic
+        for key, value in kwargs.items():
+            if hasattr(self.config, key):
+                setattr(self.config, key, value)
+
         # ── Pre-flight configuration check ─────────────────────────────────────────
-        # v2.1 改进（2026-07-12）：不要因为 LLM 不可用就 raise 阻断。
-        # 之前的设计在 Claude Code / Codex / Cursor 等 host agent 场景下会阻断整个
-        # pipeline（错误："LLM 不可用，无法进行论文写作和分析"），但这些场景下：
-        #   1. host agent 本身就是 LLM，能提供 LLM 能力（虽然 CLI 进程无法直接调用）
-        #   2. 用户可能用本地 Ollama 但 health_check 网络抖动误报
-        #   3. MockTemplateEngine 仍可生成结构化草稿，至少让 pipeline 跑通落盘
-        # 新行为：降级到 MockTemplateEngine，stderr 显式 [LLM FALLBACK] 提示，
-        #         绝不静默退化（CLAUDE.md 核心原则 #3）。
-        #
-        # v2.2 (2026-07-13): 新增 --strict-llm 行为：未配置 LLM 时直接退出码 4，
-        # 不再静默跑 MockTemplateEngine 并落盘占位文件（PR-1.4）。
+        # 外部 LLM 不可用时，先把选择返回给终端或 host agent：
+        #   1. Codex / Claude Code / Cursor 可以直接接管对话继续推进；
+        #   2. 用户可以配置外部 API 或 Ollama；
+        #   3. Mock 只有在显式 allow_mock 后才可使用，绝不自动降级。
         from scripts.health_check import run_diagnostic
+        _skip_health = bool(getattr(self.config, "skip_health", False))
         try:
-            diag = run_diagnostic()
+            diag = None if _skip_health else run_diagnostic()
         except Exception:
             diag = None
 
-        self._llm_actually_available = bool(diag and diag.llm_available)
+        self._llm_actually_available = True if _skip_health else bool(diag and diag.llm_available)
+        interaction = None
         if not self._llm_actually_available:
-            import sys as _sys
             _reason = (
-                "未配置 DEEPSEEK_API_KEY / RELAY_API_KEY 且 Ollama 未运行。"
+                "未配置可调用的外部 LLM，且 Ollama 未运行。"
                 if diag is None or not diag.llm_status
                 else f"原因：{diag.llm_status[:200]}"
             )
-            # 严格模式（默认开启）下，直接退出 4，避免下游脚本误读 mock 输出。
-            _strict = bool(getattr(self.config, "strict_llm", True))
-            if _strict:
-                print(
-                    "\n⚠️  [LLM FALLBACK] 未配置 LLM，严格模式下退出。\n"
-                    "    \n"
-                    f"    诊断：{_reason}\n"
-                    "    \n"
-                    "    解决方式（任选其一）：\n"
-                    "      1. 在 .env 写入 DEEPSEEK_API_KEY=sk-...\n"
-                    "      2. 运行 `ollama serve` 启用本地模型\n"
-                    "      3. 临时绕过：finai-pipeline --topic '...' （不要加 --strict-llm 关闭；\n"
-                    "         当前已默认开启，不需显式传）\n"
-                    "    \n"
-                    "    说明：Cursor / Claude Code / Codex 等 host agent 本身有 LLM，但 CLI\n"
-                    "    进程无法直接调用它。如需在 host agent 中跑 pipeline，请通过 MCP\n"
-                    "    反向调用或 host agent 端补全 LLM 反馈。\n",
-                    file=_sys.stderr,
-                )
-                return 4
+            interaction = self._check_and_suggest_setup(
+                topic or self.config.topic or "",
+                diag=diag,
+            )
+            self._interaction = interaction
+
+            if not self.config.allow_mock:
+                selected = None
+                if self._is_interactive_terminal():
+                    selected = self._handle_interactive(interaction)
+                if selected != "mock":
+                    return AgentPipelineResult(
+                        config=self.config,
+                        success=False,
+                        errors=[
+                            "未选择可用的 LLM 运行方式；未自动进入 Mock。",
+                            _reason,
+                        ],
+                        total_latency_ms=(time.time() - start_time) * 1000,
+                        llm_status=_reason,
+                        interaction=interaction,
+                    )
+                self.config.allow_mock = True
+
             print(
-                "\n⚠️  [LLM FALLBACK] 本次 pipeline 将降级到 MockTemplateEngine。\n"
-                "    产出物仍可落盘到 output/papers/，但内容是模板（带 [MOCK] 前缀），\n"
-                "    不是真实 LLM 生成。请配置 DEEPSEEK_API_KEY 或运行 `ollama serve`\n"
-                "    后重跑以获得真 LLM 输出。\n"
+                "\n⚠️  已明确授权 Mock 模式：仅用于演示/测试，产出物带 [MOCK] 标记，"
+                "不得作为真实研究结论。\n"
                 f"    诊断：{_reason}\n",
-                file=_sys.stderr,
+                file=sys.stderr,
             )
 
         self._ensure_initialized()
@@ -1731,13 +1873,46 @@ class AgentPipeline:
         # computed earlier in run() so the second health probe in
         # _check_and_suggest_setup doesn't re-run network checks.
         topic_for_check = (topic or self.config.topic or "")
-        ir = self._check_and_suggest_setup(topic_for_check, diag=diag)
+        ir = interaction or (
+            InteractionResult(needs_input=False, action_needed="proceed", llm_available=True)
+            if _skip_health
+            else self._check_and_suggest_setup(topic_for_check, diag=diag)
+        )
+        self._interaction = ir
 
-        # 仅在交互式终端中调用 input()（Cursor IDE）
-        # Claude Code / Codex 等 AI agent 环境：返回 InteractionResult，
-        # 由 AI agent 在对话中向用户询问
-        if self._is_interactive_terminal():
-            self._handle_interactive(ir)
+        # 交互式终端：input()；Agent/非 TTY：needs_input 时 fail-closed（不静默继续）
+        # interaction 非 None 表示 LLM 预检块已处理过，勿重复拦截（例如已选 mock）
+        _setup_already_handled = interaction is not None
+        if self._is_interactive_terminal() and not _setup_already_handled:
+            selected = self._handle_interactive(ir)
+            if selected == "exit":
+                return AgentPipelineResult(
+                    config=self.config,
+                    success=False,
+                    errors=["用户取消或未选择可用的 LLM/配置路径。"],
+                    total_latency_ms=(time.time() - start_time) * 1000,
+                    interaction=ir,
+                )
+        elif ir.needs_input and not _setup_already_handled:
+            # Agent 宿主必须读取 interaction.questions 并向用户转述；此处停止推进
+            qs = "; ".join(ir.questions) if ir.questions else ir.action_needed
+            print(
+                f"\n⚠️  需要用户确认（非 TTY / Agent 模式，已停止自动继续）:\n"
+                f"   action={ir.action_needed}\n"
+                f"   {qs}\n"
+                f"   limitations={ir.limitations or []}\n",
+                file=sys.stderr,
+            )
+            return AgentPipelineResult(
+                config=self.config,
+                success=False,
+                errors=[
+                    f"InteractionResult.needs_input=True ({ir.action_needed}); "
+                    "host agent must ask the user before retrying.",
+                ],
+                total_latency_ms=(time.time() - start_time) * 1000,
+                interaction=ir,
+            )
 
         # ── 可视化延迟启动 ─────────────────────────────────────────────────
         # 可视化服务器在用户首个 HITL gate 触发后才启动。
@@ -2002,7 +2177,116 @@ class AgentPipeline:
                 if arr:
                     result.auto_review_reports["refinement"] = arr
 
-        # ── DID Chart Auto-generation ─────────────────────────────────────────────
+        # ── P0-1: End-to-end PDF / post-run bookkeeping ─────────────────────────
+        # (Previously dead-indented under _auto_generate_arch_diagrams after
+        # `return arch_paths` — never executed.)
+        pdf_outline: dict = {}
+        if result.outline:
+            pdf_outline.update(result.outline if isinstance(result.outline, dict) else {})
+        if result.writing:
+            writing_data = result.writing if isinstance(result.writing, dict) else {}
+            pdf_outline.setdefault("content", writing_data)
+        if result.refinement:
+            refined = result.refinement if isinstance(result.refinement, dict) else {}
+            pdf_outline.setdefault("content", refined)
+
+        if _REPORT_GEN_AVAILABLE and pdf_outline and orchestrator_result.hitl_paused_at is None:
+            import logging as _ap_log
+            _ap_log = _ap_log.getLogger("agent_pipeline")
+            try:
+                _out = kwargs.get("output_dir") or self.config.output_dir or "output/papers/"
+                rg = ReportGenerator(output_dir=_out)
+                tex_path = rg.generate_paper(
+                    topic=self.config.topic or "",
+                    outline=pdf_outline,
+                    data=None,
+                    regressions=None,
+                    references=None,
+                    journal=self.config.venue or "经济研究",
+                    output_dir=_out,
+                )
+                result.paper_tex_path = str(tex_path)
+                _ap_log.info("Paper TeX/PDF generated: %s", tex_path)
+                pdf_path = Path(tex_path).with_suffix(".pdf")
+                if pdf_path.exists():
+                    _ap_log.info(
+                        "PDF available: %s (%.1f KB)",
+                        pdf_path,
+                        pdf_path.stat().st_size / 1024,
+                    )
+            except Exception as e:
+                _ap_log.warning("Paper PDF generation failed: %s", e)
+                result.errors.append(f"[PDF] generate_paper: {e}")
+
+        if self._evolution:
+            result.evolution_events = self._evolution.get_history()
+
+        if self._hitl_gate:
+            result.hitl_approvals = self._hitl_gate.get_history()
+
+        if _PROVENANCE_AVAILABLE and self.provenance_chain:
+            try:
+                self._register_provenance_result("outline", result.outline)
+                self._register_provenance_result("literature", result.literature)
+                self._register_provenance_result("plotting", result.plotting)
+                self._register_provenance_result("writing", result.writing)
+                self._register_provenance_result("refinement", result.refinement)
+            except Exception:  # noqa: S110
+                pass
+
+        if self.telemetry:
+            self.telemetry.ended_at = time.time()
+            try:
+                self.telemetry.save()
+            except Exception:  # noqa: S110
+                pass
+
+        if self.config.visualize:
+            result.visualization_path = self._generate_visualization(
+                steps, orchestrator_result
+            )
+
+        _wc = result.writing.get("total_word_count", 0) if isinstance(result.writing, dict) else 0
+        if _wc > 0 and _wc < 3000:
+            print(
+                f"\n⚠️  [字数警告] 论文正文仅 {_wc} 字，低于最低要求 3000 字。\n",
+                file=sys.stderr,
+            )
+            result.errors.append(f"[字数] 正文仅 {_wc} 字，低于 3000 字最低要求")
+
+        _pdf_err = [e for e in result.errors if "[PDF]" in e]
+        if _pdf_err and self._llm_actually_available:
+            print(
+                f"\n⚠️  [PDF] {' '.join(_pdf_err)}\n"
+                f"    请安装 LaTeX 工具链；.tex 文件可能已生成，可手动编译。\n",
+                file=sys.stderr,
+            )
+
+        if orchestrator_result.hitl_paused_at is not None:
+            result.success = False
+            result.errors.append(
+                f"HITL paused at {orchestrator_result.hitl_paused_at.value}; "
+                "call approve_step + resume_pipeline to continue."
+            )
+
+        _done_count = sum(
+            1 for s in orchestrator_result.stage_results.values()
+            if getattr(s, "status", None) in ("approved", "max_iterations", "ok", "success")
+        )
+        _total_count = len(steps)
+        _canvas_detail = f"总耗时: {(time.time() - start_time):.1f}s"
+        if orchestrator_result.hitl_paused_at:
+            _canvas_detail += f" | HITL@{orchestrator_result.hitl_paused_at.value}"
+        elif self._llm_actually_available:
+            _canvas_detail += " | LLM: 可用"
+        else:
+            _canvas_detail += " | ⚠️ LLM: Mock/受限"
+        _print_canvas_hint(
+            f"研究工作流{'暂停' if orchestrator_result.hitl_paused_at else '已完成'}！"
+            f"({_done_count}/{_total_count} 阶段)",
+            _canvas_detail,
+        )
+
         return result
 
     def _auto_generate_did_charts(
@@ -2170,143 +2454,76 @@ class AgentPipeline:
 
         return arch_paths
 
-    # ── P0-1: End-to-end PDF generation ────────────────────────────────────
-        # Collect writing content for paper generation
-        paper_content: dict = {}
-        if result.outline:
-            paper_content.update(result.outline if isinstance(result.outline, dict) else {})
-        if result.writing:
-            writing_data = result.writing if isinstance(result.writing, dict) else {}
-            paper_content.setdefault("content", writing_data)
-        if result.refinement:
-            refined = result.refinement if isinstance(result.refinement, dict) else {}
-            paper_content.setdefault("content", refined)
-
-        if _REPORT_GEN_AVAILABLE and paper_content:
-            import logging as _ap_log
-            _ap_log = _ap_log.getLogger("agent_pipeline")
-            try:
-                output_dir = kwargs.get("output_dir") or self.config.output_dir or "output/papers/"
-                rg = ReportGenerator(output_dir=output_dir)
-                tex_path = rg.generate_paper(
-                    topic=self.config.topic or "",
-                    outline=paper_content,
-                    data=None,
-                    regressions=None,
-                    references=None,
-                    journal=self.config.venue or "经济研究",
-                    output_dir=output_dir,
-                )
-                result.paper_tex_path = str(tex_path)
-                _ap_log.info("Paper PDF generated: %s", tex_path)
-                pdf_path = tex_path.with_suffix(".pdf")
-                if pdf_path.exists():
-                    _ap_log.info("PDF available: %s (%.1f KB)",
-                                pdf_path, pdf_path.stat().st_size / 1024)
-            except Exception as e:
-                _ap_log.warning("Paper PDF generation failed: %s", e)
-                result.errors.append(f"[PDF] generate_paper: {e}")
-
-        # Evolution events
-        if self._evolution:
-            result.evolution_events = self._evolution.get_history()
-
-        # HITL approvals
-        if self._hitl_gate:
-            result.hitl_approvals = self._hitl_gate.get_history()
-
-        # ── Provenance: register final results ───────────────────────────────────
-        if _PROVENANCE_AVAILABLE and self.provenance_chain:
-            try:
-                self._register_provenance_result("outline", result.outline)
-                self._register_provenance_result("literature", result.literature)
-                self._register_provenance_result("plotting", result.plotting)
-                self._register_provenance_result("writing", result.writing)
-                self._register_provenance_result("refinement", result.refinement)
-            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-                pass
-
-        # ── Telemetry: record total duration ────────────────────────────────────
-        if self.telemetry:
-            self.telemetry.ended_at = time.time()
-            try:
-                self.telemetry.save()
-            except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-                pass
-
-        # Visualization
-        if self.config.visualize:
-            result.visualization_path = self._generate_visualization(
-                steps, orchestrator_result
-            )
-
-        # ── P0-3: 字数校验 — 防止论文过短 ─────────────────────────────────
-        # 检查 writing 阶段输出是否达到最低字数要求（中文 CSSCI 通常 ≥8000 字）
-        _wc = result.writing.get("total_word_count", 0) if isinstance(result.writing, dict) else 0
-        if _wc > 0 and _wc < 3000:
-            import sys as _sys_wc
-            _warn_msg = (
-                f"\n⚠️  [字数警告] 论文正文仅 {_wc} 字，低于最低要求 3000 字。\n"
-                f"    建议增加引言、文献综述或机制分析章节内容。\n"
-                f"    如需完整论文草稿，请配置 DEEPSEEK_API_KEY 后重跑。\n"
-            )
-            print(_warn_msg, file=_sys_wc.stderr)
-            result.errors.append(f"[字数] 正文仅 {_wc} 字，低于 3000 字最低要求")
-
-        # ── P1-2: PDF 编译状态 — 缺少工具链时报错而非静默跳过 ───────────
-        _pdf_err = [e for e in result.errors if "[PDF]" in e]
-        if _pdf_err and self._llm_actually_available:
-            # LLM 生成了内容但 PDF 编译失败，打印警告
-            import sys as _sys_pdf
-            print(
-                f"\n⚠️  [PDF] {' '.join(_pdf_err)}\n"
-                f"    请安装 LaTeX 工具链（Mac: brew install --cask mactex；Linux: apt install texlive-full）\n"
-                f"    .tex 文件已生成，可手动编译。\n",
-                file=_sys_pdf.stderr,
-            )
-
-        # ── Canvas 可视化完成提示 ─────────────────────────────────────
-        _done_count = sum(
-            1 for s in orchestrator_result.stage_results.values()
-            if getattr(s, "status", None) == "approved"
-        )
-        _total_count = len(steps)
-        _canvas_detail = f"总耗时: {(time.time() - start_time):.1f}s"
-        if self._llm_actually_available:
-            _canvas_detail += " | LLM: 可用"
-        else:
-            _canvas_detail += " | ⚠️ LLM: Mock 降级（内容为模板，非真实论文）"
-        _print_canvas_hint(
-            f"研究工作流已完成！({_done_count}/{_total_count} 阶段)",
-            _canvas_detail,
-        )
-
-        return result
-
     def _is_interactive_terminal(self) -> bool:
-        """判断是否在交互式终端中运行（而非被 AI agent 调用）。
+        """判断是否可安全调用 input()。
 
-        只有 Cursor IDE 的终端（或有 TTY 的本地 shell）才进行 input() 交互。
-        Claude Code / Codex 通过对话交互，不调用 input()。
+        有 TTY 的本地 shell（含 Cursor 终端、纯终端）→ True。
+        无 TTY 的 Agent 宿主（Claude Code / Codex / Cursor Agent）→ False，
+        由 InteractionResult 交宿主对话询问（fail-closed，不静默继续）。
         """
-        # 优先用平台检测
         try:
-            from scripts.core.platform import get_platform_info
-            info = get_platform_info()
-            if not info.is_cursor:
-                return False
-        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
-            pass
-
-        # 备用：检查是否有 TTY
-        try:
-            import sys
             if hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
                 return True
-        except Exception:  # noqa: S110  # pipeline must not crash on optional feature failures
+        except Exception:  # noqa: S110
             pass
-
         return False
+
+    @staticmethod
+    def _llm_mode_options(platform: str) -> tuple[list[dict[str, Any]], str]:
+        """Build explicit LLM choices for a terminal or host agent.
+
+        The direct-conversation option delegates the next step to the current
+        Codex / Claude Code / Cursor conversation. It is not a fake CLI LLM
+        call, and Mock is deliberately never selected as the recommendation.
+        """
+        host_detected = platform in {"cursor", "claude_code", "codex"}
+        options = [
+            {
+                "id": "host_agent",
+                "label": "当前对话模型直接推进",
+                "description": (
+                    "由 Codex / Claude Code / Cursor 在当前对话中继续，"
+                    "不需要额外 API Key；CLI 不会伪装成已调用外部模型。"
+                ),
+                "recommended": host_detected,
+            },
+            {
+                "id": "external_api",
+                "label": "配置外部 LLM API",
+                "description": "配置 DEEPSEEK_API_KEY 或 RELAY_API_KEY 后由 CLI 调用。",
+                "recommended": not host_detected,
+            },
+            {
+                "id": "ollama",
+                "label": "使用 Ollama 本地模型",
+                "description": "启动 ollama serve 并准备本地模型。",
+                "recommended": False,
+            },
+            {
+                "id": "mock",
+                "label": "Mock 模式（仅演示/测试）",
+                "description": "必须明确选择；输出是模板，不能用于研究结论。",
+                "recommended": False,
+            },
+            {
+                "id": "exit",
+                "label": "退出并补齐配置",
+                "description": "不生成研究产出，修复后重新运行。",
+                "recommended": False,
+            },
+        ]
+        return options, "host_agent" if host_detected else "external_api"
+
+    @staticmethod
+    def _format_options(options: list[dict[str, Any]], recommended: str) -> list[str]:
+        """Format structured options for terminal prompts without losing ids."""
+        lines = []
+        for index, option in enumerate(options, start=1):
+            mark = " ← 推荐" if option["id"] == recommended else ""
+            lines.append(
+                f"  ({index}) {option['label']}{mark} — {option['description']}"
+            )
+        return lines
 
     def _check_and_suggest_setup(
         self,
@@ -2339,15 +2556,41 @@ class AgentPipeline:
         try:
             from scripts.health_check import run_diagnostic, print_diagnostic
         except ImportError:
-            print("⚠️  无法导入 health_check 模块，跳过自检")
-            return InteractionResult(needs_input=False, action_needed="proceed")
+            print("⚠️  无法导入 health_check 模块，等待明确选择")
+            options, recommended = self._llm_mode_options("unknown")
+            return InteractionResult(
+                needs_input=True,
+                action_needed="ask_llm_confirm",
+                questions=[
+                    "无法加载健康检查；不会自动进入 Mock。",
+                    *self._format_options(options, recommended),
+                ],
+                limitations=["健康检查模块不可用"],
+                llm_available=False,
+                options=options,
+                recommended_option=recommended,
+            )
 
         if diag is None:
             try:
                 result = run_diagnostic()
             except Exception as e:
-                print(f"⚠️  健康检查执行失败: {e}，跳过自检继续运行")
-                return InteractionResult(needs_input=False, action_needed="proceed")
+                print(f"⚠️  健康检查执行失败: {e}，等待明确选择")
+                options, recommended = self._llm_mode_options("unknown")
+                return InteractionResult(
+                    needs_input=True,
+                    action_needed="ask_llm_confirm",
+                    questions=[
+                        "健康检查未能完成；不会自动进入 Mock。",
+                        "请选择当前对话模型、外部 API、Ollama、Mock（仅演示/测试）或退出。",
+                        *self._format_options(options, recommended),
+                    ],
+                    limitations=["健康检查失败"],
+                    fix_steps=["重新运行健康检查，或检查本地依赖与网络。"],
+                    llm_available=False,
+                    options=options,
+                    recommended_option=recommended,
+                )
         else:
             result = diag
 
@@ -2398,7 +2641,7 @@ class AgentPipeline:
                 f"检测到 {len(api_key_problems)} 个 API Key 缺失，受限功能：{', '.join(limitations)}。"
                 f" 是否现在补充配置？",
                 "",
-                "  (1) 是 — 我来帮你打开 .env.local 配置",
+                "  (1) 是 — 我来帮你打开 .env.local 配置 ← 推荐",
                 "  (2) 否 — 跳过，使用已有工具继续（部分数据功能受限）",
             ]
             self._limitation_note = "；".join(limitations) if limitations else ""
@@ -2410,22 +2653,38 @@ class AgentPipeline:
                 api_keys_to_add=api_keys_to_add,
                 fix_steps=fix_steps,
                 llm_available=True,
+                options=[
+                    {
+                        "id": "configure_data_api",
+                        "label": "补充数据源 API Key",
+                        "description": "解除受限数据功能。",
+                        "recommended": True,
+                    },
+                    {
+                        "id": "continue_limited",
+                        "label": "跳过并继续",
+                        "description": "继续工作，但缺失数据源相关功能不可用。",
+                        "recommended": False,
+                    },
+                ],
+                recommended_option="configure_data_api",
             )
 
         # ── 情形 C：LLM 不可用 ──────────────────────────────────
+        options, recommended = self._llm_mode_options(getattr(result, "platform", "unknown"))
         questions = [
-            "LLM 不可用，无法进行论文写作和分析。",
+            "未检测到可调用的外部 LLM；不会自动进入 Mock。",
+            "如果当前运行在 Codex / Claude Code / Cursor 中，推荐直接由当前对话模型继续推进。",
             "当前受限功能：",
         ]
         for step in fix_steps[:4]:
             questions.append(f"  {step}")
         questions.extend([
             "",
-            "是否继续？（系统将使用已有工具工作，但无法调用 LLM 生成文本）",
-            "  (1) 继续 — 继续工作（受限模式）",
-            "  (2) 退出 — 修复后重新启动",
+            "请选择后续运行方式：",
+            *self._format_options(options, recommended),
         ])
-        self._limitation_note = "LLM 不可用"
+        self._limitation_note = "LLM 不可用；等待明确选择"
         return InteractionResult(
             needs_input=True,
             action_needed="ask_llm_confirm",
@@ -2433,15 +2692,17 @@ class AgentPipeline:
             limitations=["LLM 不可用"],
             fix_steps=fix_steps,
             llm_available=False,
+            options=options,
+            recommended_option=recommended,
         )
 
-    def _handle_interactive(self, ir: InteractionResult) -> None:
+    def _handle_interactive(self, ir: InteractionResult) -> str | None:
         """终端入口专用：在终端中使用 input() 与用户交互。
 
         此方法仅在脚本直接运行时（而非被 AI agent 调用时）使用。
         """
         if not ir.needs_input:
-            return
+            return "proceed"
 
         print()
         print(bold(cyan("─" * 72)))
@@ -2454,29 +2715,57 @@ class AgentPipeline:
             try:
                 response = input(bold("  你的选择: ")).strip().lower()
             except (EOFError, KeyboardInterrupt):
-                response = "2"
+                response = ""
             print()
 
             if response in ("1", "是", "好", "y", "yes", "ok"):
                 self._do_api_key_setup(ir)
+                return "configure_data_api"
             else:
                 lim = '、'.join(ir.limitations) if ir.limitations else "无"
                 print(f"  {dim('跳过配置，受限功能：' + lim)}")
                 print()
+                return "continue_limited"
 
         elif ir.action_needed == "ask_llm_confirm":
             for q in ir.questions:
-                print(f"  {red(q) if 'LLM 不可用' in q else '  ' + q}")
+                print(f"  {red(q) if 'LLM' in q or 'Mock' in q else '  ' + q}")
             print()
+            recommended = ir.recommended_option or "exit"
+            option_ids = {
+                str(index): option["id"]
+                for index, option in enumerate(ir.options, start=1)
+            }
+            labels = {option["id"]: option["label"] for option in ir.options}
+            recommended_index = next(
+                (
+                    index
+                    for index, option in enumerate(ir.options, start=1)
+                    if option["id"] == recommended
+                ),
+                "5",
+            )
             try:
-                response = input(bold("  你的选择 [默认: 1 继续]: ")).strip().lower()
+                response = input(
+                    bold(f"  你的选择 [默认: {recommended_index}]: ")
+                ).strip().lower()
             except (EOFError, KeyboardInterrupt):
                 print()
-                return
-            if response in ("2", "退出", "no", "n"):
+                return "exit"
+            selected = option_ids.get(response, response or recommended)
+            if selected == "mock":
+                print(f"  {yellow('已明确选择 Mock：仅用于演示/测试，不得作为研究结论。')}")
+                print()
+                return "mock"
+            if selected == "exit" or selected not in labels:
                 print(f"  {dim('退出。请修复 LLM 配置后重新启动。')}")
-                return
+                print()
+                return "exit"
+            print(f"  {dim('已选择：' + labels[selected] + '。请由对应模型/服务继续后再运行流水线。')}")
             print()
+            return selected
+
+        return None
 
     def _do_api_key_setup(self, ir: InteractionResult) -> None:
         """执行 API Key 配置向导（终端）。"""
@@ -2515,7 +2804,7 @@ class AgentPipeline:
                 continue
 
         if not opened:
-            print(f"  {dim('请手动打开: ' + env_hint)}")
+            print(f"  {dim('请手动打开: ' + str(env_file))}")
 
         print()
         print(f"  {dim('配置完成并重启后，下次运行会自动识别')}")
@@ -2635,7 +2924,7 @@ class AgentPipeline:
 
         print()
         print(f"  阶段 '{stage.value}' 已拒绝。反馈：{feedback[:100]}")
-        print(f"  请修改内容后重新提交审批，或直接退出。")
+        print("  下一步：调用 resume_pipeline(paused_result) 将带着反馈重跑该阶段。")
         print()
 
         return result
@@ -2659,28 +2948,29 @@ class AgentPipeline:
 
     def resume_pipeline(self, paused_result) -> "AgentPipelineResult":
         """
-        Resume a HITL-paused pipeline after approval.
+        Resume a HITL-paused pipeline after approve_step / reject_step.
 
-        Usage:
-            # After user approves via approve_step():
-            result = pipeline.resume_pipeline(orchestrator_result)
+        - After approve: continues from the next stage (keeps approved output).
+        - After reject: re-runs the rejected stage with feedback injected.
+        - If the gate is still PENDING: returns the paused result unchanged.
         """
-        # Re-run orchestrator from the pause point
         if self._orchestrator is None:
             return AgentPipelineResult(
                 config=self.config,
                 success=False,
                 errors=["Orchestrator not initialized"],
             )
+        steps = self._current_steps or []
         orchestrator_result = self._orchestrator.resume_pipeline(
-            paused_result, self._current_steps
+            paused_result, steps
         )
 
-        # Extract results (same as run() for completed stages)
         result = AgentPipelineResult(
             config=self.config,
             orchestrator_result=orchestrator_result,
-            total_latency_ms=0.0,  # incremental
+            total_latency_ms=float(
+                getattr(orchestrator_result, "total_latency_ms", 0.0) or 0.0
+            ),
             success=orchestrator_result.success,
             llm_fallback_used=not self._llm_actually_available,
             llm_status=(
@@ -2691,18 +2981,70 @@ class AgentPipeline:
         )
 
         for stage, stage_result in orchestrator_result.stage_results.items():
-            stage_error = getattr(stage_result, 'error', None) or getattr(stage_result, 'err', None)
-            stage_status = getattr(stage_result, 'status', None)
+            stage_error = getattr(stage_result, "error", None) or getattr(
+                stage_result, "err", None
+            )
+            stage_status = getattr(stage_result, "status", None)
             if stage_error:
                 result.errors.append(f"[{stage}] {stage_error}")
             elif stage_status in ("failed", "error"):
-                result.errors.append(f"[{stage}] stage failed with status={stage_status}")
+                result.errors.append(
+                    f"[{stage}] stage failed with status={stage_status}"
+                )
 
+        if PipelineStage.OUTLINE in orchestrator_result.stage_results:
+            result.outline = orchestrator_result.stage_results[
+                PipelineStage.OUTLINE
+            ].output
+        if PipelineStage.LITERATURE in orchestrator_result.stage_results:
+            result.literature = orchestrator_result.stage_results[
+                PipelineStage.LITERATURE
+            ].output
         if PipelineStage.WRITING in orchestrator_result.stage_results:
-            result.writing = orchestrator_result.stage_results[PipelineStage.WRITING].output
-
+            result.writing = orchestrator_result.stage_results[
+                PipelineStage.WRITING
+            ].output
         if PipelineStage.REFINEMENT in orchestrator_result.stage_results:
-            result.refinement = orchestrator_result.stage_results[PipelineStage.REFINEMENT].output
+            result.refinement = orchestrator_result.stage_results[
+                PipelineStage.REFINEMENT
+            ].output
+
+        # Mirror run(): PDF only when the pipeline fully completes (no HITL pause).
+        if (
+            _REPORT_GEN_AVAILABLE
+            and orchestrator_result.hitl_paused_at is None
+            and orchestrator_result.success
+        ):
+            resume_pdf_outline: dict = {}
+            if result.outline and isinstance(result.outline, dict):
+                resume_pdf_outline.update(result.outline)
+            if result.writing and isinstance(result.writing, dict):
+                resume_pdf_outline.setdefault("content", result.writing)
+            if result.refinement and isinstance(result.refinement, dict):
+                resume_pdf_outline.setdefault("content", result.refinement)
+            if resume_pdf_outline:
+                try:
+                    _out = self.config.output_dir or "output/papers/"
+                    rg = ReportGenerator(output_dir=_out)
+                    tex_path = rg.generate_paper(
+                        topic=self.config.topic or "",
+                        outline=resume_pdf_outline,
+                        data=None,
+                        regressions=None,
+                        references=None,
+                        journal=self.config.venue or "经济研究",
+                        output_dir=_out,
+                    )
+                    result.paper_tex_path = str(tex_path)
+                except Exception as e:
+                    result.errors.append(f"[PDF] generate_paper: {e}")
+
+        if orchestrator_result.hitl_paused_at is not None:
+            result.success = False
+            result.errors.append(
+                f"HITL paused at {orchestrator_result.hitl_paused_at.value}; "
+                "call approve_step/reject_step + resume_pipeline to continue."
+            )
 
         return result
 
@@ -2979,8 +3321,12 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Note:
-  - 本脚本是主入口，自动选择合适的分析引擎
-  - 纯回归分析请使用: python scripts/research_framework/pipeline.py
+  - 本脚本是【写作轨】主入口（outline→literature→writing→refinement），不跑 DID/IV。
+  - 实证轨请另开：
+      design scaffold:  python scripts/research_framework/pipeline.py --mode design
+      real analysis:    python -m scripts.research_framework.enhanced_pipeline --topic "..."
+                        或 import scripts.research_framework.modern_did
+      demo TWFE only:   python scripts/research_framework/pipeline.py --mode full
 
 Examples:
   python scripts/agent_pipeline.py --topic "碳排放权交易对企业绿色创新的影响" --venue "经济研究"
@@ -3002,7 +3348,13 @@ Examples:
     )
     parser.add_argument(
         "--use-hitl", action="store_true",
-        help="启用 Human-in-the-Loop 审批门",
+        help="启用 Human-in-the-Loop 审批门（默认停在 outline/literature/draft）",
+    )
+    parser.add_argument(
+        "--hitl-stages",
+        type=str,
+        default=None,
+        help="逗号分隔的 HITL 阶段（默认 outline,literature,draft；需同时 --use-hitl）",
     )
     parser.add_argument(
         "--language", choices=["zh", "en"], default="zh",
@@ -3029,9 +3381,14 @@ Examples:
         action=argparse.BooleanOptionalAction,
         default=True,
         help=(
-            "默认开启：未配置 LLM 时直接退出码 4（避免静默跑 MockTemplateEngine 并落盘占位文件）。"
-            "用 --no-strict-llm 关闭，回归到 MockTemplateEngine 降级行为。"
+            "默认开启：未配置 LLM 时返回选择项并停止，不生成占位研究产出。"
+            "--no-strict-llm 只改变失败处理策略，不会授权 Mock。"
         ),
+    )
+    parser.add_argument(
+        "--allow-mock",
+        action="store_true",
+        help="明确授权 Mock 模式（仅演示/测试；不得用于研究结论）。",
     )
     parser.add_argument(
         "--skip-health",
@@ -3077,9 +3434,19 @@ Examples:
         ]
         for r in result.details.get("results", []):
             mark = "✅" if r["passed"] else "❌"
+            status = r.get("search_status", "?")
             lines.append(
-                f"- {mark} similarity={r['similarity']:.2f} — {r['idea']}"
+                f"- {mark} similarity={r['similarity']:.2f} "
+                f"(search={status}) — {r['idea']}"
             )
+            for hit in (r.get("overlaps") or [])[:3]:
+                doi = hit.get("doi") or ""
+                doi_bit = f" doi:{doi}" if doi else ""
+                lines.append(
+                    f"  - overlap={hit.get('similarity', 0):.2f} "
+                    f"{hit.get('year', '?')} | {hit.get('venue', '')[:50]} | "
+                    f"{(hit.get('title') or '')[:120]}{doi_bit}"
+                )
         if result.issues:
             lines += ["", "## Issues", ""]
             lines += [f"- {x}" for x in result.issues]
@@ -3096,9 +3463,13 @@ Examples:
         config.venue = args.venue
     if args.use_hitl:
         config.use_hitl = True
-    # v2.2 (2026-07-13): forward strict-llm/skip-health to pipeline config so
-    # PR-1.4 的 exit code 4 行为能正确触发（默认开启）。
+        if args.hitl_stages:
+            config.hitl_stages = [s.strip() for s in args.hitl_stages.split(",") if s.strip()]
+        else:
+            config.hitl_stages = ["outline", "literature", "draft"]
+    # Forward LLM safety controls to the pipeline config.
     config.strict_llm = bool(args.strict_llm)
+    config.allow_mock = bool(args.allow_mock)
     if args.skip_health:
         config.skip_health = True
     # v2.3 (2026-08-02): --auto-arch 启用 PLOTTING 阶段后的架构图自动生成
@@ -3108,6 +3479,40 @@ Examples:
     pipeline = AgentPipeline(config=config, use_langgraph=args.langgraph)
     result = pipeline.run(topic=args.topic, output_dir=output_dir)
 
+    interaction = getattr(result, "interaction", None)
+    if interaction and not result.success and not interaction.llm_available:
+        print("\n⚠️  未运行流水线：请先选择一种 LLM 运行方式。")
+        # Agent-host isolation: leave canonical skip/progress artifacts so the
+        # host does not freestyle a parallel pipeline outside FinAI.
+        try:
+            from scripts.core.agent_host_report import (
+                blockers_from_diag,
+                write_blocked_run,
+            )
+
+            write_blocked_run(
+                topic=args.topic or config.topic or "",
+                output_dir=output_dir,
+                skipped=blockers_from_diag(
+                    llm_available=False,
+                    llm_status=(
+                        "; ".join(result.errors[:3])
+                        if result.errors
+                        else "LLM unavailable; mock disabled"
+                    ),
+                    allow_mock=bool(config.allow_mock),
+                ),
+                completed_steps=["agent_pipeline preflight (blocked)"],
+                entry="scripts/agent_pipeline.py",
+                exit_code=4,
+            )
+            print(
+                f"   已写入 {Path(output_dir) / 'SKIPPED_CONFIG.md'} "
+                f"与 {Path(output_dir) / 'FINAL.md'}"
+            )
+        except Exception as exc:  # noqa: BLE001 — never mask exit 4
+            print(f"   (skip-report write failed: {exc})", file=sys.stderr)
+        return 4
     if result.success:
         print("\n✅ 流水线执行完成")
         return 0

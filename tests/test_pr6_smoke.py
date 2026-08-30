@@ -65,7 +65,7 @@ def test_pr3_mock_template_engine():
 def test_pr3_airouter_has_mock_fallback():
     from scripts.ai_router import AIRouter
 
-    router = AIRouter(use_cache=False)
+    router = AIRouter(use_cache=False, allow_mock=True)
     router._lazy_init()
     assert hasattr(router, "_mock_fallback")
     assert router._mock_fallback is not None

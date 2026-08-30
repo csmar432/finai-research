@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "finai-research-workflow"
-version = "0.2.0a0"
+version = "0.2.0a1"
 description = "经济金融领域 AI 学术研究工作流 — 论文写作（JF/JFE/RFS/经济研究/金融研究）与金融研报生成。集成 MCP 数据获取、因果推断（DID/IV/PSM/GMM）、LaTeX 排版和对抗性 review 循环。"
 readme = "README.md"
 license = {text = "MIT"}
@@ -148,7 +148,7 @@ knowledge = [
 ]
 
 sandbox = [
-    "e2b-code-interpreter>=2.0.0,<2.0",
+    "e2b-code-interpreter>=2.0.0,<3.0",
 ]
 
 browser = [
@@ -185,6 +185,7 @@ finai-lit-review = "scripts.cli:lit_review_cmd"
 # 与 PyPI 包名同名的别名，方便 wheel 安装用户直接调用
 finai-research-workflow = "scripts.cli:pipeline_cmd_wrapper"
 finai-doctor = "scripts.cli:doctor_cmd"
+finai-agent-host = "scripts.agent_host_entry:main"
 
 [project.urls]
 Homepage = "https://github.com/csmar432/finai-research"

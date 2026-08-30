@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Provenance chain</title>
+  <desc id="desc">Every reported number remains traceable to source, transform, validation, and artifact</desc>
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f5ef"/>
+      <stop offset="100%" stop-color="#efede5"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d8d6cd" stroke-width="1" opacity="0.30"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  <path d="M56 48h28v28H56z M63 55v14h14V55z" fill="#0b7a53" fill-rule="evenodd"/>
+  <text x="104" y="68" fill="#10231c" font-size="31" font-weight="720" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Provenance chain</text>
+  <text x="104" y="98" fill="#4f6259" font-size="15" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">Every reported number remains traceable to source, transform, validation, and artifact</text>
+  <text x="1544" y="65" fill="#4f6259" font-size="13" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FinAI Research Workflow · v0.2.0a1</text>
+  <text x="1544" y="91" fill="#607168" font-size="11" text-anchor="end" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">evidence first · fail closed · human review</text>
+  <line x1="56" y1="126" x2="1544" y2="126" stroke="#d8d6cd"/>
+  <g>
+    <rect x="70" y="330" width="240" height="124" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="70" y="330" width="5" height="124" rx="2.5" fill="#0b7a53"/>
+    <text x="92" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">SOURCE</text>
+    <text x="92" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">provider · query · timestamp</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm310-392-360-392" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="310" y1="392" x2="360" y2="392" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm310-392-360-392)"/>
+
+  </g>
+  <g>
+    <rect x="370" y="330" width="240" height="124" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="370" y="330" width="5" height="124" rx="2.5" fill="#3659a2"/>
+    <text x="392" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">RAW</text>
+    <text x="392" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">immutable snapshot · checksum</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm610-392-660-392" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="610" y1="392" x2="660" y2="392" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm610-392-660-392)"/>
+
+  </g>
+  <g>
+    <rect x="670" y="330" width="240" height="124" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="670" y="330" width="5" height="124" rx="2.5" fill="#a35b20"/>
+    <text x="692" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">TRANSFORM</text>
+    <text x="692" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">code version · parameters</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm910-392-960-392" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="910" y1="392" x2="960" y2="392" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm910-392-960-392)"/>
+
+  </g>
+  <g>
+    <rect x="970" y="330" width="240" height="124" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="970" y="330" width="5" height="124" rx="2.5" fill="#71558b"/>
+    <text x="992" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">VALIDATE</text>
+    <text x="992" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">schema · ranges · missingness</text>
+  </g>
+  <g>
+    <defs><marker id="arrowm1210-392-1260-392" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#829087"/></marker></defs>
+    <line x1="1210" y1="392" x2="1260" y2="392" stroke="#829087" stroke-width="1.6" marker-end="url(#arrowm1210-392-1260-392)"/>
+
+  </g>
+  <g>
+    <rect x="1270" y="330" width="240" height="124" rx="12" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="1270" y="330" width="5" height="124" rx="2.5" fill="#a63f3f"/>
+    <text x="1292" y="383.0" fill="#10231c" font-size="16" font-weight="680" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">ARTIFACT</text>
+    <text x="1292" y="412.0" fill="#4f6259" font-size="12.5" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">table · figure · manuscript</text>
+  </g>
+  <g>
+    <rect x="220" y="564" width="1160" height="132" rx="18" fill="#ffffff" stroke="#d8d6cd" stroke-width="1.2"/>
+    <rect x="236" y="551" width="244" height="26" rx="13" fill="#f7f5ef" stroke="#3659a2"/>
+    <text x="358.0" y="569" fill="#3659a2" font-size="12" font-weight="700" text-anchor="middle" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">REPRODUCIBILITY RECORD</text>
+  </g>
+  <g>
+    <rect x="256" y="610" width="220" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="366.0" y="632" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">provenance.json</text>
+  </g>
+  <g>
+    <rect x="526" y="610" width="220" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="636.0" y="632" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">manifest + hashes</text>
+  </g>
+  <g>
+    <rect x="796" y="610" width="220" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="906.0" y="632" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">environment lock</text>
+  </g>
+  <g>
+    <rect x="1066" y="610" width="220" height="34" rx="17" fill="#3659a2" fill-opacity="0.08" stroke="#3659a2" stroke-opacity="0.72"/>
+    <text x="1176.0" y="632" fill="#10231c" font-size="12" text-anchor="middle" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">gap ledger</text>
+  </g>
+  <line x1="56" y1="850" x2="1544" y2="850" stroke="#d8d6cd"/>
+  <text x="56" y="878" fill="#607168" font-size="12" font-family="'SF Mono', 'JetBrains Mono', 'Cascadia Code', monospace">FIGURE 09 / 09 · github.com/csmar432/finai-research</text>
+  <text x="1544" y="878" fill="#607168" font-size="12" text-anchor="end" font-family="'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif">MIT · 2026</text>
+</svg>

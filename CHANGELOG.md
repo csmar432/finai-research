@@ -7,7 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed (audit_fix_2026_07_12)
+### Fixed
+- **TokenBucketRateLimiter per-server collisions**: replaced `hash()`-slot
+  buckets with exact per-server dict keys so `rate_limit_per_server` no longer
+  flakes under PYTHONHASHSEED / xdist (CI `test_per_server_rate_limit`).
+- **Writing pre-gate compat**: stop inventing `baseline_p=1.0` for
+  `negative_result_handler` on the writing track (always blocked). Soft-skip
+  unless real baseline stats are present in writing/refinement payloads;
+  keep fail-closed for manuscript/reference/data_source import failures.
+- **Deprecated CLI modes**: `research_framework/pipeline.py` accepts
+  `data|analysis|draft|lit-review|novelty-check|regression` again as aliases
+  that print an actionable redirect and exit 2 (DeprecationWarning; no silent
+  reimplementation). Makefile `validate-novelty` and lit-review docs updated.
+- **Dual-track docs**: clarified writing (`agent_pipeline`) vs empirical demo
+  (`research_framework/pipeline.py`) vs production empirics (`enhanced_pipeline` /
+  `modern_did`) in `ARCHITECTURE.md` §0, `AGENTS.md`, `api_reference.md`,
+  `README.md`, `CLAUDE.md`; removed dead CLI modes (`data`/`analysis`/`draft`/
+  `lit-review`) from argparse and examples.
+- **NoveltyGate real search**: `_check_novelty` now queries Semantic Scholar +
+  OpenAlex via `literature_download`, filters by `lookback_years`, soft-boosts
+  top journals, scores token Jaccard; LLM heuristic only when search is down
+  (documented in report `search_status`).
+- **Writing pre-gate data_source_checker**: fixed wrong import
+  `scripts.research_framework.data_source_checker` → `scripts.data_source_checker`;
+  added `check_data_sources()` adapter; gate reports are normalized to dicts;
+  failures are fail-closed (`passed=False`) instead of silent greenlight.
+- **HITL post-exec + resume semantics**: `AgentOrchestrator` previously called
+  `HITLGate.hold()` *before* `agent.run()`, so gated stages often never executed;
+  `resume_pipeline` also clamped/skipped incorrectly. Gates now hold **after**
+  real agent output (with `stage_result` in gate content). Approve continues from
+  the next step; reject re-runs the same stage with `prior_rejection_feedback`;
+  resume while still PENDING is a no-op (fail-closed). Prior stage results are
+  carried via `_resume_stage_results`.
+- **PDF / post-run bookkeeping dead path**: end-to-end TeX/PDF generation and
+  provenance/HITL bookkeeping lived under `_auto_generate_arch_diagrams` after
+  `return arch_paths` (unreachable). Moved into `AgentPipeline.run()` (and
+  mirrored on successful `resume_pipeline`), skipped while HITL-paused.
+- **Agent-host entry robustness**: isolation / non-interactive hosts previously had no
+  fail-closed FinAI entry when LLM was missing and Mock was forbidden, so agents
+  freestyled outside the official pipeline. Added `scripts/agent_host_entry.py` and
+  `scripts/core/agent_host_report.py` to write canonical `output/SKIPPED_CONFIG.md` +
+  `output/FINAL.md`, wired the same artifacts into `agent_pipeline` exit code 4, and
+  documented the protocol in `AGENTS.md` / `fin-full-pipeline` skill.
+
+### Added
+- `tests/test_orchestrator_hitl_resume.py`: regression coverage for post-exec HITL,
+  approve→continue, reject→rerun+feedback, pending no-op, final-stage approve.
+
+## [0.2.0a1] - 2026-08-07
+
+### Fixed
+- Corrected maintainer docs: `audit_guard` check count 17→25, MCP directory count 50→43, and primary entry documented as `agent_pipeline.py` (not `agent.py`).
+- Fixed `Makefile` `pipeline-lit` target (removed nonexistent `--stage lit`; points to `literature_download.py`).
+
+### Changed
+- Cleared stale PyPI publish workflow waits for mismatched GitHub tags (`v1.0.0`/`v1.0.1`/`v0.2.0-alpha`) that would have uploaded wrong/conflicting package versions.
+- Bumped package version to `0.2.0a1` for a clean Trusted Publishing release aligned with `pyproject.toml`.
+
+### Fixed (audit_fix_2026_07_12, carried in tree)
 - **T001**: Removed mechanism tests from `scripts/us_esg_regression.py` that
   constructed `cds_proxy`, `rating_proxy`, and `analyst_cov_proxy` as linear
   functions of treatment variables (endless tautology — would mechanically

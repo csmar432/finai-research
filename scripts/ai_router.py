@@ -1149,8 +1149,9 @@ class AIRouter:
       4. 记录使用了哪个模型作为最终结果
     """
 
-    def __init__(self, use_cache: bool = True):
+    def __init__(self, use_cache: bool = True, allow_mock: bool = False):
         self._use_cache = use_cache
+        self._allow_mock = allow_mock
         self._pool: ModelPool | None = None
         self._bridge: LLMBridge | None = None
         self._cache: CacheManager | None = None
@@ -1172,13 +1173,15 @@ class AIRouter:
         if os.getenv("OLLAMA_ENABLED", "false").lower() == "true":
             self._ollama = OllamaProvider()
 
-        # MockTemplateEngine（所有后端挂掉时的最终 fallback）
-        try:
-            from scripts.core.mock_template_engine import MockTemplateEngine
-            self._mock_fallback = MockTemplateEngine()
-        except ImportError:
-            self._mock_fallback = None
-            _log.warning("MockTemplateEngine not available, no fallback when all LLMs fail")
+        # MockTemplateEngine is opt-in.  A research run must stop rather than
+        # silently turn a backend outage into a template-looking result.
+        if self._allow_mock:
+            try:
+                from scripts.core.mock_template_engine import MockTemplateEngine
+                self._mock_fallback = MockTemplateEngine()
+            except ImportError:
+                self._mock_fallback = None
+                _log.warning("MockTemplateEngine not available, no fallback when all LLMs fail")
 
         # 检查各模型可用状态
         for key in ModelKey:
@@ -1191,10 +1194,10 @@ class AIRouter:
             else:
                 self._available[key.value] = "❌ 未安装"
 
-        # MockTemplateEngine 始终可用（作为最终 fallback）
         self._available["mock_template"] = (
-            f"✅ mock_template (无 API Key 时兜底)"
-            if self._mock_fallback else "❌ 未安装"
+            "✅ mock_template（已明确启用，仅演示/测试）"
+            if self._mock_fallback
+            else "⛔ 未启用（需显式 allow_mock=True 或 --allow-mock）"
         )
 
         self._initialized = True
@@ -1386,7 +1389,7 @@ class AIRouter:
                     fallback_tried=fallback_tried + ["ollama"],
                 )
 
-        # 全部失败 → MockTemplateEngine 最终 fallback
+        # 全部失败 → only use MockTemplateEngine after explicit opt-in.
         tried_str = " → ".join(fallback_tried)
         if self._mock_fallback is not None:
             _log.warning(
@@ -1421,10 +1424,14 @@ class AIRouter:
                 fallback_tried=fallback_tried + ["mock_template"],
             )
 
-        raise RuntimeError(
+        message = (
             f"所有模型均调用失败（尝试顺序：{tried_str}）。"
-            f"最后错误：{last_error}"
-        ) from last_error
+            f"最后错误：{last_error}. 未自动进入 Mock；"
+            "如仅用于演示/测试，请显式设置 allow_mock=True 或使用 --allow-mock。"
+        )
+        if last_error is None:
+            raise RuntimeError(message)
+        raise RuntimeError(message) from last_error
 
     def clear_cache(self):
         """清空所有缓存。"""
@@ -1441,7 +1448,7 @@ class AIRouter:
 # 便捷别名
 # ═══════════════════════════════════════════════════════════════════════
 
-AI = AIRouter(use_cache=True)
+AI = AIRouter(use_cache=True, allow_mock=False)
 
 
 # ═══════════════════════════════════════════════════════════════════════

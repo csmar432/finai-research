@@ -315,6 +315,9 @@ def check_6_numerical_tests_pass() -> CheckResult:
         if "passed" in line and ("in " in line or "s)" in line):
             summary = line.strip()
     evidence = [f"  pytest exit: {res.returncode}", f"  summary: {summary}"]
+    if res.returncode != 0:
+        diagnostics = (res.stderr or res.stdout).strip().splitlines()
+        evidence.extend(f"  {line}" for line in diagnostics[-5:])
     if res.returncode == 0:
         return CheckResult(
             passed=True,
@@ -611,18 +614,17 @@ def check_14_diff_in_diff2_phantom_dep() -> CheckResult:
       * scripts/research_framework/modern_did.py via `import diff_in_diff2`
 
     Defense: verify no active (uncommented) reference to `diff-in-diff2` or
-    `diff_in_diff2` exists in requirements.txt, pyproject.toml, or any
-    tracked source file. Commented-out lines are allowed (they document the
-    historic decision).
+    `diff_in_diff2` exists in pyproject.toml or any requirements file.
+    Commented-out lines are allowed when they document the historic decision.
 
     If anyone re-adds this dep without verifying PyPI existence, this check
     will fail and the related PR will not pass CI.
     """
     refs: list[str] = []
     pyproject = PROJECT_ROOT / "pyproject.toml"
-    req = PROJECT_ROOT / "requirements.txt"
+    dependency_files = [pyproject, *sorted(PROJECT_ROOT.glob("requirements*.txt"))]
 
-    for f in [pyproject, req]:
+    for f in dependency_files:
         if not f.exists():
             continue
         for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
@@ -648,7 +650,7 @@ def check_14_diff_in_diff2_phantom_dep() -> CheckResult:
         actual="0 active install references",
         expected="0",
         evidence=[
-            "  verified: requirements.txt comment only",
+            "  verified: all requirements files contain comments only",
             "  pyproject.toml comment only",
             "  runtime imports allowed (graceful EstimatorUnavailableError)",
         ],

@@ -70,7 +70,7 @@
    - `{{MCP_COUNT}}` MCP data sources
    - Pre-built CSMAR schema, 12 standard controls
    - Modern DiD, IV, GMM, RDD all built in
-   - 45 journal templates (incl. 经济研究 / 金融研究)
+   - 30 journal templates (incl. 经济研究 / 金融研究)
 
 4. **Demo: 6 min from topic to draft (500 words)**
    - Topic: 碳排放权交易对企业绿色创新的影响

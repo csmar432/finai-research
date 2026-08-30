@@ -50,7 +50,7 @@ class TestHeader:
         result = header("Test Title", "Test Subtitle")
         assert "<defs>" in result
         assert "bgGrad" in result
-        assert "hdrGrad" in result
+        assert "grid" in result
 
     def test_contains_background_rect(self):
         from gen_architecture_diagrams import header
@@ -80,8 +80,7 @@ class TestFooter:
     def test_shows_index(self):
         from gen_architecture_diagrams import footer
         result = footer(3, 5)
-        assert "图 3" in result
-        assert "5" in result
+        assert "FIGURE 03 / 05" in result
 
     def test_mit_license(self):
         from gen_architecture_diagrams import footer
@@ -213,13 +212,79 @@ class TestGenArchitectureOverview:
     def test_contains_all_layers(self):
         from gen_architecture_diagrams import gen_01_architecture_overview
         result = gen_01_architecture_overview()
-        assert "用户" in result
-        assert "接口" in result
-        assert "核心" in result or "Core" in result
-        assert "技能" in result or "Skill" in result
-        assert "数据" in result or "Data" in result
+        assert "INPUTS" in result
+        assert "WRITING TRACK" in result
+        assert "EMPIRICAL TRACK" in result
+        assert "DELIVERY" in result
+        assert "Local data" in result
 
     def test_contains_mcp_count(self):
         from gen_architecture_diagrams import gen_01_architecture_overview, MCP_COUNT
         result = gen_01_architecture_overview()
         assert str(MCP_COUNT) in result
+
+
+class TestVisualSystemContracts:
+    """Generated assets preserve semantics, accessibility, and palette consistency."""
+
+    @pytest.mark.parametrize(
+        "generator_name",
+        [
+            "gen_01_architecture_overview",
+            "gen_02_skill_system_map",
+            "gen_03_mcp_ecosystem_map",
+            "gen_04_research_pipeline",
+            "gen_05_deployment_data_flow",
+            "gen_06_writing_track",
+            "gen_07_data_routing",
+            "gen_08_did_selection",
+            "gen_09_provenance_chain",
+            "gen_banner",
+            "gen_quickstart",
+        ],
+    )
+    def test_svg_has_accessible_name_and_description(self, generator_name):
+        import gen_architecture_diagrams as diagrams
+
+        svg = getattr(diagrams, generator_name)()
+        assert 'role="img" aria-labelledby="title desc"' in svg
+        assert '<title id="title">' in svg
+        assert '<desc id="desc">' in svg
+
+    def test_outputs_do_not_reintroduce_legacy_palette(self):
+        import gen_architecture_diagrams as diagrams
+
+        legacy = {"#79a9ff", "#4cc9b0", "#d8b66a", "#a992d4", "#e38b96", "#668099"}
+        generators = (
+            diagrams.gen_01_architecture_overview,
+            diagrams.gen_02_skill_system_map,
+            diagrams.gen_03_mcp_ecosystem_map,
+            diagrams.gen_04_research_pipeline,
+            diagrams.gen_05_deployment_data_flow,
+            diagrams.gen_banner,
+        )
+        combined = "".join(generator() for generator in generators).lower()
+        assert not legacy.intersection(combined)
+
+    def test_pipeline_turns_from_design_into_data(self):
+        from gen_architecture_diagrams import gen_04_research_pipeline
+
+        svg = gen_04_research_pipeline()
+        assert 'd="M1530 248 V382 Q1530 430 1482 430 H322"' in svg
+        assert 'marker-end="url(#pipeline-turn)"' in svg
+
+    def test_banner_shows_all_eight_research_stages(self):
+        from gen_architecture_diagrams import gen_banner
+
+        svg = gen_banner()
+        for stage in ("Idea", "Literature", "Novelty", "Design", "Data", "Analysis", "Draft", "Review"):
+            assert f">{stage}</text>" in svg
+
+    def test_did_map_separates_binary_timing_from_continuous_dose(self):
+        from gen_architecture_diagrams import gen_08_did_selection
+
+        svg = gen_08_did_selection()
+        assert "Staggered binary" in svg
+        assert "Continuous dose" in svg
+        assert "never / not-yet controls" in svg
+        assert "state the dose estimand" in svg

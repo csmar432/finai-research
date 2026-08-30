@@ -9,15 +9,15 @@
 
 | 分类 | 数量 | 说明 |
 |------|------|------|
-| 🚀 Entry Points (`scripts/*.py`) | 105 | 顶级入口脚本（含 CLI） |
-| 📦 Core Modules (`scripts/core/`) | 105 | 核心库（被其他模块导入）|
+| 🚀 Entry Points (`scripts/*.py`) | 106 | 顶级入口脚本（含 CLI） |
+| 📦 Core Modules (`scripts/core/`) | 110 | 核心库（被其他模块导入）|
 | 📊 Research Framework (`scripts/research_framework/`) | 59 | 计量方法模块 |
 | 🧭 Research Directions (`scripts/research_directions/`) | 15 | 研究方向领域 |
-| 🧪 Tests (`tests/`) | 666 | 测试文件 |
+| 🧪 Tests (`tests/`) | 677 | 测试文件 |
 | 🔌 MCP Servers (`mcp_servers/user_*/`) | 43 | MCP 数据源 |
-| **合计（仅 Python 文件）** | **950** | 不含 MCP / docs / tests fixtures |
+| **合计（仅 Python 文件）** | **967** | 不含 MCP / docs / tests fixtures |
 
-> 自动生成于 2026-08-04
+> 自动生成于 2026-08-09
 ---
 
 ## 一、Entry Points · 用户入口
@@ -28,8 +28,8 @@
 
 || 脚本 | 命令 | 说明 |
 ||------|------|------|
-|| `agent.py` | `python scripts/agent.py` | 统一的 AI 研究 Agent CLI（主入口） |
-|| `agent_pipeline.py` | via `AI()` class | 5-Agent 流水线编排器（AgentPipeline 类，被其他模块导入） |
+|| `agent.py` | `python scripts/agent.py` | 单任务智能体入口（轻量；非端到端主入口） |
+|| `agent_pipeline.py` | `python scripts/agent_pipeline.py --topic "..." [--use-hitl]` | 端到端写作流水线主入口（AgentPipeline） |
 || `enhanced_workflow.py` | `python scripts/enhanced_workflow.py` | 增强研究工作流（含 HITL checkpoint） |
 || `interactive_paper_pipeline.py` | `python scripts/interactive_paper_pipeline.py` | 交互式论文写作（每个章节 checkpoint） |
 || `research_workflow.py` | — | **已废弃** → `deprecated/research_workflow.py`，使用 `agent_pipeline.py` |
@@ -218,4 +218,4 @@ report_*.py           # 报告生成（小写下划线）
 
 ---
 
-*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-08-04（自动对账）
+*本索引由 `scripts/SCRIPTS_INDEX.md` 维护，最后更新: 2026-08-09（自动对账）

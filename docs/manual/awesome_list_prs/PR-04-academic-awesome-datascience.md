@@ -21,7 +21,7 @@ acquisition, econometrics, and LaTeX manuscript generation.
 ## Project
 
 [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end
-empirical-research pipeline: 43 data-source directories, 47 econometric
+empirical-research pipeline: 43 data-source directories, 58 econometric
 method modules (including modern staggered DID), and 30 journal templates.
 MIT-licensed, with HITL gates to prevent LLM hallucination in submitted papers.
 
@@ -37,7 +37,7 @@ I will defer the exact placement to maintainer preference. Below is the entry
 in the format required by `CONTRIBUTING.md` (`[Name](URL) - Description.`):
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end empirical-research pipeline (43 data sources, 47 econometric methods, 30 journal templates) for economics and finance.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end empirical-research pipeline (43 data sources, 58 econometric methods, 30 journal templates) for economics and finance.
 ```
 
 ## PR Template Completion (per CONTRIBUTING.md checklist)

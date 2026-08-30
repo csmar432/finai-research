@@ -23,6 +23,16 @@ updates:
     # lock entry alone creates an uninstallable Dependabot PR.
     ignore:
       - dependency-name: "pydantic-core"
+      # MCP 2.x currently breaks server compatibility tests (list_tools API
+      # changes). Keep the validated 1.x line until an explicit migration.
+      - dependency-name: "mcp"
+        update-types:
+          - "version-update:semver-major"
+      # OpenAI 2.x is a runtime-major upgrade; the project still validates the
+      # OpenAI 1.x API and does not yet have an integration migration suite.
+      - dependency-name: "openai"
+        update-types:
+          - "version-update:semver-major"
     # Auto-rebase to keep PRs in sync with main.
     rebase-strategy: "auto"
     labels:

@@ -7,7 +7,7 @@
 ## 1. Description (顶部 "About" 卡片)
 
 ```
-End-to-end AI agent workflow for economic & financial research: lit review → idea generation → empirical design (DID/IV/RDD) → paper writing. 43 MCP data servers, 42 econometric methods, 17 AI skills, 45 journal templates.
+Evidence-first AI workflow for economic and financial research: literature → identification → data → econometrics → verifiable LaTeX. 43 data sources, 58 method modules, 18 AI skills, 30 journal templates.
 ```
 
 ## 2. Website
@@ -55,12 +55,13 @@ agent
 
 ## 5. Social Preview（1280×640 PNG）
 
-Social preview 已在仓库根目录的 `.github/social-preview.png` 提供（已加入 .gitignore，**在 release 流程中自动生成并上传**）。
+Social preview 的受版本控制源文件是 `.github/social-preview.png`。GitHub 目前仍需在 Settings → General → Social preview 手动上传；仓库工作流不会替你修改该设置。
 
 > 如需重新生成本地预览图，运行：
 > ```bash
 > python scripts/gen_social_preview.py
 > ```
+> 上传与核验步骤见 [`docs/MANUAL_SOCIAL_PREVIEW_UPLOAD.md`](../docs/MANUAL_SOCIAL_PREVIEW_UPLOAD.md)。
 
 ## 6. Branch Protection Rules（main 分支）
 
@@ -114,11 +115,15 @@ Settings → Pages:
 
 ## 11. PyPI Trusted Publishing
 
-pypi.org/manage/account/publishing/ → Add a new pending publisher:
-- Owner: `csmar432`（或你的用户名）
-- Repository: `FinAI-Research-Workflow`
+pypi.org/manage/project/finai-research-workflow/settings/publishing/
+→ Add a trusted publisher (project already exists on PyPI):
+- Owner: `csmar432`
+- Repository: `finai-research`   # must match GitHub repo name exactly
 - Workflow filename: `publish-pypi.yml`
 - Environment name: `pypi`
+
+OIDC subject claim shape (for debugging):
+`repo:csmar432/finai-research:environment:pypi`
 
 无需 API token，GitHub Actions 用 OIDC 自动认证。
 

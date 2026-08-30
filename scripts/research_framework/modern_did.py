@@ -16,7 +16,8 @@
 
 依赖说明：
   - 基础 DID / OLS / cluster-SE：statsmodels（内置）
-  - 交错 DID（CS/SA/BJS/Gardner）：需要 `pip install diff-in-diff2`
+  - 交错 DID（CS/SA/BJS/Gardner）：外部适配器仅在显式配置兼容后端时可用；
+    项目不会推荐或安装不存在于 PyPI 的历史 `diff_in_diff2` 包
   - Honest DiD（Rambachan-Roth 2023）：
     需要 `pip install honestdid`（PyPI 官方包，Anzony Quispe 2026）。
     honestdid 是原始 R 包 HonestDiD（Rambachan & Roth）的 Python 移植，
@@ -61,7 +62,7 @@ Quick Start
 >>> 0.0 <= result.pval <= 1.0
 True
 
->>> # 4) 交错处理 DID（需要安装 diff_in_diff2：pip install diff-in-diff2）
+>>> # 4) 交错处理 DID（外部适配器需要显式配置并审核兼容后端）
 >>> # cs_result = engine.cs()  # Callaway-Sant'Anna
 >>> # bjs_result = engine.bjs()  # Borusyak-Jaravel-Spinks
 
@@ -116,6 +117,12 @@ __all__ = [
 _log = logging.getLogger("modern_did")
 _log.setLevel(logging.INFO)
 warnings.filterwarnings("ignore")
+
+_STAGGERED_DID_BACKEND = "a reviewed diff_in_diff2-compatible backend"
+_STAGGERED_DID_HINT = (
+    "No maintained PyPI backend is bundled; configure a reviewed compatible "
+    "backend or use the self-contained DID estimators."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1116,8 +1123,8 @@ class EstimatorUnavailableError(ImportError):
         self.package = package
         self.install_hint = install_hint or f"pip install {package}"
         msg = (
-            f"Estimator '{estimator}' requires '{package}' which is not installed. "
-            f"Install with: {self.install_hint}"
+            f"Estimator '{estimator}' requires '{package}', which is unavailable. "
+            f"Resolution: {self.install_hint}"
         )
         super().__init__(msg)
 
@@ -1377,8 +1384,8 @@ class ModernDiDEngine:
         except ImportError:
             raise EstimatorUnavailableError(
                 estimator="cs",
-                package="diff-in-diff2",
-                install_hint="pip install diff-in-diff2",
+                package=_STAGGERED_DID_BACKEND,
+                install_hint=_STAGGERED_DID_HINT,
             )
         # 协变量：优先使用传入参数，否则回退到 self.x_vars
         covars = x_vars if x_vars is not None else (self.x_vars or [])
@@ -1394,47 +1401,44 @@ class ModernDiDEngine:
             control_group=control_group,
             anticipation=anticipation,
         )
-        # diff_in_diff2 >= 1.0 支持 x 参数进行 covariate adjustment
+        # Compatible backends may accept x for covariate adjustment.
         if covars:
-            try:
-                api_kwargs["x"] = covars
-            except TypeError:
-                pass  # 旧版 diff_in_diff2 不支持 x 参数
+            api_kwargs["x"] = covars
         try:
             result_obj = did2.cs(**api_kwargs)
         except TypeError:
-            # 如果 x 参数不被接受，移除并重试
+            if "x" not in api_kwargs:
+                raise
+            # Older compatible backends may not accept x; retry once without it.
             api_kwargs.pop("x", None)
             result_obj = did2.cs(**api_kwargs)
-            n_clusters = df_sub[self.unit_var].nunique()
-            self._warn_cluster_count(n_clusters, "CS")
-            # 支持多种返回格式
-            att = float(getattr(result_obj, "att", getattr(result_obj, "estimate", result_obj[0] if hasattr(result_obj, "__getitem__") else result_obj)))
-            se = float(getattr(result_obj, "se", getattr(result_obj, "std_error", np.nan)))
-            pval = float(getattr(result_obj, "pval", getattr(result_obj, "pvalue", np.nan)))
-            # 转换为本模块格式
-            result = DiDEstimationResult(
-                estimator="cs",
-                coef=att,
-                se=se,
-                pval=pval,
-                n_obs=len(df_sub),
-                additional={
-                    "method": "Callaway-Sant'Anna (2021) with IPW covariates",
-                    "covariates": covars,
-                    "control_group": control_group,
-                },
-            )
-            self._results["cs"] = result
-            return result
         except Exception as exc:
             if isinstance(exc, ImportError):
                 raise EstimatorUnavailableError(
                     estimator="cs",
-                    package="diff-in-diff2",
-                    install_hint="pip install diff-in-diff2",
+                    package=_STAGGERED_DID_BACKEND,
+                    install_hint=_STAGGERED_DID_HINT,
                 ) from exc
             raise
+        n_clusters = df_sub[self.unit_var].nunique()
+        self._warn_cluster_count(n_clusters, "CS")
+        att = float(getattr(result_obj, "att", getattr(result_obj, "estimate", result_obj[0] if hasattr(result_obj, "__getitem__") else result_obj)))
+        se = float(getattr(result_obj, "se", getattr(result_obj, "std_error", np.nan)))
+        pval = float(getattr(result_obj, "pval", getattr(result_obj, "pvalue", np.nan)))
+        result = DiDEstimationResult(
+            estimator="cs",
+            coef=att,
+            se=se,
+            pval=pval,
+            n_obs=len(df_sub),
+            additional={
+                "method": "Callaway-Sant'Anna (2021) with IPW covariates",
+                "covariates": covars,
+                "control_group": control_group,
+            },
+        )
+        self._results["cs"] = result
+        return result
 
     def bjs(self, anticipation: int = 0) -> DiDEstimationResult:
         """
@@ -1447,8 +1451,8 @@ class ModernDiDEngine:
         except ImportError:
             raise EstimatorUnavailableError(
                 estimator="bjs",
-                package="diff-in-diff2",
-                install_hint="pip install diff-in-diff2",
+                package=_STAGGERED_DID_BACKEND,
+                install_hint=_STAGGERED_DID_HINT,
             )
         try:
             df_sub = self.df.dropna(subset=[self.y_var, self.treat_var, self.time_var] + self.x_vars)
@@ -1476,8 +1480,8 @@ class ModernDiDEngine:
             if isinstance(exc, ImportError):
                 raise EstimatorUnavailableError(
                     estimator="bjs",
-                    package="diff-in-diff2",
-                    install_hint="pip install diff-in-diff2",
+                    package=_STAGGERED_DID_BACKEND,
+                    install_hint=_STAGGERED_DID_HINT,
                 ) from exc
             raise
 
@@ -1492,8 +1496,8 @@ class ModernDiDEngine:
         except ImportError:
             raise EstimatorUnavailableError(
                 estimator="gardner",
-                package="diff-in-diff2",
-                install_hint="pip install diff-in-diff2",
+                package=_STAGGERED_DID_BACKEND,
+                install_hint=_STAGGERED_DID_HINT,
             )
         try:
             df_sub = self.df.dropna(subset=[self.y_var, self.treat_var, self.time_var] + self.x_vars)
@@ -1519,8 +1523,8 @@ class ModernDiDEngine:
             if isinstance(exc, ImportError):
                 raise EstimatorUnavailableError(
                     estimator="gardner",
-                    package="diff-in-diff2",
-                    install_hint="pip install diff-in-diff2",
+                    package=_STAGGERED_DID_BACKEND,
+                    install_hint=_STAGGERED_DID_HINT,
                 ) from exc
             raise
 

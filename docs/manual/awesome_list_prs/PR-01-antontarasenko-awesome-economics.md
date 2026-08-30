@@ -13,7 +13,7 @@
 ## Repository
 
 [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end
-empirical research pipeline (43 data sources, 47 econometric methods, 30 journal
+empirical research pipeline (43 data sources, 58 econometric methods, 30 journal
 templates). Wraps idea generation, literature review, novelty check, empirical
 design, data acquisition, paper drafting, and adversarial review into a single CLI.
 
@@ -33,7 +33,7 @@ submission-ready LaTeX draft. Key features that may be useful for economists:
 - 43 data-source directories (A-share via Tushare/akshare, US via yfinance,
   global macro via FRED/IMF/World Bank, 400M+ papers via OpenAlex/ArXiv;
   28 free, no API key required).
-- 47 econometric method modules including modern staggered DID
+- 58 econometric method modules including modern staggered DID
   (Callaway-Sant'Anna, Sun-Abraham, Borusyak), synthetic control, IV/2SLS,
   panel GMM, RDD, triple-diff, spatial regression.
 - 30 journal templates (JF, JFE, RFS, Econometrica, 经济研究, 金融研究,
@@ -44,7 +44,7 @@ submission-ready LaTeX draft. Key features that may be useful for economists:
 **Entry placement** (per `contributing.md` — title-cased, period-terminated):
 
 ```markdown
-- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end empirical research pipeline (43 data sources, 47 econometric methods, 30 journal templates) for economists.
+- [FinAI Research Workflow](https://github.com/csmar432/finai-research) - End-to-end empirical research pipeline (43 data sources, 58 econometric methods, 30 journal templates) for economists.
 ```
 
 I will add it to the bottom of the most relevant existing category

@@ -11,8 +11,8 @@ Module structure:
   data_validator.py        — ProvinceDataValidator for provincial data validation
   regression_engine.py     — DID/OLS regressions with automatic DOF checking
   report_generator.py     — LaTeX + Word (.docx) output with embedded tables
-  pipeline.py             — Main CLI entry point (check_dof / run_did / main)
-  enhanced_pipeline.py    — Extended pipeline with modern_did / latex_diff / self_evolution
+  pipeline.py             — Demo TWFE + design-scaffold CLI (not writing; not modern DID)
+  enhanced_pipeline.py    — Empirical CLI wrapping modern_did / latex_diff / gates
   diagnostic_reporter.py  — Automatic diagnostic decision engine (PASS/WARN/FAIL)
   iv_panel.py             — Panel IV/GMM via linearmodels (IV/2SLS/Arellano-Bond/Fama-MacBeth)
   journal_templates_multilang.py — Multi-language journal templates (EN/JP/DE)

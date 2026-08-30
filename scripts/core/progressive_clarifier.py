@@ -68,7 +68,25 @@ _STAGE_QUESTIONS: dict[ClarificationStage, str] = {
     ClarificationStage.IDENTIFICATION: "你倾向用什么识别策略？\n  1) 双重差分 DID（含 PSM-DID / 现代 DID）\n  2) 工具变量 IV / 2SLS\n  3) 断点回归 RDD\n  4) 倾向得分匹配 PSM\n  5) 面板 GMM / 固定效应\n  6) 局部投影 LP / 事件研究\n  7) 综合运用多种方法（推荐：DID 为主 + 多种稳健性）",
     ClarificationStage.SAMPLE: "样本窗口和范围是什么？\n  例如：\n   - 2010-2022 中国 A 股上市公司\n   - 2015-2020 美国 S&P 500\n   - 2008-2019 中国省级面板\n  （请给出起止年份 + 国家/地区 + 数据粒度：公司/省级/国家级/家庭）",
     ClarificationStage.VARIABLES: "你已经定义好的变量是什么？（如未确定，可以只填因变量，其他留空，我会在文献检索后给候选）\n  - 因变量 Y：\n  - 核心解释变量 X：\n  - 政策/事件虚拟变量：\n  - 至少 3 个控制变量：\n  （说明：文献综述阶段会自动补充更多候选变量，确保稳健性检验时可替换）",
-    ClarificationStage.VENUE: "目标期刊/投稿方向是？\n  1) 中文顶刊：经济研究 / 金融研究 / 管理世界 / 会计研究\n  2) 英文 SSCI：JF / JFE / RFS / JAE / JPE\n  3) 一般 SSCI： Emerging Markets Review / China Economic Review\n  4) 暂无偏好（我会按数据可行性推荐）",
+    ClarificationStage.VENUE: (
+        "目标期刊/投稿方向是？\n"
+        "  1) 中文顶刊（下一问选具体刊名）\n"
+        "  2) 英文顶刊 JF/JFE/RFS/JAE/JPE（下一问选具体刊名）\n"
+        "  3) 一般 SSCI（Emerging Markets Review / China Economic Review）\n"
+        "  4) 暂无偏好（按数据可行性推荐）\n"
+        "也可直接写刊名，如：经济研究 / JF"
+    ),
+}
+
+_VENUE_GROUP_PROMPTS: dict[str, str] = {
+    "zh_top": (
+        "请选择具体中文顶刊：\n"
+        "  1) 经济研究\n  2) 金融研究\n  3) 管理世界\n  4) 会计研究"
+    ),
+    "en_top": (
+        "请选择具体英文顶刊：\n"
+        "  1) JF\n  2) JFE\n  3) RFS\n  4) JAE\n  5) JPE"
+    ),
 }
 
 
@@ -158,7 +176,7 @@ class ProgressiveClarifier:
       1. 5 轮逐步澄清（不一次性接收所有信息）
       2. 每轮产物落盘到 output_dir/.clarify_session/XX_*.json
       3. 强制 ack：不调用 submit_answer()，禁止 advance()
-      4. 同步：每轮问完，CLI 调用 input()；AI agent 模式下返回 InteractionResult
+      4. 同步：每轮问完，CLI 调用 input()；AI agent 模式用 next_interaction()
     """
 
     def __init__(
@@ -172,7 +190,7 @@ class ProgressiveClarifier:
         Args:
             output_dir: 产物落盘目录，默认 output/.clarify_session/
             auto_ack: 仅用于测试；生产必须 False（强制用户确认）
-            cli_mode: True 阻塞 input；False 返回 InteractionResult
+            cli_mode: True 阻塞 input；False 时用 next_interaction()/submit_answer 驱动（不伪造 InteractionResult 类型）
         """
         self.output_dir = Path(output_dir) if output_dir else Path("output/.clarify_session")
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -206,6 +224,37 @@ class ProgressiveClarifier:
         options = self._extract_options(question)
         return (question, options)
 
+    def next_interaction(self, state: ClarificationState) -> dict[str, Any]:
+        """AI agent / 非 CLI：返回结构化 Interaction 载荷（非终端 input）。
+
+        返回 dict 兼容 ``InteractionResult.to_dict()`` 字段，避免循环导入
+        agent_pipeline。宿主应展示 questions/options，再调用 submit_answer + advance。
+        """
+        question, options = self.next_question(state)
+        if state.is_complete:
+            return {
+                "needs_input": False,
+                "action_needed": "proceed",
+                "questions": [question],
+                "options": [],
+                "recommended_option": "",
+                "stage": None,
+                "can_proceed": True,
+            }
+        opt_dicts = [
+            {"id": str(i), "label": opt}
+            for i, opt in enumerate(options, start=1)
+        ]
+        return {
+            "needs_input": True,
+            "action_needed": "ask_clarification",
+            "questions": [question],
+            "options": opt_dicts,
+            "recommended_option": opt_dicts[0]["id"] if opt_dicts else "",
+            "stage": state.current_stage.value,
+            "can_proceed": False,
+        }
+
     def submit_answer(self, state: ClarificationState, answer: str) -> None:
         """提交当前阶段的答案。
 
@@ -236,19 +285,37 @@ class ProgressiveClarifier:
         self._save_state(state)
         logger.info("Stage %s answered", state.current_stage.value)
 
-    def advance(self, state: ClarificationState) -> ClarificationState:
-        """推进到下一阶段；若已到最后阶段，锁定研究画像。"""
-        if state.is_complete:
-            return state
-
-        # 顺序：QUESTION_TYPE → IDENTIFICATION → SAMPLE → VARIABLES → VENUE → 锁定
-        order = [
+    def _stage_order(self, state: ClarificationState) -> list[ClarificationStage]:
+        """按研究类型动态决定阶段顺序（综述/理论跳过识别策略）。"""
+        qtype = self._normalize_choice(
+            state.answers.get(ClarificationStage.QUESTION_TYPE.value, ""),
+            {
+                "1": "empirical", "2": "review", "3": "theoretical",
+                "实证": "empirical", "综述": "review", "理论": "theoretical",
+            },
+            default="empirical",
+        )
+        if qtype in ("review", "theoretical"):
+            return [
+                ClarificationStage.QUESTION_TYPE,
+                ClarificationStage.SAMPLE,
+                ClarificationStage.VARIABLES,
+                ClarificationStage.VENUE,
+            ]
+        return [
             ClarificationStage.QUESTION_TYPE,
             ClarificationStage.IDENTIFICATION,
             ClarificationStage.SAMPLE,
             ClarificationStage.VARIABLES,
             ClarificationStage.VENUE,
         ]
+
+    def advance(self, state: ClarificationState) -> ClarificationState:
+        """推进到下一阶段；若已到最后阶段，锁定研究画像。"""
+        if state.is_complete:
+            return state
+
+        order = self._stage_order(state)
         try:
             idx = order.index(state.current_stage)
             if idx + 1 < len(order):
@@ -257,7 +324,15 @@ class ProgressiveClarifier:
                 state.profile = self._build_profile(state)
                 state.needs_user_input = False
         except ValueError:
-            pass
+            # 当前阶段不在动态顺序中（例如从实证改答综述后仍停在 IDENTIFICATION）
+            # 跳到顺序中尚未回答的下一阶段
+            for stage in order:
+                if stage.value not in state.answers:
+                    state.current_stage = stage
+                    break
+            else:
+                state.profile = self._build_profile(state)
+                state.needs_user_input = False
 
         self._save_state(state)
         return state
@@ -291,24 +366,25 @@ class ProgressiveClarifier:
     # ─── Interactive Run ───────────────────────────────────────────────────
 
     def run_interactive(self, topic: str) -> ResearchProfile:
-        """CLI 阻塞模式：自动 5 轮 input() 直到画像锁定。
-
-        Returns:
-            ResearchProfile: 锁定后的研究画像
-
-        Raises:
-            KeyboardInterrupt: 用户 Ctrl+C 中断（不会悄悄生成 mock）
-        """
+        """CLI 阻塞模式：从新会话开始 5 轮 input() 直到画像锁定。"""
         if not self.cli_mode:
             raise RuntimeError("run_interactive requires cli_mode=True")
-
         state = self.start(topic)
+        return self.run_interactive_from_state(state)
+
+    def run_interactive_from_state(self, state: ClarificationState) -> ResearchProfile:
+        """CLI 阻塞模式：从已有状态继续（用于 --resume，不调用 start 清空进度）。"""
+        if not self.cli_mode:
+            raise RuntimeError("run_interactive_from_state requires cli_mode=True")
+        if state.is_complete and state.profile is not None:
+            return state.profile
 
         print("\n" + "═" * 70)
-        print("  主题澄清（5 轮逐步引导）")
+        print("  主题澄清（逐步引导）")
         print("═" * 70)
-        print(f"\n  📌 研究主题: {topic}")
+        print(f"\n  📌 研究主题: {state.topic}")
         print(f"  📂 会话目录: {self.output_dir}")
+        print(f"  📈 进度: {state.progress_pct}% · 当前: {state.current_stage.value}")
         print(f"  ⏱️  开始时间: {time.strftime('%Y-%m-%d %H:%M:%S')}")
         print("\n  说明：每轮问一个问题，必须回答后才能进入下一轮。")
         print("        随时可输入 'quit' 退出（不会生成任何 mock 数据）。\n")
@@ -333,6 +409,8 @@ class ProgressiveClarifier:
                 raise KeyboardInterrupt("User quit")
 
             try:
+                if state.current_stage == ClarificationStage.VENUE:
+                    answer = self._maybe_refine_venue_answer(answer)
                 self.submit_answer(state, answer)
             except RuntimeError as e:
                 print(f"  ❌ {e}")
@@ -340,13 +418,47 @@ class ProgressiveClarifier:
 
             state = self.advance(state)
 
-        # 画像锁定
         print("\n" + "═" * 70)
         print("  ✅ 研究画像已锁定")
         print("═" * 70)
         self._print_profile_summary(state.profile)
-
         return state.profile
+
+    def _maybe_refine_venue_answer(self, answer: str) -> str:
+        """大类 1/2 时二次选择具体刊名；已写刊名则原样返回。"""
+        text = answer.strip()
+        group = self._normalize_choice(text, {
+            "1": "zh_top", "2": "en_top", "3": "ssci", "4": "auto",
+            "中文": "zh_top", "英文": "en_top",
+        }, default="")
+        # 已是具体刊名
+        known = {
+            "经济研究", "金融研究", "管理世界", "会计研究",
+            "JF", "JFE", "RFS", "JAE", "JPE", "SSCI", "auto",
+        }
+        if text in known or (group in ("", "ssci", "auto") and not text[:1].isdigit()):
+            return text
+        if group not in _VENUE_GROUP_PROMPTS:
+            return text
+        print()
+        print(_VENUE_GROUP_PROMPTS[group])
+        print()
+        try:
+            sub = input("  具体刊名 › ").strip()
+        except (EOFError, KeyboardInterrupt):
+            raise
+        if not sub:
+            return text
+        if group == "zh_top":
+            return self._normalize_choice(sub, {
+                "1": "经济研究", "2": "金融研究", "3": "管理世界", "4": "会计研究",
+                "经济研究": "经济研究", "金融研究": "金融研究",
+                "管理世界": "管理世界", "会计研究": "会计研究",
+            }, default=sub)
+        return self._normalize_choice(sub, {
+            "1": "JF", "2": "JFE", "3": "RFS", "4": "JAE", "5": "JPE",
+            "JF": "JF", "JFE": "JFE", "RFS": "RFS", "JAE": "JAE", "JPE": "JPE",
+        }, default=sub)
 
     # ─── Persistence ───────────────────────────────────────────────────────
 
@@ -426,15 +538,24 @@ class ProgressiveClarifier:
                 "1": "empirical", "2": "review", "3": "theoretical",
                 "实证": "empirical", "综述": "review", "理论": "theoretical",
             }, default="empirical"),
-            identification=self._normalize_choice(answers.get(ClarificationStage.IDENTIFICATION.value, ""), {
-                "1": "DID", "2": "IV", "3": "RDD", "4": "PSM", "5": "FE", "6": "LP", "7": "multi",
-            }, default="multi"),
+            identification=(
+                "n/a"
+                if self._normalize_choice(
+                    answers.get(ClarificationStage.QUESTION_TYPE.value, ""),
+                    {"1": "empirical", "2": "review", "3": "theoretical",
+                     "实证": "empirical", "综述": "review", "理论": "theoretical"},
+                    default="empirical",
+                ) in ("review", "theoretical")
+                else self._normalize_choice(
+                    answers.get(ClarificationStage.IDENTIFICATION.value, ""),
+                    {"1": "DID", "2": "IV", "3": "RDD", "4": "PSM", "5": "FE", "6": "LP", "7": "multi"},
+                    default="multi",
+                )
+            ),
             sample_window=sample_window,
             geography=geography,
             unit=unit,
-            venue=self._normalize_choice(answers.get(ClarificationStage.VENUE.value, ""), {
-                "1": "经济研究", "2": "JF", "3": "SSCI", "4": "auto",
-            }, default="auto"),
+            venue=self._resolve_venue(answers.get(ClarificationStage.VENUE.value, "")),
             variables=self._parse_variables(answers.get(ClarificationStage.VARIABLES.value, "")),
             raw_answers=answers,
             locked_at=time.time(),
@@ -535,6 +656,26 @@ class ProgressiveClarifier:
             if key in text:
                 return val
         return default
+
+    def _resolve_venue(self, text: str) -> str:
+        """解析期刊答案：具体刊名优先；大类数字映射到组内默认刊。"""
+        text = (text or "").strip()
+        if not text:
+            return "auto"
+        known = {
+            "经济研究", "金融研究", "管理世界", "会计研究",
+            "JF", "JFE", "RFS", "JAE", "JPE", "SSCI", "auto",
+        }
+        if text in known:
+            return text
+        for name in known:
+            if name in text and name not in {"SSCI", "auto"}:
+                return name
+        # 仍是大类编号（未做二级选择时的兜底）
+        return self._normalize_choice(text, {
+            "1": "经济研究", "2": "JF", "3": "SSCI", "4": "auto",
+            "中文": "经济研究", "英文": "JF",
+        }, default="auto")
 
     def _extract_year_range(self, text: str) -> str:
         """从样本描述提取年份范围。"""

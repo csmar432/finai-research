@@ -6,7 +6,7 @@
 ## 标题
 
 ```
-FinAI Research Workflow — End-to-end AI pipeline for empirical econ research (43 MCP sources, 47 methods, 30 journals)
+FinAI Research Workflow — Evidence-first AI workflow for empirical econ research (43 MCP sources, 58 method modules, 30 journals)
 ```
 
 ## Flair
@@ -32,8 +32,8 @@ DOI: 10.5281/zenodo.21262689
 
 - **MCP (Model Context Protocol) servers** in stdlib HTTP — 43 of
   them, 28 work without an API key.
-- **Causal inference**: statsmodels, linearmodels, diff-in-diff2,
-  PyWhy (DoWhy/EconML).
+- **Causal inference**: statsmodels, linearmodels, and PyWhy
+  (DoWhy/EconML), with unavailable optional backends failing visibly.
 - **Data acquisition**: yfinance (US equities), akshare (A-share),
   wbdata, imfp, fredapi, sec-edgar-downloader.
 - **Literature**: openalex, arxiv, semanticscholar.
@@ -72,8 +72,8 @@ enforces HITL gates but does not eliminate the responsibility.
 
 ## Tech
 
-Python 3.10+, FastAPI for orchestrator, pytest (399 test files,
-7824 test functions), ruff for linting, GitHub Actions for CI.
+Python 3.10+, FastAPI for orchestrator, pytest (674 test files,
+12,783 test functions), ruff for linting, GitHub Actions for CI.
 OpenSSF Scorecard gold tier. MIT licensed.
 
 (Upstream awesome-list PRs are tracked in

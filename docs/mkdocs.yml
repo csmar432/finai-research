@@ -79,5 +79,4 @@ nav:
       - 改进路线: IMPROVEMENT_ROADMAP.md
       - 数据溯源: MOCK_DATA_POLICY.md
       - 安装部署: DOCKER_INSTALL.md
-      - 审计工作流: audit-workflow.md
       - 引用指南: CITATION_GUIDE.md

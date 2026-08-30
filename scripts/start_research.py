@@ -7,8 +7,11 @@
   #10 生成文章没征询意见 → 整流为 gate-by-gate
 
 使用：
-    # 交互式：5 轮 input() 后进入流水线
+    # 交互式：5 轮 input() 后打印下一步（默认不自动开跑）
     python scripts/start_research.py --topic "碳排放权交易对绿色创新的影响"
+
+    # 澄清后继续进入写作流水线（显式 opt-in）
+    python scripts/start_research.py --topic "..." --continue --use-hitl
 
     # 指定输出目录
     python scripts/start_research.py --topic "..." --output-dir ./research_001
@@ -25,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -154,21 +158,50 @@ def cmd_new_research(args) -> int:
     except Exception as exc:
         print(f"  ⚠️  DataGate 检查失败: {exc}")
 
-    # 3. 下一步指引（不自动进入流水线，避免悄悄生成 mock）
+    # 3. 下一步指引（默认不自动进入流水线；--continue 显式 opt-in）
+    tq = shlex.quote(profile.topic)
+    venue_arg = (
+        f" --venue {shlex.quote(profile.venue)}"
+        if profile.venue and profile.venue != "auto"
+        else ""
+    )
     print("\n  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("  📋 下一步操作（需手动确认，不会自动执行）：")
+    print("  📋 下一步操作（需手动确认；或使用 --continue 一键进入写作流水线）：")
     print("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print()
-    print(f"  ① 文献综述：python scripts/_gen_lit_review.py --topic '{profile.topic}'")
-    print(f"  ② 新颖性验证：python scripts/agent_pipeline.py --topic '{profile.topic}' --stage novelty")
-    print(f"  ③ 实证设计：python scripts/research_framework/pipeline.py --topic '{profile.topic}'")
-    print(f"  ④ 数据获取：python scripts/research_framework/data_fetcher.py --profile {profile_path}")
-    print(f"  ⑤ 论文写作：python scripts/research_framework/report_generator.py --profile {profile_path}")
+    print(f"  ① 文献综述：python scripts/literature_download.py {tq} --dry-run")
+    print(f"  ② 新颖性验证：python scripts/agent_pipeline.py --topic {tq} --novelty-check")
+    print(f"  ③ 实证设计 scaffold：python scripts/research_framework/pipeline.py --mode design --topic {tq}")
+    print(f"  ④ 实证回归：python -m scripts.research_framework.enhanced_pipeline --topic {tq}")
+    print(f"  ⑤ 端到端写作：python scripts/agent_pipeline.py --topic {tq}{venue_arg} --use-hitl")
     print()
-    print("  💡 提示：每步之间必须人工 review 产物，不允许自动串联。")
+    print(f"  📄 研究画像：{profile_path}")
+    print("  💡 写作轨与实证轨分开：agent_pipeline 不跑 DID；实证用 enhanced_pipeline / modern_did。")
+    print("  💡 HITL：agent_pipeline --use-hitl（默认停在 outline/literature/draft）。")
     print()
 
+    if getattr(args, "continue_pipeline", False):
+        return _continue_to_agent_pipeline(profile, args)
+
     return 0
+
+
+def _continue_to_agent_pipeline(profile: ResearchProfile, args) -> int:
+    """显式 --continue：把锁定画像交给 agent_pipeline（带 HITL 默认阶段）。"""
+    _print_banner("继续进入写作流水线（agent_pipeline）", "32")
+    from scripts.agent_pipeline import AgentPipeline, AgentPipelineConfig
+
+    hitl = bool(getattr(args, "use_hitl", True))
+    config = AgentPipelineConfig(
+        topic=profile.topic,
+        venue=profile.venue if profile.venue and profile.venue != "auto" else "通用",
+        use_hitl=hitl,
+        hitl_stages=["outline", "literature", "draft"] if hitl else [],
+    )
+    out = args.output_dir or str(PROJECT_ROOT / "output" / "papers")
+    pipeline = AgentPipeline(config=config)
+    result = pipeline.run(topic=profile.topic, output_dir=out)
+    return 0 if result.success else 1
 
 
 def cmd_resume(args) -> int:
@@ -194,9 +227,9 @@ def cmd_resume(args) -> int:
         print("  ✅ 画像已锁定")
         return 0
 
-    # 继续澄清
+    # 继续澄清（从已恢复的 state 继续，禁止 start() 清空进度）
     try:
-        clarifier.run_interactive(state.topic)
+        clarifier.run_interactive_from_state(state)
     except KeyboardInterrupt:
         return 130
 
@@ -254,6 +287,24 @@ def main():
     parser.add_argument("--topic", "-t", type=str, help="研究主题")
     parser.add_argument("--output-dir", "-o", type=str, help="会话产物目录")
     parser.add_argument("--skip-clarify", action="store_true", help="跳过 5 轮澄清（仅批处理）")
+    parser.add_argument(
+        "--continue",
+        dest="continue_pipeline",
+        action="store_true",
+        help="澄清锁定后继续进入 agent_pipeline（显式 opt-in，默认不开）",
+    )
+    parser.add_argument(
+        "--use-hitl",
+        action="store_true",
+        default=True,
+        help="与 --continue 联用时启用 HITL（默认开启）",
+    )
+    parser.add_argument(
+        "--no-hitl",
+        action="store_false",
+        dest="use_hitl",
+        help="与 --continue 联用时关闭 HITL",
+    )
 
     # 恢复
     parser.add_argument("--resume", action="store_true", help="恢复上次会话")

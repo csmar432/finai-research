@@ -598,7 +598,7 @@ class TestModernDiDFallbacks:
     """Estimator fallback tests (when external packages unavailable)."""
 
     def test_cs_raises_estimator_unavailable(self, mock_did_df):
-        """cs() raises EstimatorUnavailableError when diff_in_diff2 not installed."""
+        """cs() fails closed when no reviewed staggered-DID backend is installed."""
         from scripts.research_framework.modern_did import ModernDiDEngine, EstimatorUnavailableError
 
         # Simulate package unavailability by patching
@@ -625,12 +625,13 @@ class TestModernDiDFallbacks:
                 assert False, "Expected EstimatorUnavailableError"
             except EstimatorUnavailableError as e:
                 assert e.estimator == "cs"
-                assert "diff-in-diff2" in e.package
+                assert "reviewed" in e.package
+                assert "No maintained PyPI backend" in e.install_hint
         finally:
             md.__dict__["import"] = orig_import
 
     def test_bjs_raises_estimator_unavailable(self, mock_did_df):
-        """bjs() raises EstimatorUnavailableError when diff_in_diff2 not installed."""
+        """bjs() fails closed when no reviewed staggered-DID backend is installed."""
         from scripts.research_framework.modern_did import ModernDiDEngine, EstimatorUnavailableError
 
         import scripts.research_framework.modern_did as md
@@ -656,9 +657,64 @@ class TestModernDiDFallbacks:
                 assert False, "Expected EstimatorUnavailableError"
             except EstimatorUnavailableError as e:
                 assert e.estimator == "bjs"
-                assert "diff-in-diff2" in e.package
+                assert "reviewed" in e.package
+                assert "No maintained PyPI backend" in e.install_hint
         finally:
             md.__dict__["import"] = orig_import
+
+    def test_cs_returns_result_when_compatible_backend_succeeds(self, mock_did_df, monkeypatch):
+        """The normal backend path must not fall through with an implicit None."""
+        import sys
+        from types import SimpleNamespace
+
+        from scripts.research_framework.modern_did import ModernDiDEngine
+
+        backend = SimpleNamespace(cs=lambda **kwargs: SimpleNamespace(att=0.12, se=0.03, pval=0.01))
+        monkeypatch.setitem(sys.modules, "diff_in_diff2", backend)
+        engine = ModernDiDEngine(
+            df=mock_did_df,
+            y_var="roa",
+            treat_var="did",
+            time_var="post",
+            unit_var="firm_id",
+        )
+
+        result = engine.cs()
+
+        assert result.estimator == "cs"
+        assert result.coef == pytest.approx(0.12)
+        assert engine._results["cs"] is result
+
+    def test_cs_retries_legacy_backend_without_covariates(self, mock_did_df, monkeypatch):
+        """A backend that rejects x is retried exactly once without it."""
+        import sys
+        from types import SimpleNamespace
+
+        from scripts.research_framework.modern_did import ModernDiDEngine
+
+        calls = []
+
+        def cs(**kwargs):
+            calls.append(kwargs)
+            if "x" in kwargs:
+                raise TypeError("unexpected keyword argument 'x'")
+            return SimpleNamespace(att=0.08, se=0.02, pval=0.04)
+
+        monkeypatch.setitem(sys.modules, "diff_in_diff2", SimpleNamespace(cs=cs))
+        engine = ModernDiDEngine(
+            df=mock_did_df.assign(size=1.0),
+            y_var="roa",
+            treat_var="did",
+            time_var="post",
+            unit_var="firm_id",
+            x_vars=["size"],
+        )
+
+        result = engine.cs()
+
+        assert result.coef == pytest.approx(0.08)
+        assert len(calls) == 2
+        assert "x" in calls[0] and "x" not in calls[1]
 
 
 class TestModernDiDEdgeCases:

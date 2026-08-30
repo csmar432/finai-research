@@ -5,7 +5,7 @@ Covers:
   - Dataclasses (MacroObservation, MacroTimeSeries) — construction, defaults,
     to_dict, to_dataframe, latest().
   - FREDDataFetcher — INDICATOR_CATALOG structure, cache hit/miss, public CSV
-    path, API path with mocked requests, fallback to mock on error, and the
+    path, API path with mocked requests, fail-closed errors, explicit Mock, and the
     convenience fetch_* wrappers.
   - AkshareMacroFetcher — both available and unavailable branches for all
     fetch_cn_* methods, including exceptions raised inside the akshare stub.
@@ -371,15 +371,15 @@ class TestFREDDataFetcherFetchSeries:
         assert "cosd=2024-01-01" in url
         assert "coed=2024-12-31" in url
 
-    def test_public_csv_failure_falls_back_to_mock(self):
+    def test_public_csv_failure_fails_closed(self):
         f = FREDDataFetcher(api_key=None)
         mock_resp = MagicMock()
         mock_resp.raise_for_status.side_effect = RuntimeError("boom")
         with patch.object(f._session, "get", return_value=mock_resp):
             ts = f.fetch_series("PAYEMS", use_public=True)
-        assert ts.source == DataSourceType.SIMULATED
+        assert ts.source == DataSourceType.UNKNOWN
         assert ts.observations == []
-        assert "MOCK" in (ts.description or "")
+        assert "UNAVAILABLE" in (ts.description or "")
 
     def test_api_path_with_key_parses_observations(self):
         f = FREDDataFetcher(api_key="abc")
@@ -406,8 +406,8 @@ class TestFREDDataFetcherFetchSeries:
         assert len(ts.observations) == 1
         assert ts.observations[0].date == "2024-02-01"
 
-    def test_api_path_failure_falls_back_to_mock(self):
-        f = FREDDataFetcher(api_key="abc")
+    def test_api_path_mock_requires_explicit_opt_in(self):
+        f = FREDDataFetcher(api_key="abc", allow_mock=True)
         mock_resp = MagicMock()
         mock_resp.raise_for_status.side_effect = RuntimeError("network down")
         with patch.object(f._session, "get", return_value=mock_resp):

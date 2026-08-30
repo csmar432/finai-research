@@ -1077,6 +1077,64 @@ class CachedDataFetcher(DataFetcher):
         """
         from scripts.core.data_cache import FallbackChain
 
+        # Layer 0: shared empirical data root (same contract as universal_data_fetcher)
+        try:
+            from scripts.core.empirical_data_root import (
+                find_candidate_files,
+                resolve_empirical_data_root,
+            )
+
+            root = resolve_empirical_data_root()
+            keys = []
+            for k in (
+                "local_keywords",
+                "empirical_keywords",
+                "ticker",
+                "symbol",
+                "query",
+            ):
+                v = args.get(k)
+                if isinstance(v, (list, tuple)):
+                    keys.extend(str(x) for x in v if x)
+                elif v:
+                    keys.append(str(v))
+            keys.append(chain_name or "panel")
+            if root.available and keys:
+                hits = find_candidate_files(keys, root, limit=5)
+                for hit in hits:
+                    try:
+                        suffix = hit.suffix.lower()
+                        if suffix == ".csv":
+                            frame = pd.read_csv(hit)
+                        elif suffix in {".parquet", ".pq"}:
+                            frame = pd.read_parquet(hit)
+                        elif suffix == ".dta":
+                            frame = pd.read_stata(hit)
+                        else:
+                            continue
+                        if frame is None or getattr(frame, "empty", True):
+                            continue
+                        payload = {
+                            "data": frame.to_dict("records"),
+                            "_source": "local_empirical",
+                            "_path": str(hit),
+                        }
+                        self.tracker.record(
+                            f"fallback:{chain_name}",
+                            DataSource.MANUAL,
+                            detail=f"local_empirical:{hit.name}",
+                        )
+                        _log.info(
+                            "[CachedDataFetcher] Layer0 local hit: %s", hit
+                        )
+                        return payload
+                    except Exception as exc:
+                        _log.debug(
+                            "[CachedDataFetcher] local load miss %s: %s", hit, exc
+                        )
+        except Exception as exc:
+            _log.debug("[CachedDataFetcher] Layer0 unavailable: %s", exc)
+
         chain = FallbackChain(chain_name) if chain_name else FallbackChain()
         fallback_log: list[dict] = []
 

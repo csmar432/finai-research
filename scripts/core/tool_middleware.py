@@ -96,8 +96,8 @@ class TokenBucketRateLimiter:
     window : float
         Time window in seconds. Default 60.
     num_buckets : int
-        Number of individual server buckets + 1 global bucket.
-        bucket[0] = global; bucket[i] = server i-1. Default 32.
+        Deprecated (kept for call-site compat). Buckets are now a dict keyed by
+        server name so per-server limits never collide via ``hash()``.
     """
 
     def __init__(
@@ -108,23 +108,21 @@ class TokenBucketRateLimiter:
     ):
         self.rate = rate
         self.window = window
-        self._num_buckets = num_buckets
-        # tokens[bucket_idx] = (available_tokens, last_refill_ts)
-        self._tokens: list[tuple[float, float]] = [
-            (float(rate), time.time()) for _ in range(num_buckets)
-        ]
+        self._num_buckets = num_buckets  # retained for introspection/compat
+        # key None = global bucket; str = per-server bucket
+        self._tokens: dict[str | None, tuple[float, float]] = {
+            None: (float(rate), time.time()),
+        }
         self._lock = threading.RLock()
 
-    def _bucket_idx(self, key: str | None) -> int:
-        """Map a key (server name) to a bucket index. None = global bucket 0."""
-        if key is None:
-            return 0
-        # Simple hash to distribute server names across bucket slots
-        return (hash(key) % (self._num_buckets - 1)) + 1
+    def _bucket_key(self, key: str | None) -> str | None:
+        """Normalize limiter key. None = global; str = exact per-server bucket."""
+        return None if key is None else str(key)
 
-    def _refill(self, idx: int) -> tuple[float, float]:
+    def _refill(self, key: str | None) -> tuple[float, float]:
         """Refill tokens for a bucket based on elapsed time. Returns (tokens, now)."""
-        tokens, last_refill = self._tokens[idx]
+        bkey = self._bucket_key(key)
+        tokens, last_refill = self._tokens.get(bkey, (float(self.rate), time.time()))
         now = time.time()
         elapsed = now - last_refill
         refill_per_sec = self.rate / self.window
@@ -146,8 +144,8 @@ class TokenBucketRateLimiter:
             Whether the call is allowed, how long to wait if not, and remaining tokens.
         """
         with self._lock:
-            idx = self._bucket_idx(key)
-            tokens, last_refill = self._tokens[idx]
+            bkey = self._bucket_key(key)
+            tokens, last_refill = self._tokens.get(bkey, (float(self.rate), time.time()))
             now = time.time()
             elapsed = now - last_refill
 
@@ -157,7 +155,7 @@ class TokenBucketRateLimiter:
 
             if tokens >= 1.0:
                 tokens -= 1.0
-                self._tokens[idx] = (tokens, now)
+                self._tokens[bkey] = (tokens, now)
                 # Estimate when bucket is refilled to full
                 deficit = self.rate - tokens
                 reset_at = now + (deficit / refill_per_sec) if deficit > 0 else now
@@ -170,7 +168,7 @@ class TokenBucketRateLimiter:
             else:
                 # How long until next token?
                 wait = (1.0 - tokens) / refill_per_sec
-                self._tokens[idx] = (tokens, now)
+                self._tokens[bkey] = (tokens, now)
                 reset_at = now + wait * self.rate
                 return RateLimitResult(
                     allowed=False,

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-research_framework/pipeline.py
-Universal academic paper pipeline for empirical financial research.
+research_framework/pipeline.py — demo / design-scaffold CLI (empirical track).
 
-适用于中美股票/宏观/行业/公司金融等各类实证研究主题。
+This is **not** the writing pipeline (`scripts/agent_pipeline.py`) and **not**
+the production empirics entry (`enhanced_pipeline.py` + `modern_did`).
 
-数据优先级：MCP（yfinance / tushare / akshare）→ 代理变量（需授权）→ 模拟数据（需授权）
+Modes:
+  --mode full     Demo TWFE DID on a sample/demo panel (smoke / teaching).
+  --mode design   Write a template REFINED_DESIGN.md (Stage-4 scaffold only).
+  --mode review   Delegate adversarial review to llm_reviewer.
 
-The pipeline:
-  1. Data acquisition (MCP probing with fallback)
-  2. Panel construction
-  3. DID regression with DOF checking
-  4. Report generation (LaTeX + Word, both languages)
+For real staggered DID / CS / Sun-Abraham / etc.:
+  python -m scripts.research_framework.enhanced_pipeline --topic "..."
+  or: from scripts.research_framework import modern_did
 
 【强制原则】
 - 禁止静默 fallback：任何数据缺口必须向用户展示并要求确认
@@ -307,19 +308,52 @@ def did_to_latex(results_list, y_labels, x_vars, title="", label=""):
 # ─────────────────────────────────────────
 # MAIN PIPELINE
 # ─────────────────────────────────────────
+
+# Deprecated aliases kept for CLI compatibility (actionable redirect, no silent reimpl).
+_DEPRECATED_MODE_REDIRECTS: dict[str, str] = {
+    "data": (
+        "Deprecated --mode data. Use: python scripts/universal_data_fetcher.py "
+        "(or MCP / local data/). Empirics: python -m scripts.research_framework.enhanced_pipeline"
+    ),
+    "analysis": (
+        "Deprecated --mode analysis. Use: "
+        "python -m scripts.research_framework.enhanced_pipeline --topic \"...\" "
+        "or import scripts.research_framework.modern_did"
+    ),
+    "draft": (
+        "Deprecated --mode draft. Writing track: "
+        "python scripts/agent_pipeline.py --topic \"...\" --use-hitl"
+    ),
+    "lit-review": (
+        "Deprecated --mode lit-review. Use: "
+        "python scripts/literature_download.py \"QUERY\" --source arxiv,semantic,openalex"
+    ),
+    "novelty-check": (
+        "Deprecated --mode novelty-check on pipeline.py. Use: "
+        "python scripts/agent_pipeline.py --topic \"...\" --novelty-check"
+    ),
+    "regression": (
+        "Deprecated --mode regression. Use: "
+        "python -m scripts.research_framework.enhanced_pipeline "
+        "or import scripts.research_framework.modern_did"
+    ),
+}
+
+
 def _parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     ap = argparse.ArgumentParser(description="Academic paper generation pipeline")
     ap.add_argument(
         "--mode", default="full",
-        choices=["full", "design", "data", "analysis", "draft", "review"],
+        choices=["full", "design", "review", *_DEPRECATED_MODE_REDIRECTS.keys()],
         help=(
-            "Pipeline mode. 'full' = end-to-end (default). "
-            "'design' = produce REFINED_DESIGN.md only (Stage 4 of the 8-step workflow). "
-            "'data' = fetch data via MCP/fallbacks only. "
-            "'analysis' = run regressions only. "
-            "'draft' = generate paper draft only. "
-            "'review' = adversarial review of an existing draft (needs --draft-file)."
+            "CLI mode. 'full' = demo TWFE pipeline (default). "
+            "'design' = template REFINED_DESIGN.md scaffold. "
+            "'review' = adversarial review of an existing draft (needs --draft-file). "
+            "Deprecated aliases (data/analysis/draft/lit-review/novelty-check/regression) "
+            "print a redirect and exit 2. "
+            "For real empirics use enhanced_pipeline / modern_did; "
+            "for writing use scripts/agent_pipeline.py."
         ),
     )
     ap.add_argument("--topic", default="ESG and Financing Constraints",
@@ -754,11 +788,12 @@ def _run_design_mode(args: argparse.Namespace) -> int:
 - Figure 2: Event study
 - Figure 3: Robustness tornado
 
-## 7. Next Steps
-1. `python scripts/universal_data_fetcher.py diagnose --data-type <type>`
-2. `python scripts/research_framework/pipeline.py --mode data --topic "{args.topic}"`
-3. `python scripts/research_framework/pipeline.py --mode analysis --topic "{args.topic}"`
-4. `python scripts/agent_pipeline.py --topic "{args.topic}" --venue {args.venue} --language {args.language}`
+## 7. Next Steps (dual-track)
+1. Data: `python scripts/universal_data_fetcher.py` (+ MCP / local `data/`)
+2. Empirics: `python -m scripts.research_framework.enhanced_pipeline --topic "{args.topic}"`
+   (or import `scripts.research_framework.modern_did` for CS/SunAb/BJS estimators)
+3. Writing: `python scripts/agent_pipeline.py --topic "{args.topic}" --venue {args.venue} --use-hitl`
+4. Demo-only TWFE smoke: `python scripts/research_framework/pipeline.py --mode full --topic "{args.topic}"`
 """
     out_path.write_text(design_md, encoding="utf-8")
     print(f"  ✅ {out_path}")
@@ -795,9 +830,12 @@ def _main_dispatch() -> int:
     - `--mode full` (default) → call `_run_full_pipeline(args)`
     - `--mode design`        → call `_run_design_mode(args)`
     - `--mode review`        → call `_run_review_mode(args)`
+    - deprecated aliases     → stderr redirect + exit 2 (compat, no silent reimpl)
     - `--list-methods`       → print orphan-engine inventory and exit
     - Any other value        → print actionable error and return 1
     """
+    import warnings
+
     args = _parse_args()
     if args.list_methods:
         # Print inventory of orphan engines wired into RobustnessRunner.
@@ -816,6 +854,11 @@ def _main_dispatch() -> int:
             print(f"  - {m}")
         print()
         return 0
+    if args.mode in _DEPRECATED_MODE_REDIRECTS:
+        msg = _DEPRECATED_MODE_REDIRECTS[args.mode]
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
+        print(f"ERROR: {msg}", file=sys.stderr)
+        return 2
     if args.mode == "full":
         return _run_full_pipeline(args)
     if args.mode == "design":
@@ -825,7 +868,8 @@ def _main_dispatch() -> int:
     # Unknown mode: actionable error.
     print(
         f"ERROR: --mode {args.mode!r} is not recognized. "
-        "Valid modes are: full (default), design, review.",
+        "Valid modes are: full (default), design, review. "
+        f"Deprecated aliases: {', '.join(sorted(_DEPRECATED_MODE_REDIRECTS))}.",
         file=sys.stderr,
     )
     return 1

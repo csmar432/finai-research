@@ -137,6 +137,7 @@ class ProblemCategory(str, Enum):
     DEPENDENCY = "dependency"
     MCP = "mcp"
     DATA_SOURCE = "data_source"
+    INFO = "info"
     OK = "ok"
 
 
@@ -199,7 +200,9 @@ def _detect_platform() -> str:
         os.environ.get("VSCODE_RESOLVING_ENVIRONMENT", "") +
         os.environ.get("CLAUDE_CODE", "") +
         os.environ.get("AGENT_ID", "") +
-        os.environ.get("CODALANG_AGENT", "")
+        os.environ.get("CODALANG_AGENT", "") +
+        os.environ.get("CODEX_THREAD_ID", "") +
+        os.environ.get("CODEX_INTERNAL_ORIGINATOR_OVERRIDE", "")
     )
     env_lower = env_str.lower()
     if "cursor" in env_lower:
@@ -505,27 +508,26 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
     except Exception:
         pass
 
-    # ── Host Agent 委托检测（v2.1: Cursor / Claude Code / Codex）──────────────
-    # 注意：这里仅记录到 problems 作为 information-level 警告，**不**进入 available。
-    # 因为 CLI 进程无法直接调用 host agent 的 LLM；检测到 host agent 不等于
-    # LLM 真的可用。pipeline.run 在 llm_available=False 时会降级到
-    # MockTemplateEngine，host agent 端可看到 [MOCK] 草稿并补全。
+    # ── Host Agent 委托检测（Cursor / Claude Code / Codex）──────────────────
+    # 信息提示，不是网络故障；不得计入 NETWORK 以免误判「LLM 不可用（网络问题）」。
     host_platform = _detect_platform()
     if host_platform in ("cursor", "claude_code", "codex"):
         problems.append(ProblemItem(
-            category=ProblemCategory.NETWORK,
+            category=ProblemCategory.INFO,
             name="HOST_AGENT_CONTEXT",
             name_zh="Host Agent 上下文",
             message=(
                 f"检测到 host agent: {host_platform}。"
-                "CLI 进程无法直接调用 host agent 的 LLM；"
-                "pipeline 将降级到 MockTemplateEngine。"
-                "如需真 LLM，请配置 DEEPSEEK_API_KEY 或运行 ollama serve。"
+                "CLI 进程不会直接调用 host agent 的 LLM；"
+                "可由当前 Codex / Claude Code / Cursor 对话模型继续推进，"
+                "也可选择配置外部 API 或 Ollama。系统不会自动进入 Mock。"
             ),
             fix_steps=[
-                "1. 配置 DEEPSEEK_API_KEY（推荐）— 见 .env.example",
-                "2. 或运行 `ollama serve` 启动本地模型",
-                "3. 或接受 [MOCK] 草稿 — host agent 端可看到并补全内容",
+                "【推荐】1. 由当前 Codex / Claude Code / Cursor 对话模型直接继续，无需额外 API Key",
+                "2. 配置 DEEPSEEK_API_KEY 或 RELAY_API_KEY 供 CLI 调用",
+                "3. 运行 `ollama serve` 启动本地模型",
+                "4. 仅在演示/测试中明确选择 Mock；Mock 结果不可用于研究结论",
+                "5. 退出并补齐配置后重新运行",
             ],
             severity="low",
         ))
@@ -535,7 +537,10 @@ def _check_llm(verify: bool = False) -> tuple[bool, str, list[ProblemItem]]:
         status = "，".join(available)
         return True, f"✅ LLM 可用: {status}", problems
 
-    if ds_key and any(p.category == ProblemCategory.NETWORK for p in problems):
+    if ds_key and any(
+        p.category == ProblemCategory.NETWORK and p.name != "HOST_AGENT_CONTEXT"
+        for p in problems
+    ):
         return False, "❌ LLM 不可用（网络问题）", problems
 
     return False, "❌ 没有可用的 LLM（请配置 DEEPSEEK_API_KEY 或启动 ollama serve）", problems
@@ -922,24 +927,25 @@ def _check_mcp(verify: bool = False) -> tuple[int, int, list[ProblemItem], list[
 
 
 def _platform_fixes(platform: str) -> dict[str, str]:
+    env_hint = "编辑项目根目录下的 .env.local（可从 .env.example 复制）"
     if platform == "cursor":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "启用 MCP 后需要重启 Cursor",
         }
     elif platform == "claude_code":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重启 Claude Code",
         }
     elif platform == "codex":
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重新加载窗口（Cmd+Shift+P → Reload Window）",
         }
     else:
         return {
-            "env_hint": "编辑项目根目录下的 .env 文件",
+            "env_hint": env_hint,
             "restart_hint": "重启 IDE",
         }
 
@@ -953,6 +959,7 @@ def run_diagnostic(
     verify: bool = False,
     ignore_data_source: bool = False,
     ignore_api_key: bool = False,
+    data_source_profile: str = "none",
 ) -> DiagnosticResult:
     """运行完整诊断。verify=True 时执行深度验证（耗时更长）。
 
@@ -960,6 +967,11 @@ def run_diagnostic(
     that operators in environments where paid MCPs (csmar/tushare/wind) are
     intentionally absent can run the diagnostic without it being treated as
     a hard failure.
+
+    data_source_profile:
+      - "none"（默认）: 不做主题硬编码数据源清单检查（避免非关税课题被刷屏）
+      - "tariff": 使用 TARIFF_RESEARCH_REQUIREMENTS
+      - "general": 仅检查常见免费源连通性提示（轻量）
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     platform = _detect_platform()
@@ -975,6 +987,22 @@ def run_diagnostic(
     dep_problems, dep_ok = _check_dependencies()
     all_problems.extend(dep_problems)
 
+    # 2b. graphviz（仅 arch 图可选依赖，缺失为 low，不阻断）
+    import shutil as _shutil
+    if _shutil.which("dot") is None:
+        all_problems.append(ProblemItem(
+            category=ProblemCategory.DEPENDENCY,
+            name="graphviz_dot",
+            name_zh="Graphviz (dot)",
+            message="未检测到 graphviz `dot`（仅 --auto-arch 架构图需要；matplotlib 可降级）",
+            fix_steps=[
+                "macOS: brew install graphviz",
+                "pip install graphviz",
+                "不需要架构图时可忽略",
+            ],
+            severity="low",
+        ))
+
     # 3. MCP 检查
     mcp_count, mcp_verified, mcp_problems, mcp_ok = _check_mcp(verify=verify)
     all_problems.extend(mcp_problems)
@@ -984,39 +1012,47 @@ def run_diagnostic(
         # environments often don't need every paid MCP to be configured.
         all_problems = [p for p in all_problems if p.category != ProblemCategory.API_KEY]
 
-    # 3b. 数据源可用性检查
-    from scripts.data_source_checker import (
-        DataSourceChecker,
-        TARIFF_RESEARCH_REQUIREMENTS,
-    )
-    ds_checker = DataSourceChecker(TARIFF_RESEARCH_REQUIREMENTS)
-    ds_result = ds_checker.run()
+    # 3b. 数据源可用性检查（默认关闭主题硬编码清单）
+    if data_source_profile != "none" and not ignore_data_source:
+        from scripts.data_source_checker import (
+            DataSourceChecker,
+            TARIFF_RESEARCH_REQUIREMENTS,
+        )
+        requirements = []
+        if data_source_profile == "tariff":
+            requirements = TARIFF_RESEARCH_REQUIREMENTS
+        elif data_source_profile == "general":
+            # 轻量：不强制付费源；仅在有 requirements 时跑 checker
+            requirements = []
+        if requirements:
+            ds_checker = DataSourceChecker(requirements)
+            ds_result = ds_checker.run()
 
-    # 将数据源问题转换为ProblemItem
-    for src_id, src_result in ds_result.source_results.items():
-        if src_result.status in ("requires_key", "requires_purchase", "requires_auth", "unavailable"):
-            meta = DataSourceChecker.SOURCE_META.get(src_id, {})
-            severity = "high" if src_id in ("csmar_customs", "tushare") else "medium"
-            if ignore_data_source:
-                # Bug fix 2026-07-12: honor CLI flag to skip DATA_SOURCE
-                # category problems entirely. This is the documented escape
-                # hatch for "I don't need CSMAR/Tushare for my topic" cases.
-                continue
-            all_problems.append(ProblemItem(
-                category=ProblemCategory.DATA_SOURCE,
-                name=f"data_source_{src_id}",
-                name_zh=f"数据源: {src_id}",
-                message=src_result.message,
-                fix_steps=[
-                    f"来源: {meta.get('description', src_id)}",
-                    f"获取: {src_result.url or meta.get('get_url', '请自行获取')}",
-                    f"成本: {meta.get('cost', '未知')}",
-                ] if src_result.status != "unavailable" else [src_result.details or "请将数据文件放入 data/ 目录"],
-                severity=severity,
-            ))
+            for src_id, src_result in ds_result.source_results.items():
+                if src_result.status in (
+                    "requires_key", "requires_purchase", "requires_auth", "unavailable",
+                ):
+                    meta = DataSourceChecker.SOURCE_META.get(src_id, {})
+                    severity = "high" if src_id in ("csmar_customs", "tushare") else "medium"
+                    all_problems.append(ProblemItem(
+                        category=ProblemCategory.DATA_SOURCE,
+                        name=f"data_source_{src_id}",
+                        name_zh=f"数据源: {src_id}",
+                        message=src_result.message,
+                        fix_steps=[
+                            f"来源: {meta.get('description', src_id)}",
+                            f"获取: {src_result.url or meta.get('get_url', '请自行获取')}",
+                            f"成本: {meta.get('cost', '未知')}",
+                        ] if src_result.status != "unavailable" else [
+                            src_result.details or "请将数据文件放入 data/ 目录"
+                        ],
+                        severity=severity,
+                    ))
 
     # 4. 统计
-    counts: dict[str, int] = {"network": 0, "api_key": 0, "dependency": 0, "mcp": 0, "data_source": 0}
+    counts: dict[str, int] = {
+        "network": 0, "api_key": 0, "dependency": 0, "mcp": 0, "data_source": 0, "info": 0,
+    }
     for p in all_problems:
         cat_val = p.category.value if isinstance(p.category, ProblemCategory) else p.category
         counts[cat_val] = counts.get(cat_val, 0) + 1
@@ -1042,6 +1078,11 @@ def run_diagnostic(
 
     # 7. 建议
     recs: list[str] = []
+    if not llm_available and platform in ("cursor", "claude_code", "codex"):
+        recs.append(
+            "【推荐】当前对话模型（Codex / Claude Code / Cursor）可直接继续；"
+            "CLI 不会自动转入 Mock。"
+        )
     if not llm_available:
         high_sev = [p for p in all_problems if p.severity == "high"]
         if high_sev:
@@ -1095,6 +1136,7 @@ _CAT_LABELS: dict[ProblemCategory, str] = {
     ProblemCategory.DEPENDENCY: "📦 依赖问题",
     ProblemCategory.MCP: "🖥️  MCP 配置",
     ProblemCategory.DATA_SOURCE: "📊 数据源问题",
+    ProblemCategory.INFO: "ℹ️  信息提示",
     ProblemCategory.OK: "✅ 无问题",
 }
 
@@ -1229,6 +1271,12 @@ def main() -> None:
              "适用场景: 已确认不需要该数据源 / 已通过其他途径获取 / 仅作 CI 烟雾测试.",
     )
     parser.add_argument(
+        "--data-source-profile",
+        choices=["none", "general", "tariff"],
+        default="none",
+        help="数据源清单检查档位：none=默认关闭；tariff=关税课题硬编码清单；general=轻量（当前无强制项）.",
+    )
+    parser.add_argument(
         "--ignore-api-key", action="store_true",
         help="忽略 API_KEY 类问题 (即不报告 missing key 警告). "
              "适用场景: 仅做 LLM 烟雾测试 / 已确认不会调用该 MCP.",
@@ -1243,6 +1291,7 @@ def main() -> None:
         verify=args.verify,
         ignore_data_source=args.ignore_data_source,
         ignore_api_key=args.ignore_api_key,
+        data_source_profile=args.data_source_profile,
     )
     # Honor --exit-zero-on-warnings
     if args.exit_zero_on_warnings and result.problem_counts.get("api_key", 0) > 0:

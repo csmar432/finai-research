@@ -1,14 +1,10 @@
-"""Unit tests for scripts/gen_social_preview.py (constants only — plot code not tested)."""
+"""Unit tests for scripts/gen_social_preview.py."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
 import pytest
-
-# Must set Agg backend BEFORE matplotlib.pyplot is loaded by the module
-import matplotlib
-matplotlib.use("Agg")
 
 SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 
@@ -29,20 +25,16 @@ def gsp():
 
 class TestConstants:
     def test_bg_is_dark(self, gsp):
-        assert gsp.BG == "#0d1117"
+        assert gsp.BG == "#10231c"
 
     def test_fg_is_white(self, gsp):
-        assert gsp.FG == "#ffffff"
+        assert gsp.FG == "#f7f4eb"
 
     def test_accent_colors_defined(self, gsp):
         assert gsp.ACCENT1.startswith("#")
         assert gsp.ACCENT2.startswith("#")
         assert gsp.ACCENT3.startswith("#")
         assert gsp.ACCENT1 != gsp.ACCENT2 != gsp.ACCENT3
-
-    def test_card_color_different_from_bg(self, gsp):
-        assert gsp.CARD != gsp.BG
-
 
 class TestStats:
     def test_mcp_total_is_int(self, gsp):
@@ -74,3 +66,14 @@ class TestCountAllIntegration:
     def test_jt_matches_count_all(self, gsp):
         assert gsp.jt_total == gsp.stats["journal_templates"]["total"]
 
+
+class TestSvg:
+    def test_has_accessible_title(self, gsp):
+        svg = gsp.build_svg()
+        assert "<title" in svg
+        assert "<desc" in svg
+
+    def test_has_current_counts(self, gsp):
+        svg = gsp.build_svg()
+        for value in (gsp.mcp_total, gsp.methods_total, gsp.skills_total, gsp.jt_total):
+            assert f">{value}<" in svg

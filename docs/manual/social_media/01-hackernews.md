@@ -41,13 +41,13 @@ runs:
 6. Adversarial review – 3-layer LLM review loop (GPT-4o + Claude + Gemini).
 
 Tech stack (for the HN crowd):
-- 47 econometric methods, not just OLS. Modern staggered DID
+- 58 econometric methods, not just OLS. Modern staggered DID
   (Callaway-Sant'Anna, Sun-Abraham, Borusyak, Goodman-Bacon) all
   included. Full list: python scripts/count_assets.py.
 - All MCP servers are stdlib HTTP + local SQLite — no proprietary vendor
   SDK lock-in.
 - Provenance tracking on every data fetch (see scripts/core/provenance.py).
-- 17 Skills for Cursor / Claude Code / GitHub Copilot.
+- 18 Skills for Codex / Cursor / Claude Code / GitHub Copilot.
 
 Important caveat (also in the README):
 ⚠️ Every AI-generated regression result and citation MUST be verified by
@@ -56,9 +56,9 @@ between stages but does not eliminate academic responsibility. Empirical
 economics publications have desk-reject standards; "AI wrote it" is not a
 valid defense.
 
-Stack: Python 3.10+, FastAPI for the orchestrator, linearmodels for
-IV/GMM, diff-in-diff2 for staggered DID, matplotlib for charts (300 DPI
-PDF). No SaaS, no telemetry, no phone-home. MIT licensed.
+Stack: Python 3.10+, FastAPI for the orchestrator, optional maintained
+econometrics backends, and matplotlib for charts (300 DPI PDF). No SaaS,
+no telemetry, no phone-home. MIT licensed.
 
 Happy to answer technical questions about MCP integration, causal
 inference implementations, or LaTeX template customization.

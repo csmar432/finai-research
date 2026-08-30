@@ -9,6 +9,12 @@ argument-hint: "[research-direction]"
 
 端到端的经济金融学术研究流程，从用户描述研究方向开始，到生成可投稿论文 PDF 结束。
 
+> **Agent-host / 隔离槽位（重要）**  
+> 若任务要求「不要询问、不要 Mock、缺失配置则跳过并写报告」：  
+> **先运行** `python scripts/agent_host_entry.py`（或读取其写出的 `output/SKIPPED_CONFIG.md` / `output/FINAL.md`）。  
+> 若该入口因无 LLM 等原因以非 0 退出，**停止本 Skill**，不要自建平行复现流水线或编造结果。  
+> 交互式 HITL 路径仍用 `start_research.py` / `agent_pipeline.py --use-hitl`。
+
 ```
 研究方向输入
        ↓
@@ -301,7 +307,7 @@ config = AgentPipelineConfig(
     topic="[研究方向]",
     venue="[目标期刊]",
     research_field="[研究领域]",
-    use_hitl=False,
+    use_hitl=True,  # outline/literature/draft gates; set False only for batch CI
     visualize=True,
 )
 pipeline = AgentPipeline(config=config)
@@ -935,7 +941,7 @@ config = AgentPipelineConfig(
     topic="[研究方向]",
     venue="[目标期刊]",
     research_field="[研究领域]",
-    use_hitl=False,
+    use_hitl=True,  # outline/literature/draft gates; set False only for batch CI
     visualize=True,
 )
 pipeline = AgentPipeline(config=config)

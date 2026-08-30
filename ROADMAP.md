@@ -1,7 +1,7 @@
 # FinAI Research Workflow — Roadmap
 
 > Last updated: 2026-07-09
-> Status: v0.2.0a0
+> Status: v0.2.0a1
 
 This document outlines the development roadmap for FinAI Research Workflow.
 星标（Star）和社区反馈会优先影响 roadmap 优先级。
@@ -66,7 +66,7 @@ This document outlines the development roadmap for FinAI Research Workflow.
 ### High Priority
 | Item | Description | Ticket |
 |------|-------------|--------|
-| MCP tiering | Restructure 50 MCP dirs into Core/Recommended/Optional tiers | #TBD |
+| MCP tiering | Restructure 43 MCP dirs into Core/Recommended/Optional tiers | #TBD |
 | Demo GIF | Replace SVG/PNG with ≤15s GIF for README | #TBD |
 | Coverage +10% | Add tests for fin_charts, report_generator, robustness_runner | #TBD |
 | arXiv submission | Submit finai.pdf with revised abstract and case studies | #TBD |

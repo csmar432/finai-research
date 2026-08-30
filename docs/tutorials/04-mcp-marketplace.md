@@ -248,5 +248,5 @@ params: { "ts_code": "000001.SZ", "max_results": 20 }
 ## Next Steps
 
 - [Tutorial 5: Event-Driven Research](05-event-driven-research.md)
-- [API Reference: MCPToolRegistry](../api_reference.md#mcptoolregistry)
-- [Setup Guide: MCP Server Configuration](../../SETUP_GUIDE.md)
+- [API Reference](../api_reference.md)
+- [Setup Guide: MCP Server Configuration](https://github.com/csmar432/finai-research/blob/main/SETUP_GUIDE.md)

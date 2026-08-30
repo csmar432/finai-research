@@ -16,8 +16,8 @@
 
 A finance & economics AI research workflow that automates the 8-stage research
 pipeline (idea → lit review → novelty → design → data → analysis → draft → review)
-with 43 MCP data sources, 47 econometric methods, 30 journal templates, and
-17 AI skills.
+with 43 MCP data sources, 58 econometric method modules, 30 journal templates, and
+18 AI skills.
 
 **Repo:** https://github.com/csmar432/finai-research
 **License:** MIT
@@ -35,9 +35,48 @@ pip install 'finai-research-workflow[extras]'  # from PyPI
 cp .env.example .env.local
 # Edit .env.local: set DEEPSEEK_API_KEY=sk-...
 
-# 3. Run
-python scripts/agent_pipeline.py --topic "Carbon trading and green innovation"
+# 3. Run (pick one path)
+# 3a. Clarify first (recommended for new topics; does not auto-run writing)
+python scripts/start_research.py --topic "Carbon trading and green innovation"
+# optional: python scripts/start_research.py --topic "..." --continue --use-hitl
+
+# 3b. Direct writing pipeline
+python scripts/agent_pipeline.py --topic "Carbon trading and green innovation" --use-hitl
+
+# 3c. Agent-host / isolation slot (non-interactive, no Mock, fail-closed)
+#    Writes output/SKIPPED_CONFIG.md + output/FINAL.md when blocked (e.g. no LLM).
+#    Do NOT invent a parallel pipeline outside FinAI when this exits non-zero.
+python scripts/agent_host_entry.py --topic "Carbon trading and green innovation"
+# or: place TOPIC.md in cwd, then: python scripts/agent_host_entry.py
 ```
+
+---
+
+## Agent-host / isolation protocol
+
+When a host agent is told **not to ask**, **not to wait**, and **not to use Mock**:
+
+1. Prefer `python scripts/agent_host_entry.py` (reads `TOPIC.md` if `--topic` omitted).
+2. If the run is blocked (no LLM, missing topic, preflight refuse), **stop** after
+   `output/SKIPPED_CONFIG.md` + `output/FINAL.md` are written. Exit `4` = LLM/config block; `2` = bad/missing topic.
+3. **Do not** freestyle a second research stack, fabricate citations/coefficients, or silently enable Mock.
+4. Empirical work (DID/IV/data fetch) remains a **separate hand-off** from the writing pipeline; see dual-track notes in `docs/ARCHITECTURE.md`.
+5. Batch HITL off: default for `agent_host_entry`; or `FINAI_NO_HITL=1` / `--no-use-hitl` on other CLIs.
+6. **Local empirics first**: set `FINAI_EMPIRICAL_DATA_ROOT` (e.g. `/data/实证分析`).
+   Universal + CachedDataFetcher Layer 0 read this root before MCP/CLI. Skipping local
+   panels and substituting city patents / overseas revenue / interest coverage for
+   firm green patents / customs HS / bond spreads is **proxy laundering** — forbidden.
+7. **Deepen inside FinAI, don't fork outside**: if results are thin, use
+   `python -m scripts.research_framework.enhanced_pipeline --topic "..." --explore
+   [--panel path]` (multi-estimator + comprehensive robustness). Freestyle
+   `run_real_*.py` that bypasses FinAI APIs / local root is the anti-pattern.
+8. **TOPIC integrity**: `agent_host_entry` records hard-gaps in `SKIPPED_CONFIG.md`.
+   Writing may continue as `status=partial` with non-claims; use `--block-on-topic-gaps`
+   to refuse the whole run. Causal PDF delivery is not "completed" while gaps remain.
+9. **Delivery contract**: required artifacts are `FINAL.md` + `SKIPPED_CONFIG.md`
+   (`CODEX_FINAL.md` alone is insufficient). Optional: `--check-delivery` → `DELIVERY.md`.
+10. Interactive Cursor chats still greet / HITL per `.cursor/rules/system-init.mdc`;
+    isolation autopilot overrides that via `FINAI_AUTOPILOT=1` + `agent_host_entry` only.
 
 ---
 
@@ -48,14 +87,28 @@ Stage 0: Health Check        → python scripts/health_check.py
 Stage 1: Idea Generation     → IDE handles via prompt
 Stage 2: Literature Review   → scripts/literature_download.py
 Stage 3: Novelty Check       → scripts/agent_pipeline.py --novelty-check
-Stage 4: Empirical Design    → scripts/research_framework/pipeline.py --mode design
+                               (NoveltyGate: SS/OpenAlex search + Jaccard; LLM only if search down)
+Stage 4: Empirical Design    → scaffold: pipeline.py --mode design
+                               real design: fin-experiment-design / REFINED_DESIGN.md
 Stage 5: Data Acquisition    → scripts/universal_data_fetcher.py
-Stage 6: Analysis            → scripts/research_framework/modern_did.py
-Stage 7: Paper Draft         → scripts/research_framework/report_generator.py
+Stage 6: Analysis            → python -m scripts.research_framework.enhanced_pipeline
+                               or import scripts.research_framework.modern_did
+                               (pipeline.py --mode full = demo TWFE only)
+Stage 7: Paper Draft         → scripts/agent_pipeline.py / report_generator.py  【写作轨】
 Stage 8: Review              → scripts/core/llm_reviewer.py
 ```
+Writing (7) and empirics (4–6) are separate hand-offs — see `docs/ARCHITECTURE.md` §0.
 
-Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
+Each stage should pause for user confirmation when HITL is enabled.
+Use `python scripts/agent_pipeline.py --topic "..." --use-hitl` (defaults to
+outline/literature/draft gates). `run_research.py` also defaults to HITL;
+set `FINAI_NO_HITL=1` or `--no-use-hitl` for batch. Do NOT auto-continue past a stage.
+
+HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
+1. Stage agent runs first; gate holds **after** output exists (review real content).
+2. `approve_step(stage)` then `resume_pipeline(paused)` → keep output, run next stage.
+3. `reject_step(stage, feedback)` then `resume_pipeline(paused)` → re-run same stage
+   with feedback injected; do not call resume while the gate is still PENDING.
 
 ---
 
@@ -64,12 +117,14 @@ Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
 | I want to... | Run this |
 |---|---|
 | Check system health | `python scripts/health_check.py` |
-| Run full pipeline | `python scripts/agent_pipeline.py --topic "..."` |
+| Clarify topic (5 rounds) | `python scripts/start_research.py --topic "..."` |
+| Run full pipeline | `python scripts/agent_pipeline.py --topic "..." --use-hitl` |
+| Agent-host batch (fail-closed) | `python scripts/agent_host_entry.py --topic "..."` |
 | Generate paper draft | `python scripts/research_framework/report_generator.py --outline FILE.md` |
-| Run a specific method (DID/IV/RDD/PSM) | `python scripts/research_framework/modern_did.py --help` |
+| Run empirics (modern DID) | `python -m scripts.research_framework.enhanced_pipeline --topic "..."` or `from scripts.research_framework import modern_did` |
 | List journal templates | `python scripts/journal_template.py --list` |
-| List MCP servers | `python scripts/register_mcp_servers.py --list` |
-| Verify project integrity | `python scripts/audit_guard.py` (17/17 checks) |
+| List / register MCP servers | `python scripts/register_mcp_servers.py --list` / `--profile academic --prune` |
+| Verify project integrity | `python scripts/audit_guard.py` (25/25 checks) |
 
 ---
 
@@ -88,11 +143,12 @@ Each stage requires user confirmation (HITL). Do NOT auto-continue past a stage.
 
 ```
 scripts/
-├── agent_pipeline.py       # Entry: full pipeline
-├── research_framework/     # 47 econometric methods
-├── core/                   # 87 modules (LLM, checkpoint, telemetry)
+├── agent_pipeline.py       # Entry: writing pipeline
+├── agent_host_entry.py     # Entry: non-interactive agent-host (SKIPPED/FINAL)
+├── research_framework/     # 58 econometric method modules
+├── core/                   # agent orchestration (LLM, checkpoint, telemetry)
 ├── health_check.py         # System diagnostics
-├── audit_guard.py          # 17-check project integrity
+├── audit_guard.py          # 25-check project integrity
 ├── journal_template.py     # 30 journal templates
 ├── register_mcp_servers.py # 43 MCP servers
 └── universal_data_fetcher.py # 7-layer data fallback

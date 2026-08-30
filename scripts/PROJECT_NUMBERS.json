@@ -1,13 +1,13 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-08-03",
+  "last_verified": "2026-08-09",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
     "_comment": "Fields below are NOT auto-detected by count_assets.py and require manual maintenance.",
-    "version.github_release": "v1.0.1 (Zenodo DOI 10.5281/zenodo.21262689, archive minted 2026-07-08)",
-    "version.pypi": "not published (planned for v1.1.0)"
+    "version.github_release": "v0.2.0a1 (Zenodo DOI 10.5281/zenodo.21262689 retained from prior archive)",
+    "version.pypi": "0.2.0a1 (published)"
   },
   "mcp": {
     "total_directories": 43,
@@ -58,7 +58,7 @@
       "arch_diagram_demos",
       "exact_permutation"
     ],
-    "note": "Smoke tests for all 47 modules committed 2026-06-27. Some modules still need deeper numerical tests."
+    "note": "Smoke tests cover 56 of 58 modules. The remaining two demo/algorithm modules are tracked in zero_test_modules and still need dedicated tests."
   },
   "skills": {
     "total": 18,
@@ -105,11 +105,11 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 659,
-    "test_functions": 12688,
+    "test_files": 675,
+    "test_functions": 12789,
     "numerical_correctness_tests": 9,
-    "ci_coverage_gate": 55,
-    "ci_coverage_target": 60,
+    "ci_coverage_gate": 60,
+    "ci_coverage_target": 65,
     "ci_jobs": 7,
     "lock_files": [
       "requirements-lock.txt",
@@ -131,10 +131,10 @@
     "chinese_guide_lines": 1049
   },
   "version": {
-    "pyproject": "0.1.0",
-    "github_release": "v1.0.1",
+    "pyproject": "0.2.0a1",
+    "github_release": "v0.2.0a1",
     "github_release_doi": "10.5281/zenodo.21262689",
-    "github_release_date": "2026-07-08",
-    "pypi": "not published"
+    "github_release_date": "2026-08-07",
+    "pypi": "0.2.0a1"
   }
 }
