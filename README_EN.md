@@ -122,7 +122,7 @@ coefficients, citations, or statistical claims. Regenerate it with
 
 ### 🏗 Engineering Quality
 
-- ✅ 675 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
+- ✅ 677 test files, 7 CI jobs, 3-OS matrix (Ubuntu + macOS + Windows)
 - ✅ Coverage report, codecov badge
 - ✅ Pre-commit hooks (ruff + mypy + codespell + commitlint)
 - ✅ Dependabot (pip + GitHub Actions)
