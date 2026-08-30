@@ -1,7 +1,7 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-08-09",
+  "last_verified": "2026-08-31",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
@@ -48,11 +48,11 @@
     ]
   },
   "econometrics": {
-    "total_method_modules": 58,
+    "total_method_modules": 59,
     "test_coverage": {
-      "modules_with_tests": 56,
-      "modules_total": 58,
-      "percent": 96.55
+      "modules_with_tests": 57,
+      "modules_total": 59,
+      "percent": 96.61
     },
     "zero_test_modules": [
       "arch_diagram_demos",
@@ -105,8 +105,8 @@
     "note": "30 = unique keys in JOURNAL_METADATA dict. TEMPLATES dict has 44 entries with legacy aliases merged into 30 unique templates (see scripts/journal_template.py)."
   },
   "testing": {
-    "test_files": 675,
-    "test_functions": 12789,
+    "test_files": 677,
+    "test_functions": 12823,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 60,
     "ci_coverage_target": 65,

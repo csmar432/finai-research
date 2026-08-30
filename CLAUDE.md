@@ -126,7 +126,7 @@ pytest tests/ -v
 > - `user-newsapi` — NewsAPI Key（免费注册有限额）
 > - `user-yfinance` / `user-sec-edgar` — 免费，无需 Key
 
-### 计量方法（约58种独立实现，JF/JFE/RFS 标准）
+### 计量方法（约59种独立实现，JF/JFE/RFS 标准）
 
 > **重要说明**：以下方法中，标注 🔗 的依赖 `linearmodels`、`diff-in-diff2` 等第三方包；标注 ⭐ 的为独立 Python 实现。
 > 数量为近似值，因部分估计器（如 TWFE × 3 种 SE × bootstrap 变体）存在重复计数。
@@ -234,7 +234,8 @@ output/                           # 输出目录
 | `scripts/register_mcp_servers.py --list` | 列出 `{{MCP_COUNT}}` 个 MCP 服务器注册状态（首次必须跑）|
 | `scripts/register_mcp_servers.py` | 一键注册所有 MCP 到 `~/.cursor/mcp.json` |
 | `scripts/research_framework/pipeline.py` | 实证 demo TWFE + design scaffold（非写作轨）|
-| `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID；写出 `empirical_package.json`）|
+| `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID；`--mechanism` 指定渠道；写出 `GOLD_TABLES.md` + `empirical_package.json`）|
+| `scripts/research_framework/gold_tables.py` | 黄金八格实跑表（结构事实 / 逐步 / 更紧 / 样本流 / 处理→M）|
 | `scripts/core/empirical_package.py` | 实证包写稿门（黄金八格 / 控制职务 / 机制分列 / 图门）|
 | `scripts/research_framework/modern_did.py` | 现代 DID 库（import，无独立 CLI）|
 | `scripts/research_framework/fin_charts.py` | 专业金融图表 |

@@ -1637,6 +1637,74 @@ def check_17_no_research_integrity_anti_patterns() -> CheckResult:
 # ────────────────────────────────────────────────────────────────────
 
 
+def _check_empirical_package_wiring() -> CheckResult:
+    """2026-08-31: the write-gate only protects anything if both ends match.
+
+    Three links, all of which have silently broken before:
+      1. enhanced_pipeline writes ``<output_dir>/empirical_package.json``
+      2. the writing pre-gate searches the dir the empirics track defaults to
+      3. agent_pipeline actually calls the pre-gate
+    """
+    root = Path(__file__).parent.parent
+    gate = root / "scripts" / "core" / "empirical_package.py"
+    emp = root / "scripts" / "research_framework" / "enhanced_pipeline.py"
+    writer = root / "scripts" / "agent_pipeline.py"
+    evidence: list[str] = []
+
+    missing = [str(p.relative_to(root)) for p in (gate, emp, writer) if not p.exists()]
+    if missing:
+        return CheckResult(
+            passed=False,
+            expected="empirical_package.py + enhanced_pipeline.py + agent_pipeline.py",
+            actual=f"missing: {', '.join(missing)}",
+            evidence=[],
+        )
+
+    emp_src = emp.read_text(encoding="utf-8")
+    writer_src = writer.read_text(encoding="utf-8")
+
+    emits = (
+        "def _write_empirical_package" in emp_src
+        and "self._write_empirical_package()" in emp_src
+        and 'self.output_dir / "empirical_package.json"' in emp_src
+    )
+    if emits:
+        evidence.append("enhanced_pipeline writes <output_dir>/empirical_package.json")
+
+    # The gate must search the empirics default output dir ("output/").
+    # Scope to the pre-gate body: agent_pipeline.py mentions Path("output")
+    # elsewhere, and a whole-file grep would pass even with the search broken.
+    start = writer_src.find("def _run_writing_pre_gate")
+    end = writer_src.find("\n    def ", start + 1) if start >= 0 else -1
+    gate_body = writer_src[start : end if end != -1 else len(writer_src)] if start >= 0 else ""
+    searches_default = (
+        "check_empirical_package" in gate_body and 'Path("output")' in gate_body
+    )
+    if searches_default:
+        evidence.append('writing pre-gate searches Path("output")')
+
+    called = writer_src.count("_run_writing_pre_gate") >= 2  # def + call site
+    if called:
+        evidence.append("agent_pipeline calls _run_writing_pre_gate")
+
+    gold = root / "scripts" / "research_framework" / "gold_tables.py"
+    has_gold = (
+        gold.exists()
+        and "def step2b_gold_tables" in emp_src
+        and "self.step2b_gold_tables()" in emp_src
+    )
+    if has_gold:
+        evidence.append("gold-slot tables run in step2b")
+
+    ok = emits and searches_default and called and has_gold
+    return CheckResult(
+        passed=ok,
+        expected="emit + search-path + call-site + gold tables all wired",
+        actual=f"{len(evidence)}/4 links present",
+        evidence=evidence,
+    )
+
+
 CHECKS: list[AuditCheck] = [
     AuditCheck(
         1,
@@ -1812,6 +1880,19 @@ CHECKS: list[AuditCheck] = [
         "downstream pipeline treats it as a real result, producing empty "
         "LaTeX tables without warning — academic integrity risk.",
         lambda: _check_data_warning_notifier(),
+    ),
+    # 2026-08-31: empirical package write-gate must stay wired end to end
+    AuditCheck(
+        26,
+        "Empirical package write-gate is wired across both tracks",
+        "Verify empirics emit output/empirical_package.json, the writing "
+        "pre-gate searches that directory, and the gate is actually called "
+        "from the pipeline. Failure mode being defended against: a CI "
+        "workaround narrows the search path (or the emit step is dropped), "
+        "so a policy-DID draft is written with no mechanism table, an "
+        "insignificant main column, or a dirty event-study figure — and "
+        "nothing complains.",
+        lambda: _check_empirical_package_wiring(),
     ),
 ]  # noqa: E501
 
