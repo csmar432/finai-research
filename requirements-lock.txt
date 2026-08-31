@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml -o requirements-lock.txt --python-version 3.10 --universal
 annotated-types==0.8.0
     # via pydantic
-anthropic==0.112.0
+anthropic==1.2.0
     # via finai-research-workflow (pyproject.toml)
 anyio==4.14.2
     # via
