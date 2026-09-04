@@ -141,7 +141,7 @@ HITL protocol (`AgentOrchestrator` / `AgentPipeline`):
 4. **Journals** — 30 templates available. Default venue: 经济研究 (Chinese) / JF (English). User can override via `--venue`.
 5. **HITL** — pause at every stage transition. Never auto-skip a confirmation gate.
 6. **No silent fallback to mock data** — fetch() raises if all layers fail unless user opts in.
-7. **Empirical package before causal claims** — a policy DID is gold slots + live T→M table, not one TWFE coefficient. Controls need jobs attached to *this* Y. Do not drop mechanism on core mode. Do not write 「研究发现」 when `main_p>0.10` or the event-study figure is dirty.
+7. **Empirical package before causal claims** — a policy DID is gold slots + live T→M table + a retellable story page, not one TWFE coefficient. Controls need jobs attached to *this* Y. Core needs ≥2 named channels from constructs other than Y, and two mechanism methods from *different inference families*. Do not drop mechanism on core mode. Do not write 「研究发现」 when `main_p>0.10` or the event-study figure is dirty. Do not write 「H1 被拒绝」— rewrite the question. Claim ≤ tables; do not ship a whole output folder as the submission.
 
 ---
 

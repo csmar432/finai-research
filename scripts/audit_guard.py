@@ -1696,11 +1696,20 @@ def _check_empirical_package_wiring() -> CheckResult:
     if has_gold:
         evidence.append("gold-slot tables run in step2b")
 
-    ok = emits and searches_default and called and has_gold
+    gate_src = gate.read_text(encoding="utf-8")
+    has_story_contract = (
+        "MECHANISM_METHOD_FAMILIES" in gate_src
+        and "def _validate_core_story_and_type" in gate_src
+        and "mechanism_is_y" in gate_src
+    )
+    if has_story_contract:
+        evidence.append("write-gate has story + method-family + M≠Y contract")
+
+    ok = emits and searches_default and called and has_gold and has_story_contract
     return CheckResult(
         passed=ok,
-        expected="emit + search-path + call-site + gold tables all wired",
-        actual=f"{len(evidence)}/4 links present",
+        expected="emit + search-path + call-site + gold tables + story contract all wired",
+        actual=f"{len(evidence)}/5 links present",
         evidence=evidence,
     )
 

@@ -39,7 +39,7 @@ python -m scripts.core.empirical_package audit output/fin-refinement/empirical_p
 python -m scripts.research_framework.enhanced_pipeline --topic "..." --mechanism 渠道列名
 ```
 
-`empirical_package.json` 最低要求：`y_construct` / `x_construct`、每件控制的 `variable_jobs`（中文 `table_row` + 接到本题 Y 的 `job` + 非贴纸 `basis`）、黄金八格（缺格写 `dropped` 理由）、政策 DID 还要独立于电池的 `mechanism_channels` 与 `figure_gate`。政策 DID 不得 `dropped: mechanism`。交稿是合取：主栏显著 ∧ 控制有职务 ∧ 活机制表 ∧ 图干净。
+`empirical_package.json` 最低要求：`y_construct` / `x_construct`、每件控制的 `variable_jobs`（中文 `table_row` + 接到本题 Y 的 `job` + 非贴纸 `basis`）、黄金八格（缺格写 `dropped` 理由）、政策 DID 还要独立于电池的 `mechanism_channels`（≥2 条且不是本题 Y）与 `figure_gate`。`mechanism_methods` 按推断家族计数（sobel+bootstrap 只算一种）。政策 DID 不得 `dropped: mechanism`。交稿是合取：主栏显著 ∧ 控制有职务 ∧ 活机制表 ∧ 图干净 ∧ 能复述的 `story` 页。H1 必须是主发现，禁止写「H1 被拒绝」。
 
 ## 前置条件
 

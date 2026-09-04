@@ -64,23 +64,48 @@ def _ok_core() -> dict:
         },
         "main_col": "(4)",
         "main_p": 0.01,
-        "mechanism_channels": ["批发零售新注册"],
+        "mechanism_channels": ["批发零售新注册", "居民服务新注册"],
         "mechanism_methods": ["jiangting", "sobel"],
         "mechanism_lock": ["信息化"],
         "mechanism_theory": "示范改变流通进入 → 批发零售新注册上升 → 县域贷款对数因此上升",
+        "framework": "基于信息不对称下的金融中介框架，处理通过流通进入改变县域信贷",
+        "policy_type": "mixed",
+        "policy_type_basis": "商务部示范名单叠加财政专项资金到县",
         "figure_gate": {
             "event_post_n": 4,
             "event_post_cross0_n": 0,
             "placebo_true_outside_mass": True,
             "event0_job": "名单公布年，资金同步下达所以 0 点最高",
         },
+        "story": {
+            "question": "那么，电商示范名单能否提高县域贷款对数？",
+            "tension": "示范既可能引入真实信贷需求，也可能只是把已有网点的业务换个统计口径。",
+            "answer": "名单县的流通进入上升，并带动县域信贷相对扩张",
+            "pitch": (
+                "问题是示范名单有没有把信贷做厚。难处在于名单县本来条件更好，"
+                "对照并不干净，也说不清扩张来自真实需求还是统计口径。我们用县年"
+                "双重差分，先看贷款相对变化，再看流通进入这条独立于控制的渠道。"
+                "发现名单县信贷相对扩张，说明示范不只是换统计口径，而是把可贷"
+                "需求做厚了。这意味着县域信贷政策要把流通进入当作可核对的中间站，"
+                "而不是只看年末贷款余额本身。"
+            ),
+            "beats": [
+                {"section": "基准", "asks": "Y相对变了吗", "tables": [2], "answer": "相对扩张"},
+                {"section": "识别", "asks": "是不是选择", "tables": [3], "answer": "站住了"},
+                {"section": "机制", "asks": "流通进入动了吗", "tables": [4], "answer": "动了"},
+                {"section": "异质", "asks": "哪里更强", "tables": [5], "answer": "中西部更强"},
+            ],
+            "story_numbers": ["主效应实物量级"],
+        },
     }
 
 
 def test_thinking_questions_are_reusable_not_a_menu():
-    assert len(THINKING_QUESTIONS) == 10
+    assert len(THINKING_QUESTIONS) >= 10
     assert any("观察点" in q for q in THINKING_QUESTIONS)
     assert any("贴纸" in q for q in THINKING_QUESTIONS)
+    assert any("故事页" in q for q in THINKING_QUESTIONS)
+    assert any("推断家族" in q for q in THINKING_QUESTIONS)
 
 
 def test_ok_core_package_passes_write_gate():
@@ -128,9 +153,41 @@ def test_dirty_event_study_blocks_even_if_twfe_is_starred():
     assert "placebo_figure" in codes
 
 
+def test_same_family_methods_count_as_one():
+    from scripts.core.empirical_package import method_families, validate_package
+
+    pkg = _ok_core()
+    pkg["mechanism_methods"] = ["sobel", "bootstrap"]
+    assert method_families(pkg["mechanism_methods"]) == ["stepwise_indirect"]
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "mechanism_methods" in codes
+
+
+def test_mechanism_cannot_be_the_outcome():
+    pkg = _ok_core()
+    pkg["mechanism_channels"] = ["县域贷款对数", "批发零售新注册"]
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "mechanism_is_y" in codes
+
+
+def test_core_needs_a_story_page():
+    pkg = _ok_core()
+    pkg["story"] = {}
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "story" in codes
+
+
+def test_h1_rejected_is_a_rewrite_not_a_finding():
+    text = "结论：假说H1被拒绝，政策没有提高贷款。\n前站没有接上后站。"
+    codes = {f.code for f in audit_manuscript(text, _ok_core())}
+    assert "h1_rejected" in codes
+    assert "work_language" in codes
+
+
 def test_manuscript_memo_voice_and_doi():
     text = (
-        "摘要：本文不是估计 ATT，不应解释为因果。\n"
+        "摘要：本文不是估计 ATT，不应解释为因果。"
+        "名单县的流通进入上升，并带动县域信贷相对扩张。\n"
         "研究发现平行趋势、安慰剂后依然成立。\n"
         "H1：平行趋势成立。\n"
         "参考文献\n"
