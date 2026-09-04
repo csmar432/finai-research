@@ -27,8 +27,10 @@ comparison, sample flow, and treatment→M for every channel named via
 figure gate; whatever it did not run stays `dropped`). The writing pre-gate reads
 it (`scripts/core/empirical_package.py`) and blocks the draft unless the main
 column is significant, controls carry jobs tied to *this* Y, a live mechanism
-table exists, and the genre's fourth piece holds. No package → writing-only
-track, gate soft-skips.
+table exists, the genre's fourth piece holds, and a core package has a
+retellable `story` page (question / tension / number-free answer / pitch).
+Mechanism methods count by inference family; M is not Y. No package →
+writing-only track, gate soft-skips.
 
 > **CLI 入口 (写作轨)**
 >

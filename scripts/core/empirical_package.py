@@ -13,7 +13,9 @@ It encodes only reusable contracts:
 3. Mechanism channels must be disjoint from the control battery.
 4. Write-gate conjunction: significant main column ∧ jobs ∧ live mechanism
    ∧ genre-appropriate fourth piece (clean event/placebo figures for policy
-   DID; tighter compare for cross-section).
+   DID; tighter compare for cross-section) ∧ retellable story page (core).
+5. Mechanism methods count by *inference family*, not token count. M is not Y.
+   Core needs ≥2 named channels. H1 is the finding — "H1 被拒绝" fails.
 
 Writing-only tracks without a package file soft-skip. A present package that
 fails the conjunction blocks the writing pre-gate.
@@ -31,6 +33,8 @@ __all__ = [
     "GOLD_SLOTS",
     "CORE_OVERLAY_SLOTS",
     "THINKING_QUESTIONS",
+    "MECHANISM_METHOD_FAMILIES",
+    "method_families",
     "PackageFinding",
     "EmpiricalPackageReport",
     "empty_package",
@@ -78,6 +82,36 @@ THINKING_QUESTIONS: tuple[str, ...] = (
     "机制渠道与控制电池是否同构念？同一活动换分母不能既控制又机制。",
     "机制是处理→点名 M 的表，还是道歉段 / 节标题 / 把主 Y 切片？政策 DID 不得 dropped 机制。",
     "第四件随体裁：政策 DID 要事件图处理后 CI 不跨 0；截面要更紧比较站住。过一扇门不能交。",
+    "故事页先于表：一句问题、一句张力、一句无数字答案、能复述的讲稿；搜完只改答案不改问题。",
+    "H1 必须是主发现。符号/显著性对不上就重定问题或停线，禁止写「H1 被拒绝」。",
+    "机制渠道不得是本题 Y；两条渠道须是可区分路径，不是同一构念换名。",
+    "两种机制测法必须来自不同推断家族（两步法 / 中介区间 / 调节 / 时序），同族两个词只算一种。",
+)
+
+# Token → inference family. Two tokens in one family count as one method.
+MECHANISM_METHOD_FAMILIES: dict[str, frozenset[str]] = {
+    "twostep": frozenset({"jiangting", "two_step", "twostep", "did_on_m", "t_to_m"}),
+    "stepwise_indirect": frozenset(
+        {"sobel", "bootstrap", "m_in_y", "stepwise", "four_step"}
+    ),
+    "moderation": frozenset(
+        {"did_x_base_m", "did_x_baseline", "treat_x_baseline", "moderation"}
+    ),
+    "system": frozenset({"sur", "sem"}),
+    "causal_med": frozenset({"causal_mediation", "imai"}),
+    "timing": frozenset({"timing", "m_event_study"}),
+    "micro": frozenset({"micro", "household"}),
+    "exclusion": frozenset({"exclusion", "blocked_channel"}),
+}
+
+_POLICY_TYPES = frozenset({"project_system", "advocacy", "mixed", "not_policy"})
+_NUM_IN_PROSE = re.compile(r"\d+\.\d+|%")
+_H1_REJECTED = re.compile(r"假说\s*H\s*1.{0,8}(被拒绝|未得到验证)|H\s*1.{0,6}被拒绝")
+_WORK_LANGUAGE = (
+    "前站",
+    "吸收层",
+    "名单效应",
+    "框架的推论",
 )
 
 _STICKER_EXACT = re.compile(
@@ -135,6 +169,25 @@ def thinking_questions() -> tuple[str, ...]:
     return THINKING_QUESTIONS
 
 
+def method_families(methods: Iterable[str]) -> list[str]:
+    """Map method tokens to inference families; unknowns stay distinct."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for raw in methods:
+        token = _norm(str(raw))
+        if not token:
+            continue
+        family = f"other:{token}"
+        for name, aliases in MECHANISM_METHOD_FAMILIES.items():
+            if token in aliases or token == _norm(name):
+                family = name
+                break
+        if family not in seen:
+            seen.add(family)
+            out.append(family)
+    return out
+
+
 def empty_package(*, mode: str = "gold", unit: str = "firm") -> dict[str, Any]:
     """Scaffold a package. Questions first; do not copy example channel names."""
     if mode not in MODES:
@@ -162,11 +215,26 @@ def empty_package(*, mode: str = "gold", unit: str = "firm") -> dict[str, Any]:
         "mechanism_theory": "",
         "figure_gate": {},
         "null_effect": False,
+        "framework": "",
+        "policy_type": "",
+        "policy_type_basis": "",
+        "story": {},
     }
 
 
 def _norm(text: str) -> str:
     return re.sub(r"[\s_\-]+", "", (text or "").lower())
+
+
+def _same_construct(a: str, b: str) -> bool:
+    na, nb = _norm(a), _norm(b)
+    if not na or not nb:
+        return False
+    if na == nb:
+        return True
+    strip = r"(对数|率|比重|存量|规模|余额|深度)$"
+    sa, sb = re.sub(strip, "", na), re.sub(strip, "", nb)
+    return bool(sa and sb and len(sa) >= 4 and sa == sb)
 
 
 def _dropped_slots(pkg: Mapping[str, Any]) -> dict[str, str]:
@@ -315,9 +383,21 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
                 f"机制渠道与控制/lock 同构念：{overlap}。同一构念不能既进电池又进 M",
             )
         )
-    if mode == "core" and not channels:
+    if mode == "core" and y_construct and any(_same_construct(c, y_construct) for c in channels):
         findings.append(
-            PackageFinding("error", "mechanism_channels", "政策 DID 须点名至少一条独立 M")
+            PackageFinding(
+                "error",
+                "mechanism_is_y",
+                "机制渠道不得是本题 Y（贷款题禁再印贷款对数/存量/深度）",
+            )
+        )
+    if mode == "core" and len(channels) < 2:
+        findings.append(
+            PackageFinding(
+                "error",
+                "mechanism_channels",
+                "政策 DID 须点名至少两条可区分路径的独立 M，不是一条渠道换名",
+            )
         )
     theory = str(pkg.get("mechanism_theory") or "").strip()
     if mode == "core" and (not theory or "借鉴" in theory and "→" not in theory):
@@ -329,14 +409,19 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
             )
         )
     methods = [str(m).strip() for m in (pkg.get("mechanism_methods") or []) if str(m).strip()]
-    if mode == "core" and channels and len(methods) < 2:
+    families = method_families(methods)
+    if mode == "core" and channels and len(families) < 2:
         findings.append(
             PackageFinding(
                 "error",
                 "mechanism_methods",
-                "活渠道须两种测法（如 jiangting / sobel / did_x_m）并印在机制表上",
+                "活渠道须两种不同推断家族的测法（两步法 / 中介区间 / 调节 / 时序），"
+                "sobel+bootstrap 只算一种",
             )
         )
+
+    if mode == "core":
+        findings.extend(_validate_core_story_and_type(pkg))
 
     if not str(pkg.get("main_col") or "").strip():
         findings.append(PackageFinding("error", "main_col", "必须点名主栏（哪一列是交卷列）"))
@@ -344,8 +429,90 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
     return findings
 
 
+def _answer_covered(answer: str, body: str) -> bool:
+    a = re.sub(r"\s+", "", answer or "")
+    b = re.sub(r"\s+", "", body or "")
+    if len(a) < 8:
+        return bool(a) and a in b
+    chunks = [a[i : i + 6] for i in range(0, len(a) - 5)]
+    hits = sum(1 for c in chunks if c in b)
+    return hits >= max(1, len(chunks) // 2)
+
+
+def _validate_core_story_and_type(pkg: Mapping[str, Any]) -> list[PackageFinding]:
+    findings: list[PackageFinding] = []
+    policy = str(pkg.get("policy_type") or "").strip()
+    if policy not in _POLICY_TYPES:
+        findings.append(
+            PackageFinding(
+                "error",
+                "policy_type",
+                "政策 DID 须定型 policy_type：project_system / advocacy / mixed / not_policy",
+            )
+        )
+    elif policy != "not_policy" and len(str(pkg.get("policy_type_basis") or "").strip()) < 8:
+        findings.append(
+            PackageFinding(
+                "error",
+                "policy_type_basis",
+                "须写哪个部门/有无专项资金，用来决定 M 家族，不能只填类型名",
+            )
+        )
+    framework = str(pkg.get("framework") or "").strip()
+    if len(framework) < 12:
+        findings.append(
+            PackageFinding(
+                "error",
+                "framework",
+                "须一句总框架（基于……理论 / 在……框架下），机制与异质都答这句派生的问题",
+            )
+        )
+
+    story = pkg.get("story") if isinstance(pkg.get("story"), Mapping) else {}
+    if not story:
+        findings.append(
+            PackageFinding(
+                "error",
+                "story",
+                "政策 DID 须有 story 块（问题 / 张力 / 无数字答案 / 讲稿 / ≥4 拍），故事页先于表",
+            )
+        )
+        return findings
+    question = str(story.get("question") or "").strip()
+    if len(question) < 10 or not re.search(r"[？?]|能否|是否|如何", question):
+        findings.append(
+            PackageFinding("error", "story_question", "story.question 须是一句带问号或能否/是否/如何的问题")
+        )
+    tension = str(story.get("tension") or "").strip()
+    if len(tension) < 16:
+        findings.append(PackageFinding("error", "story_tension", "story.tension 须写清答案为什么不显然"))
+    answer = str(story.get("answer") or "").strip()
+    if len(answer) < 16:
+        findings.append(PackageFinding("error", "story_answer", "story.answer 须一句无数字答案"))
+    elif _NUM_IN_PROSE.search(answer):
+        findings.append(PackageFinding("error", "story_answer", "story.answer 不许带小数或百分号"))
+    pitch = str(story.get("pitch") or "").strip()
+    if not (150 <= len(pitch) <= 400):
+        findings.append(
+            PackageFinding("error", "story_pitch", "story.pitch 须 150–400 字、能复述全文，且不含数字")
+        )
+    elif _NUM_IN_PROSE.search(pitch):
+        findings.append(PackageFinding("error", "story_pitch", "story.pitch 一个数字都不许有"))
+    beats = [b for b in (story.get("beats") or []) if isinstance(b, Mapping)]
+    if len(beats) < 4:
+        findings.append(PackageFinding("error", "story_beats", "story.beats 至少 4 拍，每张主文表挂一拍"))
+    numbers = story.get("story_numbers") or []
+    if isinstance(numbers, list) and len(numbers) > 3:
+        findings.append(PackageFinding("error", "story_numbers", "摘要/结论最多 3 个故事数字"))
+    if pkg.get("h1_rejected") is True:
+        findings.append(
+            PackageFinding("error", "h1_rejected", "H1 必须是主发现；对不上就重定问题，不能标 h1_rejected")
+        )
+    return findings
+
+
 def write_gate(pkg: Mapping[str, Any]) -> list[PackageFinding]:
-    """Four-way conjunction. Passing one door is not enough."""
+    """Five-way conjunction. Passing one door is not enough."""
     findings = validate_package(pkg)
     mode = str(pkg.get("mode") or "")
     null_effect = bool(pkg.get("null_effect"))
@@ -452,6 +619,34 @@ def audit_manuscript(text: str, pkg: Mapping[str, Any] | None = None) -> list[Pa
                 "假说不要写成平行趋势/PSM/泊松/匹配等识别诊断",
             )
         )
+    for phrase in _WORK_LANGUAGE:
+        if phrase in body:
+            findings.append(
+                PackageFinding(
+                    "error",
+                    "work_language",
+                    f"正文出现工作语言 {phrase!r}：那是想问题用的词，不是刊面用词",
+                )
+            )
+    if _H1_REJECTED.search(body):
+        findings.append(
+            PackageFinding(
+                "error",
+                "h1_rejected",
+                "结论/摘要不得写「H1 被拒绝」：主假说必须是主发现，对不上就重定问题",
+            )
+        )
+    if pkg is not None:
+        story = pkg.get("story") if isinstance(pkg.get("story"), Mapping) else {}
+        answer = str(story.get("answer") or "").strip()
+        if answer and not _answer_covered(answer, body):
+            findings.append(
+                PackageFinding(
+                    "error",
+                    "story_not_in_text",
+                    "story.answer 须能在摘要或结论里复述出来（无数字答案句）",
+                )
+            )
     if "依然成立" in body and pkg is not None:
         fig = pkg.get("figure_gate") if isinstance(pkg.get("figure_gate"), Mapping) else {}
         cross0 = int(fig.get("event_post_cross0_n") or 0)

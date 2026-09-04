@@ -236,7 +236,7 @@ output/                           # 输出目录
 | `scripts/research_framework/pipeline.py` | 实证 demo TWFE + design scaffold（非写作轨）|
 | `scripts/research_framework/enhanced_pipeline.py` | 实证生产入口（现代 DID；`--mechanism` 指定渠道；写出 `GOLD_TABLES.md` + `empirical_package.json`）|
 | `scripts/research_framework/gold_tables.py` | 黄金八格实跑表（结构事实 / 逐步 / 更紧 / 样本流 / 处理→M）|
-| `scripts/core/empirical_package.py` | 实证包写稿门（黄金八格 / 控制职务 / 机制分列 / 图门）|
+| `scripts/core/empirical_package.py` | 实证包写稿门（黄金八格 / 控制职务 / 机制分族 / 故事页 / 图门）|
 | `scripts/research_framework/modern_did.py` | 现代 DID 库（import，无独立 CLI）|
 | `scripts/research_framework/fin_charts.py` | 专业金融图表 |
 | `scripts/research_framework/report_generator.py` | LaTeX 论文生成 |
