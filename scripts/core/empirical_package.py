@@ -106,11 +106,11 @@ MECHANISM_METHOD_FAMILIES: dict[str, frozenset[str]] = {
 
 _POLICY_TYPES = frozenset({"project_system", "advocacy", "mixed", "not_policy"})
 _NUM_IN_PROSE = re.compile(r"\d+\.\d+|%")
-_H1_REJECTED = re.compile(r"假说\s*H\s*1.{0,8}(被拒绝|未得到验证)|H\s*1.{0,6}被拒绝")
+# Claim form only. "H1被拒绝的可能性" / "文献中 H1 常被拒绝" stay out.
+_H1_REJECTED = re.compile(r"(?:假说\s*)?H\s*1\s*(?:被拒绝|未得到验证)(?!的可能性)")
 _WORK_LANGUAGE = (
     "前站",
     "吸收层",
-    "名单效应",
     "框架的推论",
 )
 
@@ -171,17 +171,18 @@ def thinking_questions() -> tuple[str, ...]:
 
 def method_families(methods: Iterable[str]) -> list[str]:
     """Map method tokens to inference families; unknowns stay distinct."""
+    alias: dict[str, str] = {}
+    for name, aliases in MECHANISM_METHOD_FAMILIES.items():
+        alias[_norm(name)] = name
+        for raw_alias in aliases:
+            alias[_norm(raw_alias)] = name
     out: list[str] = []
     seen: set[str] = set()
     for raw in methods:
         token = _norm(str(raw))
         if not token:
             continue
-        family = f"other:{token}"
-        for name, aliases in MECHANISM_METHOD_FAMILIES.items():
-            if token in aliases or token == _norm(name):
-                family = name
-                break
+        family = alias.get(token, f"other:{token}")
         if family not in seen:
             seen.add(family)
             out.append(family)
@@ -391,7 +392,12 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
                 "机制渠道不得是本题 Y（贷款题禁再印贷款对数/存量/深度）",
             )
         )
-    if mode == "core" and len(channels) < 2:
+    distinct_channels: list[str] = []
+    for channel in channels:
+        if any(_same_construct(channel, kept) for kept in distinct_channels):
+            continue
+        distinct_channels.append(channel)
+    if mode == "core" and len(distinct_channels) < 2:
         findings.append(
             PackageFinding(
                 "error",
@@ -500,7 +506,9 @@ def _validate_core_story_and_type(pkg: Mapping[str, Any]) -> list[PackageFinding
         findings.append(PackageFinding("error", "story_pitch", "story.pitch 一个数字都不许有"))
     beats = [b for b in (story.get("beats") or []) if isinstance(b, Mapping)]
     if len(beats) < 4:
-        findings.append(PackageFinding("error", "story_beats", "story.beats 至少 4 拍，每张主文表挂一拍"))
+        findings.append(
+            PackageFinding("error", "story_beats", "story.beats 至少 4 拍（基准 / 识别 / 机制 / 异质）")
+        )
     numbers = story.get("story_numbers") or []
     if isinstance(numbers, list) and len(numbers) > 3:
         findings.append(PackageFinding("error", "story_numbers", "摘要/结论最多 3 个故事数字"))
