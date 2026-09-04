@@ -163,6 +163,50 @@ def test_same_family_methods_count_as_one():
     assert "mechanism_methods" in codes
 
 
+def test_underscored_aliases_stay_in_the_same_family():
+    from scripts.core.empirical_package import method_families
+
+    assert method_families(["did_x_base_m", "moderation", "treat_x_baseline"]) == [
+        "moderation"
+    ]
+    assert method_families(["jiangting", "two_step", "did_on_m"]) == ["twostep"]
+    assert method_families(["m_in_y", "four_step"]) == ["stepwise_indirect"]
+
+
+def test_duplicate_channels_do_not_count_as_two_paths():
+    pkg = _ok_core()
+    pkg["mechanism_channels"] = ["批发零售新注册", "批发零售新注册"]
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "mechanism_channels" in codes
+
+
+def test_gold_mode_does_not_require_story_or_policy_type():
+    from scripts.core.empirical_package import GOLD_SLOTS
+
+    pkg = empty_package(mode="gold", unit="firm")
+    pkg["y_construct"] = "绿色专利"
+    pkg["x_construct"] = "碳交易"
+    pkg["battery"] = ["规模", "杠杆", "成长"]
+    pkg["variable_jobs"] = [
+        {
+            "name": name,
+            "table_row": f"{name}水平",
+            "construct": name,
+            "job": f"挡绿色专利的事前{name}",
+            "basis": f"接到本题绿色专利的事前{name}，不是年鉴有",
+        }
+        for name in pkg["battery"]
+    ]
+    pkg["slots"] = {name: f"T{i}" for i, name in enumerate(GOLD_SLOTS, 1)}
+    pkg["main_col"] = "(1)"
+    pkg["main_p"] = 0.01
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "story" not in codes
+    assert "policy_type" not in codes
+    assert "mechanism_channels" not in codes
+    assert codes == set()
+
+
 def test_mechanism_cannot_be_the_outcome():
     pkg = _ok_core()
     pkg["mechanism_channels"] = ["县域贷款对数", "批发零售新注册"]
@@ -182,6 +226,13 @@ def test_h1_rejected_is_a_rewrite_not_a_finding():
     codes = {f.code for f in audit_manuscript(text, _ok_core())}
     assert "h1_rejected" in codes
     assert "work_language" in codes
+
+
+def test_h1_possibility_and_published_words_are_not_workspace_voice():
+    text = "我们讨论 H1被拒绝的可能性，并回顾文献中的名单效应。"
+    codes = {f.code for f in audit_manuscript(text, _ok_core())}
+    assert "h1_rejected" not in codes
+    assert "work_language" not in codes
 
 
 def test_manuscript_memo_voice_and_doi():
