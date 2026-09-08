@@ -9,12 +9,13 @@
 > **研究主题一句话 → 收到可核验的 LaTeX 草稿。**
 > **Describe your research topic → receive a verifiable LaTeX draft.**
 
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research?color=blue)](https://github.com/csmar432/finai-research/releases)
-[![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
+[![PyPI](https://img.shields.io/pypi/v/finai-research-workflow?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
+[![Downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypistats.org/packages/finai-research-workflow)
 [![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research/actions)
-[![Coverage](https://img.shields.io/badge/coverage-60.0%25-brightgreen)](https://codecov.io/gh/csmar432/finai-research)
+[![Coverage](https://codecov.io/gh/csmar432/finai-research/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21262689.svg)](https://doi.org/10.5281/zenodo.21262689)
 [![Discussions](https://img.shields.io/github/discussions/csmar432/finai-research?color=blueviolet)](https://github.com/csmar432/finai-research/discussions)
 [![Open in GitHub Codespaces](https://img.shields.io/badge/Open%20in%20Codespaces-526ADF?logo=github)](https://codespaces.new/csmar432/finai-research)
@@ -54,7 +55,7 @@ pip install --break-system-packages "finai-research-workflow[extras]"
 > **重要提示**：缺少 `DEEPSEEK_API_KEY` 时，`finai-pipeline` 默认以退出码 4
 > 退出（严格模式），并打印明确指引。可以用 `finai-doctor` 诊断配置来源。
 
-> **PyPI:** [finai-research-workflow · 0.2.0a1](https://pypi.org/project/finai-research-workflow/) · MIT
+> **PyPI:** [finai-research-workflow · 0.3.0](https://pypi.org/project/finai-research-workflow/) · MIT
 > · 默认安装 `pip install finai-research-workflow` 不含 fastapi/streamlit（避免 PyJWT/apt 冲突）
 > · Web 套件：`pip install 'finai-research-workflow[web]'`
 > **DOI:** [10.5281/zenodo.21262689](https://doi.org/10.5281/zenodo.21262689)

@@ -4,8 +4,8 @@ message: |
   Thanks for supporting open-source economic & financial research automation!
 type: software
 title: "FinAI Research Workflow"
-version: 0.2.0a1
-date-released: 2026-08-07
+version: 0.3.0
+date-released: 2026-09-08
 url: "https://github.com/csmar432/finai-research"
 repository-code: "https://github.com/csmar432/finai-research"
 repository: "https://github.com/csmar432/finai-research"

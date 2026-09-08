@@ -1,13 +1,13 @@
 {
   "$schema": "./project_numbers.schema.json",
   "_comment": "Single Source of Truth for all project metric numbers. All documentation MUST reference these values. Update this file via `python scripts/count_assets.py --sync-ssot`, not by hand. Manually maintained numbers historically drift; auto-generation from disk eliminates the root cause.",
-  "last_verified": "2026-08-31",
+  "last_verified": "2026-09-09",
   "verified_by": "scripts/count_assets.py --sync-ssot",
   "generation_command": "python scripts/count_assets.py --sync-ssot",
   "_manual_overrides": {
     "_comment": "Fields below are NOT auto-detected by count_assets.py and require manual maintenance.",
-    "version.github_release": "v0.2.0a1 (Zenodo DOI 10.5281/zenodo.21262689 retained from prior archive)",
-    "version.pypi": "0.2.0a1 (published)"
+    "version.github_release": "v0.3.0 (Zenodo DOI 10.5281/zenodo.21262689 concept DOI; per-release DOI minted by webhook)",
+    "version.pypi": "0.3.0 (published)"
   },
   "mcp": {
     "total_directories": 43,
@@ -106,7 +106,7 @@
   },
   "testing": {
     "test_files": 677,
-    "test_functions": 12823,
+    "test_functions": 12831,
     "numerical_correctness_tests": 9,
     "ci_coverage_gate": 60,
     "ci_coverage_target": 65,
@@ -131,10 +131,10 @@
     "chinese_guide_lines": 1049
   },
   "version": {
-    "pyproject": "0.2.0a1",
-    "github_release": "v0.2.0a1",
+    "pyproject": "0.3.0",
+    "github_release": "v0.3.0",
     "github_release_doi": "10.5281/zenodo.21262689",
-    "github_release_date": "2026-08-07",
-    "pypi": "0.2.0a1"
+    "github_release_date": "2026-09-08",
+    "pypi": "0.3.0"
   }
 }

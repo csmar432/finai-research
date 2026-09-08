@@ -12,12 +12,13 @@
   <img alt="FinAI Research Workflow — research that can show its work" src="docs/assets/hero-light.svg">
 </picture>
 
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)](https://github.com/csmar432/finai-research)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Install](https://img.shields.io/badge/install-git%20clone%20%26%20pip%20install%20-e%20.-blue)](README.md)
 [![GitHub release](https://img.shields.io/github/v/release/csmar432/finai-research?color=blue)](https://github.com/csmar432/finai-research/releases)
+[![PyPI](https://img.shields.io/pypi/v/finai-research-workflow?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/finai-research-workflow/)
+[![Downloads](https://img.shields.io/pypi/dm/finai-research-workflow?color=blue)](https://pypistats.org/packages/finai-research-workflow)
 [![GitHub stars](https://img.shields.io/github/stars/csmar432/finai-research)](https://github.com/csmar432/finai-research/stargazers)
-[![arXiv](https://img.shields.io/badge/arXiv-cs.AI-b31b1b.svg)](https://arxiv.org/)
 [![CI](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/ci.yml?branch=main&label=CI)](https://github.com/csmar432/finai-research/actions)
 [![docs](https://img.shields.io/github/actions/workflow/status/csmar432/finai-research/docs.yml?branch=main&label=docs)](https://github.com/csmar432/finai-research/actions)
 [![codecov](https://codecov.io/gh/csmar432/finai-research/branch/main/graph/badge.svg)](https://codecov.io/gh/csmar432/finai-research)

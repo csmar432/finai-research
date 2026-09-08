@@ -246,7 +246,7 @@ output/                           # 输出目录
 
 ---
 
-## 可用技能（17个）
+## 可用技能（18个）
 
 技能文档在 `.claude/skills/`（Claude Code）、`.github/skills/`（Copilot）和 `knowledge/skills/`（真相源）。在 Cursor 中直接用 `Skill:` 语法触发。
 
@@ -346,7 +346,7 @@ output/                           # 输出目录
 | `.cursor/skills/` | Cursor | 17 个 Skill 文件（原生 Skill 系统）|
 | `.cursor/agents/` | Cursor | Agent 指令（literature-scout）|
 | `.github/copilot-instructions.md` | GitHub Copilot | Copilot 指令文件 |
-| `knowledge/skills/` | Claude Code / Copilot | 17 个技能文档（真相源，不含 README.md；目录副本到 .claude/skills/ 和 .github/skills/）|
+| `knowledge/skills/` | Claude Code / Copilot | 18 个技能文档（真相源，不含 README.md；目录副本到 .claude/skills/ 和 .github/skills/）|
 
 ## Skill: 语法（Cursor 专用）
 

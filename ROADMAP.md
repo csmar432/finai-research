@@ -1,7 +1,7 @@
 # FinAI Research Workflow — Roadmap
 
-> Last updated: 2026-07-09
-> Status: v0.2.0a1
+> Last updated: 2026-09-08
+> Status: v0.3.0
 
 This document outlines the development roadmap for FinAI Research Workflow.
 星标（Star）和社区反馈会优先影响 roadmap 优先级。
@@ -21,13 +21,13 @@ This document outlines the development roadmap for FinAI Research Workflow.
 ### 🚀 v0.3.0 — "First Release" (Target: 2026-Q3)
 *Focus: visibility and first-time user experience*
 
-- [ ] **First GitHub Release** (v0.3.0-alpha) with CHANGELOG
-- [ ] GitHub Discussions enabled and community categories configured
+- [x] **First stable GitHub Release** (v0.3.0) with CHANGELOG + PyPI Trusted Publishing
+- [x] GitHub Discussions enabled and community categories configured
 - [ ] README restructured: ≤300 lines, quick-start demo GIF
-- [ ] MCP server tiering (Core / Recommended / Optional)
+- [x] MCP server tiering (`register_mcp_servers.py --profile academic`, PROJECT_NUMBERS `recommended_academic_servers`)
 - [ ] arXiv preprint submission (finai.pdf, English)
 - [ ] Discord community server created and linked in README
-- [ ] Codecov token added to CI, coverage target raised to 60%
+- [x] Codecov token added to CI, coverage target raised to 60%
 
 ### 📦 v0.4.0 — "Benchmark & Trust" (Target: 2026-Q4)
 *Focus: credibility, reproducibility, academic adoption*

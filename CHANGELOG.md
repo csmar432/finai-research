@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-08
+
+First stable release on the `0.x` line. The `v1.0.0` / `v1.0.1` tags from
+2026-07-08 are historical: versioning was restarted at `0.2.0a0` for a clean
+PyPI Trusted Publishing lineage, so `0.3.0` is the latest release even though
+it sorts below `1.0.1`.
+
+### Added
+- **Empirical package + write-gate** (`scripts/core/empirical_package.py`, #204 #205
+  #213 #214): a policy-DID draft is a *package* — gold slots (structure facts →
+  stepwise → tighter compare → robust matrix → T→M mechanism table → sample flow),
+  `variable_jobs` with a job attached to *this* Y, mechanism channels disjoint from
+  the control battery, and a retellable `story` page. The writing pre-gate is a
+  five-way conjunction (significant main ∧ jobs ∧ live T→M ∧ clean figures ∧ story);
+  mechanism methods are counted by inference family, M ≠ Y, and「H1 被拒绝」fails.
+  `enhanced_pipeline` step 2b now runs the gold-slot tables and writes
+  `GOLD_TABLES.md` + `empirical_package.json`; `audit_guard` check 26 verifies the
+  empirics → writing hand-off. CLI: `python -m scripts.core.empirical_package
+  questions|scaffold|audit`.
+- **Local empirical data root** (`FINAI_EMPIRICAL_DATA_ROOT`, #187): universal and
+  cached fetchers read local panels before MCP/CLI; TOPIC hard-gaps are recorded in
+  `SKIPPED_CONFIG.md` (`--block-on-topic-gaps` to refuse the run).
+- **Empirics explore mode** (`enhanced_pipeline --explore [--panel]`, #188):
+  multi-estimator + comprehensive robustness inside FinAI instead of freestyle
+  `run_real_*.py` scripts.
+- **Repository visual system** (#189 #190): hero/banner assets, redesigned Quick
+  Demo, architecture diagrams regenerated from the version SSOT.
+- `tests/test_orchestrator_hitl_resume.py`: regression coverage for post-exec HITL,
+  approve→continue, reject→rerun+feedback, pending no-op, final-stage approve.
+- `tests/test_empirical_package.py`: 22 tests for the package contract, write-gate
+  conjunction, manuscript audit, and the Stage 6 → Stage 7 search path.
+
+### Changed
+- **Fail-closed Mock handling** (#192): synthetic/demo data is never substituted
+  silently; Quick Demo states its data source up front.
+- **LLM judge scores** (#201 #202) are parsed from the prompt schema instead of
+  regex-guessing the free text.
+- Dependencies: patch-and-minor lock refresh (#198 #206); GitHub Actions
+  `codeql-action` 4.37.9 (init + analyze bumped together, #203 #211 #212),
+  `docker/setup-buildx-action` 4.3.0 (#210), `actions/stale` 11 (#163),
+  `codecov/codecov-action` 7 (#164).
+
 ### Fixed
 - **TokenBucketRateLimiter per-server collisions**: replaced `hash()`-slot
   buckets with exact per-server dict keys so `rate_limit_per_server` no longer
@@ -49,10 +91,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `scripts/core/agent_host_report.py` to write canonical `output/SKIPPED_CONFIG.md` +
   `output/FINAL.md`, wired the same artifacts into `agent_pipeline` exit code 4, and
   documented the protocol in `AGENTS.md` / `fin-full-pipeline` skill.
-
-### Added
-- `tests/test_orchestrator_hitl_resume.py`: regression coverage for post-exec HITL,
-  approve→continue, reject→rerun+feedback, pending no-op, final-stage approve.
 
 ## [0.2.0a1] - 2026-08-07
 
