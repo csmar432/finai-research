@@ -50,6 +50,12 @@ it sorts below `1.0.1`.
   `codecov/codecov-action` 7 (#164).
 
 ### Fixed
+- **`pipeline.run_did` Frisch–Waugh bug**: the within-transform demeaned y and the
+  controls but left the DID interaction on its original scale (and pooled OLS had
+  no intercept), so the coefficient was not the TWFE estimate. The interaction is
+  now demeaned with the rest of the design and a constant is added; new
+  `tests/test_run_did_fwl.py` checks equality with the dummy-variable (LSDV)
+  estimate to 1e-8. `gold_tables` already residualised the whole matrix locally.
 - **TokenBucketRateLimiter per-server collisions**: replaced `hash()`-slot
   buckets with exact per-server dict keys so `rate_limit_per_server` no longer
   flakes under PYTHONHASHSEED / xdist (CI `test_per_server_rate_limit`).

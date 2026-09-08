@@ -217,9 +217,9 @@ def _units(df: pd.DataFrame, unit_col: str) -> int | str:
 def _absorb(frame: pd.DataFrame, cols: list[str], group: pd.Series) -> pd.DataFrame:
     """Within-transform every regressor *and* the outcome by one FE dimension.
 
-    ``pipeline.run_did`` deliberately leaves the interaction on its original
-    scale, which breaks Frisch-Waugh and attenuates the coefficient. The whole
-    design matrix has to be residualised on the same fixed effects.
+    Frisch-Waugh: the whole design matrix, interaction included, has to be
+    residualised on the same fixed effects. Kept local so the gold tables do
+    not depend on ``pipeline.run_did`` internals.
     """
     out = frame.copy()
     means = out.groupby(group, observed=True)[cols].transform("mean")
