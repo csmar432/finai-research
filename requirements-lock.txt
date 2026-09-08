@@ -4,7 +4,7 @@ annotated-types==0.8.0
     # via pydantic
 anthropic==0.112.0
     # via finai-research-workflow (pyproject.toml)
-anyio==4.14.2
+anyio==4.15.1
     # via
     #   anthropic
     #   httpx
@@ -32,7 +32,7 @@ docstring-parser==0.18.0
     # via anthropic
 exceptiongroup==1.3.1 ; python_full_version < '3.11'
     # via anyio
-fonttools==4.63.0
+fonttools==4.64.0
     # via matplotlib
 graphviz==0.21
     # via finai-research-workflow (pyproject.toml)
@@ -54,9 +54,9 @@ jiter==0.16.0
     # via
     #   anthropic
     #   openai
-joblib==1.5.3
+joblib==1.6.0
     # via scikit-learn
-kiwisolver==1.5.0
+kiwisolver==1.5.1
     # via matplotlib
 matplotlib==3.10.9 ; python_full_version < '3.11'
     # via
@@ -116,11 +116,11 @@ pandas==2.3.3
     #   finai-research-workflow (pyproject.toml)
     #   seaborn
     #   statsmodels
-patsy==1.0.2
+patsy==1.0.3
     # via statsmodels
 pillow==12.3.0
     # via matplotlib
-pydantic==2.13.4
+pydantic==2.13.5
     # via
     #   finai-research-workflow (pyproject.toml)
     #   anthropic
@@ -139,7 +139,7 @@ pytz==2026.3.post1
     # via pandas
 pyyaml==6.0.3
     # via finai-research-workflow (pyproject.toml)
-regex==2026.7.19
+regex==2026.9.3
     # via tiktoken
 requests==2.34.2
     # via
