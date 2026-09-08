@@ -174,28 +174,27 @@ def run_did(df, y_var, treat_var, time_var, x_vars, did_name="did",
     diag = check_dof(df_sub, [treat_var,time_var]+x_vars, firm_col, year_col, use_firm_fe, use_year_fe)
     if diag["fallback_triggered"]: use_firm_fe=False
 
-    # DID interaction term (built on original data before demeaning)
-    did_col = (df_sub[treat_var].astype(float)*df_sub[time_var].astype(float)).rename(did_name)
+    df_sub = df_sub.copy()
+    df_sub[did_name] = df_sub[treat_var].astype(float) * df_sub[time_var].astype(float)
 
-    # Apply within-transformation instead of dummy variables when FEs are requested.
-    # This avoids creating a (N × n_firms) dummy matrix and keeps memory usage O(N).
-    # Standard errors are computed cluster-robust below.
+    # Within-transformation instead of dummy matrices keeps memory O(N). By
+    # Frisch–Waugh–Lovell every regressor, including the DID term, must be
+    # demeaned the same way as y, otherwise the coefficient is not the TWFE
+    # estimate.
+    all_vars = [y_var, did_name] + x_vars
     if use_firm_fe and use_year_fe and firm_col in df_sub.columns and year_col in df_sub.columns:
-        all_vars = [y_var, treat_var, time_var] + x_vars
         df_fe = _two_way_within(df_sub, all_vars, firm_col, year_col)
     elif use_firm_fe and firm_col in df_sub.columns:
-        all_vars = [y_var, treat_var, time_var] + x_vars
         df_fe = _demean_for_fe(df_sub, all_vars, firm_col)
     elif use_year_fe and year_col in df_sub.columns:
-        all_vars = [y_var, treat_var, time_var] + x_vars
         df_fe = _demean_for_fe(df_sub, all_vars, year_col)
     else:
-        df_fe = df_sub.copy()
+        df_fe = df_sub
 
-    # DID term is NOT demeaned (it is the causal variable) — keep it on original scale
-    did_col.index = df_fe.index
-    x_vars + [did_name]
-    X = pd.concat([df_fe[x_vars].astype(float), did_col.astype(float)], axis=1).fillna(0)
+    X = pd.concat([df_fe[x_vars].astype(float), df_fe[did_name].astype(float)], axis=1).fillna(0)
+    # The within-transform adds the grand mean back, so an intercept is required
+    # for the slopes to equal LSDV; pooled OLS needs one anyway.
+    X = sm.add_constant(X, has_constant="add")
     y = df_fe[y_var].astype(float).values
     model = sm.OLS(y, X.values).fit(cov_type="HC1" if robust_se else "nonrobust")
     results = extract(model, list(X.columns))

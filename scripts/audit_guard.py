@@ -263,12 +263,16 @@ def check_5_pypi_badges_redirected() -> CheckResult:
     # Verify each link actually resolves (200 from PyPI = real link)
     import urllib.request
     import urllib.error
+    import urllib.parse
     import re as _re
     bad = []
     for m in matches:
-        url_m = _re.search(r"https?://[^\s)]+", m)
-        if url_m:
-            url = url_m.group(0).rstrip(")")
+        # Badge lines carry two URLs: the shields.io image and the link target.
+        # Only the target is a "PyPI claim"; shields.io 403s non-browser UAs.
+        for url in _re.findall(r"https?://[^\s)]+", m):
+            url = url.rstrip(")")
+            if urllib.parse.urlsplit(url).hostname == "img.shields.io":
+                continue
             try:
                 with urllib.request.urlopen(url, timeout=5) as r:
                     if r.status != 200:
