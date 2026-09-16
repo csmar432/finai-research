@@ -22,6 +22,7 @@ import json
 import sys
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -92,12 +93,14 @@ class TestModuleConstants:
     def test_semantic_scholar_api_has_placeholder(self):
         """SEMANTIC_SCHOLAR_API must contain the {paper_id} placeholder."""
         assert "{paper_id}" in SEMANTIC_SCHOLAR_API
-        assert "semanticscholar.org" in SEMANTIC_SCHOLAR_API
+        host = urlsplit(SEMANTIC_SCHOLAR_API.format(paper_id="x")).hostname
+        assert host == "api.semanticscholar.org"
 
     def test_crossref_api_has_placeholder(self):
         """CROSSREF_API must contain the {doi} placeholder."""
         assert "{doi}" in CROSSREF_API
-        assert "crossref.org" in CROSSREF_API
+        host = urlsplit(CROSSREF_API.format(doi="10.1/x")).hostname
+        assert host == "api.crossref.org"
 
     def test_module_all_exports(self):
         """All symbols in __all__ must be importable."""

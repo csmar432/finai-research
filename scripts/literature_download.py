@@ -32,6 +32,7 @@ import time
 import warnings
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from urllib.parse import urlsplit
 
 warnings.filterwarnings("ignore")
 
@@ -103,6 +104,15 @@ class PaperRecord:
 
 
 # ── 工具函数 ─────────────────────────────────────────────────────────────────
+
+def _url_host(url: str) -> str:
+    return (urlsplit(url).hostname or "").lower()
+
+
+def _is_arxiv_host(url: str) -> bool:
+    host = _url_host(url)
+    return host == "arxiv.org" or host.endswith(".arxiv.org")
+
 
 def _normalize_arxiv_id(raw: str) -> str:
     """清理 arXiv ID。"""
@@ -409,7 +419,7 @@ def download_batch(
 
         # 确定下载方式
         arxiv_id = paper.get("arxiv_id") or paper.get("externalIds", {}).get("ArXiv", "")
-        if not arxiv_id and "arxiv.org" in str(paper.get("pdf_url", "")):
+        if not arxiv_id and _is_arxiv_host(str(paper.get("pdf_url", ""))):
             arxiv_id = _normalize_arxiv_id(str(paper["pdf_url"]))
 
         if arxiv_id and "arxiv" in sources:

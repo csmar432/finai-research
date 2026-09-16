@@ -16,6 +16,7 @@ try:
     from scripts.literature_download import (
         PaperRecord,
         _normalize_arxiv_id,
+        _is_arxiv_host,
         _arxiv_id_pattern,
         _rate_limit,
         search_arxiv,
@@ -33,6 +34,11 @@ except Exception as e:
 class TestNormalizeArxivId:
     def test_bare_id(self):
         assert _normalize_arxiv_id("2301.12345") == "2301.12345"
+
+    def test_arxiv_host_rejects_substring_spoof(self):
+        assert _is_arxiv_host("https://arxiv.org/pdf/2301.12345.pdf")
+        assert _is_arxiv_host("https://export.arxiv.org/pdf/2301.12345.pdf")
+        assert not _is_arxiv_host("https://evil.example/arxiv.org/pdf/x.pdf")
 
     def test_with_version(self):
         # Function only strips version if last part has v-prefix digits

@@ -133,7 +133,7 @@ class LatexLintChecker:
     # R7: bibliography
     BIBLIOGRAPHY = re.compile(r"\\bibliography\{([^}]+)\}")
     # R8: tabular columns
-    TABULAR_COLS = re.compile(r"\{([clr|p{.*?}]+(?:\s*[clr|p{.*?}]*)*)\}")
+    TABULAR_COLS = re.compile(r"\{((?:[clr|]|p\{[^{}]*\})+)\}")
     # R9: include/input
     INPUT_PATTERN = re.compile(r"\\(?:input|include)\{([^}]+)\}")
 

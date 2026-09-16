@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
+
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -87,7 +89,7 @@ class TestSemanticScholarClient:
         assert c.max_retries == 2
 
     def test_base_url(self):
-        assert "semanticscholar.org" in SemanticScholarClient.BASE_URL
+        assert urlsplit(SemanticScholarClient.BASE_URL).hostname == "api.semanticscholar.org"
 
     def test_fields_includes_title(self):
         assert "title" in SemanticScholarClient.FIELDS
