@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-16
+
+Patch on the `0.3` line. GitHub Latest stayed at `v0.3.0` after the write-gate
+follow-ups; this tag is the current stable.
+
+### Added
+- Write-gate **inference floor** on core packages: staggered DID as a baseline
+  column, few-cluster SE, pre-trend sensitivity (#229).
+- English manuscript audit for H1-rejected / non-claim memos, plus
+  `_same_construct` measure affixes so `财政支出` vs `财政支出份额` count as
+  one channel (#219 #220 #229).
+
+### Changed
+- `facts_before_reg` is optional (WRITE_GATE §48.3); an empty slot no longer
+  needs a dropped reason (#230).
+- Patch/minor lock refresh; pin `pydantic-core==2.46.5` to match
+  `pydantic==2.13.5` so CI install resolves (#223 #230).
+
+### Fixed
+- Cross-platform pytest-log artifact names unique per Python version (#222).
+- CodeQL `init` + `analyze` bumped together to 4.38.0 (#229).
+- URL host checks use `urlsplit().hostname`; tabular lint regex no longer
+  ReDoS (#231).
+
 ## [0.3.0] - 2026-09-08
 
 First stable release on the `0.x` line. The `v1.0.0` / `v1.0.1` tags from
