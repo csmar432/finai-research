@@ -84,7 +84,7 @@ dev = [
 # 在 Debian/Ubuntu 系统中会与 apt 管理的 python3-jwt 冲突。
 # 因此 Web 套件拆到独立的 [web] extra，默认不装。
 extras = [
-    "plotly>=5.21.0,<7.0",
+    "plotly>=5.21.0,<8.0",
     "pdfplumber>=0.11.0,<2.0",
     "python-docx>=1.1.0,<2.0",
     "Pillow>=10.3.0,<99.0",
