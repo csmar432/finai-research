@@ -215,6 +215,34 @@ def test_gold_mode_does_not_require_story_or_policy_type():
     assert codes == set()
 
 
+def test_facts_before_reg_is_optional():
+    from scripts.core.empirical_package import GOLD_SLOTS
+
+    pkg = _ok_core()
+    pkg["slots"]["facts_before_reg"] = ""
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "slot" not in codes
+    gold = empty_package(mode="gold", unit="firm")
+    gold["y_construct"] = "绿色专利"
+    gold["x_construct"] = "碳交易"
+    gold["battery"] = ["规模", "杠杆", "成长"]
+    gold["variable_jobs"] = [
+        {
+            "name": name,
+            "table_row": f"{name}水平",
+            "construct": name,
+            "job": f"挡绿色专利的事前{name}",
+            "basis": f"接到本题绿色专利的事前{name}，不是年鉴有",
+        }
+        for name in gold["battery"]
+    ]
+    gold["slots"] = {name: f"T{i}" for i, name in enumerate(GOLD_SLOTS, 1)}
+    gold["slots"]["facts_before_reg"] = ""
+    gold["main_col"] = "(1)"
+    codes = {f.code for f in validate_package(gold) if f.severity == "error"}
+    assert codes == set()
+
+
 def test_mechanism_cannot_be_the_outcome():
     pkg = _ok_core()
     pkg["mechanism_channels"] = ["县域贷款对数", "批发零售新注册"]

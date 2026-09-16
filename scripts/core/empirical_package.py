@@ -59,8 +59,10 @@ GOLD_SLOTS: tuple[str, ...] = (
     "mechanism",
     "sample_flow",
 )
-# Optional unless the Y is a constructed transform.
-OPTIONAL_GOLD_SLOTS: tuple[str, ...] = ("measure_dict",)
+# Optional: empty is allowed (WRITE_GATE §48.3: stylized facts before baseline
+# are not required). measure_dict is not in GOLD_SLOTS; listed here so a
+# dropped reason is not demanded if a caller puts it in slots.
+OPTIONAL_GOLD_SLOTS: tuple[str, ...] = ("measure_dict", "facts_before_reg")
 
 CORE_OVERLAY_SLOTS: tuple[str, ...] = (
     "parallel_trends",
@@ -435,7 +437,7 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
             continue
         if name == "psm" and reason:
             continue  # 吕铁式：排他金融政策可 drop PSM
-        if name in OPTIONAL_GOLD_SLOTS and reason:
+        if name in OPTIONAL_GOLD_SLOTS:
             continue
         if reason:
             if len(reason) < 6:
