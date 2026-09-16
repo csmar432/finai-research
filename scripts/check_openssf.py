@@ -96,7 +96,7 @@ def _has_hardcoded_secrets() -> tuple[bool, list[str]]:
         except Exception:
             continue
         # Skip the placeholder patterns commonly used in demo code
-        if "dummy_key" in text or "<your_" in text or "example.com" in text:
+        if "dummy_key" in text or "<your_" in text:
             continue
         for pat in bad_patterns:
             for m in re.finditer(pat, text, re.IGNORECASE):
