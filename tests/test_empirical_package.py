@@ -77,6 +77,14 @@ def _ok_core() -> dict:
             "placebo_true_outside_mass": True,
             "event0_job": "名单公布年，资金同步下达所以 0 点最高",
         },
+        "inference": {
+            "staggered": True,
+            "staggered_estimator": "callaway_santanna",
+            "in_baseline_table": True,
+            "treated_clusters": 120,
+            "few_cluster": "none",
+            "pretrend_sensitivity": "event_joint_test",
+        },
         "story": {
             "question": "那么，电商示范名单能否提高县域贷款对数？",
             "tension": "示范既可能引入真实信贷需求，也可能只是把已有网点的业务换个统计口径。",
@@ -233,6 +241,73 @@ def test_h1_possibility_and_published_words_are_not_workspace_voice():
     codes = {f.code for f in audit_manuscript(text, _ok_core())}
     assert "h1_rejected" not in codes
     assert "work_language" not in codes
+
+
+def test_english_h1_and_memo_voice_are_caught():
+    text = (
+        "Conclusion: H1 is rejected. This paper does not estimate an ATT. "
+        "The listed counties' circulation entry rose and county credit expanded. "
+        "H1: parallel trends hold."
+    )
+    codes = {f.code for f in audit_manuscript(text, _ok_core())}
+    assert "h1_rejected" in codes
+    assert "memo_voice" in codes
+    assert "hypothesis_diagnostic" in codes
+
+
+def test_english_h1_possibility_is_not_a_rewrite():
+    text = "We discuss the possibility that H1 is rejected, given the pre-trends."
+    codes = {f.code for f in audit_manuscript(text, _ok_core())}
+    assert "h1_rejected" not in codes
+
+
+def test_share_and_per_capita_are_the_same_construct():
+    from scripts.core.empirical_package import _same_construct
+
+    assert _same_construct("财政支出", "财政支出份额")
+    assert _same_construct("存款", "人均存款")
+    assert not _same_construct("产业", "产业结构")
+    pkg = _ok_core()
+    pkg["mechanism_channels"] = ["财政支出", "财政支出份额"]
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "mechanism_channels" in codes
+    pkg = _ok_core()
+    pkg["y_construct"] = "县域贷款对数"
+    pkg["mechanism_channels"] = ["县域贷款份额", "批发零售新注册"]
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "mechanism_is_y" in codes
+
+
+def test_core_needs_inference_floor():
+    pkg = _ok_core()
+    pkg["inference"] = {}
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "inference" in codes
+    pkg["inference"] = {
+        "staggered": True,
+        "staggered_estimator": "none",
+        "in_baseline_table": False,
+        "treated_clusters": 20,
+        "few_cluster": "none",
+        "pretrend_sensitivity": "event_joint_test",
+    }
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "staggered_estimator" in codes
+    assert "staggered_in_baseline" in codes
+    assert "few_cluster" in codes
+
+
+def test_two_by_two_inference_does_not_need_cs():
+    pkg = _ok_core()
+    pkg["inference"] = {
+        "staggered": False,
+        "treated_clusters": 80,
+        "few_cluster": "none",
+        "pretrend_sensitivity": "honest_did",
+    }
+    codes = {f.code for f in validate_package(pkg) if f.severity == "error"}
+    assert "staggered_estimator" not in codes
+    assert "inference" not in codes
 
 
 def test_manuscript_memo_voice_and_doi():

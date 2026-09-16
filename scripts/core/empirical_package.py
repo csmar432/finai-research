@@ -15,7 +15,9 @@ It encodes only reusable contracts:
    ∧ genre-appropriate fourth piece (clean event/placebo figures for policy
    DID; tighter compare for cross-section) ∧ retellable story page (core).
 5. Mechanism methods count by *inference family*, not token count. M is not Y.
-   Core needs ≥2 named channels. H1 is the finding — "H1 被拒绝" fails.
+   Core needs ≥2 named channels. H1 is the finding — "H1 被拒绝" / "H1 is
+   rejected" fails. Core packages record an ``inference`` block (staggered
+   estimator in the baseline table, few-cluster SE, pre-trend sensitivity).
 
 Writing-only tracks without a package file soft-skip. A present package that
 fails the conjunction blocks the writing pre-gate.
@@ -86,6 +88,7 @@ THINKING_QUESTIONS: tuple[str, ...] = (
     "H1 必须是主发现。符号/显著性对不上就重定问题或停线，禁止写「H1 被拒绝」。",
     "机制渠道不得是本题 Y；两条渠道须是可区分路径，不是同一构念换名。",
     "两种机制测法必须来自不同推断家族（两步法 / 中介区间 / 调节 / 时序），同族两个词只算一种。",
+    "交错名单的异质稳健估计量是基准表的一列，不是诊断；处理簇 <50 用野靴带或随机化推断。",
 )
 
 # Token → inference family. Two tokens in one family count as one method.
@@ -105,13 +108,51 @@ MECHANISM_METHOD_FAMILIES: dict[str, frozenset[str]] = {
 }
 
 _POLICY_TYPES = frozenset({"project_system", "advocacy", "mixed", "not_policy"})
+_STAGGERED_EST = frozenset(
+    {
+        "callaway_santanna",
+        "sun_abraham",
+        "stacked",
+        "imputation_bjs",
+        "dcdh",
+        "gardner_2s",
+    }
+)
+_FEW_CLUSTER = frozenset(
+    {"wild_cluster_bootstrap", "randomization_inference", "both", "none"}
+)
+_PRETREND = frozenset({"honest_did", "pretrend_power", "event_joint_test", "none"})
+# Longest first so "增长率" is not stripped as "率".
+_MEASURE_AFFIXES = (
+    "增长率",
+    "对数",
+    "份额",
+    "占比",
+    "增速",
+    "比重",
+    "存量",
+    "规模",
+    "余额",
+    "深度",
+    "水平",
+    "人均",
+    "率",
+)
 _NUM_IN_PROSE = re.compile(r"\d+\.\d+|%")
-# Claim form only. "H1被拒绝的可能性" / "文献中 H1 常被拒绝" stay out.
-_H1_REJECTED = re.compile(r"(?:假说\s*)?H\s*1\s*(?:被拒绝|未得到验证)(?!的可能性)")
+# Claim form only. "H1被拒绝的可能性" / "the possibility that H1 is rejected" stay out.
+_H1_REJECTED = re.compile(
+    r"(?:假说\s*)?H\s*1\s*(?:被拒绝|未得到验证)(?!的可能性)"
+    r"|(?:hypothesis\s*)?H\s*1\s+(?:is|was|has been)\s+"
+    r"(?:rejected|not supported|not validated)(?!\s+possibility)",
+    re.I,
+)
 _WORK_LANGUAGE = (
     "前站",
     "吸收层",
     "框架的推论",
+    "absorption layer",
+    "front station",
+    "framework corollary",
 )
 
 _STICKER_EXACT = re.compile(
@@ -131,11 +172,35 @@ _MEMO_PHRASES = (
     "按种子文",
     "按八格交出",
     "把对象推进到",
+    "should not be interpreted as",
+    "this paper does not estimate",
+    "this paper does not attempt",
+    "correct reading is",
 )
 _DOI_IN_BIB = re.compile(r"(?i)\bdoi\s*[:=]|https?://doi\.org/")
 _HYP_DIAGNOSTIC = re.compile(
-    r"H\s*[1-4].{0,40}(平行趋势|倾向得分|PSM|泊松|PPML|匹配|样本单元)"
+    r"H\s*[1-4].{0,40}(平行趋势|倾向得分|PSM|泊松|PPML|匹配|样本单元"
+    r"|parallel trends|propensity score|matching|poisson)",
+    re.I,
 )
+_STILL_HOLDS = re.compile(r"依然成立|still holds|remains robust|remains significant", re.I)
+_FAMILY_MARKERS: dict[str, tuple[str, ...]] = {
+    "twostep": ("两步法", "江艇", "jiangting", "two-step", "two step", "did on m", "t→m"),
+    "stepwise_indirect": (
+        "sobel",
+        "bootstrap",
+        "中介",
+        "间接效应",
+        "four-step",
+        "four step",
+    ),
+    "moderation": ("调节", "moderation", "基期渠道", "did ×", "treat ×"),
+    "system": ("sur", "sem", "联立"),
+    "causal_med": ("causal mediation", "imai", "因果中介"),
+    "timing": ("时序", "timing", "event study of m", "m 的事件"),
+    "micro": ("换观察点", "household", "户级"),
+    "exclusion": ("排除反证", "blocked channel", "exclusion"),
+}
 
 
 @dataclass
@@ -220,6 +285,7 @@ def empty_package(*, mode: str = "gold", unit: str = "firm") -> dict[str, Any]:
         "policy_type": "",
         "policy_type_basis": "",
         "story": {},
+        "inference": {},
     }
 
 
@@ -233,7 +299,16 @@ def _same_construct(a: str, b: str) -> bool:
         return False
     if na == nb:
         return True
-    strip = r"(对数|率|比重|存量|规模|余额|深度)$"
+    for shorter, longer in ((na, nb), (nb, na)):
+        if longer.startswith(shorter):
+            rem = longer[len(shorter) :]
+            if rem in _MEASURE_AFFIXES:
+                return True
+        if longer.endswith(shorter):
+            rem = longer[: len(longer) - len(shorter)]
+            if rem in _MEASURE_AFFIXES:
+                return True
+    strip = r"(增长率|对数|份额|占比|增速|比重|存量|规模|余额|深度|水平|人均|率)$"
     sa, sb = re.sub(strip, "", na), re.sub(strip, "", nb)
     return bool(sa and sb and len(sa) >= 4 and sa == sb)
 
@@ -428,6 +503,7 @@ def validate_package(pkg: Mapping[str, Any]) -> list[PackageFinding]:
 
     if mode == "core":
         findings.extend(_validate_core_story_and_type(pkg))
+        findings.extend(_validate_inference(pkg))
 
     if not str(pkg.get("main_col") or "").strip():
         findings.append(PackageFinding("error", "main_col", "必须点名主栏（哪一列是交卷列）"))
@@ -443,6 +519,15 @@ def _answer_covered(answer: str, body: str) -> bool:
     chunks = [a[i : i + 6] for i in range(0, len(a) - 5)]
     hits = sum(1 for c in chunks if c in b)
     return hits >= max(1, len(chunks) // 2)
+
+
+def _is_h1_rejected_claim(body: str) -> bool:
+    for match in _H1_REJECTED.finditer(body or ""):
+        window = body[max(0, match.start() - 24) : match.end() + 16].lower()
+        if "可能性" in window or "possibility" in window:
+            continue
+        return True
+    return False
 
 
 def _validate_core_story_and_type(pkg: Mapping[str, Any]) -> list[PackageFinding]:
@@ -515,6 +600,88 @@ def _validate_core_story_and_type(pkg: Mapping[str, Any]) -> list[PackageFinding
     if pkg.get("h1_rejected") is True:
         findings.append(
             PackageFinding("error", "h1_rejected", "H1 必须是主发现；对不上就重定问题，不能标 h1_rejected")
+        )
+    return findings
+
+
+def _validate_inference(pkg: Mapping[str, Any]) -> list[PackageFinding]:
+    """Staggered estimator in the baseline table; few clusters; pre-trend sensitivity."""
+    findings: list[PackageFinding] = []
+    inf = pkg.get("inference") if isinstance(pkg.get("inference"), Mapping) else {}
+    if not inf:
+        findings.append(
+            PackageFinding(
+                "error",
+                "inference",
+                "政策 DID 须有 inference 块（staggered / treated_clusters / few_cluster / pretrend_sensitivity）",
+            )
+        )
+        return findings
+    staggered = inf.get("staggered")
+    if not isinstance(staggered, bool):
+        findings.append(
+            PackageFinding("error", "inference_staggered", "inference.staggered 须是 true 或 false")
+        )
+        staggered = False
+    estimator = str(inf.get("staggered_estimator") or "").strip()
+    if staggered:
+        if estimator not in _STAGGERED_EST:
+            findings.append(
+                PackageFinding(
+                    "error",
+                    "staggered_estimator",
+                    "交错设计须点名异质稳健估计量（callaway_santanna / sun_abraham / stacked / "
+                    "imputation_bjs / dcdh / gardner_2s），且是基准表的一列",
+                )
+            )
+        if inf.get("in_baseline_table") is not True:
+            findings.append(
+                PackageFinding(
+                    "error",
+                    "staggered_in_baseline",
+                    "异质稳健估计量须作为基准表的一列（共主栏），不能只当诊断",
+                )
+            )
+    try:
+        clusters = int(inf.get("treated_clusters"))
+    except (TypeError, ValueError):
+        findings.append(
+            PackageFinding("error", "treated_clusters", "inference.treated_clusters 须是非负整数")
+        )
+        clusters = 0
+    few = str(inf.get("few_cluster") or "").strip()
+    if few not in _FEW_CLUSTER:
+        findings.append(
+            PackageFinding(
+                "error",
+                "few_cluster",
+                "inference.few_cluster 须是 wild_cluster_bootstrap / randomization_inference / both / none",
+            )
+        )
+    elif clusters < 50 and few == "none":
+        findings.append(
+            PackageFinding(
+                "error",
+                "few_cluster",
+                "处理簇 <50 不许只报普通聚类：用野靴带或随机化推断",
+            )
+        )
+    pre = str(inf.get("pretrend_sensitivity") or "").strip()
+    if pre not in _PRETREND:
+        findings.append(
+            PackageFinding(
+                "error",
+                "pretrend_sensitivity",
+                "inference.pretrend_sensitivity 须是 honest_did / pretrend_power / event_joint_test / none",
+            )
+        )
+    elif pre == "none":
+        findings.append(
+            PackageFinding(
+                "warning",
+                "pretrend_sensitivity",
+                "事前趋势敏感未报：至少给 Honest-DID、事前功效或事件联合检验之一",
+            )
         )
     return findings
 
@@ -597,8 +764,9 @@ def write_gate(pkg: Mapping[str, Any]) -> list[PackageFinding]:
 def audit_manuscript(text: str, pkg: Mapping[str, Any] | None = None) -> list[PackageFinding]:
     findings: list[PackageFinding] = []
     body = text or ""
+    hay = body.lower()
     for phrase in _MEMO_PHRASES:
-        if phrase in body:
+        if phrase.lower() in hay:
             findings.append(
                 PackageFinding(
                     "error",
@@ -628,7 +796,7 @@ def audit_manuscript(text: str, pkg: Mapping[str, Any] | None = None) -> list[Pa
             )
         )
     for phrase in _WORK_LANGUAGE:
-        if phrase in body:
+        if phrase.lower() in body.lower():
             findings.append(
                 PackageFinding(
                     "error",
@@ -636,7 +804,7 @@ def audit_manuscript(text: str, pkg: Mapping[str, Any] | None = None) -> list[Pa
                     f"正文出现工作语言 {phrase!r}：那是想问题用的词，不是刊面用词",
                 )
             )
-    if _H1_REJECTED.search(body):
+    if _is_h1_rejected_claim(body):
         findings.append(
             PackageFinding(
                 "error",
@@ -655,7 +823,19 @@ def audit_manuscript(text: str, pkg: Mapping[str, Any] | None = None) -> list[Pa
                     "story.answer 须能在摘要或结论里复述出来（无数字答案句）",
                 )
             )
-    if "依然成立" in body and pkg is not None:
+        methods = [str(m).strip() for m in (pkg.get("mechanism_methods") or []) if str(m).strip()]
+        hay = body.lower()
+        for family in method_families(methods):
+            markers = _FAMILY_MARKERS.get(family, ())
+            if markers and not any(m.lower() in hay for m in markers):
+                findings.append(
+                    PackageFinding(
+                        "warning",
+                        "mechanism_method_named",
+                        f"机制节须点名 {family} 这一推断家族（两步法 / 中介 / 调节 / 时序），不能只写 JSON 词",
+                    )
+                )
+    if _STILL_HOLDS.search(body) and pkg is not None:
         fig = pkg.get("figure_gate") if isinstance(pkg.get("figure_gate"), Mapping) else {}
         cross0 = int(fig.get("event_post_cross0_n") or 0)
         outside = fig.get("placebo_true_outside_mass")
