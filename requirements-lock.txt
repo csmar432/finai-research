@@ -45,12 +45,12 @@ httpx==0.28.1
     #   finai-research-workflow (pyproject.toml)
     #   anthropic
     #   openai
-idna==3.19
+idna==3.20
     # via
     #   anyio
     #   httpx
     #   requests
-jiter==0.16.0
+jiter==0.17.0
     # via
     #   anthropic
     #   openai
@@ -174,11 +174,11 @@ sniffio==1.3.1
     #   openai
 statsmodels==0.15.0
     # via finai-research-workflow (pyproject.toml)
-threadpoolctl==3.6.0
+threadpoolctl==3.7.0
     # via scikit-learn
 tiktoken==0.14.0
     # via finai-research-workflow (pyproject.toml)
-tqdm==4.70.0
+tqdm==4.70.1
     # via openai
 typing-extensions==4.16.0
     # via
@@ -191,7 +191,7 @@ typing-extensions==4.16.0
     #   typing-inspection
 typing-inspection==0.4.4
     # via pydantic
-tzdata==2026.3
+tzdata==2026.4
     # via pandas
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
