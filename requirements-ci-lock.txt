@@ -230,7 +230,7 @@ pygments==2.21.0
     #   rich
 pyhdfe==0.2.0
     # via linearmodels
-pyjwt==2.13.0
+pyjwt==2.15.0
     # via mcp
 pyparsing==3.3.2
     # via
