@@ -9,7 +9,7 @@ anyio==4.15.1
     #   anthropic
     #   httpx
     #   openai
-certifi==2026.7.22
+certifi==2026.10.18
     # via
     #   httpcore
     #   httpx
