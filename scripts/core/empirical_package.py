@@ -97,7 +97,21 @@ THINKING_QUESTIONS: tuple[str, ...] = (
 MECHANISM_METHOD_FAMILIES: dict[str, frozenset[str]] = {
     "twostep": frozenset({"jiangting", "two_step", "twostep", "did_on_m", "t_to_m"}),
     "stepwise_indirect": frozenset(
-        {"sobel", "bootstrap", "m_in_y", "stepwise", "four_step"}
+        {
+            "sobel",
+            "bootstrap",
+            "m_in_y",
+            "stepwise",
+            "four_step",
+            "sobel_share",
+            "sobelshare",
+            "sobel占比",
+            "sobel份额",
+            "bootstrap_share",
+            "bootstrapshare",
+            "bootstrap占比",
+            "bootstrap份额",
+        }
     ),
     "moderation": frozenset(
         {"did_x_base_m", "did_x_baseline", "treat_x_baseline", "moderation"}

@@ -179,6 +179,9 @@ def test_underscored_aliases_stay_in_the_same_family():
     ]
     assert method_families(["jiangting", "two_step", "did_on_m"]) == ["twostep"]
     assert method_families(["m_in_y", "four_step"]) == ["stepwise_indirect"]
+    assert method_families(["sobel", "sobel_share"]) == ["stepwise_indirect"]
+    assert method_families(["sobel_share", "bootstrap_share"]) == ["stepwise_indirect"]
+    assert method_families(["sobel占比", "sobel份额"]) == ["stepwise_indirect"]
 
 
 def test_duplicate_channels_do_not_count_as_two_paths():
