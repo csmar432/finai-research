@@ -40,15 +40,14 @@ python -m scripts.core.empirical_package audit output/empirical_package.json --m
 
 无包文件的纯写作轨可跳过。有包则四件同时（主栏显著、控制有职务、活机制表、图干净）才许把结果写成「研究发现」。正文禁止备忘录腔（不应解释为 / 升为主结果），参考文献表不写 DOI。
 
-开写前先读写作文件夹里的四份技能，缺一就不写章节：
+本机若有与仓库同级的 `写作/.dsh/skills`，开写前读下面几份，一次只读用到的那份。没有这个目录就按本节已经写明的规则写章节，不要停下来找路径，也不要因为文件不在就停笔：
 
-- `写作/.dsh/skills/sheke-paper-pipeline/SKILL.md`（论证脊柱；没有五句话骨架就不要展开章节）
-本机没有与仓库同级的 `写作/.dsh/skills` 时，按本节已经写明的规则继续，不要停下来找路径。
-- `写作/.dsh/skills/sheke-causal-inference/SKILL.md`（主张上限：描述 / 相关 / 识别 / 机制）
-- `写作/.dsh/skills/sheke-empirical-tables/SKILL.md`（先写一个标准差的经济量，表行用中文名，表注写明聚类层级）
-- `写作/.dsh/skills/anti-defensive-writing/SKILL.md`（删掉预演式辩护；真正改变解释的边界留一次）
+- `sheke-paper-pipeline`：先有五句话骨架再展开章节
+- `sheke-causal-inference`：主张上限是描述、相关、识别、机制
+- `sheke-empirical-tables`：先写一个标准差的经济量，表行用中文名，表注写明聚类层级
+- `anti-defensive-writing`：删掉预演式辩护；真正改变解释的边界留一次
 
-机制段再读 `写作/.dsh/skills/sheke-mechanism-heterogeneity/SKILL.md`。禁止把 Baron-Kenny 三步法或 Sobel 占比写成机制已识别。
+机制段若有 `sheke-mechanism-heterogeneity` 就读它。无论文件在不在，都不把 Baron-Kenny 三步法或 Sobel 占比写成机制已识别。
 
 ## 输出文件
 
