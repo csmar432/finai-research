@@ -547,7 +547,7 @@ representing an economically meaningful effect.]
   \end{tabular}
   \begin{tablenotes}
     \item \textit{Notes:} This table reports...
-    \item Standard errors in parentheses are clustered at the firm level.
+    \item Standard errors in parentheses are the ones actually used. Name the cluster level only if the regression clustered.
     \item *** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
@@ -633,7 +633,7 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
   \end{tabular}
   \begin{tablenotes}
     \item \textit{注：}... \\
-    \item 括号内为在企业层面聚类的标准误。*** p<0.01, ** p<0.05, * p<0.1
+    \item 括号内为实际使用的标准误。若做了聚类，写明聚类层级；未聚类就不要写成企业聚类。*** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
 \end{table}
