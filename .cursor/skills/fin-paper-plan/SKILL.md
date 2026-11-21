@@ -232,8 +232,8 @@ Create the full chapter structure with word count targets. Use the template belo
 
 4.3 机制检验
 - 【表格4-2：机制检验表】
-- 中介效应检验
-- Sobel检验或Bootstrap
+- 处理对渠道变量的效应
+- 处理对渠道变量的效应（Sobel 占比不算机制已识别；见写作文件夹 sheke-mechanism-heterogeneity）
 
 4.4 异质性分析
 - 【表格4-3 / 图4-2：异质性分析】
@@ -387,7 +387,7 @@ Create the full chapter structure with word count targets. Use the template belo
    - Columns (1)–(4): progressively adding controls
 4.3 Mechanism Analysis
    - Table 5: Mechanism Tests
-   - Mediation effect检验
+   - Effect of treatment on the channel variable
 4.4 Heterogeneity Analysis
    - Table 6 / Figure 2: Heterogeneity by size, ownership, industry
 
@@ -524,7 +524,7 @@ Create a comprehensive table plan listing all tables needed:
 | 表3-1 | 变量定义表 | 第3章 3.2节 | 变量名/定义/数据来源/预期符号 | 三线表 | 包含全部变量 |
 | 表3-2 | 描述性统计 | 第3章 3.3节 | 变量/均值/标准差/最小值/最大值 | 三线表 | 全样本 |
 | 表4-1 | 基准回归结果 | 第4章 4.2节 | (1)–(6)列 | 三线表 | 逐步加入控制变量 |
-| 表4-2 | 机制检验 | 第4章 4.3节 | Sobel/ Bootstrap | 三线表 | 中介效应 |
+| 表4-2 | 机制检验 | 第4章 4.3节 | 处理→渠道 | 三线表 | 不写中介占比 |
 | 表4-3 | 异质性分析 | 第4章 4.4节 | 分组/系数/标准误 | 三线表 | 规模/所有制/行业 |
 | 表5-1 | 安慰剂检验 | 第5章 5.1节 | 随机次数/系数均值/p值 | 三线表 | 500次随机抽样 |
 | 表5-2 | 替换被解释变量 | 第5章 5.2节 | (1)–(3)列 | 三线表 | 稳健性 |

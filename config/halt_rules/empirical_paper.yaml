@@ -201,8 +201,8 @@ rules:
           required_tests:
             - "Sobel检验"
             - "Bootstrap置信区间"
-        - description: 必须报告中介效应占比
-          required_fields: ["mediation_proportion", "indirect_effect", "direct_effect"]
+        - description: 不把中介占比写成已识别机制
+          note: 渠道表报告处理对渠道变量的效应，不要求 mediation_proportion
         - description: 必须说明因果顺序假设
           check: causal_sequence_explained
     auto_fix: false

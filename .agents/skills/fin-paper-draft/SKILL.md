@@ -40,6 +40,15 @@ python -m scripts.core.empirical_package audit output/empirical_package.json --m
 
 无包文件的纯写作轨可跳过。有包则四件同时（主栏显著、控制有职务、活机制表、图干净）才许把结果写成「研究发现」。正文禁止备忘录腔（不应解释为 / 升为主结果），参考文献表不写 DOI。
 
+本机若有与仓库同级的 `写作/.dsh/skills`，开写前读下面几份，一次只读用到的那份。没有这个目录就按本节已经写明的规则写章节，不要停下来找路径，也不要因为文件不在就停笔：
+
+- `sheke-paper-pipeline`：先有五句话骨架再展开章节
+- `sheke-causal-inference`：主张上限是描述、相关、识别、机制
+- `sheke-empirical-tables`：先写一个标准差的经济量，表行用中文名，表注写明聚类层级
+- `anti-defensive-writing`：删掉预演式辩护；真正改变解释的边界留一次
+
+机制段若有 `sheke-mechanism-heterogeneity` 就读它。无论文件在不在，都不把 Baron-Kenny 三步法或 Sobel 占比写成机制已识别。
+
 ## 输出文件
 
 ```
@@ -99,7 +108,7 @@ have implications for [POLICY/INVESTORS/REGULATORS].
 本文研究[核心问题]。基于[数据来源]，利用[计量方法]进行实证分析，
 样本期为[时间范围]，包含[样本量]个[观测值]。实证结果表明：[主要发现]。
 具体地，[X]每增加一个标准差，[Y]相应[增加/减少]约[幅度]，经济意义[显著/有限]。
-机制检验表明，[机制路径]是主要传导渠道。分组检验显示，该效应在[子样本]中更为显著，
+若设计支持渠道判断，再写处理对渠道变量的方向是否与主结果一致。没有识别设计时，不把渠道写成已经确定的传导路径。分组检验显示，该效应在[子样本]中更为显著，
 而在[子样本]中则不显著。经过[稳健性检验]后，结论依然成立。本文对[文献]有贡献，
 对[政策/实践]有启示。
 
@@ -463,7 +472,7 @@ Y_{it} = \alpha + \beta \cdot X_{it} + \gamma \cdot Controls_{it}
 [解释模型中各变量的含义。
 $\beta$是核心系数，衡量...]
 [固定效应设置：$\mu_i$表示[公司]固定效应，$\lambda_t$表示[年份]固定效应]
-[标准误聚类：在[公司]层面聚类，参考\citet{pcse2015}]
+[标准误：写实际使用的类型。做了聚类才写聚类层级，不要默认公司层面]
 
 \textbf{[识别策略]（如DID）}：
 [描述处理组/对照组的划分依据]
@@ -538,7 +547,7 @@ representing an economically meaningful effect.]
   \end{tabular}
   \begin{tablenotes}
     \item \textit{Notes:} This table reports...
-    \item Standard errors in parentheses are clustered at the firm level.
+    \item Standard errors in parentheses are the ones actually used. Name the cluster level only if the regression clustered.
     \item *** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
@@ -570,15 +579,14 @@ Discuss how effects vary across:
 \label{sec:mechanism}
 
 [Reference Figure~\ref{fig:mechanism}.
-Test the proposed mechanisms/channels using:
-- Mediation analysis (three-step approach)
-- Interactive effects
-- Subsample analysis
+Report the effect of treatment on each named channel variable, and whether
+that direction lines up with the main result. Do not write a three-step
+mediation, a Sobel share of the total effect, or complete mediation.
 
 Example:
-To investigate the mechanism, we follow \citet{mediation2014} and conduct
-a three-step mediation analysis...
-The results suggest that [M] mediates [X\%] of the total effect.]
+Table~\ref{tab:mechanism} reports the effect of [X] on [M]. The coefficient
+is [positive/negative]. That direction is consistent with the main estimate
+on [Y]. This is a channel association, not an identified share of the total effect.]
 ```
 
 #### 中文结果模板
@@ -625,7 +633,7 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
   \end{tabular}
   \begin{tablenotes}
     \item \textit{注：}... \\
-    \item 括号内为在企业层面聚类的标准误。*** p<0.01, ** p<0.05, * p<0.1
+    \item 括号内为实际使用的标准误。若做了聚类，写明聚类层级；未聚类就不要写成企业聚类。*** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -651,9 +659,9 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
 
 [参考图~\ref{fig:mechanism}。
 使用以下方法检验传导机制：
-- 中介效应三步法
-- 交互项分析
-- 分样本分析]
+- 处理对渠道变量的效应（不把三步法或 Sobel 占比写成已识别的机制）
+- 交互项只在理论事先写明调节时使用，并报告边际效应
+- 分样本只作为异质性，组间差异要做系数差检验]
 
 \subsection{五、稳健性检验}
 
@@ -853,53 +861,12 @@ TR，反映出能源系统绩效的基础水平更高。
 
 ## 机制分析三段式模板
 
-机制分析（中介效应/异质性/渠道检验）必须采用以下三段式结构。
-
-### 标准结构
+机制段只报告处理对渠道变量的效应，以及该方向是否与主结果一致。不写完全中介、部分中介，也不写占总效应的百分比。Baron-Kenny 三步法和 Sobel 占比不是机制已识别。写法以 `写作/.dsh/skills/sheke-mechanism-heterogeneity/SKILL.md` 为准。
 
 ```latex
-\subsection{三、机制检验}
+\subsection{机制}
 
-\textbf{机制一：[M1 机制名称]}
-
-\textbf{（一）理论假说}：
-[引用理论或文献，说明为什么 M1 是潜在传导渠道。
-例：根据 Porter Hypothesis，环境规制通过激励企业绿色创新（机制 M1）
-而非调整产业结构（机制 M2）来提升环境绩效。]
-
-\textbf{（二）实证设计}：
-[描述如何检验该机制：中介效应三步法 / 交互项 / 分样本。
-例：参照 Baron and Kenny (1986) 的中介效应三步法，首先检验 X 对 Y 的
-总效应（总效应 = c），然后检验 X 对中介变量 M 的效应（a），最后同时
-放入 X 和 M，检验 M 的中介效应（b）。]
-
-\textbf{（三）结果解读}：
-[报告核心系数和显著性，结合理论解释机制是否成立。
-例：表~\ref{tab:mechanism} 报告了机制检验结果。第(1)列显示，总效应 c = 0.463
-（p < 0.01），LCCP 政策显著提升 TR。第(2)列显示，X 对 M 的效应 a = 0.312
-（p < 0.05），表明政策显著激励了绿色技术创新。第(3)列同时放入 X 和 M 后，
-M 的系数 b = 0.186（p < 0.01）且 X 的系数 c' = 0.305（p < 0.05）。
-Sobel 检验表明，M 的中介效应占总效应的 34.1%（z = 2.87, p < 0.01），
-即绿色技术创新是 LCCP 政策影响 TR 的重要传导渠道，H2 得到支持。]
-```
-
-### 中介效应标准叙述句式
-
-```latex
-% 完全中介（X 的效应完全通过 M 传导）
-检验结果显示，M 的中介效应占总效应的 [X]%（Sobel z = [z值], p < 0.01），
-且 X 的直接效应 c' 不再显著（β = [值], p = [值]），表明 M 完全中介了
-X 对 Y 的影响。
-
-% 部分中介（X 的效应部分通过 M 传导）
-检验结果显示，M 的中介效应占总效应的 [X]%（Sobel z = [z值], p < 0.01），
-且 X 的直接效应 c' 依然显著（β = [值], p < 0.01），表明 M 部分中介了
-X 对 Y 的影响，[X]% 的效应通过 M 传导，剩余 [Y]% 为直接效应。
-
-% 不成立（X → M 不显著）
-尽管理论预测 M 是潜在传导渠道，但表~\ref{tab:mechanism} 显示，X 对 M
-的效应不显著（a = [值], p = [值]），可能的原因包括：[具体解释]。
-因此，M 并非本文的主要传导渠道。
+处理使渠道变量 $M$ 变化了 [系数]（标准误，聚类在 [层级]）。该方向与主结果一致。$M$ 本身受处理影响，本文不把 $X$ 与 $M$ 同时放入 $Y$ 的方程后剩下的系数解释成已分离的间接效应。渠道不成立时，写明处理对 $M$ 的估计与标准误，并停止把该渠道写入结论。
 ```
 
 ---

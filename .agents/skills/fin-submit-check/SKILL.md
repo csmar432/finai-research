@@ -26,7 +26,7 @@ tags: [paper, submission, check, format, journal]
 □ 作者姓名未出现在正文、致谢、基金声明中
 □ 无"感谢XX老师的指导"类致谢
 □ 基金编号是否匿名化处理
-□ 运行 latexmk 或 pdflatex 后检查 .log 中是否有 "[author name] removed"
+□ 作者姓名、致谢和基金编号不要出现在匿名稿里。编译日志不会打印 "[author name] removed"，用正文检索核对。
 
 检查命令:
 grep -i "author" paper.tex
@@ -45,11 +45,7 @@ grep "removed" paper.log || echo "No author info found"
 □ 标题格式正确
 □ 脚注格式正确
 
-针对 JF/JFE:
-- 主文本不超过 50 页 (含参考文献)
-- 12pt Times New Roman
-- 双倍行距
-- 2.54cm 页边距
+针对 JF/JFE，页数以 `scripts/journal_template.py` 为准：JF 约40页（双栏），JFE 约50页（双栏）。字体和行距跟期刊文档类，不要另写成 12pt 双倍行距。
 ```
 
 ### 3. 图表分辨率检查
@@ -109,7 +105,7 @@ grep -c "\\cite{" paper.tex
 □ 年份准确
 
 验证命令:
-python scripts/journal_template.py --validate-refs --journal JF
+python scripts/journal_template.py --info JF
 
 常见格式错误:
 ❌ Author, A. B. (Year). Title. Journal. -> 缺少卷期页
@@ -209,9 +205,7 @@ grep "Overfull\|Underfull" paper.log
 
 ```
 □ 双盲审稿 (匿名所有作者信息)
-□ 不超过 50 页主文本
-□ Times New Roman 12pt
-□ 双倍行距
+□ 约40页（双栏），以 scripts/journal_template.py 为准
 □ 匿名指南: https://www.afajof.org/
 □ Online Appendix 必需
 □ Data and Code Availability Statement 必需
@@ -221,9 +215,7 @@ grep "Overfull\|Underfull" paper.log
 
 ```
 □ 双盲审稿
-□ 不超过 50 页
-□ Times New Roman 12pt
-□ 双倍行距
+□ 约50页（双栏），以 scripts/journal_template.py 为准
 □ Data Availability Statement 必需
 ```
 
@@ -233,7 +225,7 @@ grep "Overfull\|Underfull" paper.log
 □ 作者信息页单独
 □ 中文参考文献格式: GB/T 7714-2015
 □ 英文参考文献需翻译
-□ 3000-15000 字
+□ 约20000字，以 scripts/journal_template.py 为准
 □ 摘要 200-300 字
 □ 资助基金标注
 ```
@@ -312,9 +304,8 @@ grep "Overfull\|Underfull" paper.log
 
 ## 依赖项
 
-- `scripts/journal_template.py` — 期刊模板和格式验证
-- `scripts/health_check.py` — LaTeX 环境检查
-- `scripts/research_framework/fin_charts.py` — 图表分辨率检查
+- `scripts/journal_template.py` — 期刊模板（`--list` / `--info`）
+- `scripts/paper_tools.py` — `check_figure_resolution` 查图的分辨率
 
 ## 约束
 

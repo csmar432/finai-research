@@ -17,6 +17,8 @@ argument-hint: [outline-reference]
 `fin-full-pipeline` 负责"研究"阶段（lit→idea→novelty→design），
 本技能负责"写作"阶段（outline→draft→figure→review→convert）。
 
+本机若有与仓库同级的 `写作/.dsh/skills/sheke-paper-pipeline/SKILL.md`，开写前读第 0 到第 3 步，并备好任务单、五句话骨架和证据账本。没有该文件就按本节已经写明的规则进入章节，不要停下来找路径。一次只走这一条，不要把写作技能全部加载进来。
+
 ```
 fin-full-pipeline 终点
        ↓ PAPER_OUTLINE.md + REFINED_DESIGN.md

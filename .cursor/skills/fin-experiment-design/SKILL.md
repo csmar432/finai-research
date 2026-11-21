@@ -41,6 +41,9 @@ python -m scripts.research_framework.enhanced_pipeline --topic "..." --mechanism
 
 `empirical_package.json` 最低要求：`y_construct` / `x_construct`、每件控制的 `variable_jobs`（中文 `table_row` + 接到本题 Y 的 `job` + 非贴纸 `basis`）、黄金八格（缺格写 `dropped` 理由）、政策 DID 还要独立于电池的 `mechanism_channels`（≥2 条且不是本题 Y）与 `figure_gate`。`mechanism_methods` 按推断家族计数（sobel+bootstrap 只算一种）。政策 DID 不得 `dropped: mechanism`。core 包须有 `inference` 块（交错估计量进基准表；处理簇 <50 用野靴带或随机化推断；事前趋势敏感）。交稿是合取：主栏显著 ∧ 控制有职务 ∧ 活机制表 ∧ 图干净 ∧ 能复述的 `story` 页。H1 必须是主发现，禁止写「H1 被拒绝」/ “H1 is rejected”。
 
+机制与识别的写法以写作文件夹为准，不在本技能里另起一套：`写作/.dsh/skills/sheke-causal-inference/SKILL.md`、`写作/.dsh/skills/sheke-mechanism-heterogeneity/SKILL.md`、`写作/.dsh/skills/sheke-robustness-suite/SKILL.md`。换两个控制变量不算稳健性检验。
+本机没有与仓库同级的 `写作/.dsh/skills` 时，按本节已经写明的规则继续，不要停下来找路径。
+
 ## 前置条件
 
 读取以下文件（按优先级）：

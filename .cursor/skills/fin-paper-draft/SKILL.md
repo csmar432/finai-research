@@ -40,6 +40,15 @@ python -m scripts.core.empirical_package audit output/empirical_package.json --m
 
 无包文件的纯写作轨可跳过。有包则四件同时（主栏显著、控制有职务、活机制表、图干净）才许把结果写成「研究发现」。正文禁止备忘录腔（不应解释为 / 升为主结果），参考文献表不写 DOI。
 
+本机若有与仓库同级的 `写作/.dsh/skills`，开写前读下面几份，一次只读用到的那份。没有这个目录就按本节已经写明的规则写章节，不要停下来找路径，也不要因为文件不在就停笔：
+
+- `sheke-paper-pipeline`：先有五句话骨架再展开章节
+- `sheke-causal-inference`：主张上限是描述、相关、识别、机制
+- `sheke-empirical-tables`：先写一个标准差的经济量，表行用中文名，表注写明聚类层级
+- `anti-defensive-writing`：删掉预演式辩护；真正改变解释的边界留一次
+
+机制段若有 `sheke-mechanism-heterogeneity` 就读它。无论文件在不在，都不把 Baron-Kenny 三步法或 Sobel 占比写成机制已识别。
+
 ## 输出文件
 
 ```
@@ -99,7 +108,7 @@ have implications for [POLICY/INVESTORS/REGULATORS].
 本文研究[核心问题]。基于[数据来源]，利用[计量方法]进行实证分析，
 样本期为[时间范围]，包含[样本量]个[观测值]。实证结果表明：[主要发现]。
 具体地，[X]每增加一个标准差，[Y]相应[增加/减少]约[幅度]，经济意义[显著/有限]。
-机制检验表明，[机制路径]是主要传导渠道。分组检验显示，该效应在[子样本]中更为显著，
+若设计支持渠道判断，再写处理对渠道变量的方向是否与主结果一致。没有识别设计时，不把渠道写成已经确定的传导路径。分组检验显示，该效应在[子样本]中更为显著，
 而在[子样本]中则不显著。经过[稳健性检验]后，结论依然成立。本文对[文献]有贡献，
 对[政策/实践]有启示。
 
@@ -463,7 +472,7 @@ Y_{it} = \alpha + \beta \cdot X_{it} + \gamma \cdot Controls_{it}
 [解释模型中各变量的含义。
 $\beta$是核心系数，衡量...]
 [固定效应设置：$\mu_i$表示[公司]固定效应，$\lambda_t$表示[年份]固定效应]
-[标准误聚类：在[公司]层面聚类，参考\citet{pcse2015}]
+[标准误：写实际使用的类型。做了聚类才写聚类层级，不要默认公司层面]
 
 \textbf{[识别策略]（如DID）}：
 [描述处理组/对照组的划分依据]
@@ -538,7 +547,7 @@ representing an economically meaningful effect.]
   \end{tabular}
   \begin{tablenotes}
     \item \textit{Notes:} This table reports...
-    \item Standard errors in parentheses are clustered at the firm level.
+    \item Standard errors in parentheses are the ones actually used. Name the cluster level only if the regression clustered.
     \item *** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
@@ -570,15 +579,14 @@ Discuss how effects vary across:
 \label{sec:mechanism}
 
 [Reference Figure~\ref{fig:mechanism}.
-Test the proposed mechanisms/channels using:
-- Mediation analysis (three-step approach)
-- Interactive effects
-- Subsample analysis
+Report the effect of treatment on each named channel variable, and whether
+that direction lines up with the main result. Do not write a three-step
+mediation, a Sobel share of the total effect, or complete mediation.
 
 Example:
-To investigate the mechanism, we follow \citet{mediation2014} and conduct
-a three-step mediation analysis...
-The results suggest that [M] mediates [X\%] of the total effect.]
+Table~\ref{tab:mechanism} reports the effect of [X] on [M]. The coefficient
+is [positive/negative]. That direction is consistent with the main estimate
+on [Y]. This is a channel association, not an identified share of the total effect.]
 ```
 
 #### 中文结果模板
@@ -625,7 +633,7 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
   \end{tabular}
   \begin{tablenotes}
     \item \textit{注：}... \\
-    \item 括号内为在企业层面聚类的标准误。*** p<0.01, ** p<0.05, * p<0.1
+    \item 括号内为实际使用的标准误。若做了聚类，写明聚类层级；未聚类就不要写成企业聚类。*** p<0.01, ** p<0.05, * p<0.1
   \end{tablenotes}
   \end{threeparttable}
 \end{table}
@@ -651,9 +659,9 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
 
 [参考图~\ref{fig:mechanism}。
 使用以下方法检验传导机制：
-- 中介效应三步法
-- 交互项分析
-- 分样本分析]
+- 处理对渠道变量的效应（不把三步法或 Sobel 占比写成已识别的机制）
+- 交互项只在理论事先写明调节时使用，并报告边际效应
+- 分样本只作为异质性，组间差异要做系数差检验]
 
 \subsection{五、稳健性检验}
 

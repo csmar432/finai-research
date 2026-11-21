@@ -19,6 +19,9 @@ tags: [reference, bibtex, citation, formatting, literature]
 
 ## 参考文献管理流程
 
+生成或冻结 `references.bib` 之前，先读 `写作/.dsh/skills/nature-ref-verifier/SKILL.md`。作者、年份、卷期页和 DOI 对不上的条目标待核，不要为了格式完整把空字段填上。
+本机没有与仓库同级的 `写作/.dsh/skills` 时，按本节已经写明的规则继续，不要停下来找路径。
+
 ### 第一步：提取参考文献
 
 从现有文档中自动提取参考文献信息：
@@ -58,7 +61,7 @@ for ref in extracted[:3]:
 
 ### 第二步：Enrich元数据
 
-使用CrossRef API自动补全缺失信息：
+使用 CrossRef 时，只写入接口实际返回的字段。接口没有的页码和卷期不要补：
 
 ```python
 import requests
@@ -239,7 +242,7 @@ for issue in issues:
 □ DOI格式正确
 □ 年份格式一致
 □ 期刊名称标准化
-□ 页码格式正确 (无"1234-89"应为"1234-1289")
+□ 页码与来源一致 (残缺页码标待核，不要按位数补成完整页码)
 ```
 
 ## 期刊格式规范

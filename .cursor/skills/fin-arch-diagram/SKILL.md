@@ -83,7 +83,7 @@ python scripts/research_framework/arch_diagram_demos.py
 - `output/figures/demo_arch_finresearch_gv.png` — 系统架构 4 层 × 3 泳道
 - `output/figures/demo_hierarchy_pipeline_gv.png` — 8 步研究流水线
 - `output/figures/demo_process_flow_gv.png` — 决策菱形 + yes/no 分支 + 自循环
-- `output/figures/demo_consort_gv.png` — CONSORT 样本筛选
+- `output/figures/demo_consort_gv.png` — CONSORT 版式样例。图里的人数是演示数字，不能抄进真实样本筛选图。
 - `output/figures/demo_org_chart_gv.png` — 组织架构（纵向）
 
 ## 节点 (Node) 字段
