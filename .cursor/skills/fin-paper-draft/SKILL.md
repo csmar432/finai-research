@@ -580,15 +580,14 @@ Discuss how effects vary across:
 \label{sec:mechanism}
 
 [Reference Figure~\ref{fig:mechanism}.
-Test the proposed mechanisms/channels using:
-- Mediation analysis (three-step approach)
-- Interactive effects
-- Subsample analysis
+Report the effect of treatment on each named channel variable, and whether
+that direction lines up with the main result. Do not write a three-step
+mediation, a Sobel share of the total effect, or complete mediation.
 
 Example:
-To investigate the mechanism, we follow \citet{mediation2014} and conduct
-a three-step mediation analysis...
-The results suggest that [M] mediates [X\%] of the total effect.]
+Table~\ref{tab:mechanism} reports the effect of [X] on [M]. The coefficient
+is [positive/negative]. That direction is consistent with the main estimate
+on [Y]. This is a channel association, not an identified share of the total effect.]
 ```
 
 #### 中文结果模板

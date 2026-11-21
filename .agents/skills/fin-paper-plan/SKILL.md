@@ -232,7 +232,7 @@ Create the full chapter structure with word count targets. Use the template belo
 
 4.3 机制检验
 - 【表格4-2：机制检验表】
-- 中介效应检验
+- 处理对渠道变量的效应
 - 处理对渠道变量的效应（Sobel 占比不算机制已识别；见写作文件夹 sheke-mechanism-heterogeneity）
 
 4.4 异质性分析
@@ -493,7 +493,7 @@ Create the full chapter structure with word count targets. Use the template belo
    - Columns (1)–(4): progressively adding controls
 4.3 Mechanism Analysis
    - Table 5: Mechanism Tests
-   - Mediation effect检验
+   - Effect of treatment on the channel variable
 4.4 Heterogeneity Analysis
    - Table 6 / Figure 2: Heterogeneity by size, ownership, industry
 
