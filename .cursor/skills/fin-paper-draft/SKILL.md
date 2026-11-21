@@ -40,6 +40,16 @@ python -m scripts.core.empirical_package audit output/empirical_package.json --m
 
 无包文件的纯写作轨可跳过。有包则四件同时（主栏显著、控制有职务、活机制表、图干净）才许把结果写成「研究发现」。正文禁止备忘录腔（不应解释为 / 升为主结果），参考文献表不写 DOI。
 
+开写前先读写作文件夹里的四份技能，缺一就不写章节：
+
+- `写作/.dsh/skills/sheke-paper-pipeline/SKILL.md`（论证脊柱；没有五句话骨架就不要展开章节）
+本机没有与仓库同级的 `写作/.dsh/skills` 时，按本节已经写明的规则继续，不要停下来找路径。
+- `写作/.dsh/skills/sheke-causal-inference/SKILL.md`（主张上限：描述 / 相关 / 识别 / 机制）
+- `写作/.dsh/skills/sheke-empirical-tables/SKILL.md`（先写一个标准差的经济量，表行用中文名，表注写明聚类层级）
+- `写作/.dsh/skills/anti-defensive-writing/SKILL.md`（删掉预演式辩护；真正改变解释的边界留一次）
+
+机制段再读 `写作/.dsh/skills/sheke-mechanism-heterogeneity/SKILL.md`。禁止把 Baron-Kenny 三步法或 Sobel 占比写成机制已识别。
+
 ## 输出文件
 
 ```
@@ -651,9 +661,9 @@ X的系数[略有变化/保持不变]...第(3)列进一步加入固定效应...
 
 [参考图~\ref{fig:mechanism}。
 使用以下方法检验传导机制：
-- 中介效应三步法
-- 交互项分析
-- 分样本分析]
+- 处理对渠道变量的效应（不把三步法或 Sobel 占比写成已识别的机制）
+- 交互项只在理论事先写明调节时使用，并报告边际效应
+- 分样本只作为异质性，组间差异要做系数差检验]
 
 \subsection{五、稳健性检验}
 
