@@ -61,7 +61,7 @@ for ref in extracted[:3]:
 
 ### 第二步：Enrich元数据
 
-使用CrossRef API自动补全缺失信息：
+使用 CrossRef 时，只写入接口实际返回的字段。接口没有的页码和卷期不要补：
 
 ```python
 import requests
@@ -242,7 +242,7 @@ for issue in issues:
 □ DOI格式正确
 □ 年份格式一致
 □ 期刊名称标准化
-□ 页码格式正确 (无"1234-89"应为"1234-1289")
+□ 页码与来源一致 (残缺页码标待核，不要按位数补成完整页码)
 ```
 
 ## 期刊格式规范
